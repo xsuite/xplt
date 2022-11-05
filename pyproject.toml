@@ -1,0 +1,50 @@
+
+
+
+# Project information
+
+[project]
+name = "xplot"
+description = "Plotting for Xsuite"
+readme = "README.md"
+keywords = ["python"]
+#license = {text = ""}
+authors = [
+  { name = "Philipp Niedermayer", email = "eltos@outlook.de" },
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+#    "License :: ",
+    "Topic :: Scientific/Engineering",
+    "Programming Language :: Python :: 3",
+]
+requires-python = ">=3.7"
+dependencies = [
+    "matplotlib",
+    "numpy",
+]
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://github.com/eltos/xplot/"
+
+
+
+# Build tools
+
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.dynamic]
+version = {attr = "xplot.__version__"}
+
+[tool.setuptools]
+packages = ['xplot']
+
+
+# Dev tools
+
+[tool.black]
+line-length = 88
+target-version = ['py37']
