@@ -46,5 +46,5 @@ packages = ['xplot']
 # Dev tools
 
 [tool.black]
-line-length = 88
+line-length = 108
 target-version = ['py37']

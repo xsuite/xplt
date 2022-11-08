@@ -1,6 +1,7 @@
 __version__ = "0.1.0"
 
 from .colors import *
+from .twiss import *
 
 
 from . import matplotlib_setup
