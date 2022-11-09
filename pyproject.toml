@@ -18,7 +18,7 @@ classifiers = [
     "Topic :: Scientific/Engineering",
     "Programming Language :: Python :: 3",
 ]
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 dependencies = [
     "matplotlib",
     "numpy",
@@ -47,4 +47,4 @@ packages = ['xplot']
 
 [tool.black]
 line-length = 108
-target-version = ['py37']
+target-version = ['py38']

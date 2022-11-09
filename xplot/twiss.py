@@ -15,10 +15,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 
-from . import util
+from .base import XsuitePlot
 
 
-class TwissPlot:
+class TwissPlot(XsuitePlot):
+    """
+    A plot for twiss parameters and closed orbit
+    """
+
     def __init__(
         self,
         twiss=None,
@@ -46,6 +50,7 @@ class TwissPlot:
                    If required, twinx-axes will be added automatically.
 
         """
+        super().__init__()
 
         # parse kind string
         if type(kind) is str:
@@ -76,6 +81,8 @@ class TwissPlot:
             ax = [ax]
         self.fig, self.ax = ax[0].figure, ax
         self.ax_twin = [[] for a in self.ax]  # twinx-axes are created below
+        for a in self.ax:
+            a.grid()
         self.ax[-1].set(xlabel="s / " + self.display_unit_for("s"))
 
         # create plot elements
@@ -88,7 +95,6 @@ class TwissPlot:
                 # axes
                 if j == 0:
                     a = self.ax[i]
-                    a.grid()
                 else:  # create twinx-axes if required
                     a = self.ax[i].twinx()
                     a._get_lines.prop_cycler = self.ax[i]._get_lines.prop_cycler
@@ -132,58 +138,3 @@ class TwissPlot:
                     a.autoscale()
 
         return changed
-
-    def factor_for(self, p):
-        """Return factor to convert parameter into display unit"""
-        return util.factor_for(p, self.display_unit_for(p))
-
-    def display_unit_for(self, p):
-        """Return display unit for parameter"""
-        prefix = p[:-1] if len(p) > 1 and p[-1] in "xy" else p
-        return self._display_units.get(p, self._display_units.get(prefix, util.data_unit(p)))
-
-    def label_for(self, *pp, unit=True):
-        """
-        Return label for list of twiss parameters, joining where possible
-
-        :param pp: Parameter names
-        :param unit: Wheather to include unit
-        """
-        texmap = {
-            "alf": "\\alpha",
-            "bet": "\\beta",
-            "gam": "\\gamma",
-            "mu": "\\mu",
-            "d": "D",
-            "px": "x'",
-        }
-
-        def split(p):
-            if p[-1] in "xy":
-                return p[:-1], p[-1]
-            return p, ""
-
-        # split pre- and suffix
-        prefix, _ = split(pp[0])
-        display_unit = self.display_unit_for(pp[0])
-        suffix = []
-        for p in pp:
-            pre, suf = split(p)
-            suffix.append(suf)
-            if pre != prefix or self.display_unit_for(p) != display_unit:
-                # no common prefix or different units, treat separately!
-                return " ,  ".join([self.label_for(p) for p in pp])
-        suffix = ",".join(suffix)
-
-        # build label
-        label = "$"
-        if prefix:
-            label += texmap.get(prefix, prefix)
-            if suffix:
-                label += "_{" + suffix + "}"
-        else:
-            label += suffix
-        label += "$"
-        if unit and display_unit and display_unit != 1:
-            label += " / " + str(display_unit)
-        return label

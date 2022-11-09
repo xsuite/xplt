@@ -1,9 +1,11 @@
 __version__ = "0.1.0"
 
 from .colors import *
+from .line import *
 from .twiss import *
 
 
-from . import matplotlib_setup
+from . import hooks
 
-matplotlib_setup.register_defaults()
+hooks.register_matplotlib_options()
+hooks.register_pint_options()
