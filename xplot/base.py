@@ -97,7 +97,7 @@ class XsuitePlot:
 
     def __init__(
         self,
-        display_units=dict(x="mm", y="mm", p="mrad", k0l="rad"),
+        display_units=None,
     ):
         """
         Base class for plotting
@@ -105,8 +105,7 @@ class XsuitePlot:
         :param display_units: Dictionary with units for parameters. Supports prefix notation, e.g. 'bet' for 'betx' and 'bety'.
         """
 
-        # display units (prefix notation supported)
-        self._display_units = display_units
+        self._display_units = dict(dict(x="mm", y="mm", p="mrad", k0l="rad"), **(display_units or {}))
 
     def factor_for(self, p):
         """Return factor to convert parameter into display unit"""

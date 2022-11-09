@@ -16,6 +16,7 @@ import numpy as np
 import os
 
 from .base import XsuitePlot
+from .line import KnlPlot
 
 
 class TwissPlot(XsuitePlot):
@@ -29,6 +30,10 @@ class TwissPlot(XsuitePlot):
         kind="bet-dx,x+y",
         *,
         ax=None,
+        line=None,
+        line_kwargs=dict(),
+        display_units=None,
+        **subplots_kwargs,
     ):
         """
         A plot for twiss parameters and closed orbit
@@ -46,11 +51,19 @@ class TwissPlot(XsuitePlot):
                          - [[['betx', 'alfx', 'alfy']], [['mux', 'muy']]]: same as above
 
         :param twiss: Dictionary with twiss information
-        :param ax: A list of axes to plot onto, length must match the number of subplots. If None, a new figure is created.
+        :param ax: A list of axes to plot onto, length must match the number of subplots and optional line plot. If None, a new figure is created.
                    If required, twinx-axes will be added automatically.
+        :param line: Line of elements. If given, adds a line plot to the top.
+        :param line_kwargs: Keyword arguments passed to line plot.
+        :param display_units: Dictionary with units for parameters. Supports prefix notation, e.g. 'bet' for 'betx' and 'bety'.
+        :param subplots_kwargs: Keyword arguments passed to matplotlib.pyplot.subplots command when a new figure is created.
 
         """
-        super().__init__()
+        super().__init__(
+            display_units=dict(
+                dict(s="m", x="mm", y="mm", p="mrad", bet="m", d="m"), **(display_units or {})
+            )
+        )
 
         # parse kind string
         if type(kind) is str:
@@ -71,16 +84,19 @@ class TwissPlot(XsuitePlot):
                     k += 1
         self.kind = kind
 
-        # display units (prefix notation supported)
-        self._display_units = dict(s="m", x="mm", y="mm", p="mrad", bet="m", d="m")
-
         # Create plot axes
         if ax is None:
-            _, ax = plt.subplots(len(self.kind), sharex="col")
+            _, ax = plt.subplots(len(self.kind) + (1 if line else 0), sharex="col", **subplots_kwargs)
         if not hasattr(ax, "__iter__"):
             ax = [ax]
         self.fig, self.ax = ax[0].figure, ax
+        # Create line plot
+        if line:
+            self.lineplot = KnlPlot(line, ax=self.ax[0], **line_kwargs)
+            self.lineplot.ax.set(xlabel=None)
+            self.ax = self.ax[1:]
         self.ax_twin = [[] for a in self.ax]  # twinx-axes are created below
+        # Format plot axes
         for a in self.ax:
             a.grid()
         self.ax[-1].set(xlabel="s / " + self.display_unit_for("s"))
@@ -104,25 +120,26 @@ class TwissPlot(XsuitePlot):
                 # create artists for traces
                 self.artists[i].append([])
                 for k, p in enumerate(pp):
-                    (artist,) = a.plot([], [])
+                    (artist,) = a.plot([], [], label=self.label_for(p, unit=False))
                     self.artists[i][j].append(artist)
                     legend[0].append(artist)
-                    legend[1].append(self.label_for(p, unit=False))
+                    legend[1].append(artist.get_label())
 
-            if legend[0]:
+            if len(legend[0]) > 1:
                 a.legend(*legend)
 
         # set data
         if twiss:
             self.update(twiss, autoscale=True)
 
-    def update(self, twiss, autoscale=False):
+    def update(self, twiss, autoscale=False, *, line=None):
         """
         Update the twiss data this plot shows
 
-        :param twiss: Dictionary with twiss information
-        :param autoscale: Whether or not to perform autoscaling on all axes
-        :return: changed artists
+        :param twiss: Dictionary with twiss information.
+        :param line: Line of elements.
+        :param autoscale: Whether or not to perform autoscaling on all axes.
+        :return: changed artists.
         """
         s = self.factor_for("s")
         changed = []
@@ -136,5 +153,8 @@ class TwissPlot(XsuitePlot):
                 if autoscale:
                     a.relim()
                     a.autoscale()
+
+        if line:
+            self.lineplot.update(line, autoscale=autoscale)
 
         return changed

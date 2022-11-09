@@ -30,6 +30,9 @@ class KnlPlot(XsuitePlot):
         knl=None,
         ax=None,
         filled=True,
+        display_units=None,
+        resolution=1000,
+        **subplots_kwargs,
     ):
         """
         A plot for knl values along line
@@ -38,23 +41,26 @@ class KnlPlot(XsuitePlot):
         :param knl: List of orders n to plot knl values for. If None, automatically determine from line.
         :param ax: An axes to plot onto. If None, a new figure is created.
         :param filled: If True, make a filled plot instead of a line plot.
+        :param display_units: Dictionary with units for parameters. Supports prefix notation, e.g. 'bet' for 'betx' and 'bety'.
+        :param resolution: Number of points to use for plot.
+        :param subplots_kwargs: Keyword arguments passed to matplotlib.pyplot.subplots command when a new figure is created.
 
         """
-        super().__init__()
+        super().__init__(display_units=display_units)
 
         if knl is None:
             if line is None:
                 raise ValueError("Either line or N parameter must not be None")
             knl = range(max([e.order for e in line.elements if hasattr(e, "order")]) + 1)
         self.knl = knl
-        self.S = np.linspace(0, line.get_length(), 500)
+        self.S = np.linspace(0, line.get_length(), resolution)
         self.filled = filled
 
         # Create plot
         if ax is None:
-            _, ax = plt.subplots()
+            _, ax = plt.subplots(**subplots_kwargs)
         self.fig, self.ax = ax.figure, ax
-        self.ax.set(xlabel=self.label_for("s"))
+        self.ax.set(xlabel=self.label_for("s"), ylabel="$k_nl$")
         self.ax.grid()
 
         # create plot elements
@@ -68,7 +74,7 @@ class KnlPlot(XsuitePlot):
                 (artist,) = self.ax.plot([], [], alpha=0.5, label=self.label_for(f"k{n}l"))
             self.artists.append(artist)
         self.ax.plot(self.S, np.zeros_like(self.S), "k-", lw=1)
-        self.ax.legend()
+        self.ax.legend(ncol=5)
 
         # set data
         if line:
@@ -88,7 +94,7 @@ class KnlPlot(XsuitePlot):
             if hasattr(el, "knl"):
                 for i, n in enumerate(self.knl):
                     if n <= el.order:
-                        mask = (s <= self.S) & (self.S <= s + el.length)
+                        mask = (s <= self.S) & (self.S < s + el.length)
                         KNL[i, mask] += el.knl[n]
 
         # plot
@@ -101,7 +107,6 @@ class KnlPlot(XsuitePlot):
             else:
                 art.set_data((s * self.S, f * knl))
             changed.append(art)
-        self.ax.legend()
         if autoscale:
             if self.filled:  # At present, relim does not support collection instances.
 
