@@ -2,10 +2,12 @@
 #
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
+import os, sys, distutils.dir_util
+from xplot import __version__
+
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
-from xplot import __version__
 
 project = "Xplot"
 copyright = "2022, Philipp Niedermayer (github.com/eltos)"
@@ -16,9 +18,8 @@ version = __version__
 release = version
 
 # Project sources
-import os, sys
-
-sys.path.insert(0, os.path.abspath(".."))
+root = os.path.abspath("..")
+sys.path.insert(0, root)
 
 # Auto API
 autoapi_type = "python"
@@ -41,23 +42,44 @@ autoapi_add_toctree_entry = False
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
+    "sphinx_book_theme",
     "sphinx_rtd_theme",
-    "myst_parser",
     "sphinx.ext.napoleon",
     "sphinx.ext.autodoc",
     "autoapi.extension",
     "sphinx_toolbox.sidebar_links",
     "sphinx_toolbox.github",
     "sphinx.ext.githubpages",
+    "myst_nb",
 ]
 
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
+# Example notebooks
+def np_example_notebooks_init(app, *args):
+    global np_example_notebooks
+    np_example_notebooks = distutils.dir_util.copy_tree(
+        os.path.join(root, "examples"), os.path.join(app.srcdir, "examples")
+    )
+
+
+def np_example_notebooks_clean(*args):
+    for file in np_example_notebooks:
+        os.remove(file)
+
+
+nb_execution_mode = "off"
+
+
+def setup(app):
+    app.connect("config-inited", np_example_notebooks_init)
+    app.connect("build-finished", np_example_notebooks_clean)
+
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = "sphinx_rtd_theme"
+html_theme = "sphinx_book_theme"  # "sphinx_rtd_theme"
 html_show_sourcelink = False
 html_static_path = ["_static"]

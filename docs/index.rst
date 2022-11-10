@@ -6,6 +6,7 @@ Welcome to Xplot's documentation!
    :caption: Contents
    :maxdepth: 1
 
+   usage
    api
 
 .. sidebar-links::

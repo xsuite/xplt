@@ -13,13 +13,13 @@ jobs:
         run: >
           pip install -e . &&
           pip install
-          sphinx==5.3.0
+          sphinx==4.5.0
+          sphinx-book-theme==0.3.3
           sphinx_rtd_theme==1.1.1
           sphinxcontrib-napoleon==0.7
-          myst-parser==0.18.1
           sphinx-toolbox==3.2.0
           sphinx-autoapi==2.0.0
-          nbsphinx==0.8.9
+          myst-nb==0.17.1
       - name: Sphinx build
         run: |
           sphinx-build docs _build
