@@ -23,6 +23,7 @@ dependencies = [
     "xsuite",
     "matplotlib",
     "numpy",
+    "pint",
 ]
 dynamic = ["version"]
 
