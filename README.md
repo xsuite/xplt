@@ -3,6 +3,8 @@
 
 ## Usage
 
+Read the docs at https://eltos.github.io/xplot
+
 See [examples](examples/) directory
 
 

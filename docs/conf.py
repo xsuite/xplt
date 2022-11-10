@@ -5,12 +5,15 @@
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
+from xplot import __version__
 
 project = "Xplot"
 copyright = "2022, Philipp Niedermayer (github.com/eltos)"
 author = "Philipp Niedermayer (github.com/eltos)"
 github_username = "eltos"
 github_repository = "xplot"
+version = __version__
+release = version
 
 # Project sources
 import os, sys
@@ -56,4 +59,5 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = "sphinx_rtd_theme"
+html_show_sourcelink = False
 html_static_path = ["_static"]
