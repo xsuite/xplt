@@ -20,10 +20,6 @@ from .line import KnlPlot
 
 
 class TwissPlot(XsuitePlot):
-    """
-    A plot for twiss parameters and closed orbit
-    """
-
     def __init__(
         self,
         twiss=None,
@@ -40,15 +36,16 @@ class TwissPlot(XsuitePlot):
 
         :param kind: Defines the properties to plot.
                      This can be a nested list or a separated string or a mixture of lists and strings where
-                     the first list level (or separator ',') determines the subplots,
-                     the second list level (or separator '-') determines any twinx-axes,
-                     and the third list level (or separator '+') determines plots.
+                     the first list level (or separator ``,``) determines the subplots,
+                     the second list level (or separator ``-``) determines any twinx-axes,
+                     and the third list level (or separator ``+``) determines plots.
                      In addition, abbreviations for x-y-parameter pairs are supported (e.g. 'bet' for 'betx+bety').
+
                      Examples:
-                         - 'bet-dx': single subplot with 'betx' and 'bety' on the left and 'dx' on the right axis
-                         - [[['betx', 'bety'], ['dx']]]: same as above
-                         - 'betx+alf,mu': two suplots the first with 'betx', 'alfx' and 'alfy' and the second with 'mux' and 'muy'
-                         - [[['betx', 'alfx', 'alfy']], [['mux', 'muy']]]: same as above
+                      - ``'bet-dx'``: single subplot with 'betx' and 'bety' on the left and 'dx' on the right axis
+                      - ``[[['betx', 'bety'], ['dx']]]``: same as above
+                      - ``'betx+alf,mu'``: two suplots the first with 'betx', 'alfx' and 'alfy' and the second with 'mux' and 'muy'
+                      - ``[[['betx', 'alfx', 'alfy']], [['mux', 'muy']]]``: same as above
 
         :param twiss: Dictionary with twiss information
         :param ax: A list of axes to plot onto, length must match the number of subplots and optional line plot. If None, a new figure is created.

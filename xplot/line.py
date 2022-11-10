@@ -19,10 +19,6 @@ from .base import XsuitePlot
 
 
 class KnlPlot(XsuitePlot):
-    """
-    A plot for knl values along line
-    """
-
     def __init__(
         self,
         line=None,

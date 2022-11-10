@@ -90,11 +90,6 @@ def factor_for(p, unit):
 
 
 class XsuitePlot:
-    """
-    Base class for plotting
-
-    """
-
     def __init__(
         self,
         display_units=None,
