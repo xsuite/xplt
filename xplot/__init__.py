@@ -1,4 +1,12 @@
-__version__ = "0.1.0"
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+__author__ = "Philipp Niedermayer"
+__contact__ = "eltos@outlook.de"
+
+
+__version__ = "0.1.1"
+
 
 from .colors import *
 from .line import *
