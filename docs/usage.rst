@@ -8,4 +8,5 @@ User guide
 
    examples/colors
    examples/twiss
+   examples/phasespace
 
