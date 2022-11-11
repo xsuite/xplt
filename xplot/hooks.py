@@ -16,10 +16,16 @@ def register_matplotlib_options():
     """Register default options for matplotlib"""
     import matplotlib as mpl
 
-    mpl.colormaps.register(cmap_petroff)
-    mpl.colormaps.register(cmap_petroff_gradient)
-    mpl.colormaps.register(cmap_petroff_bipolar)
-    mpl.colormaps.register(cmap_petroff_cyclic)
+    for cmap in (
+        cmap_petroff,
+        cmap_petroff_gradient,
+        cmap_petroff_bipolar,
+        cmap_petroff_cyclic,
+    ):
+        mpl.cm.register_cmap(cmap=cmap)
+        cmap_r = cmap.reversed()
+        cmap_r.name = cmap.name + "_r"
+        mpl.cm.register_cmap(cmap=cmap_r)
 
     mpl.rcParams.update(
         {
@@ -40,7 +46,9 @@ def register_pint_options():
     @pint.register_unit_format("l")
     def format_latex(unit, registry, **options):
         """Slightly modified latex formatter"""
-        preprocessed = {r"\mathrm{{{}}}".format(u.replace("_", r"\_")): p for u, p in unit.items()}
+        preprocessed = {
+            r"\mathrm{{{}}}".format(u.replace("_", r"\_")): p for u, p in unit.items()
+        }
         formatted = pint.formatter(
             preprocessed.items(),
             as_ratio=False,
