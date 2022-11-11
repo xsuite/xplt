@@ -17,4 +17,5 @@ cd xplot
 pip install -e .
 pip install pre-commit
 pre-commit install
+git config core.autocrlf input
 ```

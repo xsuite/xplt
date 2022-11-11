@@ -2,6 +2,10 @@
 Welcome to Xplot's documentation!
 =================================
 
+A plotting library for Xsuite_
+
+.. _Xsuite: https://github.com/xsuite
+
 .. toctree::
    :caption: Contents
    :maxdepth: 1
@@ -11,6 +15,7 @@ Welcome to Xplot's documentation!
 
 .. sidebar-links::
    :github:
+
 
 
 ==================
