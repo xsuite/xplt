@@ -71,11 +71,6 @@ def data_unit(p):
         momentum_compaction_factor=1,  # alpha_c = eta+1/gamma0^2 = 1/gamma0_tr^2
         #betz0
         
-        ## elements
-        ###################
-        k0l=1,
-        k1l='m^-1',
-        
     )   
     # fmt: on
 
@@ -100,7 +95,9 @@ class XsuitePlot:
         :param display_units: Dictionary with units for parameters. Supports prefix notation, e.g. 'bet' for 'betx' and 'bety'.
         """
 
-        self._display_units = dict(dict(x="mm", y="mm", p="mrad", k0l="rad"), **(display_units or {}))
+        self._display_units = dict(
+            dict(x="mm", y="mm", p="mrad", k0l="rad"), **(display_units or {})
+        )
 
     def factor_for(self, p):
         """Return factor to convert parameter into display unit"""
@@ -109,7 +106,11 @@ class XsuitePlot:
     def display_unit_for(self, p):
         """Return display unit for parameter"""
         prefix = p[:-1] if len(p) > 1 and p[-1] in "xy" else p
-        return self._display_units.get(p, self._display_units.get(prefix, data_unit(p)))
+        if p in self._display_units:
+            return self._display_units[p]
+        if prefix in self._display_units:
+            return self._display_units[prefix]
+        return data_unit(p)
 
     def label_for(self, *pp, unit=True):
         """
@@ -128,7 +129,6 @@ class XsuitePlot:
                 "gam": "\\gamma",
                 "mu": "\\mu",
                 "d": "D",
-                "px": "x'",
             }.get(label, label)
 
         def split(p):
