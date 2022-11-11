@@ -10,6 +10,7 @@ A plotting library for Xsuite_
    :caption: Contents
    :maxdepth: 1
 
+   quickstart
    usage
    api
 
