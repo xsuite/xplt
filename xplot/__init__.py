@@ -11,6 +11,7 @@ __version__ = "0.1.1"
 from .colors import *
 from .line import *
 from .twiss import *
+from .phasespace import *
 
 
 from . import hooks
