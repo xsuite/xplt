@@ -61,13 +61,13 @@ class PhaseSpacePlot(XsuitePlot):
                       - ``'x,x-y'``: two suplots the first with x-px and the second with x-y phase space
                       - ``[['x', 'px'], ['x', 'y']]``: same as above
 
-        :param plot: Defines the type of plot. Can be 'auto', 'scatter' or 'hist2d'. Default is 'auto' for which the plot type is chosen automatically based on the number of particles.
+        :param plot: Defines the type of plot. Can be 'auto', 'scatter' or 'hist'. Default is 'auto' for which the plot type is chosen automatically based on the number of particles.
         :param ax: A list of axes to plot onto, length must match the number of subplots. If None, a new figure is created.
         :param mask: An index mask to select particles to plot. If None, all particles are plotted.
         :param masks: List of masks for each subplot.
         :param display_units: Dictionary with units for parameters.
         :param color: Color of the scatter plot. If None, the color is determined by the color cycle.
-        :param cmap: Colormap to use for the hist2d plot.
+        :param cmap: Colormap to use for the hist plot.
         :param projections: Add histogrammed projections onto axis. Can be True, False, "x", "y", "auto" or a list of these for each subplot
         :param projections_kwargs: Additional kwargs for histogram projection (step plot)
         :param mean: Whether to indicate mean of distribution with a cross marker. Boolean or list of booleans for each subplot.
@@ -134,8 +134,8 @@ class PhaseSpacePlot(XsuitePlot):
             raise ValueError(f"percentiles list must be flat or of length {n}")
         if grid and (len(grid) != 2 or grid[0] * grid[1] < n):
             raise ValueError(f"grid must be a tuple (n, m) with n*m >= {n}")
-        if plot not in ["auto", "scatter", "hist2d"]:
-            raise ValueError("plot must be 'auto', 'scatter' or 'hist2d'")
+        if plot not in ["auto", "scatter", "hist"]:
+            raise ValueError("plot must be 'auto', 'scatter' or 'hist'")
 
         self.plot = plot
         self.percentiles = percentiles
@@ -268,7 +268,7 @@ class PhaseSpacePlot(XsuitePlot):
 
             plot = self.plot
             if plot == "auto":
-                plot = "scatter" if len(x) <= 1000 else "hist2d"
+                plot = "scatter" if len(x) <= 1000 else "hist"
             # scatter plot
             self.artists_scatter[i].set_visible(plot == "scatter")
             if plot == "scatter":
@@ -278,7 +278,7 @@ class PhaseSpacePlot(XsuitePlot):
             for artist in self.artists_hexbin[i]:
                 artist.remove()
             self.artists_hexbin[i] = []
-            if plot == "hist2d":
+            if plot == "hist":
                 # twice to mitigate https://stackoverflow.com/q/17354095
                 hexbin_bg = ax.hexbin(x, y, mincnt=1, **self._hxkw)
                 hexbin_fg = ax.hexbin(x, y, mincnt=1, edgecolors="none", **self._hxkw)
@@ -338,7 +338,7 @@ class PhaseSpacePlot(XsuitePlot):
                 # ax.relim()  # At present, relim does not support collection instances.
                 if plot == "scatter":
                     artists = [self.artists_scatter[i]]
-                elif plot == "hist2d":
+                elif plot == "hist":
                     artists = self.artists_hexbin[i]
                 else:
                     artists = []
