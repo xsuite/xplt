@@ -33,6 +33,8 @@ class PhaseSpacePlot(XsuitePlot):
         display_units=None,
         color=None,
         cmap="Blues" or "magma_r",
+        projections="auto",
+        projections_kwargs=None,
         mean=False,
         mean_kwargs=None,
         std=False,
@@ -66,6 +68,8 @@ class PhaseSpacePlot(XsuitePlot):
         :param display_units: Dictionary with units for parameters.
         :param color: Color of the scatter plot. If None, the color is determined by the color cycle.
         :param cmap: Colormap to use for the hist2d plot.
+        :param projections: Add histogrammed projections onto axis. Can be True, False, "x", "y", "auto" or a list of these for each subplot
+        :param projections_kwargs: Additional kwargs for histogram projection (step plot)
         :param mean: Whether to indicate mean of distribution with a cross marker. Boolean or list of booleans for each subplot.
         :param mean_kwargs: Additional kwargs for mean cross
         :param std: Whether to indicate standard deviation of distribution with an ellipse. Boolean or list of booleans for each subplot.
@@ -119,6 +123,8 @@ class PhaseSpacePlot(XsuitePlot):
             std = n * [std]
         if percentiles is None or not hasattr(percentiles[0], "__iter__"):
             percentiles = n * [percentiles]
+        if isinstance(projections, str) or not hasattr(projections, "__iter__"):
+            projections = n * [projections]
 
         if len(mean) != n:
             raise ValueError(f"mean must be a boolean or a list of length {n}")
@@ -133,6 +139,7 @@ class PhaseSpacePlot(XsuitePlot):
 
         self.plot = plot
         self.percentiles = percentiles
+        self.projections = projections
 
         # Create plot axes
         if ax is None:
@@ -155,18 +162,20 @@ class PhaseSpacePlot(XsuitePlot):
 
         # Create distribution plots
         self.artists_scatter = [None] * n
-        self.artists_hexbin = [[]] * n
+        self.artists_hexbin = [()] * n
         self.artists_mean = [None] * n
         self.artists_std = [None] * n
-        self.artists_percentiles = [[]] * n
+        self.artists_percentiles = [()] * n
+        self.ax_twin = [{} for i in range(n)]
+        self.artists_twin = [{} for i in range(n)]
 
         for i, ((a, b), ax) in enumerate(zip(self.kind, self.axflat)):
 
             # 2D phase space distribution
             ##############################
+
             self.artists_scatter[i] = ax.scatter([], [], s=4, color=color)
             self._hxkw = dict(cmap=cmap, rasterized=True)
-            self.artists_hexbin.append([])
 
             # 2D mean indicator
             if mean[i]:
@@ -205,7 +214,21 @@ class PhaseSpacePlot(XsuitePlot):
             ax.set(title=title, xlabel=self.label_for(a), ylabel=self.label_for(b))
             ax.grid(alpha=0.5)
 
-            # TODO: twin axis for projections
+            # 1D histogram projections
+            ###########################
+
+            if self.projections[i]:
+                kwargs = dict(
+                    dict(color="k", alpha=0.3, lw=1), **projections_kwargs or {}
+                )
+                for xy, yx in zip("xy", "yx"):
+                    if self.projections[i] != yx:
+                        # Create twin xy axis and artists
+                        twin = ax.twinx() if xy == "x" else ax.twiny()
+                        twin.set(**{f"{yx}ticks": [], f"{yx}lim": (0, 0.2)})
+                        self.ax_twin[i][xy] = twin
+                        (hist,) = twin.step([], [], **kwargs)
+                        self.artists_twin[i][xy] = hist
 
         # set data
         if particles is not None:
@@ -242,6 +265,7 @@ class PhaseSpacePlot(XsuitePlot):
 
             # 2D phase space distribution
             ##############################
+
             plot = self.plot
             if plot == "auto":
                 plot = "scatter" if len(x) <= 1000 else "hist2d"
@@ -289,7 +313,26 @@ class PhaseSpacePlot(XsuitePlot):
                         angle=np.degrees(np.arctan2(*evecs[1])),
                     )
 
-            # TODO: projections
+            # 1D histogram projections
+            ###########################
+
+            project = self.projections[i]
+            if project == "auto":
+                project = len(x) >= 200
+
+            for xy, v in zip("xy", (x, y)):
+                if xy in self.artists_twin[i]:
+                    hist = self.artists_twin[i][xy]
+                    hist.set_visible(project)
+                    if project:
+                        # 1D histogram
+                        counts, edges = np.histogram(v, bins=101)
+                        counts = counts / len(v)
+                        steps = (
+                            np.append(edges, edges[-1]),
+                            np.concatenate(([0], counts, [0])),
+                        )
+                        hist.set_data(steps if xy == "x" else steps[::-1])
 
             if autoscale:
                 # ax.relim()  # At present, relim does not support collection instances.
