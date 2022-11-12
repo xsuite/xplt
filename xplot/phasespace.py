@@ -29,6 +29,7 @@ class PhaseSpacePlot(XsuitePlot):
         *,
         ax=None,
         mask=None,
+        masks=None,
         display_units=None,
         color=None,
         cmap="Blues" or "magma_r",
@@ -39,6 +40,7 @@ class PhaseSpacePlot(XsuitePlot):
         percentiles=None,
         percentile_kwargs=None,
         grid=None,
+        titles="auto",
         **subplots_kwargs,
     ):
         """
@@ -59,7 +61,8 @@ class PhaseSpacePlot(XsuitePlot):
 
         :param plot: Defines the type of plot. Can be 'auto', 'scatter' or 'hist2d'. Default is 'auto' for which the plot type is chosen automatically based on the number of particles.
         :param ax: A list of axes to plot onto, length must match the number of subplots. If None, a new figure is created.
-        :param mask: A index mask to select particles to plot. If None, all particles are plotted.
+        :param mask: An index mask to select particles to plot. If None, all particles are plotted.
+        :param masks: List of masks for each subplot.
         :param display_units: Dictionary with units for parameters.
         :param color: Color of the scatter plot. If None, the color is determined by the color cycle.
         :param cmap: Colormap to use for the hist2d plot.
@@ -70,6 +73,7 @@ class PhaseSpacePlot(XsuitePlot):
         :param percentiles: List of percentiles (in percent) to indicate in the distribution with ellipses. Can also be a list of lists for each subplot.
         :param percentile_kwargs: Additional kwargs for percentile ellipses.
         :param grid: Tuple (ncol, nrow) for subplot layout. If None, the layout is determined automatically.
+        :param titles: List of titles for each subplot or 'auto' to automatically set titles based on plot kind.
         :param subplots_kwargs: Keyword arguments passed to matplotlib.pyplot.subplots command when a new figure is created.
 
 
@@ -191,21 +195,44 @@ class PhaseSpacePlot(XsuitePlot):
                     ax.add_artist(artist)
                     self.artists_percentiles[i].append(artist)
 
-            ax.set(xlabel=self.label_for(a), ylabel=self.label_for(b))
+            # Axes title and labels
+            if titles == "auto":
+                title = self.title_for(a, b)
+            elif titles is None:
+                title = None
+            else:
+                title = titles[i]
+            ax.set(title=title, xlabel=self.label_for(a), ylabel=self.label_for(b))
             ax.grid(alpha=0.5)
 
             # TODO: twin axis for projections
 
         # set data
         if particles is not None:
-            self.update(particles, mask=mask, autoscale=True)
+            self.update(particles, mask=mask, masks=masks, autoscale=True)
 
-    def update(self, particles, mask=None, autoscale=False):
+    def update(self, particles, *, mask=None, masks=None, autoscale=False):
+        """
+        Update the data this plot shows
+
+        :param particles: A dictionary with particle information
+        :param mask: An index mask to select particles to plot. If None, all particles are plotted.
+        :param masks: List of masks for each subplot.
+        :param autoscale: Whether or not to perform autoscaling on all axes.
+        :return: changed artists.
+        """
+        if masks is None:
+            masks = [mask] * len(self.kind)
+        elif mask is not None:
+            raise ValueError("Only one of mask and masks can be set.")
+        if len(masks) != len(self.kind):
+            raise ValueError(f"masks must be a list of length {len(self.kind)}")
+
         for i, ((a, b), ax) in enumerate(zip(self.kind, self.axflat)):
             ax.autoscale(autoscale)
             # coordinates
-            x = self.factor_for(a) * self._masked(particles, a, mask)
-            y = self.factor_for(b) * self._masked(particles, b, mask)
+            x = self.factor_for(a) * self._masked(particles, a, masks[i])
+            y = self.factor_for(b) * self._masked(particles, b, masks[i])
 
             # statistics
             XY = np.array((x, y))
@@ -293,3 +320,21 @@ class PhaseSpacePlot(XsuitePlot):
         if mask is not None:
             p = p[mask]
         return np.array(p).flatten()
+
+    def title_for(self, a, b):
+        """
+        Plot title for a given pair (a,b) of properties
+        """
+        titles = {  # Order of a,b does not matter
+            "x-px": "Horizontal phase space",
+            "y-py": "Vertical phase space",
+            "zeta-delta": "Longitudinal phase space",
+            "X-Px": "Normalized horizontal phase space",
+            "Y-Py": "Normalized vertical phase space",
+            "x-y": "Transverse profile",
+        }
+        return titles.get(f"{a}-{b}", titles.get(f"{b}-{a}", f"{a}-{b} phase space"))
+
+    def factor_for(self, p):
+        # TODO: handle normalized coordinates (X,Px,Y,Py)
+        return super().factor_for(p)
