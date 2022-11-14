@@ -42,13 +42,9 @@ autoapi_add_toctree_entry = False
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    "sphinx_book_theme",
-    "sphinx_rtd_theme",
     "sphinx.ext.napoleon",
     "sphinx.ext.autodoc",
     "autoapi.extension",
-    "sphinx_toolbox.sidebar_links",
-    "sphinx_toolbox.github",
     "sphinx.ext.githubpages",
     "myst_nb",
 ]
@@ -80,6 +76,10 @@ def setup(app):
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = "sphinx_book_theme"  # "sphinx_rtd_theme"
+html_theme = "pydata_sphinx_theme"
 html_show_sourcelink = False
 html_static_path = ["_static"]
+html_theme_options = {
+    "show_nav_level": 2,
+    "github_url": "https://github.com/eltos/xplot",
+}
