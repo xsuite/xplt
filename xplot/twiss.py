@@ -58,7 +58,8 @@ class TwissPlot(XsuitePlot):
         """
         super().__init__(
             display_units=dict(
-                dict(s="m", x="mm", y="mm", p="mrad", bet="m", d="m"), **(display_units or {})
+                dict(s="m", x="mm", y="mm", p="mrad", bet="m", d="m"),
+                **(display_units or {}),
             )
         )
 
@@ -83,7 +84,9 @@ class TwissPlot(XsuitePlot):
 
         # Create plot axes
         if ax is None:
-            _, ax = plt.subplots(len(self.kind) + (1 if line else 0), sharex="col", **subplots_kwargs)
+            _, ax = plt.subplots(
+                len(self.kind) + (1 if line else 0), sharex="col", **subplots_kwargs
+            )
         if not hasattr(ax, "__iter__"):
             ax = [ax]
         self.fig, self.ax = ax[0].figure, ax
@@ -129,7 +132,7 @@ class TwissPlot(XsuitePlot):
         if twiss:
             self.update(twiss, autoscale=True)
 
-    def update(self, twiss, autoscale=False, *, line=None):
+    def update(self, twiss, *, autoscale=False, line=None):
         """
         Update the twiss data this plot shows
 
