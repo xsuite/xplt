@@ -21,7 +21,6 @@ classifiers = [
 
 requires-python = ">=3.8"
 dependencies = [
-    "xsuite",
     "matplotlib",
     "numpy",
     "pandas",

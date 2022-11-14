@@ -1,7 +1,7 @@
 
 # Welcome to Xplot's documentation!
 
-A plotting library for [Xsuite](https://github.com/xsuite).
+A plotting library for [Xsuite](https://github.com/xsuite) and simmilar accelerator physics codes.
 
 ```{toctree}
 :caption: Contents
