@@ -29,46 +29,46 @@ def data_unit(p):
         ###################
         s='m',            # Reference accumulated path length
         x='m',            # Horizontal position
-        px=1,             # Px / (m/m0 * p0c) = beta_x gamma /(beta0 gamma0)
+        px="1",           # Px / (m/m0 * p0c) = beta_x gamma /(beta0 gamma0)
         y='m',            # Vertical position
-        py=1,             # Py / (m/m0 * p0c)
-        delta=1,          # (Pc m0/m - p0c) /p0c
-        ptau=1,           # (Energy m0/m - Energy0) / p0c
-        pzeta=1,          # ptau / beta0
-        rvv=1,            # beta / beta0
-        rpp=1,            # m/m0 P0c / Pc = 1/(1+delta)
+        py="1",           # Py / (m/m0 * p0c)
+        delta="1",        # (Pc m0/m - p0c) /p0c
+        ptau="1",         # (Energy m0/m - Energy0) / p0c
+        pzeta="1",        # ptau / beta0
+        rvv="1",          # beta / beta0
+        rpp="1",          # m/m0 P0c / Pc = 1/(1+delta)
         zeta='m',         # (s - beta0 c t )
         tau='m',          # (s / beta0 - ct)
         mass0='eV',       # Reference rest mass
         q0='e',           # Reference charge
         p0c='eV',         # Reference momentum
         energy0='eV',     # Reference energy
-        gamma0=1,         # Reference relativistic gamma
-        beta0=1,          # Reference relativistic beta
+        gamma0="1",       # Reference relativistic gamma
+        beta0="1",        # Reference relativistic beta
         
         ## twiss
         ###################
         betx='m',         # Horizontal twiss beta-function
         bety='m',         # Vertical twiss beta-function
-        alfx=1,           # Horizontal twiss alpha-function
-        alfy=1,           # Vertical twiss alpha-function
+        alfx="1",         # Horizontal twiss alpha-function
+        alfy="1",         # Vertical twiss alpha-function
         gamx='1/m',       # Horizontal twiss gamma-function
         gamy='1/m',       # Vertical twiss gamma-function
-        mux=1,            # Horizontal phase advance
-        muy=1,            # Vertical phase advance
+        mux="1",          # Horizontal phase advance
+        muy="1",          # Vertical phase advance
         #muzeta
-        qx=1,             # Horizontal tune qx=mux[-1]
-        qy=1,             # Vertical tune qy=mux[-1]
+        qx="1",           # Horizontal tune qx=mux[-1]
+        qy="1",           # Vertical tune qy=mux[-1]
         #qs
         dx='m',           # Horizontal dispersion $D_{x,y}$ [m]
         dy='m',           # $D_{x,y}$ [m]
         #dzeta
-        dpx=1,
-        dpy=1,
+        dpx="1",
+        dpy="1",
         circumference='m',
         T_rev='s',
-        slip_factor=1,                 # eta
-        momentum_compaction_factor=1,  # alpha_c = eta+1/gamma0^2 = 1/gamma0_tr^2
+        slip_factor="1",                 # eta
+        momentum_compaction_factor="1",  # alpha_c = eta+1/gamma0^2 = 1/gamma0_tr^2
         #betz0
         
     )   
@@ -79,9 +79,31 @@ def data_unit(p):
     return units.get(p)
 
 
-def factor_for(p, unit):
+def factor_for(var, to_unit):
     """Return factor to convert parameter into unit"""
-    return (pint.Quantity(data_unit(p)) / pint.Quantity(unit)).to("").magnitude
+    if var in ("X", "Y"):
+        xy = var.lower()[-1]
+        quantity = pint.Quantity(f"({data_unit(xy)})/({data_unit('bet'+xy)})^(1/2)")
+    elif var in ("Px", "Py"):
+        xy = var[-1]
+        quantity = pint.Quantity(f"({data_unit('p'+xy)})*({data_unit('bet'+xy)})^(1/2)")
+    else:
+        quantity = pint.Quantity(data_unit(var))
+    return (quantity / pint.Quantity(to_unit)).to("").magnitude
+
+
+def normalized_coordinates(x, px, alfx, betx):
+    """Convert to normalized coordinates using twiss parameters"""
+    X = x / betx**0.5
+    Px = alfx * x / betx**0.5 + px * betx**0.5
+    return X, Px
+
+
+def denormalized_coordinates(X, Px, alfx, betx):
+    """Convert from normalized coordinates using twiss parameters"""
+    x = X * betx**0.5
+    px = -alfx * X / betx**0.5 + Px / betx**0.5
+    return x, px
 
 
 class XsuitePlot:
@@ -96,7 +118,16 @@ class XsuitePlot:
         """
 
         self._display_units = dict(
-            dict(x="mm", y="mm", p="mrad", k0l="rad"), **(display_units or {})
+            dict(
+                x="mm",
+                y="mm",
+                p="mrad",
+                X="mm^(1/2)",
+                Y="mm^(1/2)",
+                P="mm^(1/2)",
+                k0l="rad",
+            ),
+            **(display_units or {}),
         )
 
     def factor_for(self, p):
@@ -157,6 +188,8 @@ class XsuitePlot:
         else:
             label += suffix
         label += "$"
-        if unit and display_unit and display_unit != 1:
-            label += f" / ${pint.Unit(display_unit):~l}$"
+        if unit and display_unit:
+            display_unit = pint.Unit(display_unit)
+            if display_unit != pint.Unit("1"):
+                label += f" / ${display_unit:~l}$"
         return label

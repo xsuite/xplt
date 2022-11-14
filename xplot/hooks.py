@@ -59,6 +59,6 @@ def register_pint_options():
             parentheses_fmt=r"\left({}\right)",
             **options,
         )
-        return formatted.replace("[", "{").replace("]", "}")
+        return formatted.replace("[", "{").replace("]", "}").replace("^{0.5}", "^{1/2}")
 
     pint.formatting.format_default = "l"

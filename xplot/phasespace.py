@@ -15,7 +15,7 @@ from matplotlib.patches import Ellipse
 import matplotlib.pyplot as plt
 import numpy as np
 
-from .base import XsuitePlot
+from .base import XsuitePlot, normalized_coordinates
 
 pairwise = np.c_
 
@@ -24,13 +24,14 @@ class PhaseSpacePlot(XsuitePlot):
     def __init__(
         self,
         particles=None,
-        kind="x,y,z",
+        kind=None,
         plot="auto",
         *,
         ax=None,
         mask=None,
         masks=None,
         display_units=None,
+        twiss=None,
         color=None,
         cmap="Blues" or "magma_r",
         projections="auto",
@@ -54,6 +55,7 @@ class PhaseSpacePlot(XsuitePlot):
                      the first list level (or separator ``,``) determines the subplots,
                      and the second list level (or separator ``-``) determines coordinate pairs.
                      In addition, abbreviations for x-y-parameter pairs are supported (e.g. 'x' for 'x-px').
+                     For normalized coordinates, use uppercase letters (e.g. 'X' for 'X-Px').
 
                      Examples:
                       - ``'x'``: single subplot with x-px phase space
@@ -66,6 +68,7 @@ class PhaseSpacePlot(XsuitePlot):
         :param mask: An index mask to select particles to plot. If None, all particles are plotted.
         :param masks: List of masks for each subplot.
         :param display_units: Dictionary with units for parameters.
+        :param twiss: Object holding twiss parameters (alfx, alfy, betx and bety) for calculation of normalized coordinates.
         :param color: Color of the scatter plot. If None, the color is determined by the color cycle.
         :param cmap: Colormap to use for the hist plot.
         :param projections: Add histogrammed projections onto axis. Can be True, False, "x", "y", "auto" or a list of these for each subplot
@@ -82,14 +85,7 @@ class PhaseSpacePlot(XsuitePlot):
 
 
         """
-        super().__init__(
-            display_units=dict(
-                dict(
-                    x="mm", y="mm", p="mrad", X="mm^(1/2)", Y="mm^(1/2)", P="mm^(1/2)"
-                ),
-                **(display_units or {}),
-            )
-        )
+        super().__init__(display_units=display_units)
 
         # parse kind string by splitting at commas and dashes and replacing abbreviations
         abbreviations = dict(
@@ -99,6 +95,8 @@ class PhaseSpacePlot(XsuitePlot):
             X=("X", "Px"),
             Y=("Y", "Py"),
         )
+        if kind is None:
+            kind = "x,y,z" if twiss is None else "X,Y,z"
         if isinstance(kind, str):
             kind = kind.split(",")
         kind = list(kind)
@@ -140,6 +138,7 @@ class PhaseSpacePlot(XsuitePlot):
         self.plot = plot
         self.percentiles = percentiles
         self.projections = projections
+        self.twiss = twiss
 
         # Create plot axes
         if ax is None:
@@ -353,16 +352,27 @@ class PhaseSpacePlot(XsuitePlot):
     def axflat(self):
         return np.array(self.ax).flatten()
 
-    def _masked(self, particles, property, mask=None):
-        # TODO: handle normalized coordinates (X,Px,Y,Py)
-        p = (
-            getattr(particles, property)
-            if hasattr(particles, property)
-            else particles[property]
-        )
+    def _masked(self, particles, prop, mask=None):
+        """Get masked particle property"""
+
+        def get(obj, val):
+            return getattr(obj, val) if hasattr(obj, val) else obj[val]
+
+        if prop in ("X", "Px", "Y", "Py"):
+            # normalized coordinates
+            x = prop.lower()[-1]
+            coords = [get(particles, p) for p in (x, "p" + x)]
+            twiss = [get(self.twiss, p) for p in ("alf" + x, "bet" + x)]
+            X, Px = normalized_coordinates(*coords, *twiss)
+            v = X if prop.lower() == x else Px
+
+        else:
+            v = get(particles, prop)
+
         if mask is not None:
-            p = p[mask]
-        return np.array(p).flatten()
+            v = v[mask]
+
+        return np.array(v).flatten()
 
     def title_for(self, a, b):
         """
@@ -377,7 +387,3 @@ class PhaseSpacePlot(XsuitePlot):
             "x-y": "Transverse profile",
         }
         return titles.get(f"{a}-{b}", titles.get(f"{b}-{a}", f"{a}-{b} phase space"))
-
-    def factor_for(self, p):
-        # TODO: handle normalized coordinates (X,Px,Y,Py)
-        return super().factor_for(p)
