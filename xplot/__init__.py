@@ -16,5 +16,12 @@ from .phasespace import *
 
 from . import hooks
 
-hooks.register_matplotlib_options()
-hooks.register_pint_options()
+try:
+    hooks.register_matplotlib_options()
+except:
+    pass
+
+try:
+    hooks.register_pint_options()
+except:
+    pass
