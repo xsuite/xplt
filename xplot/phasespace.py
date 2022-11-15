@@ -392,6 +392,7 @@ class PhaseSpacePlot(XsuitePlot):
         *,
         q=None,
         extend=1,
+        autoscale=True,
         separatrix=True,
         separatrix_kwargs=None,
         equipotentials=True,
@@ -405,6 +406,7 @@ class PhaseSpacePlot(XsuitePlot):
             mu (float): Virtual sextupole phase in rad/2pi
             q (float, optional): Tune. Defaults to tune from twiss.
             extend (float, optional): Extend of separatrix and equipotential lines. If > 1 they are drawn beyond the the stable region.
+            autoscale (bool, optional): Whether to autoscale axis or not
             separatrix (bool, optional): Plot separatrix. Defaults to True.
             separatrix_kwargs (dict, optional): Keyword arguments for separatrix line plot.
             equipotentials (bool, optional): Plot equipotential lines. Defaults to True.
@@ -459,11 +461,13 @@ class PhaseSpacePlot(XsuitePlot):
             XY[1] *= self.factor_for(b)
             return XY
 
-        # plot separatrix
-        if separatrix:
-            kwarg = style(separatrix_kwargs, color="r", ls="--", label="Separatrix")
+        lim = ax.dataLim
+        with FixedLimits(ax):
 
-            with FixedLimits(ax):
+            # plot separatrix
+            if separatrix:
+                kwarg = style(separatrix_kwargs, color="r", ls="--", label="Separatrix")
+
                 t = extend
                 for X, Y in (
                     [(-2, -2), (-2 * t, 2 * t)],
@@ -474,20 +478,30 @@ class PhaseSpacePlot(XsuitePlot):
                     Y = h * 3**0.5 * np.array(Y) / 2
                     ax.plot(*transform((X, Y)), **kwarg)
 
-        # plot equipotential lines
-        if equipotentials:
-            kwargs = style(
-                equipotentials_kwargs, colors="lightgray", linewidths=1, alpha=0.5
-            )
+            # plot equipotential lines
+            if equipotentials:
+                kwargs = style(
+                    equipotentials_kwargs, colors="lightgray", linewidths=1, alpha=0.5
+                )
 
-            # X = h * np.linspace(-5, 5, 500)
-            X = extend * h * np.linspace(-1, 2, 500)
-            Y = extend * h * 3**0.5 * np.linspace(-1, 1, 500)
-            X, Y = np.meshgrid(X, Y)
-            H = (3 * h * (X**2 + Y**2) + 3 * X * Y**2 - X**3) / h**3 / 4
-            levels = np.linspace(0, extend, int(10 * extend)) ** 2
+                # X = h * np.linspace(-5, 5, 500)
+                X = extend * h * np.linspace(-1, 2, 500)
+                Y = extend * h * 3**0.5 * np.linspace(-1, 1, 500)
+                X, Y = np.meshgrid(X, Y)
+                H = (3 * h * (X**2 + Y**2) + 3 * X * Y**2 - X**3) / h**3 / 4
+                levels = np.linspace(0, extend, int(10 * extend)) ** 2
 
-            with FixedLimits(ax):
                 ax.contour(*transform((X, Y)), H, levels=levels, **kwargs)
 
-            ax.grid(False)
+                ax.grid(False)
+
+        # autoscale to separatrix
+        if autoscale:
+            edges = np.array(
+                [(2 * h, -h, -h, 2 * h), (0, -(3**0.5) * h, 3**0.5 * h, 0)]
+            )
+            x, y = transform(edges)
+            ax.dataLim = lim.union(
+                [mpl.transforms.Bbox([[min(x), min(y)], [max(x), max(y)]])]
+            )
+            ax.autoscale()
