@@ -59,3 +59,41 @@ def denormalized_coordinates(X, Px, twiss, xy, delta=0):
     x = x + get(twiss, xy) + delta * get(twiss, "d" + xy)
     px = px + get(twiss, "p" + xy) + delta * get(twiss, "dp" + xy)
     return x, px
+
+
+def virtual_sextupole(tracker, particle_ref=None):
+    """Determine virtual sextupole strength from twiss data
+
+    The normalized strenght is defined as S = -1/2 * betx^(3/2) * k2l
+
+    The implementation considers only normal sextupole components.
+
+    Args:
+        tracker: Tracker object with line and twiss methods
+        particle_ref: Reference particle. Defaults to reference particle of tracker.
+
+    Returns:
+        Tuple (S, mu) with normalized strength in m^(-1/2) and phase in rad/2pi
+    """
+
+    # find sextupoles
+    sextupoles, k2l = [], []
+    for name, el in tracker.line.element_dict.items():
+        if hasattr(el, "knl") and el.order >= 2 and el.knl[2]:
+            sextupoles.append(name)
+            k2l.append(el.knl[2])
+
+    # twiss at sextupoles
+    tw = tracker.twiss(
+        method="4d",
+        particle_ref=particle_ref,
+        at_elements=sextupoles,
+    )
+    betx, mux = tw.betx, tw.mux
+
+    # determine virtual sextupole
+    Sn = -1 / 2 * betx ** (3 / 2) * k2l
+    Stotal = np.sum(Sn * np.exp(3j * mux * 2 * np.pi))
+    S = np.abs(Stotal)
+    mu = np.angle(Stotal) / 3 / 2 / np.pi
+    return S, mu

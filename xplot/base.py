@@ -200,3 +200,16 @@ class XsuitePlot:
             if display_unit != pint.Unit("1"):
                 label += f" / ${display_unit:~l}$"
         return label
+
+
+class FixedLimits:
+    """Context manager for keeping axis limits fixed while plotting"""
+
+    def __init__(self, axis):
+        self.axis = axis
+
+    def __enter__(self):
+        self.limits = self.axis.get_xlim(), self.axis.get_ylim()
+
+    def __exit__(self, *args):
+        self.axis.set(xlim=self.limits[0], ylim=self.limits[1])
