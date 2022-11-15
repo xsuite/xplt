@@ -385,7 +385,7 @@ class PhaseSpacePlot(XsuitePlot):
         return titles.get(f"{a}-{b}", titles.get(f"{b}-{a}", f"{a}-{b} phase space"))
 
     def axline(self, kind, val, also_on_normalized=True, subplots="all", **kwargs):
-        """Plot a vertical or horizontal line
+        """Plot a vertical or horizontal line for a given coordinate
 
         Args:
             kind (str): Phase space coordinate
@@ -424,7 +424,7 @@ class PhaseSpacePlot(XsuitePlot):
 
     def plot_hamiltonian_kobayashi(
         self,
-        i,
+        subplot,
         S,
         mu,
         *,
@@ -439,7 +439,7 @@ class PhaseSpacePlot(XsuitePlot):
         """Plot separatrix and equipotential lines of kobayashi hamiltonian
 
         Args:
-            i (int): Index of subplot
+            subplot (int): Index of subplot
             S (float): Virtual sextupole strength in m^(-1/2)
             mu (float): Virtual sextupole phase in rad/2pi
             q (float, optional): Tune. Defaults to tune from twiss.
@@ -453,8 +453,8 @@ class PhaseSpacePlot(XsuitePlot):
 
         # TODO: provide option to plot for different particle delta (dispersion shifts and chromaticity shrinks the triangle)
 
-        ax = self.axflat[i]
-        a, b = self.kind[i]
+        ax = self.axflat[subplot]
+        a, b = self.kind[subplot]
         config = {
             "x-px": ("x", False),
             "y-py": ("y", False),
