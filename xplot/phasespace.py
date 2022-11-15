@@ -384,6 +384,44 @@ class PhaseSpacePlot(XsuitePlot):
         }
         return titles.get(f"{a}-{b}", titles.get(f"{b}-{a}", f"{a}-{b} phase space"))
 
+    def axline(self, kind, val, also_on_normalized=True, subplots="all", **kwargs):
+        """Plot a vertical or horizontal line
+
+        Args:
+            kind (str): Phase space coordinate
+            val (float): Value of phase space coordinate
+            also_on_normalized (bool, optional): If true, also plot line for related (de-)normalized phase space coordinate
+            subplots (list of int): Subplots to plot line onto. Defaults to all with matching coordinates.
+            kwargs: Arguments for axvline or axhline
+
+        """
+
+        kwargs = style(kwargs, c="k")
+
+        for i, (ab, ax) in enumerate(zip(self.kind, self.axflat)):
+            if subplots is not "all" and i not in subplots:
+                continue
+
+            for a, line in zip(ab, (ax.axvline, ax.axhline)):
+                if a == kind:
+                    # same axis found, draw line
+                    line(val * self.factor_for(kind), **kwargs)
+
+                elif self.twiss is not None and kind.lower() == a.lower():
+                    # related (de-)normalized axis found, transform and draw line
+                    xy = kind.lower()[-1]
+                    if kind in "x,y":  # x,y -> X,Y
+                        v = normalized_coordinates(val, 0, self.twiss, xy)[0]
+                    elif kind in "X,Y":  # X,Y -> x,y
+                        v = denormalized_coordinates(val, 0, self.twiss, xy)[0]
+                    elif kind in "px,py":  # px,py -> Px,Py
+                        v = normalized_coordinates(0, val, self.twiss, xy)[1]
+                    elif kind in "Px,Py":  # Px,Py -> px,py
+                        v = denormalized_coordinates(0, val, self.twiss, xy)[1]
+                    else:
+                        continue
+                    line(v * self.factor_for(a), **kwargs)
+
     def plot_hamiltonian_kobayashi(
         self,
         i,
