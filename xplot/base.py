@@ -113,20 +113,6 @@ def factor_for(var, to_unit):
     return (quantity / pint.Quantity(to_unit)).to("").magnitude
 
 
-def normalized_coordinates(x, px, alfx, betx):
-    """Convert to normalized coordinates using twiss parameters"""
-    X = x / betx**0.5
-    Px = alfx * x / betx**0.5 + px * betx**0.5
-    return X, Px
-
-
-def denormalized_coordinates(X, Px, alfx, betx):
-    """Convert from normalized coordinates using twiss parameters"""
-    x = X * betx**0.5
-    px = -alfx * X / betx**0.5 + Px / betx**0.5
-    return x, px
-
-
 class XsuitePlot:
     def __init__(
         self,

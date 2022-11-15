@@ -15,7 +15,8 @@ from matplotlib.patches import Ellipse
 import matplotlib.pyplot as plt
 import numpy as np
 
-from .base import XsuitePlot, get, style, normalized_coordinates
+from .base import XsuitePlot, get, style
+from .util import normalized_coordinates, denormalized_coordinates
 
 pairwise = np.c_
 
@@ -354,11 +355,11 @@ class PhaseSpacePlot(XsuitePlot):
 
         if prop in ("X", "Px", "Y", "Py"):
             # normalized coordinates
-            x = prop.lower()[-1]
-            coords = [get(particles, p) for p in (x, "p" + x)]
-            twiss = [get(self.twiss, p) for p in ("alf" + x, "bet" + x)]
-            X, Px = normalized_coordinates(*coords, *twiss)
-            v = X if prop.lower() == x else Px
+            xy = prop.lower()[-1]
+            coords = [get(particles, p) for p in (xy, "p" + xy)]
+            delta = get(particles, "delta")
+            X, Px = normalized_coordinates(*coords, self.twiss, xy, delta=delta)
+            v = X if prop.lower() == xy else Px
 
         else:
             v = get(particles, prop)
