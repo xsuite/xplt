@@ -17,6 +17,27 @@ import pint
 import re
 
 
+VOID = object()
+
+
+def get(obj, val, default=VOID):
+    """Get value from object"""
+    try:
+        return getattr(obj, val)
+    except:
+        try:
+            return obj[val]
+        except:
+            if default is not VOID:
+                return default
+    raise AttributeError(f"{obj} does not provide an attribute or index '{val}'")
+
+
+def style(kwargs, **default_style):
+    """Return kwargs or defaults"""
+    return dict(default_style, **(kwargs or {}))
+
+
 def data_unit(p):
     """Return data unit of parameter p as used by xsuite"""
     # https://github.com/xsuite/xsuite/raw/main/docs/physics_manual/physics_man.pdf

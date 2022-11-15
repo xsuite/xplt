@@ -18,6 +18,21 @@ import os
 from .base import XsuitePlot
 
 
+def iter_elements(line):
+    """Iterate over elements in line
+
+    Yields (name, element, s_from, s_to) with
+
+    """
+    el_s0 = line.get_s_elements("upstream")
+    el_s1 = line.get_s_elements("downstream")
+    for name, el, s0, s1 in zip(line.element_names, line.elements, el_s0, el_s1):
+        if s0 == s1:  # thin lense located at element center
+            if hasattr(el, "length"):
+                s0, s1 = (s0 + s1 - el.length) / 2, (s0 + s1 + el.length) / 2
+        yield name, el, s0, s1
+
+
 class KnlPlot(XsuitePlot):
     def __init__(
         self,
@@ -98,11 +113,7 @@ class KnlPlot(XsuitePlot):
         """
         # compute knl as function of s
         KNL = np.zeros((len(self.knl), self.S.size))
-        el_s0 = line.get_s_elements("upstream")
-        el_s1 = line.get_s_elements("downstream")
-        for name, el, s0, s1 in zip(line.element_names, line.elements, el_s0, el_s1):
-            if s0 == s1:  # thin lense located at element center
-                s0, s1 = (s0 + s1 - el.length) / 2, (s0 + s1 + el.length) / 2
+        for name, el, s0, s1 in iter_elements(line):
             if hasattr(el, "knl"):
                 for i, n in enumerate(self.knl):
                     if n <= el.order:

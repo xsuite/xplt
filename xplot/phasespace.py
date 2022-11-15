@@ -15,7 +15,7 @@ from matplotlib.patches import Ellipse
 import matplotlib.pyplot as plt
 import numpy as np
 
-from .base import XsuitePlot, normalized_coordinates
+from .base import XsuitePlot, get, style, normalized_coordinates
 
 pairwise = np.c_
 
@@ -150,7 +150,7 @@ class PhaseSpacePlot(XsuitePlot):
                     nrow -= 1
                 ncol = n // nrow
 
-            kwargs = dict(dict(figsize=(4 * ncol, 4 * nrow)), **subplots_kwargs)
+            kwargs = style(subplots_kwargs, figsize=(4 * ncol, 4 * nrow))
             _, ax = plt.subplots(nrow, ncol, **kwargs)
         if not hasattr(ax, "__iter__"):
             ax = [ax]
@@ -178,16 +178,12 @@ class PhaseSpacePlot(XsuitePlot):
 
             # 2D mean indicator
             if mean[i]:
-                kwargs = dict(  # marker='P', mec='w',
-                    dict(color="k", marker="+", ms=8, zorder=100), **mean_kwargs or {}
-                )
+                kwargs = style(mean_kwargs, color="k", marker="+", ms=8, zorder=100)
                 (self.artists_mean[i],) = ax.plot([], [], **kwargs)
 
             # 2D std ellipses
             if std[i]:
-                kwargs = dict(
-                    dict(color="k", lw=1, ls="-", zorder=100), **std_kwargs or {}
-                )
+                kwargs = style(std_kwargs, color="k", lw=1, ls="-", zorder=100)
                 self.artists_std[i] = Ellipse([0, 0], 0, 0, fill=False, **kwargs)
                 ax.add_artist(self.artists_std[i])
 
@@ -195,9 +191,12 @@ class PhaseSpacePlot(XsuitePlot):
             if percentiles[i]:
                 self.artists_percentiles[i] = []
                 for j, _ in enumerate(self.percentiles[i]):
-                    kwargs = dict(
-                        dict(color="k", lw=1, ls=(0, [5, 5] + [1, 5] * j), zorder=100),
-                        **percentile_kwargs or {},
+                    kwargs = style(
+                        percentile_kwargs,
+                        color="k",
+                        lw=1,
+                        ls=(0, [5, 5] + [1, 5] * j),
+                        zorder=100,
                     )
                     artist = Ellipse([0, 0], 0, 0, fill=False, **kwargs)
                     ax.add_artist(artist)
@@ -217,9 +216,7 @@ class PhaseSpacePlot(XsuitePlot):
             ###########################
 
             if self.projections[i]:
-                kwargs = dict(
-                    dict(color="k", alpha=0.3, lw=1), **projections_kwargs or {}
-                )
+                kwargs = style(projections_kwargs, color="k", alpha=0.3, lw=1)
                 for xy, yx in zip("xy", "yx"):
                     if self.projections[i] != yx:
                         # Create twin xy axis and artists
@@ -354,9 +351,6 @@ class PhaseSpacePlot(XsuitePlot):
 
     def _masked(self, particles, prop, mask=None):
         """Get masked particle property"""
-
-        def get(obj, val):
-            return getattr(obj, val) if hasattr(obj, val) else obj[val]
 
         if prop in ("X", "Px", "Y", "Py"):
             # normalized coordinates
