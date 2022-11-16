@@ -1,11 +1,15 @@
-# Plotting for Xsuite
+# Xplt
+
+A plotting library for [Xsuite](https://github.com/xsuite) and simmilar accelerator physics codes.
 
 
 ## Usage
 
-Read the docs at https://eltos.github.io/xplt
+```bash
+pip install xplt
+```
 
-See [examples](examples/) directory
+Read the docs at https://eltos.github.io/xplt
 
 
 
