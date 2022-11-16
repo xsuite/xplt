@@ -3,7 +3,7 @@
 
 ## Usage
 
-Read the docs at https://eltos.github.io/xplot
+Read the docs at https://eltos.github.io/xplt
 
 See [examples](examples/) directory
 
@@ -12,8 +12,8 @@ See [examples](examples/) directory
 ## Developer installation
 
 ```bash
-git clone git@github.com:eltos/xplot.git
-cd xplot
+git clone git@github.com:eltos/xplt.git
+cd xplt
 pip install -e .
 pip install pre-commit
 pre-commit install

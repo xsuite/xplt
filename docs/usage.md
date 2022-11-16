@@ -1,7 +1,7 @@
 
 # User guide
 
-The following pages describe how to use Xplot for plotting of data from Xsuite or simmilar accelerator physics codes.
+The following pages describe how to use Xplt for plotting of data from Xsuite or simmilar accelerator physics codes.
 
 ```{toctree}
 :caption: Contents
@@ -16,7 +16,7 @@ examples/phasespace
 Xsuite is not an explicit dependency, rather an API assumption on available attributes, indices and units. You can use data from any source, for example:
 
 ```python
-import xplot as xplt
+import xplt
 import numpy as np
 
 particles = dict(

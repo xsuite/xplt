@@ -3,17 +3,17 @@
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 import os, sys, distutils.dir_util
-from xplot import __version__
+from xplt import __version__
 
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = "Xplot"
+project = "Xplt"
 copyright = "2022, Philipp Niedermayer (github.com/eltos)"
 author = "Philipp Niedermayer (github.com/eltos)"
 github_username = "eltos"
-github_repository = "xplot"
+github_repository = "xplt"
 version = __version__
 release = version
 
@@ -23,7 +23,7 @@ sys.path.insert(0, root)
 
 # Auto API
 autoapi_type = "python"
-autoapi_dirs = ["../xplot"]
+autoapi_dirs = ["../xplt"]
 autoapi_ignore = ["*/.ipynb_checkpoints/*"]
 autoapi_options = [
     "members",
@@ -85,5 +85,5 @@ html_show_sourcelink = False
 html_static_path = ["_static"]
 html_theme_options = {
     "show_nav_level": 2,
-    "github_url": "https://github.com/eltos/xplot",
+    "github_url": "https://github.com/eltos/xplt",
 }

@@ -7,7 +7,7 @@ Version |version|
 .. toctree::
    :maxdepth: 3
 
-   autoapi/xplot/index
+   autoapi/xplt/index
 
 
 

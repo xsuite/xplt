@@ -1,5 +1,5 @@
 
-# Welcome to Xplot's documentation!
+# Welcome to Xplt's documentation!
 
 A plotting library for [Xsuite](https://github.com/xsuite) and simmilar accelerator physics codes.
 
