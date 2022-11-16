@@ -86,4 +86,11 @@ html_static_path = ["_static"]
 html_theme_options = {
     "show_nav_level": 2,
     "github_url": "https://github.com/eltos/xplt",
+    "icon_links": [
+        {
+            "name": "PyPI",
+            "url": "https://pypi.org/project/xplt",
+            "icon": "fa-solid fa-cube",
+        },
+    ],
 }

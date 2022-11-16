@@ -29,7 +29,9 @@ dependencies = [
 dynamic = ["version"]
 
 [project.urls]
-Homepage = "https://github.com/eltos/xplt/"
+homepage = "https://github.com/eltos/xplt"
+documentation = "https://eltos.github.io/xplt"
+repository = "https://github.com/eltos/xplt"
 
 
 
