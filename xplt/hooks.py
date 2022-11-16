@@ -9,7 +9,7 @@ __author__ = "Philipp Niedermayer"
 __contact__ = "eltos@outlook.de"
 __date__ = "2022-09-06"
 
-from xplot.colors import *
+from xplt.colors import *
 
 
 def register_matplotlib_options():
