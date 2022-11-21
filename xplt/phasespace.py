@@ -399,7 +399,7 @@ class PhaseSpacePlot(Xplot):
         kwargs = style(kwargs, c="k")
 
         for i, (ab, ax) in enumerate(zip(self.kind, self.axflat)):
-            if subplots is not "all" and i not in subplots:
+            if subplots != "all" and i not in subplots:
                 continue
 
             for a, line in zip(ab, (ax.axvline, ax.axhline)):
