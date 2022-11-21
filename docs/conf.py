@@ -51,6 +51,7 @@ extensions = [
 
 myst_enable_extensions = [
     "colon_fence",
+    "amsmath",
 ]
 
 templates_path = ["_templates"]

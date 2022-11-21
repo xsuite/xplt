@@ -10,6 +10,7 @@ The following pages describe how to use Xplt for plotting of data from Xsuite or
 examples/colors
 examples/twiss
 examples/phasespace
+examples/hamiltonians
 ```
 
 :::{tip}
