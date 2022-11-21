@@ -204,6 +204,10 @@ class Xplot:
             **(display_units or {}),
         )
 
+    def save(self, fname, **kwargs):
+        """Save the figure"""
+        self.fig.savefig(fname, **style(kwargs, dpi=300))
+
     def factor_for(self, p):
         """Return factor to convert parameter into display unit"""
         return factor_for(p, self.display_unit_for(p))
