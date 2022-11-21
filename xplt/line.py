@@ -77,7 +77,11 @@ class KnlPlot(Xplot):
         if ax is None:
             _, ax = plt.subplots(**subplots_kwargs)
         self.fig, self.ax = ax.figure, ax
-        self.ax.set(xlabel=self.label_for("s"), ylabel="$k_nl$")
+        self.ax.set(
+            xlabel=self.label_for("s"),
+            ylabel="$k_nl$",
+            xlim=(self.S.min(), self.S.max()),
+        )
         self.ax.grid()
 
         # create plot elements
@@ -113,11 +117,16 @@ class KnlPlot(Xplot):
         """
         # compute knl as function of s
         KNL = np.zeros((len(self.knl), self.S.size))
+        Smax = line.get_length()
         for name, el, s0, s1 in iter_elements(line):
             if hasattr(el, "knl"):
                 for i, n in enumerate(self.knl):
                     if n <= el.order:
-                        mask = (s0 <= self.S) & (self.S < s1)
+                        if 0 <= s0 <= Smax:
+                            mask = (self.S >= s0) & (self.S < s1)
+                        else:
+                            # handle wrap around
+                            mask = (self.S >= s0 % Smax) | (self.S < s1 % Smax)
                         KNL[i, mask] += el.knl[n]
 
         # plot
