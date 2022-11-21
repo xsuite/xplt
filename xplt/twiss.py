@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 
-from .base import Xplot
+from .base import Xplot, style
 from .line import KnlPlot
 
 
@@ -159,3 +159,63 @@ class TwissPlot(Xplot):
             self.lineplot.update(line, autoscale=autoscale)
 
         return changed
+
+    def axline(self, kind, val, subplots="all", **kwargs):
+        """Plot a vertical or horizontal line for a given coordinate
+
+        Args:
+            kind (str): property at which to place the line (e.g. "s", "x", "betx", etc.)
+            val (float): Value of property
+            subplots (list of int): Subplots to plot line onto. Defaults to all with matching coordinates.
+            kwargs: Arguments for axvline or axhline
+
+        """
+        return self.axspan(kind, val, None, subplots=subplots, **kwargs)
+
+    def axspan(self, kind, val, val_to=None, subplots="all", **kwargs):
+        """Plot a vertical or horizontal span (or line) for a given coordinate
+
+        Args:
+            kind (str): property at which to place the line (e.g. "s", "x", "betx", etc.).
+            val (float): Value of property.
+            val_to (float, optional): Second value of property to plot a span. If this is None, plot a line instead of a span.
+            subplots (list of int): Subplots to plot line onto. Defaults to all with matching coordinates.
+            kwargs: Arguments for axvspan or axhspan (or axvline or axhline if val_to is None)
+
+        """
+
+        if val_to is None:  # only a line
+            kwargs = style(kwargs, color="k", zorder=1.9)
+        else:  # a span
+            kwargs = style(kwargs, color="lightgray", zorder=1.9, lw=0, alpha=0.6)
+
+        if kind == "s":
+            # vertical span or line on all axes
+            for a in self.ax:
+                if val_to is None:  # only a line
+                    a.axvline(val * self.factor_for("s"), **kwargs)
+                else:
+                    a.axvspan(
+                        val * self.factor_for("s"),
+                        val_to * self.factor_for("s"),
+                        **kwargs,
+                    )
+
+        else:
+            # horizontal span or line
+            for i, p_subplot in enumerate(self.kind):
+                if subplots != "all" and i not in subplots:
+                    continue
+
+                for j, p_axis in enumerate(p_subplot):
+                    a = self.ax[i] if j == 0 else self.ax_twin[i][j - 1]
+                    for k, p in enumerate(p_axis):
+                        if p == kind:  # axis found
+                            if val_to is None:  # only a line
+                                a.axhline(val * self.factor_for(p), **kwargs)
+                            else:
+                                a.axhspan(
+                                    val * self.factor_for("s"),
+                                    val_to * self.factor_for("s"),
+                                    **kwargs,
+                                )
