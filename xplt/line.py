@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 
-from .base import XsuitePlot
+from .base import Xplot
 
 
 def iter_elements(line):
@@ -33,7 +33,7 @@ def iter_elements(line):
         yield name, el, s0, s1
 
 
-class KnlPlot(XsuitePlot):
+class KnlPlot(Xplot):
     def __init__(
         self,
         line=None,

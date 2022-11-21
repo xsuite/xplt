@@ -113,7 +113,7 @@ def factor_for(var, to_unit):
     return (quantity / pint.Quantity(to_unit)).to("").magnitude
 
 
-class XsuitePlot:
+class Xplot:
     def __init__(
         self,
         display_units=None,

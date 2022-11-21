@@ -15,13 +15,13 @@ from matplotlib.patches import Ellipse
 import matplotlib.pyplot as plt
 import numpy as np
 
-from .base import XsuitePlot, get, style, FixedLimits
+from .base import Xplot, get, style, FixedLimits
 from .util import normalized_coordinates, denormalized_coordinates
 
 pairwise = np.c_
 
 
-class PhaseSpacePlot(XsuitePlot):
+class PhaseSpacePlot(Xplot):
     def __init__(
         self,
         particles=None,

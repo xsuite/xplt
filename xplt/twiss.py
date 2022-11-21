@@ -15,11 +15,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 
-from .base import XsuitePlot
+from .base import Xplot
 from .line import KnlPlot
 
 
-class TwissPlot(XsuitePlot):
+class TwissPlot(Xplot):
     def __init__(
         self,
         twiss=None,
@@ -153,6 +153,7 @@ class TwissPlot(XsuitePlot):
                 if autoscale:
                     a.relim()
                     a.autoscale()
+                    a.set(xlim=(s * min(twiss["s"]), s * max(twiss["s"])))
 
         if line:
             self.lineplot.update(line, autoscale=autoscale)
