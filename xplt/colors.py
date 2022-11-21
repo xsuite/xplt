@@ -51,3 +51,15 @@ cmap_petroff_bipolar.set_over(petroff_colors[8])
 cmap_petroff_cyclic = mpl.colors.LinearSegmentedColormap.from_list(
     "petroff_cyclic", [petroff_colors[i] for i in (3, 9, 0, 4, 2, 6, 1, 3)]
 )
+
+
+def make_unicoloured_cmap(color):
+    """Make a linear colormap of a given color from transparent to black"""
+    return mpl.colors.LinearSegmentedColormap.from_list(
+        "gradient",
+        (
+            (0.000, (1.000, 1.000, 1.000, 0)),
+            (0.400, color),
+            (1.000, (0.000, 0.000, 0.000, 1)),
+        ),
+    )

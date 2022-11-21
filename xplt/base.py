@@ -113,6 +113,73 @@ def factor_for(var, to_unit):
     return (quantity / pint.Quantity(to_unit)).to("").magnitude
 
 
+class ManifoldMultipleLocator(mpl.ticker.MaxNLocator):
+    def __init__(self, fixed_multiples, n=5, minor_n=None):
+        """A multiple locator that chooses its base from a set of multiples to yield about n ticks
+
+        For ranges smaller than the smallest fixed_multiple, the default MaxNLocator is used
+        For ranges larger than the largest fixed_multiple, a multiple of the later is used
+
+        Args:
+            fixed_multiples (list of float): multiples to choose from
+            n (int): number of ticks to produce (best effort)
+            minor_n (list of float): If given, produce that many minor ticks in between each major tick. Length must match the length of fixed_multiples
+        """
+        super().__init__(n)
+        self.fixed_multiples = fixed_multiples
+        self.n = n
+        self.minor_n = minor_n
+
+    def _raw_ticks(self, vmin, vmax):
+        if vmax - vmin < self.n * self.fixed_multiples[0]:
+            return super()._raw_ticks(vmin, vmax)
+        for step in self.fixed_multiples:
+            if (vmax - vmin) / step <= self.n:
+                break
+        while (vmax - vmin) / step > self.n:
+            step += self.fixed_multiples[-1]
+        if self.minor_n is not None:
+            if step in self.fixed_multiples:
+                step /= self.minor_n[self.fixed_multiples.index(step)]
+            else:
+                step /= self.minor_n[-1]
+        return np.arange(int(vmin / step) * step, vmax + step, step)
+
+
+class AngleLocator(ManifoldMultipleLocator):
+    def __init__(self, minor=False, deg=True):
+        """A tick locator for angles
+
+        Args:
+            minor (bool): If true, return a minor locator. By default a major locator is returned.
+            deg (bool): If true, locate angles is degree. If false, in radians.
+        """
+        multiples = (5, 15, 30, 45, 60, 90, 120, 180, 360)
+        if not deg:
+            multiples = list(np.deg2rad(multiples))
+        subdivide = (5, 3, 3, 3, 4, 3, 4, 4, 4)
+        super().__init__(multiples, 5, subdivide if minor else None)
+
+
+class RadiansFormatter(mpl.ticker.Formatter):
+    """A tick formatter to format angles in radians as fractions or multiples of pi"""
+
+    def __call__(self, x, pos=None):
+        if x == 0:
+            return "0"
+        s = "-" if x < 0 else ""
+        x = abs(x)
+        if x == np.pi:
+            return f"${s}\\pi$"
+        for n in (2, 3, 4, 6, 8, 12):
+            m = round(x / (np.pi / n))
+            if abs(x - m * np.pi / n) < 1e-10 and m / n != m // n:
+                if m == 1:
+                    m = ""
+                return f"${s}{m}\\pi/{n}$"
+        return f"${x/np.pi:g}\\pi$"
+
+
 class Xplot:
     def __init__(
         self,
@@ -200,6 +267,80 @@ class Xplot:
             if display_unit != pint.Unit("1"):
                 label += f" / ${display_unit:~l}$"
         return label
+
+    @staticmethod
+    def set_axis_ticks_angle(yaxis, minor=True, deg=False):
+        """Set ticks locator and formatter to display an angle
+
+        This will set ticks at multiples or fractions of 180° or pi with appropriate labels
+
+        Args:
+            yaxis: The axis to format (ax.xaxis or ax.yaxis)
+            minor (bool): If true (default), also set the minor locator
+            deg (bool): If true, use angles in degree. If false (default), in radians.
+        """
+        yaxis.set_major_locator(AngleLocator(deg=deg))
+        if minor:
+            yaxis.set_minor_locator(AngleLocator(deg=deg, minor=True))
+        if not deg:
+            yaxis.set_major_formatter(RadiansFormatter())
+
+    @staticmethod
+    def add_scale(
+        ax,
+        scale,
+        label=None,
+        *,
+        vertical=False,
+        width=0.01,
+        padding=0.1,
+        loc="auto",
+        color="k",
+        fontsize="x-small",
+    ):
+        """Add a scale patch (a yardstick or ruler)
+
+        Args:
+            ax: The axis to add it to.
+            scale: The size of the scale in data units.
+            label (str, optional): A label for the scale.
+            vertical (bool): If true, make a vertical one (default is a horizontal one).
+            width (float): The line width of the scale in axis units.
+            padding (float): The padding between the scale and the axis.
+            loc (str): The location of the scale. Can be any of the usual matplotlib locations, e.g. 'auto', 'upper left', 'upper center', 'upper right', 'center left', 'center', 'center right', 'lower left', 'lower center, 'lower right'.
+            color: Color for the patch.
+            fontsize: Font size of the label.
+
+        Returns:
+            The artist added (an AnchoredOffsetbox).
+        """
+        if loc == "auto":
+            loc = "upper left" if vertical else "lower right"
+        w, h = scale, width
+        w_trans, h_trans = ax.transData, ax.transAxes
+        if vertical:  # swap dimensions
+            w, h = h, w
+            w_trans, h_trans = h_trans, w_trans
+        aux = mpl.offsetbox.AuxTransformBox(
+            mpl.transforms.blended_transform_factory(w_trans, h_trans)
+        )
+        aux.add_artist(plt.Rectangle((0, 0), w, h, fc=color))
+        if label:
+            kwa = dict(text=label, color=color, fontsize=fontsize)
+            if vertical:
+                aux.add_artist(
+                    plt.Text(w * 2, h / 2, ha="left", va="center", rotation=90, **kwa)
+                )
+            else:
+                aux.add_artist(
+                    plt.Text(w / 2, h * 1.5, va="bottom", ha="center", **kwa)
+                )
+        ab = mpl.offsetbox.AnchoredOffsetbox(
+            loc, borderpad=padding, zorder=100, frameon=False
+        )
+        ab.set_child(aux)
+        ax.add_artist(ab)
+        return ab
 
 
 class FixedLimits:
