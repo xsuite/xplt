@@ -34,7 +34,7 @@ class PhaseSpacePlot(Xplot):
         display_units=None,
         twiss=None,
         color=None,
-        cmap="Blues" or "magma_r",
+        cmap="magma_r" or "Blues",
         projections="auto",
         projections_kwargs=None,
         mean=False,
@@ -175,7 +175,7 @@ class PhaseSpacePlot(Xplot):
             # 2D phase space distribution
             ##############################
 
-            self.artists_scatter[i] = ax.scatter([], [], s=4, color=color)
+            self.artists_scatter[i] = ax.scatter([], [], s=4, color=color, lw=0)
             self._hxkw = dict(cmap=cmap, rasterized=True)
 
             # 2D mean indicator
