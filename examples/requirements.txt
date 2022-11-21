@@ -1,0 +1,6 @@
+xdeps==0.0.10
+xfields==0.8.4
+xobjects==0.1.27
+xpart==0.9.3
+xsuite==0.4.0
+xtrack==0.22.0
