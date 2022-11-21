@@ -21,7 +21,7 @@ classifiers = [
 
 requires-python = ">=3.8"
 dependencies = [
-    "matplotlib",
+    "matplotlib>=3.2",
     "numpy",
     "pandas",
     "pint",
