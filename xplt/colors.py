@@ -28,26 +28,26 @@ petroff_colors = [
     "#92dadd",
 ]
 
-# Colormap with 10 distinct colors
+#: Colormap with 10 distinct colors
 cmap_petroff = mpl.colors.ListedColormap(petroff_colors, "petroff")
 cmap_petroff.set_under("none")
 cmap_petroff.set_over("none")
 
-# Gradient colormap
+#: Gradient colormap
 cmap_petroff_gradient = mpl.colors.LinearSegmentedColormap.from_list(
     "petroff_gradient", [petroff_colors[i] for i in (9, 0, 4, 2, 6, 1)]
 )
 cmap_petroff_gradient.set_under(petroff_colors[3])
 cmap_petroff_gradient.set_over(petroff_colors[7])
 
-# Bipolar colormap
+#: Bipolar colormap
 cmap_petroff_bipolar = mpl.colors.LinearSegmentedColormap.from_list(
     "petroff_bipolar", [petroff_colors[i] for i in (2, 6, 1, 3, 9, 0, 4)]
 )
 cmap_petroff_bipolar.set_under(petroff_colors[5])
 cmap_petroff_bipolar.set_over(petroff_colors[8])
 
-# Cyclic colormap
+#: Cyclic colormap
 cmap_petroff_cyclic = mpl.colors.LinearSegmentedColormap.from_list(
     "petroff_cyclic", [petroff_colors[i] for i in (3, 9, 0, 4, 2, 6, 1, 3)]
 )
