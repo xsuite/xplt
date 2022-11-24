@@ -45,6 +45,7 @@ class PhaseSpacePlot(Xplot):
         percentile_kwargs=None,
         grid=None,
         titles="auto",
+        wrap_zeta=None,
         **subplots_kwargs,
     ):
         """
@@ -82,6 +83,7 @@ class PhaseSpacePlot(Xplot):
         :param percentile_kwargs: Additional kwargs for percentile ellipses.
         :param grid: Tuple (ncol, nrow) for subplot layout. If None, the layout is determined automatically.
         :param titles: List of titles for each subplot or 'auto' to automatically set titles based on plot kind.
+        :param wrap_zeta: If set, wrap the zeta-coordinate plotted at the machine circumference. Either pass the circumference directly or set this to True to use the circumference from twiss.
         :param subplots_kwargs: Keyword arguments passed to matplotlib.pyplot.subplots command when a new figure is created.
 
 
@@ -140,6 +142,7 @@ class PhaseSpacePlot(Xplot):
         self.percentiles = percentiles
         self.projections = projections
         self.twiss = twiss
+        self.wrap_zeta = wrap_zeta
 
         # Create plot axes
         if ax is None:
@@ -367,6 +370,11 @@ class PhaseSpacePlot(Xplot):
 
         if mask is not None:
             v = v[mask]
+
+        if prop == "zeta" and self.wrap_zeta:
+            # wrap values at machine circumference
+            w = self.twiss.circumference if self.wrap_zeta is True else self.wrap_zeta
+            v = np.mod(v + w / 2, w) - w / 2
 
         return np.array(v).flatten()
 
