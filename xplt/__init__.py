@@ -12,6 +12,7 @@ from .colors import *
 from .line import *
 from .twiss import *
 from .phasespace import *
+from .timestructure import *
 
 
 from . import hooks

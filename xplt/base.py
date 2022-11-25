@@ -91,6 +91,11 @@ def data_unit(p):
         slip_factor="1",                 # eta
         momentum_compaction_factor="1",  # alpha_c = eta+1/gamma0^2 = 1/gamma0_tr^2
         #betz0
+
+        ## derived quantities
+        ######################
+        t='s',
+        f='Hz',
         
     )   
     # fmt: on
