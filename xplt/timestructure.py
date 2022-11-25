@@ -221,7 +221,9 @@ class TimeFFTPlot(_TimestructurePlotMixin, Xplot):
                 subplots_kwargs: Keyword arguments passed to matplotlib.pyplot.subplots command when a new figure is created.
 
         """
-        super().__init__(beta, frev, display_units=style(display_units, f="kHz"))
+        super().__init__(
+            beta, frev, display_units=style(display_units, f="Hz" if log else "kHz")
+        )
 
         self.fmax = fmax
         self.scaling = scaling
@@ -235,9 +237,16 @@ class TimeFFTPlot(_TimestructurePlotMixin, Xplot):
         # Create fft plots
         kwargs = style(plot_kwargs, lw=1)
         (self.artist_plot,) = self.ax.plot([], [], **kwargs)
-        self.ax.set(xlabel="Frequency " + self.label_for("f"), xlim=(0, self.fmax))
+        self.ax.set(
+            xlabel="Frequency " + self.label_for("f"),
+            xlim=(0, self.fmax * self.factor_for("f")),
+        )
         if log:
-            self.ax.set(xlim=(10, self.fmax), xscale="log", yscale="log")
+            self.ax.set(
+                xlim=(10 * self.factor_for("f"), self.fmax * self.factor_for("f")),
+                xscale="log",
+                yscale="log",
+            )
         self.ax.grid()
 
         # set data
@@ -284,4 +293,6 @@ class TimeFFTPlot(_TimestructurePlotMixin, Xplot):
         if autoscale:
             self.ax.relim()
             self.ax.autoscale()
-            self.ax.set(xlim=(10, self.fmax))
+            self.ax.set(
+                xlim=(10 * self.factor_for("f"), self.fmax * self.factor_for("f"))
+            )
