@@ -35,7 +35,12 @@ def get(obj, val, default=VOID):
 
 def style(kwargs, **default_style):
     """Return kwargs or defaults"""
-    return dict(default_style, **(kwargs or {}))
+    kwargs = kwargs or {}
+    if "c" in kwargs or "color" in kwargs:
+        # c and color are common aliases, remove both from default_style if present
+        default_style.pop("c", None)
+        default_style.pop("color", None)
+    return dict(default_style, **kwargs)
 
 
 def data_unit(p):

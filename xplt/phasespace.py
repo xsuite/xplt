@@ -406,7 +406,7 @@ class PhaseSpacePlot(Xplot):
 
         """
 
-        kwargs = style(kwargs, c="k")
+        kwargs = style(kwargs, color="k")
 
         for i, (ab, ax) in enumerate(zip(self.kind, self.axflat)):
             if subplots != "all" and i not in subplots:
