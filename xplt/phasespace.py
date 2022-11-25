@@ -359,6 +359,8 @@ class PhaseSpacePlot(Xplot):
 
         if prop in ("X", "Px", "Y", "Py"):
             # normalized coordinates
+            if self.twiss is None:
+                raise ValueError("Normalized coordinates requested but twiss is None")
             xy = prop.lower()[-1]
             coords = [get(particles, p) for p in (xy, "p" + xy)]
             delta = get(particles, "delta")
@@ -523,6 +525,7 @@ class PhaseSpacePlot(Xplot):
                     X = h * np.array(X) / 2
                     Y = h * 3**0.5 * np.array(Y) / 2
                     ax.plot(*transform((X, Y)), **kwarg)
+                    kwarg.pop("label", None)
 
             # plot equipotential lines
             if equipotentials:
