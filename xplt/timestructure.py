@@ -210,7 +210,7 @@ class TimeFFTPlot(_TimestructurePlotMixin, Xplot):
         Args:
                 particles: Particles data to plot.
                 beta: Relativistic beta of particles.
-                frev: Revolution frequency of circular line. If None for linear lines.
+                frev: Revolution frequency of circular line. Use None for linear lines.
                 fmax: Maximum frequency (in Hz) to plot.
                 log: If True, plot on a log scale.
                 ax: An axes to plot onto. If None, a new figure is created.
@@ -296,6 +296,133 @@ class TimeFFTPlot(_TimestructurePlotMixin, Xplot):
             self.ax.set(
                 xlim=(10 * self.factor_for("f"), self.fmax * self.factor_for("f"))
             )
+
+    def plot_harmonics(self, v, dv=0, *, n=20, inverse=False, **plot_kwargs):
+        """Add vertical lines or spans indicating the location of values or spans and their harmonics
+
+        Args:
+            v (float or list of float): Value or list of values.
+            dv (float or list of float, optional): Width or list of widths centered around value(s).
+            n (int): Number of harmonics to plot.
+            inverse (bool): If true, plot harmonics of n/(v±dv) instead of n*(v±dv). Useful to plot frequency harmonics in time domain and vice-versa.
+            plot_kwargs: Keyword arguments to be passed to plotting method
+        """
+        return super().plot_harmonics(
+            self.ax, v, dv, n=n, inverse=inverse, **plot_kwargs
+        )
+
+
+class TimeIntervalPlot(_TimestructurePlotMixin, Xplot):
+    def __init__(
+        self,
+        particles=None,
+        *,
+        beta=None,
+        frev=None,
+        tmax=None,
+        bin_time=None,
+        bin_count=None,
+        log=True,
+        ax=None,
+        mask=None,
+        display_units=None,
+        step_kwargs=None,
+        grid=True,
+        **subplots_kwargs,
+    ):
+        """
+        A histogram plot of particle arrival intervalls (i.e. delay between consecutive particles).
+
+        The plot is based on the particle arrival time, which is:
+            - For circular lines: at_turn / frev + zeta / beta / c0
+            - For linear lines: zeta / beta / c0
+
+        Useful to plot time structures of particles loss, such as spill structures.
+
+        Args:
+                particles: Particles data to plot.
+                beta: Relativistic beta of particles.
+                frev: Revolution frequency of circular line. Use None for linear lines.
+                tmax: Maximum interval (in s) to plot.
+                bin_time: Time bin width if bin_count is None.
+                bin_count: Number of bins if bin_time is None.
+                log: If True, plot on a log scale.
+                ax: An axes to plot onto. If None, a new figure is created.
+                mask: An index mask to select particles to plot. If None, all particles are plotted.
+                display_units: Dictionary with units for parameters.
+                step_kwargs: Keyword arguments passed to matplotlib.pyplot.step() plot.
+                grid (bool): En- or disable showing the grid
+                subplots_kwargs: Keyword arguments passed to matplotlib.pyplot.subplots command when a new figure is created.
+
+        """
+        super().__init__(
+            beta, frev, display_units=style(display_units, f="Hz" if log else "kHz")
+        )
+
+        if bin_time is None and bin_count is None:
+            bin_count = 100
+        self._bin_time = bin_time
+        self._bin_count = bin_count
+        self.tmax = tmax
+
+        # Create plot axes
+        if ax is None:
+            _, ax = plt.subplots(**subplots_kwargs)
+        self.ax = ax
+        self.fig = self.ax.figure
+
+        # Create distribution plots
+        kwargs = style(step_kwargs, lw=1)
+        (self.artist_hist,) = self.ax.step([], [], **kwargs)
+        self.ax.set(
+            xlabel="Delay between consecutive particles " + self.label_for("t"),
+            xlim=(self.bin_time if log else 0, self.tmax * self.factor_for("t")),
+            ylabel=f"Particles per ${pint.Quantity(self.bin_time, 's').to_compact():~gL}$ bin",
+            ylim=(None if log else 0, None),
+        )
+        self.ax.grid(grid)
+
+        if log:
+            self.ax.set(
+                xscale="log",
+                yscale="log",
+            )
+
+        # set data
+        if particles is not None:
+            self.update(particles, mask=mask, autoscale=True)
+
+    @property
+    def bin_time(self):
+        return self._bin_time or self.tmax / self._bin_count
+
+    @property
+    def bin_count(self):
+        return int(np.ceil(self.tmax / self.bin_time))
+
+    def update(self, particles, mask=None, autoscale=False):
+        """Update plot with new data
+
+        Args:
+            particles: Particles data to plot.
+            mask: An index mask to select particles to plot. If None, all particles are plotted.
+            autoscale: Whether or not to perform autoscaling on all axes.
+        """
+
+        # extract times
+        times = self.factor_for("t") * self.time(particles, mask=mask)
+        delay = np.diff(times)
+
+        # calculate and plot histogram
+        counts, edges = np.histogram(
+            delay, bins=self.bin_count, range=(0, self.bin_count * self.bin_time)
+        )
+        steps = (np.append(edges, edges[-1]), np.concatenate(([0], counts, [0])))
+        self.artist_hist.set_data(steps)
+
+        if autoscale:
+            self.ax.relim()
+            self.ax.autoscale()
 
     def plot_harmonics(self, v, dv=0, *, n=20, inverse=False, **plot_kwargs):
         """Add vertical lines or spans indicating the location of values or spans and their harmonics
