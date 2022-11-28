@@ -50,9 +50,9 @@ class _TimestructurePlotMixin:
             turn = turn[mask]
             zeta = zeta[mask]
 
-        time = zeta / self.beta / c0
+        time = -zeta / self.beta / c0  # zeta>0 means early; zeta<0 means late
         if self.frev is not None:
-            time = turn / self.frev
+            time = time + turn / self.frev
         elif np.any(turn > 0):
             raise ValueError("frev is required for non-circular lines where turn > 0.")
 
