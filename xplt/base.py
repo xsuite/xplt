@@ -49,8 +49,8 @@ def data_unit(p):
     if re.fullmatch(r"k(\d+)l", p):
         return 1 if p == "k0l" else "m^-" + p[1:-1]
     # fmt: off
-    units = dict(        
-        
+    units = dict(
+
         ## particles
         ###################
         s='m',            # Reference accumulated path length
@@ -108,19 +108,6 @@ def data_unit(p):
     if p not in units:
         raise NotImplementedError(f"Data unit for parameter {p} not implemented")
     return units.get(p)
-
-
-def factor_for(var, to_unit):
-    """Return factor to convert parameter into unit"""
-    if var in ("X", "Y"):
-        xy = var.lower()[-1]
-        quantity = pint.Quantity(f"({data_unit(xy)})/({data_unit('bet'+xy)})^(1/2)")
-    elif var in ("Px", "Py"):
-        xy = var[-1]
-        quantity = pint.Quantity(f"({data_unit('p'+xy)})*({data_unit('bet'+xy)})^(1/2)")
-    else:
-        quantity = pint.Quantity(data_unit(var))
-    return (quantity / pint.Quantity(to_unit)).to("").magnitude
 
 
 class ManifoldMultipleLocator(mpl.ticker.MaxNLocator):
@@ -193,14 +180,19 @@ class RadiansFormatter(mpl.ticker.Formatter):
 class Xplot:
     def __init__(
         self,
+        *,
+        data_units=None,
         display_units=None,
     ):
         """
         Base class for plotting
 
-        :param display_units: Dictionary with units for parameters. Supports prefix notation, e.g. 'bet' for 'betx' and 'bety'.
+        Args:
+            display_units: Dictionary with units to display parameters. Supports prefix notation, e.g. 'bet' for 'betx' and 'bety'.
+            data_units: Dictionary with native units of parameters. Supports prefix notation, e.g. 'bet' for 'betx' and 'bety'.
         """
 
+        self._data_units = data_units or {}
         self._display_units = dict(
             dict(
                 x="mm",
@@ -220,16 +212,37 @@ class Xplot:
 
     def factor_for(self, p):
         """Return factor to convert parameter into display unit"""
-        return factor_for(p, self.display_unit_for(p))
+        if p in ("X", "Y"):
+            xy = p.lower()[-1]
+            quantity = pint.Quantity(
+                f"({self.data_unit_for(xy)})/({self.data_unit_for('bet'+xy)})^(1/2)"
+            )
+        elif p in ("Px", "Py"):
+            xy = p[-1]
+            quantity = pint.Quantity(
+                f"({self.data_unit_for('p'+xy)})*({self.data_unit_for('bet'+xy)})^(1/2)"
+            )
+        else:
+            quantity = pint.Quantity(self.data_unit_for(p))
+        return (quantity / pint.Quantity(self.display_unit_for(p))).to("").magnitude
+
+    def data_unit_for(self, p):
+        """Return data unit for parameter"""
+        if p in self._data_units:
+            return self._data_units[p]
+        prefix = p[:-1] if len(p) > 1 and p[-1] in "xy" else p
+        if prefix in self._data_units:
+            return self._data_units[prefix]
+        return data_unit(p)
 
     def display_unit_for(self, p):
         """Return display unit for parameter"""
-        prefix = p[:-1] if len(p) > 1 and p[-1] in "xy" else p
         if p in self._display_units:
             return self._display_units[p]
+        prefix = p[:-1] if len(p) > 1 and p[-1] in "xy" else p
         if prefix in self._display_units:
             return self._display_units[prefix]
-        return data_unit(p)
+        return self.data_unit_for(p)
 
     def label_for(self, *pp, unit=True):
         """
