@@ -437,3 +437,152 @@ class TimeIntervalPlot(_TimestructurePlotMixin, Xplot):
         return super().plot_harmonics(
             self.ax, v, dv, n=n, inverse=inverse, **plot_kwargs
         )
+
+
+class TimeVariationPlot(_TimestructurePlotMixin, Xplot):
+    def __init__(
+        self,
+        particles=None,
+        *,
+        beta=None,
+        frev=None,
+        counting_dt=None,
+        counting_bins=None,
+        evaluate_dt=None,
+        evaluate_bins=None,
+        metric="cv",
+        poisson=True,
+        range=None,
+        ax=None,
+        mask=None,
+        display_units=None,
+        step_kwargs=None,
+        grid=True,
+        **subplots_kwargs,
+    ):
+        """
+        Plot of particle arrival time variability.
+
+        The plot is based on the particle arrival time, which is:
+            - For circular lines: at_turn / frev + zeta / beta / c0
+            - For linear lines: zeta / beta / c0
+
+        Useful to plot time structures of particles loss, such as spill structures.
+
+        The following metrics are implemented:
+            cv: Coefficient of variation
+                cv = std(N)/mean(N)
+            duty: Spill duty factor
+                F = mean(N)**2 / mean(N**2)
+
+        Args:
+            particles: Particles data to plot.
+            beta: Relativistic beta of particles.
+            frev: Revolution frequency of circular line. If None for linear lines.
+            counting_dt: Time bin width for counting if counting_bins is None.
+            counting_bins: Number of bins if counting_dt is None.
+            metric (str): Metric to plot. See above for list of implemented metrices.
+            evaluate_dt: Time bin width for metric evaluation if evaluate_bins is None.
+            evaluate_bins: Number of bins if evaluate_dt is None.
+            poisson (bool): If true, indicate poisson limit.
+            range: A tuple of (min, max) time values defining the histogram range.
+            ax: An axes to plot onto. If None, a new figure is created.
+            mask: An index mask to select particles to plot. If None, all particles are plotted.
+            display_units: Dictionary with units for parameters.
+            step_kwargs: Keyword arguments passed to matplotlib.pyplot.step() plot.
+            grid (bool): En- or disable showing the grid
+            subplots_kwargs: Keyword arguments passed to matplotlib.pyplot.subplots command when a new figure is created.
+
+        """
+        super().__init__(beta, frev, display_units=display_units)
+
+        if counting_dt is None and counting_bins is None:
+            counting_bins = 100 * 100
+        if evaluate_dt is None and evaluate_bins is None:
+            evaluate_bins = 100
+        self.metric = metric
+        self.counting_dt = counting_dt
+        self.counting_bins = counting_bins
+        self.evaluate_dt = evaluate_dt
+        self.evaluate_bins = evaluate_bins
+        self.range = range
+
+        # Create plot axes
+        if ax is None:
+            _, ax = plt.subplots(**subplots_kwargs)
+        self.ax = ax
+        self.fig = self.ax.figure
+
+        # Create distribution plots
+        kwargs = style(step_kwargs, lw=1)
+        (self.artist_metric,) = self.ax.step([], [], **kwargs)
+        self.ax.set(xlabel=self.label_for("t"), ylim=(0, None))
+        self.ax.grid(grid)
+        if poisson:
+            kwargs.update(
+                color=self.artist_metric.get_color() or "gray",
+                alpha=0.5,
+                zorder=1.9,
+                lw=1,
+                ls=":",
+                label="Poisson limit",
+            )
+            (self.artist_poisson,) = self.ax.step([], [], **kwargs)
+        else:
+            self.artist_poisson = None
+
+        # set data
+        if particles is not None:
+            self.update(particles, mask=mask, autoscale=True)
+
+    def update(self, particles, mask=None, autoscale=False):
+        """Update plot with new data
+
+        Args:
+            particles: Particles data to plot.
+            mask: An index mask to select particles to plot. If None, all particles are plotted.
+            autoscale: Whether or not to perform autoscaling on all axes.
+        """
+
+        # extract times
+        times = self.factor_for("t") * self.time(particles, mask=mask)
+
+        # histogram
+        bin_time = self.counting_dt or (times[-1] - times[0]) / self.counting_bins
+        range = self.range or (np.min(times), np.max(times))
+        nbins = int(np.ceil((range[1] - range[0]) / bin_time))
+        range = (range[0], range[0] + nbins * bin_time)  # ensure exact bin width
+        counts, edges = np.histogram(times, bins=nbins, range=range)
+
+        # make 2D array by subdividing into evaluation bins
+        if self.evaluate_bins is not None:
+            ebins = int(nbins / self.evaluate_bins)
+        else:
+            ebins = int(self.evaluate_dt / bin_time)
+        N = counts = counts[: int(len(counts) / ebins) * ebins].reshape((-1, ebins))
+        edges = edges[: int(len(edges) / ebins + 1) * ebins : ebins]
+
+        # calculate metrics
+        if self.metric == "cv":
+            label = f"Coefficient of variation $c_v=\\sigma/\\mu$"
+            F = np.std(N, axis=1) / np.mean(N, axis=1)
+            F_poisson = 1 / np.mean(N, axis=1) ** 0.5
+        elif self.metric == "duty":
+            label = "Spill duty factor $F=\\langle N \\rangle^2/\\langle N^2 \\rangle$"
+            F = np.mean(N, axis=1) ** 2 / np.mean(N**2, axis=1)
+            F_poisson = 1 / (1 + 1 / np.mean(N, axis=1))
+        else:
+            raise ValueError(f"Unknown metric {self.metric}")
+
+        # update plot
+        steps = (np.append(edges, edges[-1]), np.concatenate(([0], F, [0])))
+        self.artist_metric.set_data(steps)
+        if self.artist_poisson:
+            steps = (np.append(edges, edges[-1]), np.concatenate(([0], F_poisson, [0])))
+            self.artist_poisson.set_data(steps)
+        self.ax.set(ylabel=label)
+
+        if autoscale:
+            self.ax.relim()
+            self.ax.autoscale()
+            self.ax.set(ylim=(0, None))
