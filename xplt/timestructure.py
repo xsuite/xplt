@@ -296,3 +296,17 @@ class TimeFFTPlot(_TimestructurePlotMixin, Xplot):
             self.ax.set(
                 xlim=(10 * self.factor_for("f"), self.fmax * self.factor_for("f"))
             )
+
+    def plot_harmonics(self, v, dv=0, *, n=20, inverse=False, **plot_kwargs):
+        """Add vertical lines or spans indicating the location of values or spans and their harmonics
+
+        Args:
+            v (float or list of float): Value or list of values.
+            dv (float or list of float, optional): Width or list of widths centered around value(s).
+            n (int): Number of harmonics to plot.
+            inverse (bool): If true, plot harmonics of n/(v±dv) instead of n*(v±dv). Useful to plot frequency harmonics in time domain and vice-versa.
+            plot_kwargs: Keyword arguments to be passed to plotting method
+        """
+        return super().plot_harmonics(
+            self.ax, v, dv, n=n, inverse=inverse, **plot_kwargs
+        )

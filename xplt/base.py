@@ -300,6 +300,41 @@ class Xplot:
             yaxis.set_major_formatter(RadiansFormatter())
 
     @staticmethod
+    def plot_harmonics(
+        ax, v, dv=0, *, n=20, vertical=True, inverse=False, **plot_kwargs
+    ):
+        """Add vertical lines or spans indicating the location of values or spans and their harmonics
+
+        Args:
+            ax: Axis to plot onto.
+            v (float or list of float): Value or list of values.
+            dv (float or list of float, optional): Width or list of widths centered around value(s).
+            n (int): Number of harmonics to plot.
+            vertical (bool): Plot vertical lines if true, horizontal otherweise.
+            inverse (bool): If true, plot harmonics of n/(v±dv) instead of n*(v±dv). Useful to plot frequency harmonics in time domain and vice-versa.
+            plot_kwargs: Keyword arguments to be passed to plotting method
+        """
+        if not hasattr(v, "__iter__"):
+            v = [v]
+        if not hasattr(dv, "__iter__"):
+            dv = [dv] * len(v)
+        kwargs = style(plot_kwargs, zorder=1.9, color="gray", lw=1)
+        for i in range(1, n + 1):
+            for j, (vi, dvi) in enumerate(zip(v, dv)):
+                if dvi == 0:
+                    method = ax.axvline if vertical else ax.axhline
+                    args = np.array([vi])
+                else:
+                    method = ax.axvspan if vertical else ax.axhspan
+                    args = np.array([vi - dvi / 2, vi + dvi / 2])
+                args = sorted((i / args) if inverse else (i * args))
+                method(
+                    *args,
+                    **style(kwargs, alpha=1 - np.log(1 + (np.e - 1) * (i - 1) / n)),
+                )
+                kwargs.pop("label", None)
+
+    @staticmethod
     def add_scale(
         ax,
         scale,
