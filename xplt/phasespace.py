@@ -262,7 +262,8 @@ class PhaseSpacePlot(Xplot):
             XY = np.array((x, y))
             XY0 = np.mean(XY, axis=1)
             UV = XY - XY0[:, np.newaxis]  # centered coordinates
-            evals, evecs = np.linalg.eig(np.cov(UV))  # eigenvalues and -vectors
+            if self.artists_std[i] or self.artists_percentiles[i]:
+                evals, evecs = np.linalg.eig(np.cov(UV))  # eigenvalues and -vectors
 
             # 2D phase space distribution
             ##############################
