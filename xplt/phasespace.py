@@ -439,7 +439,7 @@ class PhaseSpacePlot(Xplot):
         S,
         mu,
         *,
-        q=None,
+        delta=0,
         extend=1,
         autoscale=True,
         separatrix=True,
@@ -453,7 +453,7 @@ class PhaseSpacePlot(Xplot):
             subplot (int): Index of subplot
             S (float): Virtual sextupole strength in m^(-1/2)
             mu (float): Virtual sextupole phase in rad/2pi
-            q (float, optional): Tune. Defaults to tune from twiss.
+            delta (float, optional): Momentum offset.
             extend (float, optional): Extend of separatrix and equipotential lines. If > 1 they are drawn beyond the the stable region.
             autoscale (bool, optional): Whether to autoscale axis or not
             separatrix (bool, optional): Plot separatrix. Defaults to True.
@@ -461,8 +461,6 @@ class PhaseSpacePlot(Xplot):
             equipotentials (bool, optional): Plot equipotential lines. Defaults to True.
             equipotentials_kwargs (dict, optional): Keyword arguments for equipotential line contour plot.
         """
-
-        # TODO: provide option to plot for different particle delta (dispersion shifts and chromaticity shrinks the triangle)
 
         ax = self.axflat[subplot]
         a, b = self.kind[subplot]
@@ -487,8 +485,8 @@ class PhaseSpacePlot(Xplot):
         alfx, betx, mux, x, px = [
             get(self.twiss, pre + xy).squeeze() for pre in ["alf", "bet", "mu", "", "p"]
         ]
-        if q is None:
-            q = get(self.twiss, "q" + xy).squeeze()
+        q = get(self.twiss, "q" + xy).squeeze()
+        q = q + delta * get(self.twiss, "dq" + xy).squeeze()
 
         # distance d to nearby 3rd order resonance r
         r = round(3 * q) / 3
@@ -500,10 +498,12 @@ class PhaseSpacePlot(Xplot):
         rotation = np.array([[+np.cos(dmu), np.sin(dmu)], [-np.sin(dmu), np.cos(dmu)]])
 
         def transform(XY):
+            """Transform normalized phase space coordinates into coordinates of plot"""
+            # rotate so as to account for phase advance
             XY = np.tensordot(rotation, XY, 1)
             # match plot settings
             if not normalized:
-                XY = np.array(denormalized_coordinates(*XY, self.twiss, xy))
+                XY = np.array(denormalized_coordinates(*XY, self.twiss, xy, delta))
             if swap:
                 XY = XY[::-1]
             XY[0] *= self.factor_for(a)
@@ -518,7 +518,7 @@ class PhaseSpacePlot(Xplot):
                 kwarg = style(separatrix_kwargs, color="r", ls="--", label="Separatrix")
 
                 t = extend
-                for X, Y in (
+                for X, Y in (  # triangle edges
                     [(-2, -2), (-2 * t, 2 * t)],
                     [(1 - 3 * t, 1 + 3 * t), (1 + t, 1 - t)],
                     [(1 - 3 * t, 1 + 3 * t), (-1 - t, -1 + t)],
