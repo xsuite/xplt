@@ -51,5 +51,6 @@ packages = ['xplt']
 # Dev tools
 
 [tool.black]
-line-length = 88
+line-length = 98
 target-version = ['py38']
+

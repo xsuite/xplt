@@ -345,9 +345,7 @@ class PhaseSpacePlot(Xplot):
                 else:
                     artists = []
                 ax.update_datalim(
-                    mpl.transforms.Bbox.union(
-                        [a.get_datalim(ax.transData) for a in artists]
-                    )
+                    mpl.transforms.Bbox.union([a.get_datalim(ax.transData) for a in artists])
                 )
                 ax.autoscale()
 
@@ -435,13 +433,13 @@ class PhaseSpacePlot(Xplot):
 
     def plot_hamiltonian_kobayashi(
         self,
-        subplot,
+        subplots,
         S,
         mu,
         *,
         delta=0,
         extend=1,
-        autoscale=True,
+        autoscale=1.1,
         separatrix=True,
         separatrix_kwargs=None,
         equipotentials=True,
@@ -450,108 +448,114 @@ class PhaseSpacePlot(Xplot):
         """Plot separatrix and equipotential lines of kobayashi hamiltonian
 
         Args:
-            subplot (int): Index of subplot
+            subplots (int or list of int): Index of subplot(s)
             S (float): Virtual sextupole strength in m^(-1/2)
             mu (float): Virtual sextupole phase in rad/2pi
             delta (float, optional): Momentum offset.
             extend (float, optional): Extend of separatrix and equipotential lines. If > 1 they are drawn beyond the the stable region.
-            autoscale (bool, optional): Whether to autoscale axis or not
+            autoscale (bool or float, optional): Whether to autoscale axis or not (bool), or the extend to consider for autoscaling
             separatrix (bool, optional): Plot separatrix. Defaults to True.
             separatrix_kwargs (dict, optional): Keyword arguments for separatrix line plot.
             equipotentials (bool, optional): Plot equipotential lines. Defaults to True.
             equipotentials_kwargs (dict, optional): Keyword arguments for equipotential line contour plot.
         """
+        if not hasattr(subplots, "__iter__"):
+            subplots = [subplots]
 
-        ax = self.axflat[subplot]
-        a, b = self.kind[subplot]
-        config = {
-            "x-px": ("x", False),
-            "y-py": ("y", False),
-            "X-Px": ("x", True),
-            "Y-Py": ("y", True),
-        }
-        if f"{a}-{b}" in config:
-            xy, normalized = config[f"{a}-{b}"]
-            swap = False
-        elif f"{b}-{a}" in config:
-            xy, normalized = config[f"{b}-{a}"]
-            swap = True
-        else:
-            raise TypeError(f"Invalid plot kind {a}-{b} for kobayashi hamiltonian")
+        for subplot in subplots:
+            ax = self.axflat[subplot]
+            a, b = self.kind[subplot]
+            config = {
+                "x-px": ("x", False),
+                "y-py": ("y", False),
+                "X-Px": ("x", True),
+                "Y-Py": ("y", True),
+            }
+            if f"{a}-{b}" in config:
+                xy, normalized = config[f"{a}-{b}"]
+                swap = False
+            elif f"{b}-{a}" in config:
+                xy, normalized = config[f"{b}-{a}"]
+                swap = True
+            else:
+                raise TypeError(f"Invalid plot kind {a}-{b} for kobayashi hamiltonian")
 
-        # twiss parameters at plot location
-        if self.twiss is None:
-            raise ValueError("No twiss parameters provided during plot creation")
-        alfx, betx, mux, x, px = [
-            get(self.twiss, pre + xy).squeeze() for pre in ["alf", "bet", "mu", "", "p"]
-        ]
-        q = get(self.twiss, "q" + xy).squeeze()
-        q = q + delta * get(self.twiss, "dq" + xy).squeeze()
+            # twiss parameters at plot location
+            if self.twiss is None:
+                raise ValueError("No twiss parameters provided during plot creation")
+            alfx, betx, mux, x, px = [
+                get(self.twiss, pre + xy).squeeze() for pre in ["alf", "bet", "mu", "", "p"]
+            ]
+            q = get(self.twiss, "q" + xy).squeeze()
+            q = q + delta * get(self.twiss, "dq" + xy).squeeze()
 
-        # distance d to nearby 3rd order resonance r
-        r = round(3 * q) / 3
-        d = q - r
-        # size of stable triangle
-        h = 4 * np.pi * d / S
-        # phase advance from virtual sextupole to here
-        dmu = 2 * np.pi * (mux - mu)
-        rotation = np.array([[+np.cos(dmu), np.sin(dmu)], [-np.sin(dmu), np.cos(dmu)]])
+            # distance d to nearby 3rd order resonance r
+            r = round(3 * q) / 3
+            d = q - r
+            # size of stable triangle
+            h = 4 * np.pi * d / S
+            # phase advance from virtual sextupole to here
+            dmu = 2 * np.pi * (mux - mu)
+            rotation = np.array([[+np.cos(dmu), np.sin(dmu)], [-np.sin(dmu), np.cos(dmu)]])
 
-        def transform(XY):
-            """Transform normalized phase space coordinates into coordinates of plot"""
-            # rotate so as to account for phase advance
-            XY = np.tensordot(rotation, XY, 1)
-            # match plot settings
-            if not normalized:
-                XY = np.array(denormalized_coordinates(*XY, self.twiss, xy, delta))
-            if swap:
-                XY = XY[::-1]
-            XY[0] *= self.factor_for(a)
-            XY[1] *= self.factor_for(b)
-            return XY
+            def transform(XY):
+                """Transform normalized phase space coordinates into coordinates of plot"""
+                # rotate so as to account for phase advance
+                XY = np.tensordot(rotation, XY, 1)
+                # match plot settings
+                if not normalized:
+                    XY = np.array(denormalized_coordinates(*XY, self.twiss, xy, delta))
+                if swap:
+                    XY = XY[::-1]
+                XY[0] *= self.factor_for(a)
+                XY[1] *= self.factor_for(b)
+                return XY
 
-        lim = ax.dataLim
-        with FixedLimits(ax):
+            lim = ax.dataLim
+            with FixedLimits(ax):
 
-            # plot separatrix
-            if separatrix:
-                kwarg = style(separatrix_kwargs, color="r", ls="--", label="Separatrix")
+                # plot separatrix
+                if separatrix:
+                    kwarg = style(separatrix_kwargs, color="r", ls="--", label="Separatrix")
 
-                t = extend
-                for X, Y in (  # triangle edges
-                    [(-2, -2), (-2 * t, 2 * t)],
-                    [(1 - 3 * t, 1 + 3 * t), (1 + t, 1 - t)],
-                    [(1 - 3 * t, 1 + 3 * t), (-1 - t, -1 + t)],
-                ):
-                    X = h * np.array(X) / 2
-                    Y = h * 3**0.5 * np.array(Y) / 2
-                    ax.plot(*transform((X, Y)), **kwarg)
-                    kwarg.pop("label", None)
+                    t = extend
+                    for X, Y in (  # triangle edges
+                        [(-2, -2), (-2 * t, 2 * t)],
+                        [(1 - 3 * t, 1 + 3 * t), (1 + t, 1 - t)],
+                        [(1 - 3 * t, 1 + 3 * t), (-1 - t, -1 + t)],
+                    ):
+                        X = h * np.array(X) / 2
+                        Y = h * 3**0.5 * np.array(Y) / 2
+                        ax.plot(*transform((X, Y)), **kwarg)
+                        kwarg.pop("label", None)
 
-            # plot equipotential lines
-            if equipotentials:
-                kwargs = style(
-                    equipotentials_kwargs, colors="lightgray", linewidths=1, alpha=0.5
+                # plot equipotential lines
+                if equipotentials:
+                    kwargs = style(
+                        equipotentials_kwargs,
+                        colors="lightgray",
+                        linewidths=1,
+                        alpha=0.5,
+                    )
+
+                    # X = h * np.linspace(-5, 5, 500)
+                    X = extend * h * np.linspace(-1, 2, 500)
+                    Y = extend * h * 3**0.5 * np.linspace(-1, 1, 500)
+                    X, Y = np.meshgrid(X, Y)
+                    H = (3 * h * (X**2 + Y**2) + 3 * X * Y**2 - X**3) / h**3 / 4
+                    levels = np.linspace(0, extend, int(10 * extend)) ** 2
+
+                    ax.contour(*transform((X, Y)), H, levels=levels, **kwargs)
+
+                    ax.grid(False)
+
+            # autoscale to separatrix
+            if autoscale:
+                t = 1 if autoscale is True else autoscale
+                X = np.array((-2, -2, 1 - 3 * t, 1 + 3 * t, 1 - 3 * t, 1 + 3 * t)) / 2
+                Y = np.array((-2 * t, 2 * t, 1 + t, 1 - t, -1 - t, -1 + t)) * 3**0.5 / 2
+                x, y = transform((h * X, h * Y))
+                ax.dataLim = lim.union(
+                    [mpl.transforms.Bbox([[min(x), min(y)], [max(x), max(y)]])]
                 )
-
-                # X = h * np.linspace(-5, 5, 500)
-                X = extend * h * np.linspace(-1, 2, 500)
-                Y = extend * h * 3**0.5 * np.linspace(-1, 1, 500)
-                X, Y = np.meshgrid(X, Y)
-                H = (3 * h * (X**2 + Y**2) + 3 * X * Y**2 - X**3) / h**3 / 4
-                levels = np.linspace(0, extend, int(10 * extend)) ** 2
-
-                ax.contour(*transform((X, Y)), H, levels=levels, **kwargs)
-
-                ax.grid(False)
-
-        # autoscale to separatrix
-        if autoscale:
-            edges = np.array(
-                [(2 * h, -h, -h, 2 * h), (0, -(3**0.5) * h, 3**0.5 * h, 0)]
-            )
-            x, y = transform(edges)
-            ax.dataLim = lim.union(
-                [mpl.transforms.Bbox([[min(x), min(y)], [max(x), max(y)]])]
-            )
-            ax.autoscale()
+                ax.autoscale()
