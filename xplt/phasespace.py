@@ -48,6 +48,7 @@ class PhaseSpacePlot(Xplot):
         grid=None,
         titles="auto",
         wrap_zeta=None,
+        animated=False,
         **subplots_kwargs,
     ):
         """
@@ -88,6 +89,7 @@ class PhaseSpacePlot(Xplot):
         :param grid: Tuple (ncol, nrow) for subplot layout. If None, the layout is determined automatically.
         :param titles: List of titles for each subplot or 'auto' to automatically set titles based on plot kind.
         :param wrap_zeta: If set, wrap the zeta-coordinate plotted at the machine circumference. Either pass the circumference directly or set this to True to use the circumference from twiss.
+        :param animated: If True, improve plotting performance for creating an animation.
         :param subplots_kwargs: Keyword arguments passed to matplotlib.pyplot.subplots command when a new figure is created.
 
 
@@ -189,12 +191,14 @@ class PhaseSpacePlot(Xplot):
             # 2D mean indicator
             if mean[i]:
                 kwargs = style(mean_kwargs, color="k", marker="+", ms=8, zorder=100)
-                (self.artists_mean[i],) = ax.plot([], [], **kwargs)
+                (self.artists_mean[i],) = ax.plot([], [], **kwargs, animated=animated)
 
             # 2D std ellipses
             if std[i]:
                 kwargs = style(std_kwargs, color="k", lw=1, ls="-", zorder=100)
-                self.artists_std[i] = Ellipse([0, 0], 0, 0, fill=False, **kwargs)
+                self.artists_std[i] = Ellipse(
+                    [0, 0], 0, 0, fill=False, **kwargs, animated=animated
+                )
                 ax.add_artist(self.artists_std[i])
 
             # 2D percentile ellipses
@@ -208,7 +212,7 @@ class PhaseSpacePlot(Xplot):
                         ls=(0, [5, 5] + [1, 5] * j),
                         zorder=100,
                     )
-                    artist = Ellipse([0, 0], 0, 0, fill=False, **kwargs)
+                    artist = Ellipse([0, 0], 0, 0, fill=False, **kwargs, animated=animated)
                     ax.add_artist(artist)
                     self.artists_percentiles[i].append(artist)
 
@@ -233,7 +237,7 @@ class PhaseSpacePlot(Xplot):
                         twin = ax.twinx() if xy == "x" else ax.twiny()
                         twin.set(**{f"{yx}ticks": [], f"{yx}lim": (0, 0.2)})
                         self.ax_twin[i][xy] = twin
-                        (hist,) = twin.step([], [], **kwargs)
+                        (hist,) = twin.step([], [], **kwargs, animated=animated)
                         self.artists_twin[i][xy] = hist
 
         # set data
@@ -244,11 +248,14 @@ class PhaseSpacePlot(Xplot):
         """
         Update the data this plot shows
 
-        :param particles: A dictionary with particle information
-        :param mask: An index mask to select particles to plot. If None, all particles are plotted.
-        :param masks: List of masks for each subplot.
-        :param autoscale: Whether or not to perform autoscaling on all axes.
-        :return: changed artists.
+        Args:
+            particles: A dictionary with particle information
+            mask: An index mask to select particles to plot. If None, all particles are plotted.
+            masks: List of masks for each subplot.
+            autoscale: Whether or not to perform autoscaling on all axes.
+
+        Returns:
+            List of changed artists.
         """
         if masks is None:
             masks = [mask] * len(self.kind)
@@ -257,8 +264,11 @@ class PhaseSpacePlot(Xplot):
         if len(masks) != len(self.kind):
             raise ValueError(f"masks must be a list of length {len(self.kind)}")
 
+        changed_artists = []
+
         for i, ((a, b), ax) in enumerate(zip(self.kind, self.axflat)):
             ax.autoscale(autoscale)
+
             # coordinates
             x = self.factor_for(a) * self._masked(particles, a, masks[i])
             y = self.factor_for(b) * self._masked(particles, b, masks[i])
@@ -276,13 +286,20 @@ class PhaseSpacePlot(Xplot):
             plot = self.plot
             if plot == "auto":
                 plot = "scatter" if len(x) <= 1000 else "hist"
+
             # scatter plot
-            self.artists_scatter[i].set_visible(plot == "scatter")
             if plot == "scatter":
+                self.artists_scatter[i].set_visible(True)
                 self.artists_scatter[i].set_offsets(pairwise[x, y])
+                changed_artists.append(self.artists_scatter[i])
+            elif self.artists_scatter[i].get_visible():
+                self.artists_scatter[i].set_visible(False)
+                changed_artists.append(self.artists_scatter[i])
+
             # hexbin plot
-            # remove old hexbin and create a new one (no update method)
+            # remove old hexbin and create a new one (no update method exists)
             for artist in self.artists_hexbin[i]:
+                changed_artists.append(artist)
                 artist.remove()
             self.artists_hexbin[i] = []
             if plot == "hist":
@@ -290,10 +307,12 @@ class PhaseSpacePlot(Xplot):
                 hexbin_bg = ax.hexbin(x, y, mincnt=1, **self._hxkw)
                 hexbin_fg = ax.hexbin(x, y, mincnt=1, edgecolors="none", **self._hxkw)
                 self.artists_hexbin[i] = [hexbin_bg, hexbin_fg]
+                changed_artists.extend(self.artists_hexbin[i])
 
             # 2D mean indicator
             if self.artists_mean[i]:
                 self.artists_mean[i].set_data(XY0)
+                changed_artists.append(self.artists_mean[i])
 
             # 2D std indicator
             if self.artists_std[i]:
@@ -304,6 +323,7 @@ class PhaseSpacePlot(Xplot):
                     height=h,
                     angle=np.degrees(np.arctan2(*evecs[1])),
                 )
+                changed_artists.append(self.artists_std[i])
 
             # 2D percentile indicator
             if self.artists_percentiles[i]:
@@ -319,6 +339,7 @@ class PhaseSpacePlot(Xplot):
                         height=h,
                         angle=np.degrees(np.arctan2(*evecs[1])),
                     )
+                    changed_artists.append(self.artists_percentiles[i][j])
 
             # 1D histogram projections
             ###########################
@@ -335,11 +356,15 @@ class PhaseSpacePlot(Xplot):
                         # 1D histogram
                         counts, edges = np.histogram(v, bins=101)
                         counts = counts / len(v)
+                        # counts = np.bincount((101 * (v - np.min(v)) / (np.max(v) - np.min(v))).astype(int))[:101] / len(v)
+                        # edges = np.linspace(np.min(v), np.max(v), 102)
+
                         steps = (
                             np.append(edges, edges[-1]),
                             np.concatenate(([0], counts, [0])),
                         )
                         hist.set_data(steps if xy == "x" else steps[::-1])
+                        changed_artists.append(hist)
 
             if autoscale:
                 # ax.relim()  # At present, relim does not support collection instances.
@@ -352,7 +377,9 @@ class PhaseSpacePlot(Xplot):
                 ax.update_datalim(
                     mpl.transforms.Bbox.union([a.get_datalim(ax.transData) for a in artists])
                 )
-                ax.autoscale()
+                ax.autoscale(True)
+
+        return changed_artists
 
     @property
     def axflat(self):
