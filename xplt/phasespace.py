@@ -28,6 +28,8 @@ class PhaseSpacePlot(Xplot):
         kind=None,
         plot="auto",
         *,
+        scatter_kwargs=None,
+        hist_kwargs=None,
         ax=None,
         mask=None,
         masks=None,
@@ -66,6 +68,8 @@ class PhaseSpacePlot(Xplot):
                       - ``[['x', 'px'], ['x', 'y']]``: same as above
 
         :param plot: Defines the type of plot. Can be 'auto', 'scatter' or 'hist'. Default is 'auto' for which the plot type is chosen automatically based on the number of particles.
+        :param scatter_kwargs: Additional kwargs for scatter plot
+        :param hist_kwargs: Additional kwargs for hexbin histogram plot
         :param ax: A list of axes to plot onto, length must match the number of subplots. If None, a new figure is created.
         :param mask: An index mask to select particles to plot. If None, all particles are plotted.
         :param masks: List of masks for each subplot.
@@ -178,8 +182,9 @@ class PhaseSpacePlot(Xplot):
             # 2D phase space distribution
             ##############################
 
-            self.artists_scatter[i] = ax.scatter([], [], s=4, color=color, lw=0)
-            self._hxkw = dict(cmap=cmap, rasterized=True)
+            kwargs = style(scatter_kwargs, s=4, color=color, lw=0, animated=animated)
+            self.artists_scatter[i] = ax.scatter([], [], **kwargs)
+            self._hxkw = style(hist_kwargs, cmap=cmap, rasterized=True, animated=animated)
 
             # 2D mean indicator
             if mean[i]:
