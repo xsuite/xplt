@@ -36,7 +36,7 @@ class _TimestructurePlotMixin:
         self.beta = beta
         self.frev = frev
 
-    def time(self, particles, mask=None):
+    def particle_arrival_times(self, particles, mask=None):
         """Get particle arrival times
 
         Args:
@@ -56,7 +56,56 @@ class _TimestructurePlotMixin:
         elif np.any(turn > 0):
             raise ValueError("frev is required for non-circular lines where turn > 0.")
 
-        return np.array(sorted(time))
+        return time
+
+    @staticmethod
+    def binned_timeseries(times, n, what=None):
+        """Get binned timeseries with equally spaced time bins
+
+        From the particle arrival times (non-equally distributed timestamps), a timeseries with equally
+        spaced time bins is derived. The time bin size is determined based on the number of bins.
+        The parameter `what` determines what is returned for the timeseries. By default (what=None), the
+        number of particles arriving within each time bin is returned. Alternatively, a particle property
+        can be passed as array, in which case that property is averaged over all particles arriving within
+        the respective bin (or 0 if no particles arrive within a time bin).
+
+        Args:
+            times: Array of particle arrival times.
+            what: Array of associated data or None. Must have same shape as times. See above.
+            n: Number of bins.
+
+        Returns:
+            The timeseries as tuple (t_min, dt, values) where
+            t_min is the start time of the timeseries data,
+            dt is the time bin width and
+            values are the values of the timeseries as array of length n.
+        """
+
+        # Note: The code below was optimized to run much faster than an ordinary
+        # np.histogram, which quickly slows down for large datasets.
+        # If you intend to change something here, make sure to benchmark it!
+
+        t_min = np.min(times)
+        dt = (np.max(times) - t_min) / n
+        # count timestamps in bins
+        bins = ((times - t_min) / dt).astype(int)
+        # bins are i*dt <= t < (i+1)*dt where i = 0 .. n-1
+        bins = np.clip(bins, None, n - 1)  # but for the last bin use t <= n*dt
+        # count particles per time bin
+        counts = np.bincount(bins)  # , minlength=n)[:n]
+
+        if what is None:
+            # Return particle counts
+            return t_min, dt, counts
+
+        else:
+            # Return 'what' averaged
+            v = np.zeros(n)
+            # sum up 'what' for all the particles in each bin
+            np.add.at(v, bins, what)
+            # divide by particle count to get mean (default to 0)
+            v[counts > 0] /= counts[counts > 0]
+            return t_min, dt, v
 
 
 class TimeHistPlot(_TimestructurePlotMixin, Xplot):
@@ -142,10 +191,10 @@ class TimeHistPlot(_TimestructurePlotMixin, Xplot):
         """
 
         # extract times
-        times = self.factor_for("t") * self.time(particles, mask=mask)
+        times = self.particle_arrival_times(particles, mask=mask)
 
         # histogram settings
-        bin_time = self.bin_time or (times[-1] - times[0]) / self.bin_count
+        bin_time = self.bin_time or (np.max(times) - np.min(times)) / self.bin_count
         range = self.range or (np.min(times), np.max(times))
         nbins = int(np.ceil((range[1] - range[0]) / bin_time))
         range = (range[0], range[0] + nbins * bin_time)  # ensure exact bin width
@@ -157,6 +206,7 @@ class TimeHistPlot(_TimestructurePlotMixin, Xplot):
         if self.relative:
             weights /= len(times)
         counts, edges = np.histogram(times, bins=nbins, weights=weights, range=range)
+        edges *= self.factor_for("t")
 
         # update plot
         if self.plot == "cumulative":
@@ -176,9 +226,7 @@ class TimeHistPlot(_TimestructurePlotMixin, Xplot):
         if self.plot == "rate":
             ylabel += " / s"
         elif self.plot != "cumulative":
-            ylabel += (
-                f"\nper ${pint.Quantity(bin_time, 's').to_compact():~gL}$ interval"
-            )
+            ylabel += f"\nper ${pint.Quantity(bin_time, 's').to_compact():~gL}$ interval"
         self.ax.set(ylabel=ylabel)
 
 
@@ -186,6 +234,7 @@ class TimeFFTPlot(_TimestructurePlotMixin, Xplot):
     def __init__(
         self,
         particles=None,
+        what=None,
         *,
         beta=None,
         frev=None,
@@ -199,16 +248,23 @@ class TimeFFTPlot(_TimestructurePlotMixin, Xplot):
         **subplots_kwargs,
     ):
         """
-        A frequency plot of particle arrival times.
+        A frequency plot based on particle arrival times.
 
         The plot is based on the particle arrival time, which is:
             - For circular lines: at_turn / frev + zeta / beta / c0
             - For linear lines: zeta / beta / c0
 
+        From the particle arrival times (non-equally distributed timestamps), a timeseries with equally
+        spaced time bins is derived. The time bin size is determined based on fmax and performance considerations.
+        By default, the binned property is the number of particles arriving within the bin time (what='count').
+        Alternatively, a particle property may be specified (e.g. what='x'), in which case that property is
+        averaged over all particles arriving in the respective bin. The FFT is then computed over the timeseries.
+
         Useful to plot time structures of particles loss, such as spill structures.
 
         Args:
                 particles: Particles data to plot.
+                what (str, optional): The particle property to make the FFT over. By default, the FFT is done over the particle count.
                 beta: Relativistic beta of particles.
                 frev: Revolution frequency of circular line. Use None for linear lines.
                 fmax: Maximum frequency (in Hz) to plot.
@@ -221,11 +277,10 @@ class TimeFFTPlot(_TimestructurePlotMixin, Xplot):
                 subplots_kwargs: Keyword arguments passed to matplotlib.pyplot.subplots command when a new figure is created.
 
         """
-        super().__init__(
-            beta, frev, display_units=style(display_units, f="Hz" if log else "kHz")
-        )
+        super().__init__(beta, frev, display_units=style(display_units, f="Hz" if log else "kHz"))
 
         self.fmax = fmax
+        self.what = what
         self.scaling = scaling
 
         # Create plot axes
@@ -262,18 +317,21 @@ class TimeFFTPlot(_TimestructurePlotMixin, Xplot):
             autoscale: Whether or not to perform autoscaling on all axes.
         """
 
-        # extract times
-        times = self.factor_for("t") * self.time(particles, mask=mask)
+        # extract times and associated property
+        times = self.particle_arrival_times(particles, mask=mask)
+        if self.what is None:
+            what = None
+        else:
+            what = self.factor_for(self.what) * get(particles, self.what)
+            if mask is not None:
+                what = what[mask]
 
         # re-sample times into equally binned time series
-        # optimized to run in < 1s (including fft) even for 1e6 times and fmax = 10 MHz
         dt = 1 / 2 / self.fmax
         n = int(np.ceil((np.max(times) - np.min(times)) / dt))
         # to improve FFT performance, round up to next power of 2
         n = 1 << (n - 1).bit_length()
-        dt = (np.max(times) - np.min(times)) / n
-        # count timestamps in bins (much faster than np.histogram)
-        timeseries = np.bincount(((times - np.min(times)) / dt).astype(int))
+        t_min, dt, timeseries = self.binned_timeseries(times, n, what)
 
         # calculate fft without DC component
         freq = np.fft.rfftfreq(len(timeseries), d=dt)[1:]
@@ -293,9 +351,7 @@ class TimeFFTPlot(_TimestructurePlotMixin, Xplot):
         if autoscale:
             self.ax.relim()
             self.ax.autoscale()
-            self.ax.set(
-                xlim=(10 * self.factor_for("f"), self.fmax * self.factor_for("f"))
-            )
+            self.ax.set(xlim=(10 * self.factor_for("f"), self.fmax * self.factor_for("f")))
 
     def plot_harmonics(self, v, dv=0, *, n=20, inverse=False, **plot_kwargs):
         """Add vertical lines or spans indicating the location of values or spans and their harmonics
@@ -307,9 +363,7 @@ class TimeFFTPlot(_TimestructurePlotMixin, Xplot):
             inverse (bool): If true, plot harmonics of n/(v±dv) instead of n*(v±dv). Useful to plot frequency harmonics in time domain and vice-versa.
             plot_kwargs: Keyword arguments to be passed to plotting method
         """
-        return super().plot_harmonics(
-            self.ax, v, dv, n=n, inverse=inverse, **plot_kwargs
-        )
+        return super().plot_harmonics(self.ax, v, dv, n=n, inverse=inverse, **plot_kwargs)
 
 
 class TimeIntervalPlot(_TimestructurePlotMixin, Xplot):
@@ -355,9 +409,7 @@ class TimeIntervalPlot(_TimestructurePlotMixin, Xplot):
                 subplots_kwargs: Keyword arguments passed to matplotlib.pyplot.subplots command when a new figure is created.
 
         """
-        super().__init__(
-            beta, frev, display_units=style(display_units, f="Hz" if log else "kHz")
-        )
+        super().__init__(beta, frev, display_units=style(display_units, f="Hz" if log else "kHz"))
 
         if bin_time is None and bin_count is None:
             bin_count = 100
@@ -410,8 +462,8 @@ class TimeIntervalPlot(_TimestructurePlotMixin, Xplot):
         """
 
         # extract times
-        times = self.factor_for("t") * self.time(particles, mask=mask)
-        delay = np.diff(times)
+        times = self.factor_for("t") * self.particle_arrival_times(particles, mask=mask)
+        delay = np.diff(sorted(times))
 
         # calculate and plot histogram
         counts, edges = np.histogram(
@@ -434,9 +486,7 @@ class TimeIntervalPlot(_TimestructurePlotMixin, Xplot):
             inverse (bool): If true, plot harmonics of n/(v±dv) instead of n*(v±dv). Useful to plot frequency harmonics in time domain and vice-versa.
             plot_kwargs: Keyword arguments to be passed to plotting method
         """
-        return super().plot_harmonics(
-            self.ax, v, dv, n=n, inverse=inverse, **plot_kwargs
-        )
+        return super().plot_harmonics(self.ax, v, dv, n=n, inverse=inverse, **plot_kwargs)
 
 
 class TimeVariationPlot(_TimestructurePlotMixin, Xplot):
@@ -545,10 +595,10 @@ class TimeVariationPlot(_TimestructurePlotMixin, Xplot):
         """
 
         # extract times
-        times = self.factor_for("t") * self.time(particles, mask=mask)
+        times = self.factor_for("t") * self.particle_arrival_times(particles, mask=mask)
 
         # histogram
-        bin_time = self.counting_dt or (times[-1] - times[0]) / self.counting_bins
+        bin_time = self.counting_dt or (np.max(times) - np.min(times)) / self.counting_bins
         range = self.range or (np.min(times), np.max(times))
         nbins = int(np.ceil((range[1] - range[0]) / bin_time))
         range = (range[0], range[0] + nbins * bin_time)  # ensure exact bin width
