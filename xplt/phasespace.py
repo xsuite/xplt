@@ -76,7 +76,7 @@ class PhaseSpacePlot(Xplot):
         :param masks: List of masks for each subplot.
         :param display_units: Dictionary with units for parameters.
         :param twiss: Object holding twiss parameters (alfx, alfy, betx and bety) for calculation of normalized coordinates.
-        :param color: Color of the scatter plot. If None, the color is determined by the color cycle.
+        :param color (str or list of str): Properties defining the color of points for the scatter plot(s). Implies plot='scatter'. Pass a list of properties to use different values for each subplot
         :param cmap: Colormap to use for the hist plot.
         :param projections: Add histogrammed projections onto axis. Can be True, False, "x", "y", "auto" or a list of these for each subplot
         :param projections_kwargs: Additional kwargs for histogram projection (step plot)
@@ -143,8 +143,17 @@ class PhaseSpacePlot(Xplot):
             raise ValueError(f"grid must be a tuple (n, m) with n*m >= {n}")
         if plot not in ["auto", "scatter", "hist"]:
             raise ValueError("plot must be 'auto', 'scatter' or 'hist'")
+        if color is not None:
+            if plot not in ["auto", "scatter"]:
+                raise ValueError(f"Setting color requires plot='scatter', but plot was {plot}")
+            plot = "scatter"
+            if isinstance(color, str):
+                color = np.resize(color.split(","), n)
+        else:
+            color = n * [None]
 
         self.plot = plot
+        self.color = color
         self.percentiles = percentiles
         self.projections = projections
         self.twiss = twiss
@@ -179,13 +188,20 @@ class PhaseSpacePlot(Xplot):
         self.artists_twin = [{} for i in range(n)]
         self.artists_hamiltonian = [{} for i in range(n)]
 
-        for i, ((a, b), ax) in enumerate(zip(self.kind, self.axflat)):
+        for i, ((a, b), c, ax) in enumerate(zip(self.kind, self.color, self.axflat)):
 
             # 2D phase space distribution
             ##############################
 
-            kwargs = style(scatter_kwargs, s=4, color=color, lw=0, animated=animated)
+            # scatter plot
+            kwargs = style(scatter_kwargs, s=4, cmap=cmap, lw=0, animated=animated)
+            scatter_cmap = kwargs.pop("cmap")  # bypass UserWarning: ignored
             self.artists_scatter[i] = ax.scatter([], [], **kwargs)
+            self.artists_scatter[i].cmap = mpl.colormaps[scatter_cmap]
+            if c is not None and (np.any(self.color != c) or i == n - 1):
+                self.fig.colorbar(self.artists_scatter[i], label=self.label_for(c))
+
+            # hexbin histogram
             self._hxkw = style(hist_kwargs, cmap=cmap, rasterized=True, animated=animated)
 
             # 2D mean indicator
@@ -266,7 +282,7 @@ class PhaseSpacePlot(Xplot):
 
         changed_artists = []
 
-        for i, ((a, b), ax) in enumerate(zip(self.kind, self.axflat)):
+        for i, ((a, b), c, ax) in enumerate(zip(self.kind, self.color, self.axflat)):
             ax.autoscale(autoscale)
 
             # coordinates
@@ -288,13 +304,21 @@ class PhaseSpacePlot(Xplot):
                 plot = "scatter" if len(x) <= 1000 else "hist"
 
             # scatter plot
+            scatter = self.artists_scatter[i]
             if plot == "scatter":
-                self.artists_scatter[i].set_visible(True)
-                self.artists_scatter[i].set_offsets(pairwise[x, y])
-                changed_artists.append(self.artists_scatter[i])
-            elif self.artists_scatter[i].get_visible():
-                self.artists_scatter[i].set_visible(False)
-                changed_artists.append(self.artists_scatter[i])
+                scatter.set_visible(True)
+                scatter.set_offsets(pairwise[x, y])
+                if c is not None:
+                    v = self.factor_for(c) * self._masked(particles, c, masks[i])
+                    if autoscale:
+                        scatter.set_clim(vmin=min(v), vmax=max(v))
+                    cm = mpl.cm.ScalarMappable(norm=scatter.norm, cmap=scatter.cmap)
+                    scatter.set_facecolor(cm.to_rgba(v))
+
+                changed_artists.append(scatter)
+            elif scatter.get_visible():
+                scatter.set_visible(False)
+                changed_artists.append(scatter)
 
             # hexbin plot
             # remove old hexbin and create a new one (no update method exists)
