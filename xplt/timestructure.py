@@ -131,7 +131,7 @@ class TimeHistPlot(_TimestructurePlotMixin, Xplot):
         A histogram plot of particle arrival times.
 
         The plot is based on the particle arrival time, which is:
-            - For circular lines: at_turn / frev + zeta / beta / c0
+            - For circular lines: at_turn / frev - zeta / beta / c0
             - For linear lines: zeta / beta / c0
 
         Useful to plot time structures of particles loss, such as spill structures.
@@ -250,8 +250,8 @@ class TimeFFTPlot(_TimestructurePlotMixin, Xplot):
         """
         A frequency plot based on particle arrival times.
 
-        The plot is based on the particle arrival time, which is:
-            - For circular lines: at_turn / frev + zeta / beta / c0
+        The particle arrival time is:
+            - For circular lines: at_turn / frev - zeta / beta / c0
             - For linear lines: zeta / beta / c0
 
         From the particle arrival times (non-equally distributed timestamps), a timeseries with equally
@@ -388,7 +388,7 @@ class TimeIntervalPlot(_TimestructurePlotMixin, Xplot):
         A histogram plot of particle arrival intervalls (i.e. delay between consecutive particles).
 
         The plot is based on the particle arrival time, which is:
-            - For circular lines: at_turn / frev + zeta / beta / c0
+            - For circular lines: at_turn / frev - zeta / beta / c0
             - For linear lines: zeta / beta / c0
 
         Useful to plot time structures of particles loss, such as spill structures.
@@ -514,7 +514,7 @@ class TimeVariationPlot(_TimestructurePlotMixin, Xplot):
         Plot of particle arrival time variability.
 
         The plot is based on the particle arrival time, which is:
-            - For circular lines: at_turn / frev + zeta / beta / c0
+            - For circular lines: at_turn / frev - zeta / beta / c0
             - For linear lines: zeta / beta / c0
 
         Useful to plot time structures of particles loss, such as spill structures.
