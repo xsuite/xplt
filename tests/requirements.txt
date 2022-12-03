@@ -1,0 +1,3 @@
+pytest==6.2.5
+testbook==0.4.2
+-r ../examples/requirements.txt
