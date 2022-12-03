@@ -479,15 +479,9 @@ class TimeFFTPlot(XParticlePlot):
         times = self._get_masked(particles, "t", mask)
 
         # re-sample times into equally binned time series
-        dt = 1 / 2 / self.fmax
-        n = int(np.ceil((np.max(times) - np.min(times)) / dt))
+        n = int(np.ceil((np.max(times) - np.min(times)) * self.fmax * 2))
         # to improve FFT performance, round up to next power of 2
         self.nbins = n = 1 << (n - 1).bit_length()
-        freq = np.fft.rfftfreq(n, d=dt)[1:]
-        if self.relative:
-            freq /= self.frev(particles)
-        else:
-            freq *= self.factor_for("f")
 
         # update plots
         changed = []
@@ -504,6 +498,11 @@ class TimeFFTPlot(XParticlePlot):
                     t_min, dt, timeseries = binned_timeseries(times, n, property)
 
                     # calculate fft without DC component
+                    freq = np.fft.rfftfreq(n, d=dt)[1:]
+                    if self.relative:
+                        freq /= self.frev(particles)
+                    else:
+                        freq *= self.factor_for("f")
                     mag = np.abs(np.fft.rfft(timeseries))[1:]
                     if self.scaling.lower() == "amplitude":
                         # amplitude in units of particle counts
