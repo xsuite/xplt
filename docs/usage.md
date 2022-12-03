@@ -11,6 +11,7 @@ examples/colors
 examples/twiss
 examples/phasespace
 examples/hamiltonians
+examples/timestructure
 examples/animations
 ```
 
