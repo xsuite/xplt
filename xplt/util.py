@@ -12,11 +12,18 @@ __date__ = "2022-11-15"
 
 import numpy as np
 
+try:
+    import pandas as pd
+except ImportError:
+    pd = None  # pandas is not required
+
 VOID = object()
 
 
 def get(obj, val, default=VOID):
     """Get value from object"""
+    if pd is not None and isinstance(obj, pd.DataFrame):
+        return obj[val].values
     try:
         return getattr(obj, val)
     except:

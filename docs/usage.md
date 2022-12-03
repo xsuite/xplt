@@ -21,12 +21,20 @@ Xsuite is not an explicit dependency, rather an API assumption on available attr
 ```python
 import xplt
 import numpy as np
+import pandas as pd
 
+# Dictionary
 particles = dict(
     x = np.random.normal(size=int(1e5)),  # in m
     px = np.random.normal(size=int(1e5)),  # in rad
 )
 xplt.PhaseSpacePlot(particles, kind='x-px')
+
+# Pandas DataFrame
+df = pd.DataFrame(particles)
+xplt.PhaseSpacePlot(df, kind='x-px')
+
+...
 ```
 
 :::
