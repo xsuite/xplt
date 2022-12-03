@@ -9,6 +9,7 @@ __author__ = "Philipp Niedermayer"
 __contact__ = "eltos@outlook.de"
 __date__ = "2022-11-24"
 
+import types
 
 import matplotlib as mpl
 import numpy as np
@@ -898,3 +899,11 @@ class TimeVariationPlot(XParticlePlot):
                 )
 
         return super().label_for(*pp, unit=unit, texify=texify)
+
+
+## Restrict star imports to local namespace
+__all__ = [
+    name
+    for name, thing in globals().items()
+    if not (name.startswith("_") or isinstance(thing, types.ModuleType))
+]

@@ -11,6 +11,7 @@ __date__ = "2022-11-08"
 
 
 import re
+import types
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -585,3 +586,11 @@ class FixedLimits:
 
     def __exit__(self, *args):
         self.axis.set(xlim=self.limits[0], ylim=self.limits[1])
+
+
+## Restrict star imports to local namespace
+__all__ = [
+    name
+    for name, thing in globals().items()
+    if not (name.startswith("_") or isinstance(thing, types.ModuleType))
+]

@@ -9,6 +9,7 @@ __author__ = "Philipp Niedermayer"
 __contact__ = "eltos@outlook.de"
 __date__ = "2022-09-06"
 
+import types
 
 import matplotlib as mpl
 import numpy as np
@@ -590,3 +591,11 @@ class PhaseSpacePlot(XParticlePlot):
                     [mpl.transforms.Bbox([[min(x), min(y)], [max(x), max(y)]])]
                 )
                 ax.autoscale()
+
+
+## Restrict star imports to local namespace
+__all__ = [
+    name
+    for name, thing in globals().items()
+    if not (name.startswith("_") or isinstance(thing, types.ModuleType))
+]

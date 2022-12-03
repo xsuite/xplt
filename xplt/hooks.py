@@ -9,7 +9,14 @@ __author__ = "Philipp Niedermayer"
 __contact__ = "eltos@outlook.de"
 __date__ = "2022-09-06"
 
-from xplt.colors import *
+import types
+from xplt.colors import (
+    cmap_petroff,
+    cmap_petroff_gradient,
+    cmap_petroff_bipolar,
+    cmap_petroff_cyclic,
+    petroff_colors,
+)
 
 
 def register_matplotlib_options():
@@ -62,3 +69,11 @@ def register_pint_options():
         return formatted.replace("[", "{").replace("]", "}").replace("^{0.5}", "^{1/2}")
 
     pint.formatting.format_default = "l"
+
+
+## Restrict star imports to local namespace
+__all__ = [
+    name
+    for name, thing in globals().items()
+    if not (name.startswith("_") or isinstance(thing, types.ModuleType))
+]

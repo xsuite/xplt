@@ -7,12 +7,15 @@ __contact__ = "eltos@outlook.de"
 
 __version__ = "0.2.1"
 
+# allow usage of xplt.mpl.* without importing matplotlib
+import matplotlib as mpl
 
 from .colors import *
-from .line import *
-from .twiss import *
-from .phasespace import *
-from .timestructure import *
+from .line import KnlPlot
+from .phasespace import PhaseSpacePlot
+from .timestructure import TimePlot, TimeBinPlot, TimeFFTPlot, TimeIntervalPlot, TimeVariationPlot
+from .twiss import TwissPlot
+from .util import average, normalized_coordinates, denormalized_coordinates
 
 
 from . import hooks

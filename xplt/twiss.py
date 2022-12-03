@@ -9,6 +9,7 @@ __author__ = "Philipp Niedermayer"
 __contact__ = "eltos@outlook.de"
 __date__ = "2022-11-08"
 
+import types
 
 from .base import XPlot, defaults
 from .line import KnlPlot
@@ -177,3 +178,11 @@ class TwissPlot(XPlot):
                                     val_to * self.factor_for("s"),
                                     **kwargs,
                                 )
+
+
+## Restrict star imports to local namespace
+__all__ = [
+    name
+    for name, thing in globals().items()
+    if not (name.startswith("_") or isinstance(thing, types.ModuleType))
+]

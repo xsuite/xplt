@@ -9,6 +9,7 @@ __author__ = "Philipp Niedermayer"
 __contact__ = "eltos@outlook.de"
 __date__ = "2022-11-15"
 
+import types
 
 import numpy as np
 
@@ -150,3 +151,11 @@ def virtual_sextupole(tracker, particle_ref=None):
     S = np.abs(Stotal)
     mu = np.angle(Stotal) / 3 / 2 / np.pi
     return S, mu
+
+
+## Restrict star imports to local namespace
+__all__ = [
+    name
+    for name, thing in globals().items()
+    if not (name.startswith("_") or isinstance(thing, types.ModuleType))
+]
