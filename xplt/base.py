@@ -507,11 +507,11 @@ class XParticlePlot(XPlot):
         return self._circumference or self.twiss.circumference
 
     def frev(self, particles=None):
-        if self._frev is None and self._circumference is None:
+        if self._frev is None and self.circumference is None:
             raise ValueError(
                 "Particle arrival time requested while at_turn > 0, but neither frev or circumference is set"
             )
-        beta = self.beta or get(particles, "beta0")
+        beta = self.beta or get(particles, "beta0").flatten()
         if hasattr(beta, "__iter__"):
             if not np.allclose(beta, beta[0]):
                 raise ValueError(

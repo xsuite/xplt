@@ -369,7 +369,7 @@ class TimeFFTPlot(XParticlePlot):
         *,
         fmax=None,
         relative=False,
-        log=True,
+        log=None,
         scaling="amplitude",
         mask=None,
         plot_kwargs=None,
@@ -404,7 +404,7 @@ class TimeFFTPlot(XParticlePlot):
                 kind (str, optional): What to make the FFT over. Can be 'count' (default), or a particle property (in which case averaging applies).
                 fmax (float): Maximum frequency (in Hz) to plot.
                 relative (bool): If True, plot relative frequencies (f/frev) instead of absolute frequencies (f).
-                log: If True, plot on a log scale.
+                log (bool, optional): If True, plot on a log scale.
                 scaling: Scaling of the FFT. Can be 'amplitude' (default) or 'pds'.
                 mask: An index mask to select particles to plot. If None, all particles are plotted.
                 plot_kwargs: Keyword arguments passed to the plot function.
@@ -420,9 +420,6 @@ class TimeFFTPlot(XParticlePlot):
                 subplots_kwargs: Keyword arguments passed to matplotlib.pyplot.subplots command when a new figure is created.
 
         """
-        if fmax is None:
-            raise ValueError("fmax must be specified.")
-
         display_units = defaults(display_units, f="Hz" if log else "kHz")
         super().__init__(
             data_units=data_units,
@@ -435,9 +432,11 @@ class TimeFFTPlot(XParticlePlot):
         )
 
         self.kind = self._parse_nested_list_string(kind)
-        self.fmax = fmax
+        self._fmax = fmax
         self.relative = relative
         self.scaling = scaling
+        if log is None:
+            log = not relative
 
         # initialize figure with n subplots
         nntwins = [len(tw) - 1 for tw in self.kind]
@@ -466,6 +465,13 @@ class TimeFFTPlot(XParticlePlot):
         if particles is not None:
             self.update(particles, mask=mask, autoscale=True)
 
+    def fmax(self, particles):
+        if self._fmax is not None:
+            return self._fmax
+        if self.relative:
+            return self.frev(particles)
+        raise ValueError("fmax must be specified.")
+
     def update(self, particles, mask=None, autoscale=False):
         """Update plot with new data
 
@@ -479,7 +485,8 @@ class TimeFFTPlot(XParticlePlot):
         times = self._get_masked(particles, "t", mask)
 
         # re-sample times into equally binned time series
-        n = int(np.ceil((np.max(times) - np.min(times)) * self.fmax * 2))
+        fmax = self.fmax(particles)
+        n = int(np.ceil((np.max(times) - np.min(times)) * fmax * 2))
         # to improve FFT performance, round up to next power of 2
         self.nbins = n = 1 << (n - 1).bit_length()
 
@@ -520,7 +527,7 @@ class TimeFFTPlot(XParticlePlot):
                     a.relim()
                     a.autoscale()
                     log = a.get_xscale() == "log"
-                    xlim = np.array((10.0, self.fmax) if log else (0.0, self.fmax))
+                    xlim = np.array((10.0, fmax) if log else (0.0, fmax))
                     if self.relative:
                         xlim /= self.frev(particles)
                     else:
