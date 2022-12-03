@@ -2,6 +2,8 @@
 #
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
+import importlib
+import inspect
 import os, sys, distutils.dir_util
 from xplt import __version__
 
@@ -44,6 +46,7 @@ autoapi_add_toctree_entry = False
 extensions = [
     "sphinx.ext.napoleon",
     "sphinx.ext.autodoc",
+    "sphinx.ext.linkcode",
     "autoapi.extension",
     "sphinx.ext.githubpages",
     "myst_nb",
@@ -56,6 +59,24 @@ myst_enable_extensions = [
 
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+
+# Source code links
+def linkcode_resolve(domain, info):
+    if domain != "py" or not info["module"]:
+        return None
+    filename = info["module"].replace(".", "/") + ".py"
+    url = f"https://github.com/eltos/xplt/blob/main/{filename}"
+    try:
+        # determine line number range
+        obj = importlib.import_module(info["module"])
+        for name in info["fullname"].split("."):
+            obj = getattr(obj, name)
+        sourcecode, line = inspect.getsourcelines(obj)
+        url += f"#L{line}-L{line + len(sourcecode) - 1}"
+    except:
+        pass  # e.g. a primitive
+    return url
+
 
 # Example notebooks
 def np_example_notebooks_init(app, *args):
