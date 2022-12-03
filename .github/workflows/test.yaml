@@ -15,4 +15,4 @@ jobs:
       - name: Pytest
         run: |
           cd tests
-          pytest -v
+          pytest -v --cov=xplt --cov-report=xml --cov-report=term-missing
