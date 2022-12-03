@@ -10,37 +10,17 @@ __contact__ = "eltos@outlook.de"
 __date__ = "2022-11-08"
 
 
+import re
+
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import pint
-import re
+
+from .util import get, defaults, normalized_coordinates
 
 
-VOID = object()
-
-
-def get(obj, val, default=VOID):
-    """Get value from object"""
-    try:
-        return getattr(obj, val)
-    except:
-        try:
-            return obj[val]
-        except:
-            if default is not VOID:
-                return default
-    raise AttributeError(f"{obj} does not provide an attribute or index '{val}'")
-
-
-def style(kwargs, **default_style):
-    """Return kwargs or defaults"""
-    kwargs = kwargs or {}
-    if "c" in kwargs or "color" in kwargs:
-        # c and color are common aliases, remove both from default_style if present
-        default_style.pop("c", None)
-        default_style.pop("color", None)
-    return dict(default_style, **kwargs)
+c0 = 299792458  # speed of light in m/s
 
 
 def data_unit(p):
@@ -177,7 +157,7 @@ class RadiansFormatter(mpl.ticker.Formatter):
         return f"${x/np.pi:g}\\pi$"
 
 
-class Xplot:
+class XPlot:
     def __init__(
         self,
         *,
@@ -206,24 +186,111 @@ class Xplot:
             **(display_units or {}),
         )
 
+    @classmethod
+    def _parse_nested_list_string(cls, list_string, separators=",-+", subs={}):
+        """Parse a separated string or nested list or a mixture of both
+
+        Args:
+            list_string (str or list): The string or nested list to parse
+            separators (str): The characters that separate the elements
+            subs (dict): A dictionary of substitutions to apply to the elements
+
+        Returns:
+            nested list of elements in the string
+        """
+        if type(list_string) is str:
+            elements = []
+            for element in list_string.split(separators[0]):
+                element = subs.get(element, element)
+                # split again in case subs contains a separator
+                elements.extend(element.split(separators[0]))
+        else:
+            elements = list(list_string)
+        if len(separators) > 1:
+            for i in range(len(elements)):
+                elements[i] = cls._parse_nested_list_string(elements[i], separators[1:], subs)
+        return elements
+
+    def _init_axes(self, ax, nrow=1, ncol=1, nntwins=None, grid=False, **subplots_kwargs):
+        """Helper method to initialize a default manifold plot with subplots, twin axes and line plots
+
+        Args:
+            ax (matplotlib.axes.Axes or None): If given, use these axes for the plot.
+                Otherwise create a new figure and axes.
+            nrow (int): Number of rows in the plot.
+            ncol (int): Number of columns in the plot.
+            nntwins (list): List defining how many twin axes to create for each subplot.
+                If None, the number of twins is automatically determined based on self.kind.
+            grid (bool): If true, add a grid to the plot.
+            subplots_kwargs: Additional keyword arguments to pass to matplotlib.pyplot.subplots
+        """
+
+        # Create plot axes
+        if ax is None:
+            _, ax = plt.subplots(nrow, ncol, **subplots_kwargs)
+        self.ax = ax
+        self.fig = self.axflat[0].figure
+
+        self.axflat_twin = []
+
+        for i, a in enumerate(self.axflat):
+            if grid:
+                a.grid(grid)
+
+            # Create twin axes
+            self.axflat_twin.append([])
+            for j in range(nntwins[i]):
+                twin = a.twinx()
+                twin._get_lines.prop_cycler = a._get_lines.prop_cycler
+                if j > 0:
+                    twin.spines.right.set_position(("axes", 1 + 0.2 * j))
+                self.axflat_twin[i].append(twin)
+
+    @property
+    def axflat(self):
+        """Return a flat list of all primary axes"""
+        return np.array(self.ax).flatten()
+
+    def axis_for(self, subplot=0, twin=0):
+        """Return the axis for a given flat subplot index and twin index"""
+        return self.axflat_twin[subplot][twin - 1] if twin else self.axflat[subplot]
+
+    def _init_artists(self, subplots_twin_elements, create_artist):
+        """Helper method to create artists for subplots and twin axes
+
+        Args:
+            subplots_twin_elements (list): A list of lists of elements to create artists for.
+                The outer list is for subplots, the inner list for twin axes.
+            create_artist (function): A function that creates an artist for a given element.
+                It should take the indices i, j, k, the axis, and the element as arguments.
+        """
+        self.artists = []
+        for i, ppp in enumerate(subplots_twin_elements):
+            self.artists.append([])
+            legend = [], []
+            for j, pp in enumerate(ppp):
+                a = self.axis_for(i, j)
+                a.set(ylabel=self.label_for(*pp))
+
+                # create artists for traces
+                self.artists[i].append([])
+                for k, p in enumerate(pp):
+                    artist = create_artist(i, j, k, a, p)
+                    self.artists[i][j].append(artist)
+                    for art in artist if hasattr(artist, "__iter__") else [artist]:
+                        legend[0].append(art)
+                        legend[1].append(art.get_label())
+
+            if len(legend[0]) > 1:
+                a.legend(*legend)
+
     def save(self, fname, **kwargs):
         """Save the figure"""
-        self.fig.savefig(fname, **style(kwargs, dpi=300))
+        self.fig.savefig(fname, **defaults(kwargs, dpi=300))
 
     def factor_for(self, p):
         """Return factor to convert parameter into display unit"""
-        if p in ("X", "Y"):
-            xy = p.lower()[-1]
-            quantity = pint.Quantity(
-                f"({self.data_unit_for(xy)})/({self.data_unit_for('bet'+xy)})^(1/2)"
-            )
-        elif p in ("Px", "Py"):
-            xy = p[-1]
-            quantity = pint.Quantity(
-                f"({self.data_unit_for('p'+xy)})*({self.data_unit_for('bet'+xy)})^(1/2)"
-            )
-        else:
-            quantity = pint.Quantity(self.data_unit_for(p))
+        quantity = pint.Quantity(self.data_unit_for(p))
         return (quantity / pint.Quantity(self.display_unit_for(p))).to("").magnitude
 
     def data_unit_for(self, p):
@@ -244,15 +311,18 @@ class Xplot:
             return self._display_units[prefix]
         return self.data_unit_for(p)
 
-    def label_for(self, *pp, unit=True):
+    def label_for(self, *pp, unit=True, texify=lambda s: None):
         """
         Return label for list of parameters, joining where possible
 
-        :param pp: Parameter names
-        :param unit: Wheather to include unit
+        Args:
+            pp: Parameter names
+            unit: Wheather to include unit
+            texify: A function accepting a label and returning the tex string for it (without $)
+
         """
 
-        def texify(label):
+        def default_texify(label):
             if m := re.fullmatch(r"k(\d+)l", label):
                 return f"k_{m.group(1)}l"
             return {
@@ -264,7 +334,7 @@ class Xplot:
             }.get(label, label)
 
         def split(p):
-            if p[-1] in "xy":
+            if p[-1] in "xy" and p[:-1] in "alf,bet,gam,mu,d,p,dp,P,q,dq,,".split(","):
                 return p[:-1], p[-1]
             return p, ""
 
@@ -283,11 +353,11 @@ class Xplot:
         # build label
         label = "$"
         if prefix:
-            label += texify(prefix)
+            label += texify(prefix) or default_texify(prefix)
             if suffix:
                 label += "_{" + suffix + "}"
         else:
-            label += suffix
+            label += texify(suffix) or default_texify(suffix)
         label += "$"
         if unit and display_unit:
             display_unit = pint.Unit(display_unit)
@@ -313,9 +383,7 @@ class Xplot:
             yaxis.set_major_formatter(RadiansFormatter())
 
     @staticmethod
-    def plot_harmonics(
-        ax, v, dv=0, *, n=20, vertical=True, inverse=False, **plot_kwargs
-    ):
+    def plot_harmonics(ax, v, dv=0, *, n=20, vertical=True, inverse=False, **plot_kwargs):
         """Add vertical lines or spans indicating the location of values or spans and their harmonics
 
         Args:
@@ -331,7 +399,7 @@ class Xplot:
             v = [v]
         if not hasattr(dv, "__iter__"):
             dv = [dv] * len(v)
-        kwargs = style(plot_kwargs, zorder=1.9, color="gray", lw=1)
+        kwargs = defaults(plot_kwargs, zorder=1.9, color="gray", lw=1)
         for i in range(1, n + 1):
             for j, (vi, dvi) in enumerate(zip(v, dv)):
                 if dvi == 0:
@@ -343,7 +411,7 @@ class Xplot:
                 args = sorted((i / args) if inverse else (i * args))
                 method(
                     *args,
-                    **style(kwargs, alpha=1 - np.log(1 + (np.e - 1) * (i - 1) / n)),
+                    **defaults(kwargs, alpha=1 - np.log(1 + (np.e - 1) * (i - 1) / n)),
                 )
                 kwargs.pop("label", None)
 
@@ -390,19 +458,120 @@ class Xplot:
         if label:
             kwa = dict(text=label, color=color, fontsize=fontsize)
             if vertical:
-                aux.add_artist(
-                    plt.Text(w * 2, h / 2, ha="left", va="center", rotation=90, **kwa)
-                )
+                aux.add_artist(plt.Text(w * 2, h / 2, ha="left", va="center", rotation=90, **kwa))
             else:
-                aux.add_artist(
-                    plt.Text(w / 2, h * 1.5, va="bottom", ha="center", **kwa)
-                )
-        ab = mpl.offsetbox.AnchoredOffsetbox(
-            loc, borderpad=padding, zorder=100, frameon=False
-        )
+                aux.add_artist(plt.Text(w / 2, h * 1.5, va="bottom", ha="center", **kwa))
+        ab = mpl.offsetbox.AnchoredOffsetbox(loc, borderpad=padding, zorder=100, frameon=False)
         ab.set_child(aux)
         ax.add_artist(ab)
         return ab
+
+
+class XParticlePlot(XPlot):
+    def __init__(
+        self,
+        *,
+        data_units=None,
+        display_units=None,
+        twiss=None,
+        beta=None,
+        frev=None,
+        circumference=None,
+        wrap_zeta=False,
+        **kwargs,
+    ):
+        """Base plotting class for particle data
+
+        Args:
+            data_units (dict, optional): Units of the data. If None, the units are determined from the data.
+            display_units (dict, optional): Units to display the data in. If None, the units are determined from the data.
+            twiss (dict, optional): Twiss parameters (alfx, alfy, betx and bety) to use for conversion to normalized phase space coordinates.
+            beta (float, optional): Relativistic beta of particles. Defaults to particles.beta0.
+            frev (float, optional): Revolution frequency of circular line for calculation of particle time.
+            circumference (float, optional): Path length of circular line if frev is not given.
+            wrap_zeta: If set, wrap the zeta-coordinate plotted at the machine circumference. Either pass the circumference directly or set this to True to use the circumference from twiss.
+        """
+        display_units = defaults(
+            display_units, x="mm", y="mm", p="mrad", X="mm^(1/2)", Y="mm^(1/2)", P="mm^(1/2)"
+        )
+        super().__init__(data_units=data_units, display_units=display_units, **kwargs)
+        self.twiss = twiss
+        self.beta = beta
+        self._frev = frev
+        self._circumference = circumference
+        self.wrap_zeta = wrap_zeta
+
+    @property
+    def circumference(self):
+        return self._circumference or self.twiss.circumference
+
+    def frev(self, particles=None):
+        if self._frev is None and self._circumference is None:
+            raise ValueError(
+                "Particle arrival time requested while at_turn > 0, but neither frev or circumference is set"
+            )
+        beta = self.beta or get(particles, "beta0")
+        if hasattr(beta, "__iter__"):
+            if not np.allclose(beta, beta[0]):
+                raise ValueError(
+                    "Particle arrival time requested without passing beta, and particle beta is not constant"
+                )
+            beta = beta[0]
+        return self._frev or beta * c0 / self.circumference
+
+    def _get_masked(self, particles, prop, mask=None):
+        """Get masked particle property"""
+
+        if prop in ("X", "Px", "Y", "Py"):
+            # normalized coordinates
+            if self.twiss is None:
+                raise ValueError("Normalized coordinates requested but twiss is None")
+            xy = prop.lower()[-1]
+            coords = [get(particles, p) for p in (xy, "p" + xy)]
+            delta = get(particles, "delta")
+            X, Px = normalized_coordinates(*coords, self.twiss, xy, delta=delta)
+            v = X if prop.lower() == xy else Px
+
+        elif prop == "t":
+            # particle arrival time (t = at_turn / frev - zeta / beta / c0)
+            beta = self.beta or get(particles, "beta0")
+            turn = get(particles, "at_turn")
+            zeta = get(particles, "zeta")
+            time = -zeta / beta / c0  # zeta>0 means early; zeta<0 means late
+            if np.any(turn > 0):
+                time = time + turn / self.frev(particles)
+            v = time
+
+        else:
+            v = get(particles, prop)
+
+        if mask is not None:
+            v = v[mask]
+
+        if prop == "zeta" and self.wrap_zeta:
+            # wrap values at machine circumference
+            w = self.circumference if self.wrap_zeta is True else self.wrap_zeta
+            v = np.mod(v + w / 2, w) - w / 2
+
+        return np.array(v).flatten()
+
+    def factor_for(self, p):
+        """Return factor to convert parameter into display unit"""
+        if p in ("X", "Y"):
+            xy = p.lower()[-1]
+            quantity = pint.Quantity(
+                f"({self.data_unit_for(xy)})/({self.data_unit_for('bet'+xy)})^(1/2)"
+            )
+            return (quantity / pint.Quantity(self.display_unit_for(p))).to("").magnitude
+
+        elif p in ("Px", "Py"):
+            xy = p[-1]
+            quantity = pint.Quantity(
+                f"({self.data_unit_for('p'+xy)})*({self.data_unit_for('bet'+xy)})^(1/2)"
+            )
+            return (quantity / pint.Quantity(self.display_unit_for(p))).to("").magnitude
+
+        return super().factor_for(p)
 
 
 class FixedLimits:

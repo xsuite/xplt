@@ -12,7 +12,53 @@ __date__ = "2022-11-15"
 
 import numpy as np
 
-from .base import get
+VOID = object()
+
+
+def get(obj, val, default=VOID):
+    """Get value from object"""
+    try:
+        return getattr(obj, val)
+    except:
+        try:
+            return obj[val]
+        except:
+            if default is not VOID:
+                return default
+    raise AttributeError(f"{obj} does not provide an attribute or index '{val}'")
+
+
+def defaults(kwargs, **default_style):
+    """Return kwargs or defaults"""
+    kwargs = kwargs or {}
+    if "c" in kwargs or "color" in kwargs:
+        # c and color are common aliases, remove both from default_style if either present
+        default_style.pop("c", None)
+        default_style.pop("color", None)
+    return dict(default_style, **kwargs)
+
+
+def average(*data, n=100, function=np.mean):
+    """Average the data
+
+    Applies the function to n subsequent points of the data (along last axis) to yield one point in the output
+
+    Args:
+        data (np.ndarray): the data to average over
+        n (int): number of subsequent datapoints of intput to average into one point in the output. If the input size is not a multiple of n, the data will be clipped.
+        function (callable, optional): averaging function to apply to last axis of input data. Defaults to np.mean
+    Returns:
+        averaged data
+    """
+    result = []
+    for d in data:
+        w = int(d.shape[-1] / n)
+        result.append(function(d[..., : w * n].reshape(*d.shape[:-1], w, n), axis=-1))
+    return result[0] if len(result) == 1 else result
+
+
+# def smooth(*data, n):
+#    return [scipy.signal.savgol_filter(d, n, 0) for d in data] if n else data
 
 
 def normalized_coordinates(x, px, twiss, xy, delta=0):

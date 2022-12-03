@@ -10,16 +10,11 @@ __contact__ = "eltos@outlook.de"
 __date__ = "2022-11-08"
 
 
-import matplotlib as mpl
-import matplotlib.pyplot as plt
-import numpy as np
-import os
-
-from .base import Xplot, style
+from .base import XPlot, defaults
 from .line import KnlPlot
 
 
-class TwissPlot(Xplot):
+class TwissPlot(XPlot):
     def __init__(
         self,
         twiss=None,
@@ -38,7 +33,7 @@ class TwissPlot(Xplot):
                      This can be a nested list or a separated string or a mixture of lists and strings where
                      the first list level (or separator ``,``) determines the subplots,
                      the second list level (or separator ``-``) determines any twinx-axes,
-                     and the third list level (or separator ``+``) determines plots.
+                     and the third list level (or separator ``+``) determines plots on the same axis.
                      In addition, abbreviations for x-y-parameter pairs are supported (e.g. 'bet' for 'betx+bety').
 
                      Examples:
@@ -64,69 +59,30 @@ class TwissPlot(Xplot):
         )
 
         # parse kind string
-        if type(kind) is str:
-            kind = kind.split(",")
-        kind = list(kind)
-        for i in range(len(kind)):
-            if type(kind[i]) is str:
-                kind[i] = kind[i].split("-")
-            for j in range(len(kind[i])):
-                if type(kind[i][j]) is str:
-                    kind[i][j] = kind[i][j].split("+")
-                k = 0
-                while k < len(kind[i][j]):
-                    if kind[i][j][k] in ("", "p", "alf", "bet", "gam", "mu", "d", "dp"):
-                        kind[i][j].insert(k + 1, kind[i][j][k] + "y")
-                        kind[i][j][k] += "x"
-                        k += 1
-                    k += 1
-        self.kind = kind
+        subs = {a: f"{a}x+{a}y" for a in ("", "p", "alf", "bet", "gam", "mu", "d", "dp")}
+        self.kind = self._parse_nested_list_string(kind, ",-+", subs)
 
-        # Create plot axes
-        if ax is None:
-            _, ax = plt.subplots(
-                len(self.kind) + (1 if line else 0), sharex="col", **subplots_kwargs
-            )
-        if not hasattr(ax, "__iter__"):
-            ax = [ax]
-        self.fig, self.ax = ax[0].figure, ax
-        # Create line plot
+        # initialize figure with n subplots
+        n, nntwin = len(self.kind), [len(tw) - 1 for tw in self.kind]
         if line:
-            self.lineplot = KnlPlot(line, ax=self.ax[0], **line_kwargs)
+            n += 1
+            nntwin = [0] + nntwin
+        self._init_axes(ax, n, 1, nntwin, sharex="col", **subplots_kwargs)
+
+        # Create line plot
+        self.lineplot = None
+        if line:
+            self.lineplot = KnlPlot(line, ax=self.axis_for(0), **line_kwargs)
             self.lineplot.ax.set(xlabel=None)
-            self.ax = self.ax[1:]
-        self.ax_twin = [[] for a in self.ax]  # twinx-axes are created below
+
         # Format plot axes
-        for a in self.ax:
-            a.grid()
-        self.ax[-1].set(xlabel="s / " + self.display_unit_for("s"))
+        self.axis_for(-1).set(xlabel=self.label_for("s"))
 
         # create plot elements
-        self.artists = []
-        for i, ppp in enumerate(self.kind):
-            self.artists.append([])
-            legend = [], []
+        def create_artists(i, j, k, a, p):
+            return a.plot([], [], label=self.label_for(p, unit=False))[0]
 
-            for j, pp in enumerate(ppp):
-                # axes
-                if j == 0:
-                    a = self.ax[i]
-                else:  # create twinx-axes if required
-                    a = self.ax[i].twinx()
-                    a._get_lines.prop_cycler = self.ax[i]._get_lines.prop_cycler
-                    self.ax_twin[i].append(a)
-                a.set(ylabel=self.label_for(*pp))
-
-                # create artists for traces
-                self.artists[i].append([])
-                for k, p in enumerate(pp):
-                    (artist,) = a.plot([], [], label=self.label_for(p, unit=False))
-                    self.artists[i][j].append(artist)
-                    legend[0].append(artist)
-                    legend[1].append(artist.get_label())
-
-            if len(legend[0]) > 1:
-                a.legend(*legend)
+        self._init_artists([[], *self.kind] if line else self.kind, create_artists)
 
         # set data
         if twiss:
@@ -144,8 +100,10 @@ class TwissPlot(Xplot):
         s = self.factor_for("s")
         changed = []
         for i, ppp in enumerate(self.kind):
+            if self.lineplot is not None:
+                i += 1  # skip line plot
             for j, pp in enumerate(ppp):
-                a = self.ax[i] if j == 0 else self.ax_twin[i][j - 1]
+                a = self.axis_for(i, j)
                 for k, p in enumerate(pp):
                     f = self.factor_for(p)
                     self.artists[i][j][k].set_data((s * twiss["s"], f * twiss[p]))
@@ -185,13 +143,13 @@ class TwissPlot(Xplot):
         """
 
         if val_to is None:  # only a line
-            kwargs = style(kwargs, color="k", zorder=1.9)
+            kwargs = defaults(kwargs, color="k", zorder=1.9)
         else:  # a span
-            kwargs = style(kwargs, color="lightgray", zorder=1.9, lw=0, alpha=0.6)
+            kwargs = defaults(kwargs, color="lightgray", zorder=1.9, lw=0, alpha=0.6)
 
         if kind == "s":
             # vertical span or line on all axes
-            for a in self.ax:
+            for a in self.axflat:
                 if val_to is None:  # only a line
                     a.axvline(val * self.factor_for("s"), **kwargs)
                 else:
@@ -208,7 +166,7 @@ class TwissPlot(Xplot):
                     continue
 
                 for j, p_axis in enumerate(p_subplot):
-                    a = self.ax[i] if j == 0 else self.ax_twin[i][j - 1]
+                    a = self.axis_for(i, j)
                     for k, p in enumerate(p_axis):
                         if p == kind:  # axis found
                             if val_to is None:  # only a line

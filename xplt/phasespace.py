@@ -11,17 +11,16 @@ __date__ = "2022-09-06"
 
 
 import matplotlib as mpl
-from matplotlib.patches import Ellipse
-import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.patches import Ellipse
 
-from .base import Xplot, get, style, FixedLimits
+from .base import XParticlePlot, get, defaults, FixedLimits
 from .util import normalized_coordinates, denormalized_coordinates
 
 pairwise = np.c_
 
 
-class PhaseSpacePlot(Xplot):
+class PhaseSpacePlot(XParticlePlot):
     def __init__(
         self,
         particles=None,
@@ -34,6 +33,7 @@ class PhaseSpacePlot(Xplot):
         mask=None,
         masks=None,
         display_units=None,
+        data_units=None,
         twiss=None,
         color=None,
         cmap="magma_r" or "Blues",
@@ -48,14 +48,18 @@ class PhaseSpacePlot(Xplot):
         grid=None,
         titles="auto",
         wrap_zeta=None,
+        beta=None,
+        frev=None,
+        circumference=None,
         animated=False,
         **subplots_kwargs,
     ):
         """
         A plot for phase space distributions
 
-        :param particles: A dictionary with particle information
-        :param kind: Defines the properties to plot.
+        Args:
+            particles: A dictionary with particle information
+            kind: Defines the properties to plot.
                      This can be a nested list or a separated string or a mixture of lists and strings where
                      the first list level (or separator ``,``) determines the subplots,
                      and the second list level (or separator ``-``) determines coordinate pairs.
@@ -68,59 +72,62 @@ class PhaseSpacePlot(Xplot):
                       - ``'x,x-y'``: two suplots the first with x-px and the second with x-y phase space
                       - ``[['x', 'px'], ['x', 'y']]``: same as above
 
-        :param plot: Defines the type of plot. Can be 'auto', 'scatter' or 'hist'. Default is 'auto' for which the plot type is chosen automatically based on the number of particles.
-        :param scatter_kwargs: Additional kwargs for scatter plot
-        :param hist_kwargs: Additional kwargs for hexbin histogram plot
-        :param ax: A list of axes to plot onto, length must match the number of subplots. If None, a new figure is created.
-        :param mask: An index mask to select particles to plot. If None, all particles are plotted.
-        :param masks: List of masks for each subplot.
-        :param display_units: Dictionary with units for parameters.
-        :param twiss: Object holding twiss parameters (alfx, alfy, betx and bety) for calculation of normalized coordinates.
-        :param color (str or list of str): Properties defining the color of points for the scatter plot(s). Implies plot='scatter'. Pass a list of properties to use different values for each subplot
-        :param cmap: Colormap to use for the hist plot.
-        :param projections: Add histogrammed projections onto axis. Can be True, False, "x", "y", "auto" or a list of these for each subplot
-        :param projections_kwargs: Additional kwargs for histogram projection (step plot)
-        :param mean: Whether to indicate mean of distribution with a cross marker. Boolean or list of booleans for each subplot.
-        :param mean_kwargs: Additional kwargs for mean cross
-        :param std: Whether to indicate standard deviation of distribution with an ellipse. Boolean or list of booleans for each subplot.
-        :param std_kwargs: Additional kwargs for std ellipses.
-        :param percentiles: List of percentiles (in percent) to indicate in the distribution with ellipses. Can also be a list of lists for each subplot.
-        :param percentile_kwargs: Additional kwargs for percentile ellipses.
-        :param grid: Tuple (ncol, nrow) for subplot layout. If None, the layout is determined automatically.
-        :param titles: List of titles for each subplot or 'auto' to automatically set titles based on plot kind.
-        :param wrap_zeta: If set, wrap the zeta-coordinate plotted at the machine circumference. Either pass the circumference directly or set this to True to use the circumference from twiss.
-        :param animated: If True, improve plotting performance for creating an animation.
-        :param subplots_kwargs: Keyword arguments passed to matplotlib.pyplot.subplots command when a new figure is created.
+            plot: Defines the type of plot. Can be 'auto', 'scatter' or 'hist'. Default is 'auto' for which the plot type is chosen automatically based on the number of particles.
+            scatter_kwargs: Additional kwargs for scatter plot
+            hist_kwargs: Additional kwargs for hexbin histogram plot
+            ax: A list of axes to plot onto, length must match the number of subplots. If None, a new figure is created.
+            mask: An index mask to select particles to plot. If None, all particles are plotted.
+            masks: List of masks for each subplot.
+            display_units (dict, optional): Units to display the data in. If None, the units are determined from the data.
+            data_units (dict, optional): Units of the data. If None, the units are determined from the data.
+            twiss (dict, optional): Twiss parameters (alfx, alfy, betx and bety) to use for conversion to normalized phase space coordinates.
+            color (str or list of str): Properties defining the color of points for the scatter plot(s). Implies plot='scatter'. Pass a list of properties to use different values for each subplot
+            cmap: Colormap to use for the hist plot.
+            projections: Add histogrammed projections onto axis. Can be True, False, "x", "y", "auto" or a list of these for each subplot
+            projections_kwargs: Additional kwargs for histogram projection (step plot)
+            mean: Whether to indicate mean of distribution with a cross marker. Boolean or list of booleans for each subplot.
+            mean_kwargs: Additional kwargs for mean cross
+            std: Whether to indicate standard deviation of distribution with an ellipse. Boolean or list of booleans for each subplot.
+            std_kwargs: Additional kwargs for std ellipses.
+            percentiles: List of percentiles (in percent) to indicate in the distribution with ellipses. Can also be a list of lists for each subplot.
+            percentile_kwargs: Additional kwargs for percentile ellipses.
+            grid: Tuple (ncol, nrow) for subplot layout. If None, the layout is determined automatically.
+            titles: List of titles for each subplot or 'auto' to automatically set titles based on plot kind.
+            wrap_zeta: If set, wrap the zeta-coordinate plotted at the machine circumference. Either pass the circumference directly or set this to True to use the circumference from twiss.
+            beta (float, optional): Relativistic beta of particles. Defaults to particles.beta0.
+            frev (float, optional): Revolution frequency of circular line for calculation of particle time.
+            circumference (float, optional): Path length of circular line if frev is not given.
+            animated: If True, improve plotting performance for creating an animation.
+            subplots_kwargs: Keyword arguments passed to matplotlib.pyplot.subplots command when a new figure is created.
 
 
         """
-        super().__init__(display_units=display_units)
+        super().__init__(
+            data_units=data_units,
+            display_units=display_units,
+            twiss=twiss,
+            beta=beta,
+            frev=frev,
+            circumference=circumference,
+            wrap_zeta=wrap_zeta,
+        )
 
         # parse kind string by splitting at commas and dashes and replacing abbreviations
         abbreviations = dict(
-            x=("x", "px"),
-            y=("y", "py"),
-            z=("zeta", "delta"),
-            X=("X", "Px"),
-            Y=("Y", "Py"),
+            x="x-px",
+            y="y-py",
+            z="zeta-delta",
+            X="X-Px",
+            Y="Y-Py",
         )
         if kind is None:
             kind = "x,y,z" if twiss is None else "X,Y,z"
-        if isinstance(kind, str):
-            kind = kind.split(",")
-        kind = list(kind)
-        for i in range(len(kind)):
-            if isinstance(kind[i], str):
-                kind[i] = kind[i].split("-")
-                # replace abbreviations elements by corresponding tuple
-                if len(kind[i]) == 1 and kind[i][0] in abbreviations:
-                    kind[i] = abbreviations[kind[i][0]]
-                if len(kind[i]) != 2:
-                    raise ValueError(
-                        "Kind must only contain exactly two coordinates per subplot, "
-                        f"but got {kind[i]}"
-                    )
-        self.kind = kind
+        self.kind = self._parse_nested_list_string(
+            self._parse_nested_list_string(kind, ",", abbreviations),
+            ",-",  # no abbreviations on second level!
+        )
+        if np.any([len(k) != 2 for k in self.kind]):
+            raise ValueError("Kind must only contain exactly two coordinates per subplot")
         n = len(self.kind)
 
         # sanitize parameters
@@ -160,21 +167,18 @@ class PhaseSpacePlot(Xplot):
         self.wrap_zeta = wrap_zeta
 
         # Create plot axes
-        if ax is None:
-            if grid:
-                ncol, nrow = grid
-            else:
-                nrow = int(np.sqrt(n))
-                while n % nrow != 0:
-                    nrow -= 1
-                ncol = n // nrow
 
-            kwargs = style(subplots_kwargs, figsize=(4 * ncol, 4 * nrow))
-            _, ax = plt.subplots(nrow, ncol, **kwargs)
-        if not hasattr(ax, "__iter__"):
-            ax = [ax]
-        self.ax = ax
-        self.fig = self.axflat[0].figure
+        # initialize figure with n subplots
+        if grid:
+            ncol, nrow = grid
+        else:
+            nrow = int(np.sqrt(n))
+            while n % nrow != 0:
+                nrow -= 1
+            ncol = n // nrow
+        nntwins = [0 for _ in self.kind]
+        kwargs = defaults(subplots_kwargs, figsize=(4 * ncol, 4 * nrow))
+        self._init_axes(ax, nrow, ncol, nntwins, grid, **kwargs)
         if len(self.axflat) < n:
             raise ValueError(f"Need {n} axes but got only {len(self.axflat)}")
 
@@ -184,9 +188,9 @@ class PhaseSpacePlot(Xplot):
         self.artists_mean = [None] * n
         self.artists_std = [None] * n
         self.artists_percentiles = [()] * n
-        self.ax_twin = [{} for i in range(n)]
-        self.artists_twin = [{} for i in range(n)]
-        self.artists_hamiltonian = [{} for i in range(n)]
+        self.ax_twin = [{} for _ in range(n)]
+        self.artists_twin = [{} for _ in range(n)]
+        self.artists_hamiltonian = [{} for _ in range(n)]
 
         for i, ((a, b), c, ax) in enumerate(zip(self.kind, self.color, self.axflat)):
 
@@ -194,24 +198,24 @@ class PhaseSpacePlot(Xplot):
             ##############################
 
             # scatter plot
-            kwargs = style(scatter_kwargs, s=4, cmap=cmap, lw=0, animated=animated)
+            kwargs = defaults(scatter_kwargs, s=4, cmap=cmap, lw=0, animated=animated)
             scatter_cmap = kwargs.pop("cmap")  # bypass UserWarning: ignored
             self.artists_scatter[i] = ax.scatter([], [], **kwargs)
             self.artists_scatter[i].cmap = mpl.colormaps[scatter_cmap]
             if c is not None and (np.any(self.color != c) or i == n - 1):
-                self.fig.colorbar(self.artists_scatter[i], label=self.label_for(c))
+                self.fig.colorbar(self.artists_scatter[i], ax=ax, label=self.label_for(c))
 
             # hexbin histogram
-            self._hxkw = style(hist_kwargs, cmap=cmap, rasterized=True, animated=animated)
+            self._hxkw = defaults(hist_kwargs, cmap=cmap, rasterized=True, animated=animated)
 
             # 2D mean indicator
             if mean[i]:
-                kwargs = style(mean_kwargs, color="k", marker="+", ms=8, zorder=100)
+                kwargs = defaults(mean_kwargs, color="k", marker="+", ms=8, zorder=100)
                 (self.artists_mean[i],) = ax.plot([], [], **kwargs, animated=animated)
 
             # 2D std ellipses
             if std[i]:
-                kwargs = style(std_kwargs, color="k", lw=1, ls="-", zorder=100)
+                kwargs = defaults(std_kwargs, color="k", lw=1, ls="-", zorder=100)
                 self.artists_std[i] = Ellipse(
                     [0, 0], 0, 0, fill=False, **kwargs, animated=animated
                 )
@@ -221,7 +225,7 @@ class PhaseSpacePlot(Xplot):
             if percentiles[i]:
                 self.artists_percentiles[i] = []
                 for j, _ in enumerate(self.percentiles[i]):
-                    kwargs = style(
+                    kwargs = defaults(
                         percentile_kwargs,
                         color="k",
                         lw=1,
@@ -246,7 +250,7 @@ class PhaseSpacePlot(Xplot):
             ###########################
 
             if self.projections[i]:
-                kwargs = style(projections_kwargs, color="k", alpha=0.3, lw=1)
+                kwargs = defaults(projections_kwargs, color="k", alpha=0.3, lw=1)
                 for xy, yx in zip("xy", "yx"):
                     if self.projections[i] != yx:
                         # Create twin xy axis and artists
@@ -286,8 +290,8 @@ class PhaseSpacePlot(Xplot):
             ax.autoscale(autoscale)
 
             # coordinates
-            x = self.factor_for(a) * self._masked(particles, a, masks[i])
-            y = self.factor_for(b) * self._masked(particles, b, masks[i])
+            x = self.factor_for(a) * self._get_masked(particles, a, masks[i])
+            y = self.factor_for(b) * self._get_masked(particles, b, masks[i])
 
             # statistics
             XY = np.array((x, y))
@@ -309,9 +313,10 @@ class PhaseSpacePlot(Xplot):
                 scatter.set_visible(True)
                 scatter.set_offsets(pairwise[x, y])
                 if c is not None:
-                    v = self.factor_for(c) * self._masked(particles, c, masks[i])
+                    v = self.factor_for(c) * self._get_masked(particles, c, masks[i])
                     if autoscale:
-                        scatter.set_clim(vmin=min(v), vmax=max(v))
+                        # scatter.set_clim(np.min(v), np.max(v)) # does not always work (bug?)
+                        scatter.norm = mpl.colors.Normalize(np.min(v), np.max(v))
                     cm = mpl.cm.ScalarMappable(norm=scatter.norm, cmap=scatter.cmap)
                     scatter.set_facecolor(cm.to_rgba(v))
 
@@ -405,36 +410,6 @@ class PhaseSpacePlot(Xplot):
 
         return changed_artists
 
-    @property
-    def axflat(self):
-        return np.array(self.ax).flatten()
-
-    def _masked(self, particles, prop, mask=None):
-        """Get masked particle property"""
-
-        if prop in ("X", "Px", "Y", "Py"):
-            # normalized coordinates
-            if self.twiss is None:
-                raise ValueError("Normalized coordinates requested but twiss is None")
-            xy = prop.lower()[-1]
-            coords = [get(particles, p) for p in (xy, "p" + xy)]
-            delta = get(particles, "delta")
-            X, Px = normalized_coordinates(*coords, self.twiss, xy, delta=delta)
-            v = X if prop.lower() == xy else Px
-
-        else:
-            v = get(particles, prop)
-
-        if mask is not None:
-            v = v[mask]
-
-        if prop == "zeta" and self.wrap_zeta:
-            # wrap values at machine circumference
-            w = self.twiss.circumference if self.wrap_zeta is True else self.wrap_zeta
-            v = np.mod(v + w / 2, w) - w / 2
-
-        return np.array(v).flatten()
-
     def title_for(self, a, b):
         """
         Plot title for a given pair (a,b) of properties
@@ -461,7 +436,7 @@ class PhaseSpacePlot(Xplot):
 
         """
 
-        kwargs = style(kwargs, color="k")
+        kwargs = defaults(kwargs, color="k")
 
         for i, (ab, ax) in enumerate(zip(self.kind, self.axflat)):
             if subplots != "all" and i not in subplots:
@@ -572,7 +547,7 @@ class PhaseSpacePlot(Xplot):
 
                 # plot separatrix
                 if separatrix:
-                    kwarg = style(separatrix_kwargs, color="r", ls="--", label="Separatrix")
+                    kwarg = defaults(separatrix_kwargs, color="r", ls="--", label="Separatrix")
 
                     t = extend
                     for X, Y in (  # triangle edges
@@ -587,7 +562,7 @@ class PhaseSpacePlot(Xplot):
 
                 # plot equipotential lines
                 if equipotentials:
-                    kwargs = style(
+                    kwargs = defaults(
                         equipotentials_kwargs,
                         colors="lightgray",
                         linewidths=1,

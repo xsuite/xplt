@@ -13,9 +13,8 @@ __date__ = "2022-11-08"
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
-import os
 
-from .base import Xplot
+from .base import XPlot
 
 
 def iter_elements(line):
@@ -33,7 +32,7 @@ def iter_elements(line):
         yield name, el, s0, s1
 
 
-class KnlPlot(Xplot):
+class KnlPlot(XPlot):
     def __init__(
         self,
         line=None,
@@ -64,9 +63,7 @@ class KnlPlot(Xplot):
         if knl is None:
             if line is None:
                 raise ValueError("Either line or knl parameter must not be None")
-            knl = range(
-                max([e.order for e in line.elements if hasattr(e, "order")]) + 1
-            )
+            knl = range(max([e.order for e in line.elements if hasattr(e, "order")]) + 1)
         self.knl = knl
         if line is None and line_length is None:
             raise ValueError("Either line or line_length parameter must not be None")
@@ -96,9 +93,7 @@ class KnlPlot(Xplot):
                     zorder=3,
                 )
             else:
-                (artist,) = self.ax.plot(
-                    [], [], alpha=0.5, label=self.label_for(f"k{n}l")
-                )
+                (artist,) = self.ax.plot([], [], alpha=0.5, label=self.label_for(f"k{n}l"))
             self.artists.append(artist)
         self.ax.plot(self.S, np.zeros_like(self.S), "k-", lw=1)
         self.ax.legend(ncol=5)
