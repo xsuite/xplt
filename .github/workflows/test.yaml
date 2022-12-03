@@ -3,7 +3,7 @@ name: Test
 on: [push, pull_request]
 
 jobs:
-  tests:
+  pytest:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -16,3 +16,16 @@ jobs:
         run: |
           cd tests
           pytest -v --cov=xplt --cov-report=xml --cov-report=term-missing
+
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - name: Install dependencies
+        run: |
+          pip install -e .
+          pip install -r docs/requirements.txt
+      - name: Sphinx build
+        run: |
+          sphinx-build docs _build
