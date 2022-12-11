@@ -64,18 +64,23 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 def linkcode_resolve(domain, info):
     if domain != "py" or not info["module"]:
         return None
-    filename = info["module"].replace(".", "/") + ".py"
-    url = f"https://github.com/eltos/xplt/blob/main/{filename}"
     try:
-        # determine line number range
+        # inspect source
         obj = importlib.import_module(info["module"])
         for name in info["fullname"].split("."):
             obj = getattr(obj, name)
+        sourcefile = inspect.getsourcefile(obj)
         sourcecode, line = inspect.getsourcelines(obj)
-        url += f"#L{line}-L{line + len(sourcecode) - 1}"
+        # build link
+        root = 'xplt' + os.path.sep
+        if root not in sourcefile:
+            return None  # external source
+        else:
+            path = (root + sourcefile.split(root)[-1]).replace(os.path.sep, '/')
+            filename = f"{path}#L{line}-L{line + len(sourcecode) - 1}"
+            return f"https://github.com/eltos/xplt/blob/main/{filename}"
     except:
-        pass  # e.g. a primitive
-    return url
+        return None
 
 
 # Example notebooks
