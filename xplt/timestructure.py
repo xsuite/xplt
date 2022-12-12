@@ -261,6 +261,8 @@ class TimeBinPlot(XParticlePlot):
                 return "\\mathrm{Particle~rate}"
             if label == "cumulative":
                 return "\\mathrm{Particles~(cumulative)}"
+            if label != "t":
+                return f"\\langle {label} \\rangle"
 
         return super().label_for(*pp, unit=unit, texify=texify)
 
@@ -416,8 +418,8 @@ class TimeFFTPlot(XParticlePlot):
                         freq *= self.factor_for("f")
                     mag = np.abs(np.fft.rfft(timeseries))[1:]
                     if self.scaling.lower() == "amplitude":
-                        # amplitude in units of particle counts
-                        mag *= 2 / len(timeseries)
+                        # amplitude in units of p
+                        mag *= 2 / len(timeseries) * self.factor_for(p)
                     elif self.scaling.lower() == "pds":
                         # power density spectrum in a.u.
                         mag = mag**2
