@@ -18,7 +18,11 @@ try:
 except ImportError:
     pd = None  # pandas is not required
 
+
 VOID = object()
+
+
+c0 = 299792458  # speed of light in m/s
 
 
 def get(obj, val, default=VOID):

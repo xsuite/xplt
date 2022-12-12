@@ -1,0 +1,271 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+""" Methods for plotting phase space distributions
+
+"""
+
+__author__ = "Philipp Niedermayer"
+__contact__ = "eltos@outlook.de"
+__date__ = "2022-12-07"
+
+
+import types
+import numpy as np
+import pint
+
+from .util import c0, get, defaults, normalized_coordinates
+from .base import XPlot
+
+
+class XParticlePlot(XPlot):
+    def __init__(
+        self,
+        *,
+        data_units=None,
+        display_units=None,
+        twiss=None,
+        beta=None,
+        frev=None,
+        circumference=None,
+        wrap_zeta=False,
+        **kwargs,
+    ):
+        """Base plotting class for particle data
+
+        Args:
+            data_units (dict, optional): Units of the data. If None, the units are determined from the data.
+            display_units (dict, optional): Units to display the data in. If None, the units are determined from the data.
+            twiss (dict, optional): Twiss parameters (alfx, alfy, betx and bety) to use for conversion to normalized phase space coordinates.
+            beta (float, optional): Relativistic beta of particles. Defaults to particles.beta0.
+            frev (float, optional): Revolution frequency of circular line for calculation of particle time.
+            circumference (float, optional): Path length of circular line if frev is not given.
+            wrap_zeta: If set, wrap the zeta-coordinate plotted at the machine circumference. Either pass the circumference directly or set this to True to use the circumference from twiss.
+        """
+        display_units = defaults(
+            display_units,
+            x="mm",
+            y="mm",
+            p="mrad",
+            X="mm^(1/2)",
+            Y="mm^(1/2)",
+            P="mm^(1/2)",
+            J="mm",  # Action
+            Θ="rad",  # Angle
+        )
+        super().__init__(data_units=data_units, display_units=display_units, **kwargs)
+        self.twiss = twiss
+        self.beta = beta
+        self._frev = frev
+        self._circumference = circumference
+        self.wrap_zeta = wrap_zeta
+
+    @property
+    def circumference(self):
+        if self._circumference is not None:
+            return self._circumference
+        if self.twiss is not None:
+            return self.twiss.circumference
+
+    def frev(self, particles=None):
+        if self._frev is None and self.circumference is None:
+            raise ValueError(
+                "Particle arrival time requested while at_turn > 0, but neither frev or circumference is set"
+            )
+        beta = self.beta or get(particles, "beta0").flatten()
+        if hasattr(beta, "__iter__"):
+            if not np.allclose(beta, beta[0]):
+                raise ValueError(
+                    "Particle arrival time requested without passing beta, and particle beta is not constant"
+                )
+            beta = beta[0]
+        return self._frev or beta * c0 / self.circumference
+
+    def _get_masked(self, particles, prop, mask=None):
+        """Get masked particle property"""
+
+        if prop in ("X", "Px", "Y", "Py"):
+            # normalized coordinates
+            if self.twiss is None:
+                raise ValueError("Normalized coordinates requested but twiss is None")
+            xy = prop.lower()[-1]
+            coords = [self._get_masked(particles, p, mask) for p in (xy, "p" + xy)]
+            delta = self._get_masked(particles, "delta", mask)
+            X, Px = normalized_coordinates(*coords, self.twiss, xy, delta=delta)
+            return X if prop.lower() == xy else Px
+
+        if prop in ("Jx", "Jy", "Θx", "Θy"):
+            # action angle coordinates
+            X = self._get_masked(particles, prop[-1].upper(), mask)
+            Px = self._get_masked(particles, "P" + prop[-1].lower(), mask)
+            if prop in ("Jx", "Jy"):  # Action
+                return (X**2 + Px**2) / 2
+            if prop in ("Θx", "Θy"):  # Angle
+                return -np.arctan2(Px, X)
+
+        if prop == "t":
+            # particle arrival time (t = at_turn / frev - zeta / beta / c0)
+            beta = self.beta or self._get_masked(particles, "beta0", mask)
+            turn = self._get_masked(particles, "at_turn", mask)
+            zeta = self._get_masked(particles, "zeta", mask)
+            time = -zeta / beta / c0  # zeta>0 means early; zeta<0 means late
+            if np.any(turn != 0):
+                time = time + turn / self.frev(particles)
+            return time
+
+        v = get(particles, prop)
+
+        if mask is not None:
+            v = v[mask]
+
+        if prop == "zeta" and self.wrap_zeta:
+            # wrap values at machine circumference
+            w = self.circumference if self.wrap_zeta is True else self.wrap_zeta
+            v = np.mod(v + w / 2, w) - w / 2
+
+        return np.array(v).flatten()
+
+    def factor_for(self, p):
+        """Return factor to convert parameter into display unit"""
+        data_unit = None
+
+        if p in ("X", "Y"):  # normalized coordinates
+            xy = p.lower()
+            data_unit = f"({self.data_unit_for(xy)})/({self.data_unit_for('bet'+xy)})^(1/2)"
+
+        elif p in ("Px", "Py"):  # normalized coordinates
+            xy = p[-1]
+            data_unit = f"({self.data_unit_for('p'+xy)})*({self.data_unit_for('bet'+xy)})^(1/2)"
+
+        elif p in ("Jx", "Jy"):  # Action
+            xy = p[-1]
+            data_unit = f"({self.data_unit_for(xy)})^2/({self.data_unit_for('bet'+xy)})"
+
+        elif p in ("Θx", "Θy"):  # Angle
+            data_unit = "rad"
+
+        if data_unit is not None:
+            quantity = pint.Quantity(data_unit)
+            return (quantity / pint.Quantity(self.display_unit_for(p))).to("").magnitude
+
+        return super().factor_for(p)
+
+
+class ParticlesPlot(XParticlePlot):
+    def __init__(
+        self,
+        particles=None,
+        kind="x+y",
+        as_function_of="at_turn",
+        *,
+        mask=None,
+        plot_kwargs=None,
+        sort_by=None,
+        grid=True,
+        ax=None,
+        data_units=None,
+        display_units=None,
+        twiss=None,
+        beta=None,
+        frev=None,
+        circumference=None,
+        wrap_zeta=False,
+        **subplots_kwargs,
+    ):
+        """
+        A plot of particle properties as function of another property.
+
+        Args:
+            particles: Particles data to plot.
+            kind (str or list): Defines the properties to plot.
+                 This can be a separated string or a nested list or a mixture of both where
+                 the first list level (or separator ``,``) determines the subplots,
+                 the second list level (or separator ``-``) determines any twinx-axes,
+                 and the third list level (or separator ``+``) determines plots on the same axis.
+            as_function_of (str): The property to plot as function of.
+            mask: An index mask to select particles to plot. If None, all particles are plotted.
+            plot_kwargs (dict): Keyword arguments passed to the plot function.
+            sort_by (str or None): Sort the data by this property. Default is to sort by the ``as_function_of`` property.
+            grid (bool): If True, show grid lines.
+            ax: Axes to plot on. If None, a new figure is created.
+            data_units (dict): Units of the data. If None, the units are determined from the data.
+            display_units (dict): Units to display the data in. If None, the units are determined from the data.
+            twiss (dict): Twiss parameters (alfx, alfy, betx and bety) to use for conversion to normalized phase space coordinates.
+            beta (float): Relativistic beta of particles. Defaults to particles.beta0.
+            frev (float): Revolution frequency of circular line for calculation of particle time.
+            circumference (float): Path length of circular line if frev is not given. Defaults to twiss.circumference.
+            wrap_zeta (bool or float): If set, wrap the zeta-coordinate plotted at the machine circumference. Set to
+                True to wrap at the circumference or to a value to wrap at this value.
+            subplots_kwargs: Keyword arguments passed to matplotlib.pyplot.subplots command when a new figure is created.
+        """
+        super().__init__(
+            data_units=data_units,
+            display_units=display_units,
+            twiss=twiss,
+            beta=beta,
+            frev=frev,
+            circumference=circumference,
+            wrap_zeta=wrap_zeta,
+        )
+
+        # parse kind string
+        self.kind = self._parse_nested_list_string(kind)
+        self.as_function_of = as_function_of
+        self.sort_by = sort_by
+
+        # initialize figure with n subplots
+        nntwins = [len(tw) - 1 for tw in self.kind]
+        self._init_axes(ax, len(self.kind), 1, nntwins, grid, sharex="col", **subplots_kwargs)
+
+        # Format plot axes
+        self.axis_for(-1).set(xlabel=self.label_for(self.as_function_of))
+
+        # create plot elements
+        def create_artists(i, j, k, a, p):
+            kwargs = defaults(plot_kwargs, marker=".", ls="", label=self.label_for(p, unit=False))
+            return a.plot([], [], **kwargs)[0]
+
+        self._init_artists(self.kind, create_artists)
+
+        # set data
+        if particles is not None:
+            self.update(particles, mask=mask, autoscale=True)
+
+    def update(self, particles, mask=None, autoscale=False):
+        """Update plot with new data
+
+        Args:
+            particles: Particles data to plot.
+            mask: An index mask to select particles to plot. If None, all particles are plotted.
+            autoscale: Whether or not to perform autoscaling on all axes.
+        """
+
+        xdata = self._get_masked(particles, self.as_function_of, mask)
+        order = np.argsort(
+            xdata if self.sort_by is None else self._get_masked(particles, self.sort_by, mask)
+        )
+        xdata = xdata[order] * self.factor_for(self.as_function_of)
+
+        changed = []
+        for i, ppp in enumerate(self.kind):
+            for j, pp in enumerate(ppp):
+                for k, p in enumerate(pp):
+                    values = self._get_masked(particles, p, mask)
+                    values = values[order] * self.factor_for(p)
+                    self.artists[i][j][k].set_data((xdata, values))
+                    changed.append(self.artists[i][j][k])
+
+                if autoscale:
+                    a = self.axis_for(i, j)
+                    a.relim()
+                    a.autoscale()
+
+        return changed
+
+
+## Restrict star imports to local namespace
+__all__ = [
+    name
+    for name, thing in globals().items()
+    if not (name.startswith("_") or isinstance(thing, types.ModuleType))
+]

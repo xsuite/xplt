@@ -18,10 +18,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pint
 
-from .util import get, defaults, normalized_coordinates
-
-
-c0 = 299792458  # speed of light in m/s
+from .util import defaults
 
 
 def data_unit(p):
@@ -466,113 +463,6 @@ class XPlot:
         ab.set_child(aux)
         ax.add_artist(ab)
         return ab
-
-
-class XParticlePlot(XPlot):
-    def __init__(
-        self,
-        *,
-        data_units=None,
-        display_units=None,
-        twiss=None,
-        beta=None,
-        frev=None,
-        circumference=None,
-        wrap_zeta=False,
-        **kwargs,
-    ):
-        """Base plotting class for particle data
-
-        Args:
-            data_units (dict, optional): Units of the data. If None, the units are determined from the data.
-            display_units (dict, optional): Units to display the data in. If None, the units are determined from the data.
-            twiss (dict, optional): Twiss parameters (alfx, alfy, betx and bety) to use for conversion to normalized phase space coordinates.
-            beta (float, optional): Relativistic beta of particles. Defaults to particles.beta0.
-            frev (float, optional): Revolution frequency of circular line for calculation of particle time.
-            circumference (float, optional): Path length of circular line if frev is not given.
-            wrap_zeta: If set, wrap the zeta-coordinate plotted at the machine circumference. Either pass the circumference directly or set this to True to use the circumference from twiss.
-        """
-        display_units = defaults(
-            display_units, x="mm", y="mm", p="mrad", X="mm^(1/2)", Y="mm^(1/2)", P="mm^(1/2)"
-        )
-        super().__init__(data_units=data_units, display_units=display_units, **kwargs)
-        self.twiss = twiss
-        self.beta = beta
-        self._frev = frev
-        self._circumference = circumference
-        self.wrap_zeta = wrap_zeta
-
-    @property
-    def circumference(self):
-        return self._circumference or self.twiss.circumference
-
-    def frev(self, particles=None):
-        if self._frev is None and self.circumference is None:
-            raise ValueError(
-                "Particle arrival time requested while at_turn > 0, but neither frev or circumference is set"
-            )
-        beta = self.beta or get(particles, "beta0").flatten()
-        if hasattr(beta, "__iter__"):
-            if not np.allclose(beta, beta[0]):
-                raise ValueError(
-                    "Particle arrival time requested without passing beta, and particle beta is not constant"
-                )
-            beta = beta[0]
-        return self._frev or beta * c0 / self.circumference
-
-    def _get_masked(self, particles, prop, mask=None):
-        """Get masked particle property"""
-
-        if prop in ("X", "Px", "Y", "Py"):
-            # normalized coordinates
-            if self.twiss is None:
-                raise ValueError("Normalized coordinates requested but twiss is None")
-            xy = prop.lower()[-1]
-            coords = [get(particles, p) for p in (xy, "p" + xy)]
-            delta = get(particles, "delta")
-            X, Px = normalized_coordinates(*coords, self.twiss, xy, delta=delta)
-            v = X if prop.lower() == xy else Px
-
-        elif prop == "t":
-            # particle arrival time (t = at_turn / frev - zeta / beta / c0)
-            beta = self.beta or get(particles, "beta0")
-            turn = get(particles, "at_turn")
-            zeta = get(particles, "zeta")
-            time = -zeta / beta / c0  # zeta>0 means early; zeta<0 means late
-            if np.any(turn > 0):
-                time = time + turn / self.frev(particles)
-            v = time
-
-        else:
-            v = get(particles, prop)
-
-        if mask is not None:
-            v = v[mask]
-
-        if prop == "zeta" and self.wrap_zeta:
-            # wrap values at machine circumference
-            w = self.circumference if self.wrap_zeta is True else self.wrap_zeta
-            v = np.mod(v + w / 2, w) - w / 2
-
-        return np.array(v).flatten()
-
-    def factor_for(self, p):
-        """Return factor to convert parameter into display unit"""
-        if p in ("X", "Y"):
-            xy = p.lower()[-1]
-            quantity = pint.Quantity(
-                f"({self.data_unit_for(xy)})/({self.data_unit_for('bet'+xy)})^(1/2)"
-            )
-            return (quantity / pint.Quantity(self.display_unit_for(p))).to("").magnitude
-
-        elif p in ("Px", "Py"):
-            xy = p[-1]
-            quantity = pint.Quantity(
-                f"({self.data_unit_for('p'+xy)})*({self.data_unit_for('bet'+xy)})^(1/2)"
-            )
-            return (quantity / pint.Quantity(self.display_unit_for(p))).to("").magnitude
-
-        return super().factor_for(p)
 
 
 class FixedLimits:

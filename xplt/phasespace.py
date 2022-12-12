@@ -15,8 +15,9 @@ import matplotlib as mpl
 import numpy as np
 from matplotlib.patches import Ellipse
 
-from .base import XParticlePlot, get, defaults, FixedLimits
-from .util import normalized_coordinates, denormalized_coordinates
+from .util import get, defaults, normalized_coordinates, denormalized_coordinates
+from .base import FixedLimits
+from .particles import XParticlePlot
 
 pairwise = np.c_
 

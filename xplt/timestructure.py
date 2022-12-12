@@ -14,9 +14,8 @@ import types
 import matplotlib as mpl
 import numpy as np
 
-from .base import defaults, XParticlePlot
-
-c0 = 299792458  # speed of light in m/s
+from .util import defaults
+from .particles import XParticlePlot, ParticlesPlot
 
 
 def binned_timeseries(times, n, what=None):
@@ -69,113 +68,18 @@ def binned_timeseries(times, n, what=None):
         return t_min, dt, v
 
 
-class TimePlot(XParticlePlot):
-    def __init__(
-        self,
-        particles=None,
-        kind="x+y",
-        *,
-        mask=None,
-        plot_kwargs=None,
-        grid=True,
-        ax=None,
-        data_units=None,
-        display_units=None,
-        twiss=None,
-        beta=None,
-        frev=None,
-        circumference=None,
-        wrap_zeta=False,
-        **subplots_kwargs,
-    ):
+class TimePlot(ParticlesPlot):
+    def __init__(self, particles=None, kind="x+y", **kwargs):
         """
-        A plot of particle properties as function of times.
+        A thin wrapper around the ParticlesPlot plotting data as function of time.
+        For more information refer to the documentation of the :class:`~xplt.particles.ParticlesPlot` class.
 
         The plot is based on the particle arrival time, which is:
             - For circular lines: at_turn / frev - zeta / beta / c0
             - For linear lines: zeta / beta / c0
 
-        Args:
-            particles: Particles data to plot.
-            kind: Defines the properties to plot.
-                 This can be a nested list or a separated string or a mixture of lists and strings where
-                 the first list level (or separator ``,``) determines the subplots,
-                 the second list level (or separator ``-``) determines any twinx-axes,
-                 and the third list level (or separator ``+``) determines plots on the same axis.
-
-            mask: An index mask to select particles to plot. If None, all particles are plotted.
-            plot_kwargs: Keyword arguments passed to the plot function.
-            grid: If True, show grid lines.
-            ax: Axes to plot on. If None, a new figure is created.
-            data_units (dict, optional): Units of the data. If None, the units are determined from the data.
-            display_units (dict, optional): Units to display the data in. If None, the units are determined from the data.
-            twiss (dict, optional): Twiss parameters (alfx, alfy, betx and bety) to use for conversion to normalized phase space coordinates.
-            beta (float, optional): Relativistic beta of particles. Defaults to particles.beta0.
-            frev (float, optional): Revolution frequency of circular line for calculation of particle time.
-            circumference (float, optional): Path length of circular line if frev is not given.
-            wrap_zeta: If set, wrap the zeta-coordinate plotted at the machine circumference. Either pass the circumference directly or set this to True to use the circumference from twiss.
-            subplots_kwargs: Keyword arguments passed to matplotlib.pyplot.subplots command when a new figure is created.
-
         """
-        super().__init__(
-            data_units=data_units,
-            display_units=display_units,
-            twiss=twiss,
-            beta=beta,
-            frev=frev,
-            circumference=circumference,
-            wrap_zeta=wrap_zeta,
-        )
-
-        # parse kind string
-        self.kind = self._parse_nested_list_string(kind)
-
-        # initialize figure with n subplots
-        nntwins = [len(tw) - 1 for tw in self.kind]
-        self._init_axes(ax, len(self.kind), 1, nntwins, grid, sharex="col", **subplots_kwargs)
-
-        # Format plot axes
-        self.axis_for(-1).set(xlabel=self.label_for("t"))
-
-        # create plot elements
-        def create_artists(i, j, k, a, p):
-            kwargs = defaults(plot_kwargs, marker=".", ls="", label=self.label_for(p, unit=False))
-            return a.plot([], [], **kwargs)[0]
-
-        self._init_artists(self.kind, create_artists)
-
-        # set data
-        if particles is not None:
-            self.update(particles, mask=mask, autoscale=True)
-
-    def update(self, particles, mask=None, autoscale=False):
-        """Update plot with new data
-
-        Args:
-            particles: Particles data to plot.
-            mask: An index mask to select particles to plot. If None, all particles are plotted.
-            autoscale: Whether or not to perform autoscaling on all axes.
-        """
-
-        times = self._get_masked(particles, "t", mask)
-        order = np.argsort(times)
-        times = times[order] * self.factor_for("t")
-
-        changed = []
-        for i, ppp in enumerate(self.kind):
-            for j, pp in enumerate(ppp):
-                for k, p in enumerate(pp):
-                    values = self._get_masked(particles, p, mask)
-                    values = values[order] * self.factor_for(p)
-                    self.artists[i][j][k].set_data((times, values))
-                    changed.append(self.artists[i][j][k])
-
-                if autoscale:
-                    a = self.axis_for(i, j)
-                    a.relim()
-                    a.autoscale()
-
-        return changed
+        super().__init__(particles, kind, as_function_of="t", **kwargs)
 
 
 class TimeBinPlot(XParticlePlot):

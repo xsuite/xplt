@@ -11,7 +11,8 @@ __date__ = "2022-11-08"
 
 import types
 
-from .base import XPlot, defaults
+from .util import defaults
+from .base import XPlot
 from .line import KnlPlot
 
 
