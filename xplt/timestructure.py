@@ -466,18 +466,19 @@ class TimeFFTPlot(XParticlePlot):
 
         return super().label_for(*pp, unit=unit, texify=texify)
 
-    def plot_harmonics(self, v, dv=0, *, n=20, inverse=False, **plot_kwargs):
+    def plot_harmonics(self, f, df=0, *, n=20, **plot_kwargs):
         """Add vertical lines or spans indicating the location of values or spans and their harmonics
 
         Args:
-            v (float or list of float): Value or list of values.
-            dv (float or list of float, optional): Width or list of widths centered around value(s).
+            f (float or list of float): Fundamental frequency or list of frequencies in Hz.
+            df (float or list of float, optional): Bandwidth or list of bandwidths centered around frequencies(s) in Hz.
             n (int): Number of harmonics to plot.
-            inverse (bool): If true, plot harmonics of n/(v±dv) instead of n*(v±dv). Useful to plot frequency harmonics in time domain and vice-versa.
             plot_kwargs: Keyword arguments to be passed to plotting method
         """
         for a in self.axflat:
-            super().plot_harmonics(a, v, dv, n=n, inverse=inverse, **plot_kwargs)
+            super().plot_harmonics(
+                a, self.factor_for("f") * f, self.factor_for("f") * df, n=n, **plot_kwargs
+            )
 
 
 class TimeIntervalPlot(XParticlePlot):
@@ -602,19 +603,16 @@ class TimeIntervalPlot(XParticlePlot):
             if not ax.get_yscale() == "log":
                 ax.set(ylim=(0, None))
 
-    def plot_harmonics(self, v, dv=0, *, n=20, inverse=False, **plot_kwargs):
+    def plot_harmonics(self, t, *, n=20, **plot_kwargs):
         """Add vertical lines or spans indicating the location of values or spans and their harmonics
 
         Args:
-            v (float or list of float): Value or list of values.
-            dv (float or list of float, optional): Width or list of widths centered around value(s).
+            t (float or list of float): Period in s.
             n (int): Number of harmonics to plot.
-            inverse (bool): If true, plot harmonics of n/(v±dv) instead of n*(v±dv). Useful to plot frequency harmonics in time domain and vice-versa.
             plot_kwargs: Keyword arguments to be passed to plotting method
         """
-        return super().plot_harmonics(
-            self.axis_for(-1), v, dv, n=n, inverse=inverse, **plot_kwargs
-        )
+        for a in self.axflat:
+            super().plot_harmonics(a, self.factor_for("t") * t, n=n, **plot_kwargs)
 
 
 class TimeVariationPlot(XParticlePlot):

@@ -381,14 +381,23 @@ class XPlot:
             yaxis.set_major_formatter(RadiansFormatter())
 
     @staticmethod
-    def plot_harmonics(ax, v, dv=0, *, n=20, vertical=True, inverse=False, **plot_kwargs):
+    def plot_harmonics(
+        ax, v, dv=0, *, n=20, scale_width=True, vertical=True, inverse=False, **plot_kwargs
+    ):
         """Add vertical lines or spans indicating the location of values or spans and their harmonics
+
+        Indicates the bands at the h-th harmonics for h = 1, 2, ..., n
+        - h * (v ± dv/2)      if scale_width and not inverse (default)
+        - h * v ± dv/2        if not scale_width and not inverse
+        - h / (v ± dv/2)      if inverse and scale_width
+        - 1 / ( v/h ± dv/2 )  if inverse and not scale_width
 
         Args:
             ax: Axis to plot onto.
             v (float or list of float): Value or list of values.
             dv (float or list of float, optional): Width or list of widths centered around value(s).
             n (int): Number of harmonics to plot.
+            scale_width (bool, optional): Whether to scale the width for higher harmonics or keep it constant.
             vertical (bool): Plot vertical lines if true, horizontal otherweise.
             inverse (bool): If true, plot harmonics of n/(v±dv) instead of n*(v±dv). Useful to plot frequency harmonics in time domain and vice-versa.
             plot_kwargs: Keyword arguments to be passed to plotting method
@@ -400,13 +409,18 @@ class XPlot:
         kwargs = defaults(plot_kwargs, zorder=1.9, color="gray", lw=1)
         for i in range(1, n + 1):
             for j, (vi, dvi) in enumerate(zip(v, dv)):
+                h = 1 / i if inverse else i
+                vi = h * vi
                 if dvi == 0:
                     method = ax.axvline if vertical else ax.axhline
                     args = np.array([vi])
                 else:
+                    if scale_width:
+                        dvi = h * dvi
                     method = ax.axvspan if vertical else ax.axhspan
                     args = np.array([vi - dvi / 2, vi + dvi / 2])
-                args = sorted((i / args) if inverse else (i * args))
+                if inverse:
+                    args = sorted(1 / args)
                 method(
                     *args,
                     **defaults(kwargs, alpha=1 - np.log(1 + (np.e - 1) * (i - 1) / n)),
