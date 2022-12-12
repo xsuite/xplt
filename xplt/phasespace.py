@@ -571,7 +571,7 @@ class PhaseSpacePlot(XParticlePlot):
                         alpha=0.5,
                     )
 
-                    # X = h * np.linspace(-5, 5, 500)
+                    # Hamiltonian normalized to value at separatrix
                     X = extend * h * np.linspace(-1, 2, 500)
                     Y = extend * h * 3**0.5 * np.linspace(-1, 1, 500)
                     X, Y = np.meshgrid(X, Y)

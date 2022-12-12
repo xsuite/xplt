@@ -84,7 +84,9 @@ def data_unit(p):
     # fmt: on
 
     if p not in units:
-        raise NotImplementedError(f"Data unit for parameter {p} not implemented")
+        raise NotImplementedError(
+            f"Data unit for {p} not known. Please specify via data_units keyword."
+        )
     return units.get(p)
 
 

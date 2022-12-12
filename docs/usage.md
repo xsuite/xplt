@@ -16,7 +16,7 @@ examples/animations
 ```
 
 :::{tip}
-Xsuite is not an explicit dependency, rather an API assumption on available attributes, indices and units. You can use data from any source, for example:
+Xsuite is not an explicit dependency, rather an API assumption on available attributes, indices and units. You can use data from any source, and also custom attributes. Use the `data_unit` keyword argument to specify the unit of custom attributes.
 
 ```python
 import xplt
@@ -27,8 +27,9 @@ import pandas as pd
 particles = dict(
     x = np.random.normal(size=int(1e5)),  # in m
     px = np.random.normal(size=int(1e5)),  # in rad
+    a = np.random.normal(size=int(1e5)),  # custom attribute
 )
-xplt.PhaseSpacePlot(particles, kind='x-px')
+xplt.PhaseSpacePlot(particles, kind='x-px', data_unit=dict(a="km"))
 
 # Pandas DataFrame
 df = pd.DataFrame(particles)
