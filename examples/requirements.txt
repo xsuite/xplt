@@ -1,7 +1,7 @@
 xdeps==0.0.10
-xfields==0.8.4
-xobjects==0.1.27
-xpart==0.9.3
+xfields==0.9.2
+xobjects==0.1.30
+xpart==0.10.1
 xsuite==0.4.0
-xtrack==0.22.0
+xtrack==0.23.5
 jupyterlab==3.4.5
