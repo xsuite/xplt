@@ -168,23 +168,12 @@ class XPlot:
         Base class for plotting
 
         Args:
-            display_units: Dictionary with units to display parameters. Supports prefix notation, e.g. 'bet' for 'betx' and 'bety'.
-            data_units: Dictionary with native units of parameters. Supports prefix notation, e.g. 'bet' for 'betx' and 'bety'.
+            data_units (dict, optional): Units of the data. If None, the units are determined from the data.
+            display_units (dict, optional): Units to display the data in. If None, the units are determined from the data.
         """
 
         self._data_units = data_units or {}
-        self._display_units = dict(
-            dict(
-                x="mm",
-                y="mm",
-                p="mrad",
-                X="mm^(1/2)",
-                Y="mm^(1/2)",
-                P="mm^(1/2)",
-                k0l="rad",
-            ),
-            **(display_units or {}),
-        )
+        self._display_units = defaults(display_units, s="m", x="mm", y="mm", p="mrad")
 
     @classmethod
     def _parse_nested_list_string(cls, list_string, separators=",-+", subs={}):

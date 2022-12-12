@@ -15,6 +15,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 
+from .util import defaults
 from .base import XPlot
 
 
@@ -41,6 +42,7 @@ class KnlPlot(XPlot):
         knl=None,
         ax=None,
         filled=True,
+        data_units=None,
         display_units=None,
         resolution=1000,
         line_length=None,
@@ -49,22 +51,31 @@ class KnlPlot(XPlot):
         """
         A plot for knl values along line
 
-        :param line: Line of elements.
-        :param knl: List of orders n to plot knl values for. If None, automatically determine from line.
-        :param ax: An axes to plot onto. If None, a new figure is created.
-        :param filled: If True, make a filled plot instead of a line plot.
-        :param display_units: Dictionary with units for parameters. Supports prefix notation, e.g. 'bet' for 'betx' and 'bety'.
-        :param resolution: Number of points to use for plot.
-        :param line_length: Length of line (only required if line is None).
-        :param subplots_kwargs: Keyword arguments passed to matplotlib.pyplot.subplots command when a new figure is created.
+        Args:
+            line: Line of elements.
+            knl (int or list of int): Maximum order or list of orders n to plot knl values for. If None, automatically determine from line.
+            ax: An axes to plot onto. If None, a new figure is created.
+            filled (bool): If True, make a filled plot instead of a line plot.
+            data_units (dict, optional): Units of the data. If None, the units are determined from the data.
+            display_units (dict, optional): Units to display the data in. If None, the units are determined from the data.
+            resolution: Number of points to use for plot.
+            line_length: Length of line (only required if line is None).
+            subplots_kwargs: Keyword arguments passed to matplotlib.pyplot.subplots command when a new figure is created.
+
+        Known issues:
+            - Thin elements produced with MAD-X MAKETHIN do overlap due to the displacement introduced by the TEAPOT algorithm.
+              This leads to glitches of knl being doubled or zero at element overlaps for lines containing such elements.
 
         """
+        display_units = defaults(display_units, k0l="rad")
         super().__init__(display_units=display_units)
 
         if knl is None:
             if line is None:
                 raise ValueError("Either line or knl parameter must not be None")
             knl = range(max([e.order for e in line.elements if hasattr(e, "order")]) + 1)
+        if isinstance(knl, int):
+            knl = range(knl + 1)
         self.knl = knl
         if line is None and line_length is None:
             raise ValueError("Either line or line_length parameter must not be None")

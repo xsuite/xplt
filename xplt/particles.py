@@ -44,9 +44,6 @@ class XParticlePlot(XPlot):
         """
         display_units = defaults(
             display_units,
-            x="mm",
-            y="mm",
-            p="mrad",
             X="mm^(1/2)",
             Y="mm^(1/2)",
             P="mm^(1/2)",

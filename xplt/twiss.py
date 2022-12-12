@@ -53,12 +53,8 @@ class TwissPlot(XPlot):
         :param subplots_kwargs: Keyword arguments passed to matplotlib.pyplot.subplots command when a new figure is created.
 
         """
-        super().__init__(
-            display_units=dict(
-                dict(s="m", x="mm", y="mm", p="mrad", bet="m", d="m"),
-                **(display_units or {}),
-            )
-        )
+        display_units = defaults(display_units, bet="m", d="m")
+        super().__init__(display_units=display_units)
 
         # parse kind string
         subs = {a: f"{a}x+{a}y" for a in ("", "p", "alf", "bet", "gam", "mu", "d", "dp")}
