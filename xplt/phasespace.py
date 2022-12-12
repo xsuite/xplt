@@ -14,9 +14,10 @@ import types
 import matplotlib as mpl
 import numpy as np
 from matplotlib.patches import Ellipse
+from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
 from .util import get, defaults, normalized_coordinates, denormalized_coordinates
-from .base import FixedLimits
+from .base import FixedLimits, AngleLocator, RadiansFormatter
 from .particles import XParticlePlot
 
 pairwise = np.c_
@@ -39,6 +40,7 @@ class PhaseSpacePlot(XParticlePlot):
         twiss=None,
         color=None,
         cmap="magma_r" or "Blues",
+        cbar_loc=None,
         projections="auto",
         projections_kwargs=None,
         mean=False,
@@ -85,6 +87,7 @@ class PhaseSpacePlot(XParticlePlot):
             twiss (dict, optional): Twiss parameters (alfx, alfy, betx and bety) to use for conversion to normalized phase space coordinates.
             color (str or list of str): Properties defining the color of points for the scatter plot(s). Implies plot='scatter'. Pass a list of properties to use different values for each subplot
             cmap: Colormap to use for the hist plot.
+            cbar_loc: Location of the colorbar, such as 'right', 'inside upper right', etc.
             projections: Add histogrammed projections onto axis. Can be True, False, "x", "y", "auto" or a list of these for each subplot
             projections_kwargs: Additional kwargs for histogram projection (step plot)
             mean: Whether to indicate mean of distribution with a cross marker. Boolean or list of booleans for each subplot.
@@ -160,6 +163,10 @@ class PhaseSpacePlot(XParticlePlot):
                 color = np.resize(color.split(","), n)
         else:
             color = n * [None]
+        if cbar_loc is None:
+            cbar_loc = (
+                "right" if len(color) <= 1 or np.all(color == color[0]) else "inside upper right"
+            )
 
         self.plot = plot
         self.color = color
@@ -204,8 +211,24 @@ class PhaseSpacePlot(XParticlePlot):
             scatter_cmap = kwargs.pop("cmap")  # bypass UserWarning: ignored
             self.artists_scatter[i] = ax.scatter([], [], **kwargs)
             self.artists_scatter[i].cmap = mpl.colormaps[scatter_cmap]
+            # add colorbar
             if c is not None and (np.any(self.color != c) or i == n - 1):
-                self.fig.colorbar(self.artists_scatter[i], ax=ax, label=self.label_for(c))
+                cbargs = dict(label=self.label_for(c))
+                if self.display_unit_for(c) == "rad":
+                    cbargs.update(ticks=AngleLocator(deg=False), format=RadiansFormatter())
+                if cbar_loc.startswith("inside "):
+                    # colorbar inside plot
+                    axins = inset_axes(
+                        ax, width="50%", height="3%", loc=cbar_loc.lstrip("inside ")
+                    )
+                    self.fig.colorbar(
+                        self.artists_scatter[i], **cbargs, cax=axins, orientation="horizontal"
+                    )
+                    axins.tick_params(labelsize=8)
+                    axins.xaxis.offsetText.set_fontsize(8)
+                    axins.xaxis.label.set_size(8)
+                else:
+                    self.fig.colorbar(self.artists_scatter[i], **cbargs, ax=ax, location=cbar_loc)
 
             # hexbin histogram
             self._hxkw = defaults(hist_kwargs, cmap=cmap, rasterized=True, animated=animated)
@@ -318,7 +341,8 @@ class PhaseSpacePlot(XParticlePlot):
                     v = self.factor_for(c) * self._get_masked(particles, c, masks[i])
                     if autoscale:
                         # scatter.set_clim(np.min(v), np.max(v)) # does not always work (bug?)
-                        scatter.norm = mpl.colors.Normalize(np.min(v), np.max(v))
+                        # scatter.norm = mpl.colors.Normalize(np.min(v), np.max(v)) # works, but resets colorbar locator/formatter
+                        scatter.norm.autoscale(v)
                     cm = mpl.cm.ScalarMappable(norm=scatter.norm, cmap=scatter.cmap)
                     scatter.set_facecolor(cm.to_rgba(v))
 
