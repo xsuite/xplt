@@ -50,7 +50,16 @@ class XParticlePlot(XPlot):
             J="mm",  # Action
             Θ="rad",  # Angle
         )
-        super().__init__(data_units=data_units, display_units=display_units, **kwargs)
+        super().__init__(
+            data_units=data_units,
+            display_units=display_units,
+            prefix_suffix_config={
+                " ": ("X", "Y"),
+                "P": ("Px", "Py"),
+                "J": ("Jx", "Jy"),
+                "Θ": ("Θx", "Θy"),
+            },
+        )
         self.twiss = twiss
         self.beta = beta
         self._frev = frev
@@ -147,6 +156,21 @@ class XParticlePlot(XPlot):
 
         return super().factor_for(p)
 
+    def _texify_label(self, label, suffixes=()):
+        label = {
+            "energy": "E",  # total energy
+            "ptau": "p_\\tau",
+            "pzeta": "p_\\zeta",
+            "chi": "\\chi",
+            "energy0": "E_\\mathrm{ref}",  # total energy of reference particle
+            "mass0": "m_\\mathrm{ref}",  # mass of reference particle
+            "q0": "q_\\mathrm{ref}",  # charge of reference particle
+            "p0c": "p_\\mathrm{ref}c",  # momentum of reference particle
+            "gamma0": "\\gamma_\\mathrm{ref}",  # relativistic gamma of reference particle
+            "beta0": "\\beta_\\mathrm{ref}",  # relativistic beta of reference particle
+        }.get(label, label)
+        return super()._texify_label(label, suffixes)
+
 
 class ParticlesPlot(XParticlePlot):
     def __init__(
@@ -206,7 +230,8 @@ class ParticlesPlot(XParticlePlot):
         )
 
         # parse kind string
-        self.kind = self._parse_nested_list_string(kind)
+        subs = {p: "+".join(s) for p, s in self._prefix_suffix_config.items()}
+        self.kind = self._parse_nested_list_string(kind, subs=subs)
         self.as_function_of = as_function_of
         self.sort_by = sort_by
 

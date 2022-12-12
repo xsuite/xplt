@@ -25,13 +25,15 @@ class TwissPlot(XPlot):
         ax=None,
         line=None,
         line_kwargs=dict(),
+        data_units=None,
         display_units=None,
         **subplots_kwargs,
     ):
         """
         A plot for twiss parameters and closed orbit
 
-        :param kind: Defines the properties to plot.
+        Args:
+            kind: Defines the properties to plot.
                      This can be a nested list or a separated string or a mixture of lists and strings where
                      the first list level (or separator ``,``) determines the subplots,
                      the second list level (or separator ``-``) determines any twinx-axes,
@@ -44,20 +46,26 @@ class TwissPlot(XPlot):
                       - ``'betx+alf,mu'``: two suplots the first with 'betx', 'alfx' and 'alfy' and the second with 'mux' and 'muy'
                       - ``[[['betx', 'alfx', 'alfy']], [['mux', 'muy']]]``: same as above
 
-        :param twiss: Dictionary with twiss information
-        :param ax: A list of axes to plot onto, length must match the number of subplots and optional line plot. If None, a new figure is created.
-                   If required, twinx-axes will be added automatically.
-        :param line: Line of elements. If given, adds a line plot to the top.
-        :param line_kwargs: Keyword arguments passed to line plot.
-        :param display_units: Dictionary with units for parameters. Supports prefix notation, e.g. 'bet' for 'betx' and 'bety'.
-        :param subplots_kwargs: Keyword arguments passed to matplotlib.pyplot.subplots command when a new figure is created.
+            twiss: Dictionary with twiss information
+            ax: A list of axes to plot onto, length must match the number of subplots and optional line plot. If None, a new figure is created.
+                If required, twinx-axes will be added automatically.
+            line: Line of elements. If given, adds a line plot to the top.
+            line_kwargs: Keyword arguments passed to line plot.
+            data_units (dict, optional): Units of the data. If None, the units are determined from the data.
+            display_units (dict, optional): Units to display the data in. If None, the units are determined from the data.
+            subplots_kwargs: Keyword arguments passed to matplotlib.pyplot.subplots command when a new figure is created.
 
         """
-        display_units = defaults(display_units, bet="m", d="m")
-        super().__init__(display_units=display_units)
+        super().__init__(
+            data_units=data_units,
+            display_units=defaults(display_units, bet="m", d="m"),
+            prefix_suffix_config={
+                p: (p + "x", p + "y") for p in "alf,bet,gam,mu,d,dp,q,dq".split(",")
+            },
+        )
 
         # parse kind string
-        subs = {a: f"{a}x+{a}y" for a in ("", "p", "alf", "bet", "gam", "mu", "d", "dp")}
+        subs = {p: "+".join(s) for p, s in self._prefix_suffix_config.items()}
         self.kind = self._parse_nested_list_string(kind, ",-+", subs)
 
         # initialize figure with n subplots
@@ -115,6 +123,18 @@ class TwissPlot(XPlot):
             self.lineplot.update(line, autoscale=autoscale)
 
         return changed
+
+    def _texify_label(self, label, suffixes=()):
+        label = {
+            "alf": "\\alpha",
+            "bet": "\\beta",
+            "gam": "\\gamma",
+            "mu": "\\mu",
+            "d": "D",
+            "dzeta": "D_\\zeta",
+            "ptau": "p_\\tau",
+        }.get(label, label)
+        return super()._texify_label(label, suffixes)
 
     def axline(self, kind, val, subplots="all", **kwargs):
         """Plot a vertical or horizontal line for a given coordinate

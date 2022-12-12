@@ -43,10 +43,13 @@ def data_unit(p):
         rpp="1",          # m/m0 P0c / Pc = 1/(1+delta)
         zeta='m',         # (s - beta0 c t )
         tau='m',          # (s / beta0 - ct)
+        energy='eV',      # Energy (total energy E = sqrt(mc^2 + pc^2))
+        chi="1",          # q/ q0 * m0/m = qratio / mratio
+
         mass0='eV',       # Reference rest mass
         q0='e',           # Reference charge
         p0c='eV',         # Reference momentum
-        energy0='eV',     # Reference energy
+        energy0='eV',     # Reference energy (total energy)
         gamma0="1",       # Reference relativistic gamma
         beta0="1",        # Reference relativistic beta
         
@@ -163,6 +166,7 @@ class XPlot:
         *,
         data_units=None,
         display_units=None,
+        prefix_suffix_config=None,
     ):
         """
         Base class for plotting
@@ -170,10 +174,14 @@ class XPlot:
         Args:
             data_units (dict, optional): Units of the data. If None, the units are determined from the data.
             display_units (dict, optional): Units to display the data in. If None, the units are determined from the data.
+            prefix_suffix_config (dict, optional): Prefix and suffix config for joining axes labels. A dict with prefixes and
+                corresponding full names, e.g. {"p": ("px", "py", ...), ...} to join labels for px and py as $p_{x,y}$.
         """
 
         self._data_units = data_units or {}
         self._display_units = defaults(display_units, s="m", x="mm", y="mm", p="mrad")
+        self._prefix_suffix_config = {"": ("x", "y"), "p": ("px", "py")}
+        self._prefix_suffix_config.update(prefix_suffix_config or {})
 
     @classmethod
     def _parse_nested_list_string(cls, list_string, separators=",-+", subs={}):
@@ -300,58 +308,66 @@ class XPlot:
             return self._display_units[prefix]
         return self.data_unit_for(p)
 
-    def label_for(self, *pp, unit=True, texify=lambda s: None):
+    def _texify_label(self, label, suffixes=()):
+        """Return tex string representation for label and suffixes
+
+        Args:
+            label (str): The label to texify
+            suffixes (list): A list of suffixes to append to the label
+
+        Returns:
+            str: The texified label (without enclosing $)
+        """
+        greek = (
+            "alpha beta gamma delta epsilon zeta eta theta iota kappa lambda "
+            "mu nu xi pi rho sigma tau upsilon phi chi psi omega".split(" ")
+        )
+        if label in greek:
+            label = "\\" + label
+
+        if len(suffixes) > 0:
+            label += "_{" + ",".join(suffixes) + "}"
+        return label
+
+    def label_for(self, *pp, unit=True):
         """
         Return label for list of parameters, joining where possible
 
         Args:
             pp: Parameter names
             unit: Wheather to include unit
-            texify: A function accepting a label and returning the tex string for it (without $)
-
         """
 
-        def default_texify(label):
-            if m := re.fullmatch(r"k(\d+)l", label):
-                return f"k_{m.group(1)}l"
-            return {
-                "alf": "\\alpha",
-                "bet": "\\beta",
-                "gam": "\\gamma",
-                "mu": "\\mu",
-                "d": "D",
-            }.get(label, label)
-
         def split(p):
-            if p[-1] in "xy" and p[:-1] in "alf,bet,gam,mu,d,p,dp,P,q,dq,,".split(","):
-                return p[:-1], p[-1]
-            return p, ""
+            for pre, matches in self._prefix_suffix_config.items():
+                if p in matches:
+                    return pre, p.lstrip(pre)
+            return p, None
 
         # split pre- and suffix
         prefix, _ = split(pp[0])
         display_unit = self.display_unit_for(pp[0])
-        suffix = []
+        suffixes = []
         for p in pp:
             pre, suf = split(p)
-            suffix.append(suf)
+            if suf:
+                suffixes.append(suf)
             if pre != prefix or self.display_unit_for(p) != display_unit:
                 # no common prefix or different units, treat separately!
                 return " ,  ".join([self.label_for(p) for p in pp])
-        suffix = ",".join(suffix)
 
         # build label
-        label = "$"
-        if prefix:
-            label += texify(prefix) or default_texify(prefix)
-            if suffix:
-                label += "_{" + suffix + "}"
+        if prefix.strip():
+            label = "$" + self._texify_label(prefix, suffixes) + "$"
         else:
-            label += texify(suffix) or default_texify(suffix)
-        label += "$"
+            label = "$" + ",".join([self._texify_label(s) for s in suffixes]) + "$"
+
+        # add unit
         if unit and display_unit:
             display_unit = pint.Unit(display_unit)
             if display_unit != pint.Unit("1"):
                 label += f" / ${display_unit:~l}$"
+
         return label
 
     @staticmethod

@@ -253,18 +253,17 @@ class TimeBinPlot(XParticlePlot):
             return "1/s"
         return super().data_unit_for(p)
 
-    def label_for(self, *pp, unit=True):
-        def texify(label):
-            if label == "count":
-                return "\\mathrm{Particles}"
-            if label == "rate":
-                return "\\mathrm{Particle~rate}"
-            if label == "cumulative":
-                return "\\mathrm{Particles~(cumulative)}"
-            if label != "t":
-                return f"\\langle {label} \\rangle"
+    def _texify_label(self, label, suffixes=()):
+        if label == "count":
+            label = "\\mathrm{Particles}"
+        elif label == "rate":
+            label = "\\mathrm{Particle~rate}"
+        elif label == "cumulative":
+            label = "\\mathrm{Particles~(cumulative)}"
+        elif label != "t":
+            return f"\\langle {super()._texify_label(label, suffixes)} \\rangle"
 
-        return super().label_for(*pp, unit=unit, texify=texify)
+        return super()._texify_label(label, suffixes)
 
 
 class TimeFFTPlot(XParticlePlot):
@@ -454,19 +453,16 @@ class TimeFFTPlot(XParticlePlot):
             return "a.u."
         return super().display_unit_for(p)
 
-    def label_for(self, *pp, unit=True):
-        def texify(label):
-            if label == "f":
-                return  # don't change the x-axis label
+    def _texify_label(self, label, suffixes=()):
+        if label != "f":  # don't change the x-axis label
             if self.scaling.lower() == "amplitude":
                 if label == "count":
-                    return "\\mathrm{Particles}"
+                    label = "\\mathrm{Particles}"
                 else:
-                    return "\\hat{" + label + "}"
+                    label = "\\hat{" + label + "}"
             elif self.scaling.lower() == "pds":
-                return "|\\mathrm{FFT}|^2"
-
-        return super().label_for(*pp, unit=unit, texify=texify)
+                return "|\\mathrm{FFT(" + super()._texify_label(label, suffixes) + ")}|^2"
+        return super()._texify_label(label, suffixes)
 
     def plot_harmonics(self, f, df=0, *, n=20, **plot_kwargs):
         """Add vertical lines or spans indicating the location of values or spans and their harmonics
@@ -799,16 +795,12 @@ class TimeVariationPlot(XParticlePlot):
             return "1"
         return super().data_unit_for(p)
 
-    def label_for(self, *pp, unit=True):
-        def texify(label):
-            if label == "cv":
-                return "\\mathrm{Coefficient~of~variation}~ c_v=\\sigma/\\mu"
-            elif label == "duty":
-                return (
-                    "\\mathrm{Spill~duty~factor}~ F=\\langle N \\rangle^2/\\langle N^2 \\rangle"
-                )
-
-        return super().label_for(*pp, unit=unit, texify=texify)
+    def _texify_label(self, label, suffixes=()):
+        if label == "cv":
+            label = "\\mathrm{Coefficient~of~variation}~ c_v=\\sigma/\\mu"
+        elif label == "duty":
+            label = "\\mathrm{Spill~duty~factor}~ F=\\langle N \\rangle^2/\\langle N^2 \\rangle"
+        return super()._texify_label(label, suffixes)
 
 
 ## Restrict star imports to local namespace

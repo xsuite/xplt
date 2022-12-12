@@ -14,6 +14,7 @@ import types
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
+import re
 
 from .util import defaults
 from .base import XPlot
@@ -67,8 +68,7 @@ class KnlPlot(XPlot):
               This leads to glitches of knl being doubled or zero at element overlaps for lines containing such elements.
 
         """
-        display_units = defaults(display_units, k0l="rad")
-        super().__init__(display_units=display_units)
+        super().__init__(display_units=defaults(display_units, k0l="rad"))
 
         if knl is None:
             if line is None:
@@ -158,6 +158,11 @@ class KnlPlot(XPlot):
             self.ax.autoscale()
 
         return changed
+
+    def _texify_label(self, label, suffixes=()):
+        if m := re.fullmatch(r"k(\d+)l", label):
+            label = f"k_{m.group(1)}l"
+        return super()._texify_label(label, suffixes)
 
 
 ## Restrict star imports to local namespace
