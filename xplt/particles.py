@@ -140,9 +140,16 @@ class XParticlePlot(XPlot):
 
         if prop == "t":
             # particle arrival time (t = at_turn / frev - zeta / beta / c0)
-            beta = self.beta or self._get_masked(particles, "beta0", mask)
-            turn = self._get_masked(particles, "at_turn", mask)
-            zeta = self._get_masked(particles, "zeta", mask)
+            beta = self.beta(particles)
+            if beta is None:
+                raise ValueError(
+                    "Particle arrival time requested, but enither beta nor beta0 is known. "
+                    "Either pass beta or pass both frev and circumference."
+                )
+            turn = get(particles, "at_turn")[mask]
+            zeta = get(particles, "zeta")[
+                mask
+            ]  # do not use _get_masked as wrap_zeta might mess it up!
             time = -zeta / beta / c0  # zeta>0 means early; zeta<0 means late
             if np.any(turn != 0):
                 frev = self.frev(particles)
