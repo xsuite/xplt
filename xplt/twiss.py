@@ -91,7 +91,7 @@ class TwissPlot(XPlot):
         self._init_artists([[], *self.kind] if line else self.kind, create_artists)
 
         # set data
-        if twiss:
+        if twiss is not None:
             self.update(twiss, autoscale=True)
 
     def update(self, twiss, *, autoscale=False, line=None):

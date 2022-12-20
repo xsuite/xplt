@@ -111,7 +111,7 @@ class KnlPlot(XPlot):
         self.ax.legend(ncol=5)
 
         # set data
-        if line:
+        if line is not None:
             self.update(line, autoscale=True)
 
     def update(self, line, autoscale=False):
