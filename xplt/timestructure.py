@@ -206,7 +206,7 @@ class TimeBinPlot(XParticlePlot):
                         property = self._get_masked(particles, p, mask)
 
                     t_min, dt, timeseries = binned_timeseries(times, n, property)
-                    timeseries = timeseries.astype(np.float)
+                    timeseries = timeseries.astype(np.float64)
                     edges = np.linspace(t_min, t_min + dt * n, n + 1)
 
                     if self.relative:
