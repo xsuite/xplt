@@ -20,9 +20,25 @@ import pint
 
 from .util import defaults
 
+_custom_data_units = {}
+
+
+def register_data_unit(**kwargs):
+    """Register custom data units for parameters
+
+    Args:
+        kwargs: key-value pairs of parameter name and unit
+    """
+    for unit in kwargs.values():
+        pint.Unit(unit)  # raises an error if not a valid unit
+    _custom_data_units.update(kwargs)
+
 
 def data_unit(p):
     """Return data unit of parameter p as used by xsuite"""
+    if p in _custom_data_units:
+        return _custom_data_units.get(p)
+
     # https://github.com/xsuite/xsuite/raw/main/docs/physics_manual/physics_man.pdf
     if re.fullmatch(r"k(\d+)l", p):
         return 1 if p == "k0l" else "m^-" + p[1:-1]
@@ -31,6 +47,7 @@ def data_unit(p):
 
         ## particles
         ###################
+        at_turn="1",      # Turn count
         s='m',            # Reference accumulated path length
         x='m',            # Horizontal position
         px="1",           # Px / (m/m0 * p0c) = beta_x gamma /(beta0 gamma0)
@@ -88,7 +105,7 @@ def data_unit(p):
 
     if p not in units:
         raise NotImplementedError(
-            f"Data unit for {p} not known. Please specify via data_units keyword."
+            f"Data unit for {p} not known. Please specify via register_data_unit method or data_units keyword."
         )
     return units.get(p)
 
