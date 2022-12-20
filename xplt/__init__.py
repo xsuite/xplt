@@ -12,7 +12,7 @@ import matplotlib as mpl
 
 from .base import config, register_data_unit, register_data_symbol
 from .colors import *
-from .line import KnlPlot
+from .line import KnlPlot, FloorPlot
 from .phasespace import PhaseSpacePlot
 from .timestructure import TimePlot, TimeBinPlot, TimeFFTPlot, TimeIntervalPlot, TimeVariationPlot
 from .twiss import TwissPlot

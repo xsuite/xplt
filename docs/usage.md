@@ -8,6 +8,7 @@ The following pages describe how to use Xplt for plotting of data from Xsuite or
 :maxdepth: 1
 
 examples/colors
+examples/line
 examples/twiss
 examples/phasespace
 examples/hamiltonians
