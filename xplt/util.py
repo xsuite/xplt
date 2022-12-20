@@ -25,19 +25,26 @@ VOID = object()
 c0 = 299792458  # speed of light in m/s
 
 
-def get(obj, val, default=VOID):
+def val(obj):
+    """Return the value if this is an array of size 1, object otherwise"""
+    if np.size(obj) == 1:
+        return np.array(obj).item()
+    return obj
+
+
+def get(obj, value, default=VOID):
     """Get value from object"""
     if pd is not None and isinstance(obj, pd.DataFrame):
-        return obj[val].values
+        return val(obj[value].values)
     try:
-        return getattr(obj, val)
+        return val(getattr(obj, value))
     except:
         try:
-            return obj[val]
+            return val(obj[value])
         except:
             if default is not VOID:
                 return default
-    raise AttributeError(f"{obj} does not provide an attribute or index '{val}'")
+    raise AttributeError(f"{obj} does not provide an attribute or index '{value}'")
 
 
 def defaults(kwargs, **default_style):
@@ -172,6 +179,45 @@ def virtual_sextupole(tracker, particle_ref=None):
     S = np.abs(Stotal)
     mu = np.angle(Stotal) / 3 / 2 / np.pi
     return S, mu
+
+
+def hamiltonian_kobayashi(X, Px, S, mu, twiss, xy="x", delta=0, *, normalized=False):
+    """Calculate the kobayashi hamiltonian
+
+    Args:
+        X: Normalized X-coordinate in m^(1/2)
+        Px: Normalized Px-coordinate in m^(1/2)
+        S: Normalized sextupole strength in m^(-1/2)
+        mu: Sextupole phase in rad/2pi
+        twiss: Object or dict with local twiss information in m and rad
+        xy (str): Plane. Either "x" or "y".
+        delta (float): Momentum deviation to account for dispersive orbit.
+        normalized: If true, return value of hamiltonian normalized to value at separatrix.
+
+    Returns:
+        Value of the hamiltonian (normalized if specified)
+
+    """
+
+    # Tune distance
+    q = get(twiss, "q" + xy)
+    q = q + delta * get(twiss, "dq" + xy)  # chromatic tune shift
+    r = np.round(3 * q) / 3  # next 3rd order resonance
+    d = q - r  # distance to resonance
+    # h = 4 * np.pi * d / S  # size of stable striangle (inscribed circle)
+
+    # rotate coordinates to account for phase advance
+    dmu = 2 * np.pi * (mu - get(twiss, "mu" + xy))  # phase advance to virtual sextupole
+    rotation = np.array([[+np.cos(dmu), np.sin(dmu)], [-np.sin(dmu), np.cos(dmu)]])
+    (X, Px) = np.tensordot(rotation, (X, Px), 1)
+
+    # calculate hamiltonian
+    H = 3 * np.pi * d * (X**2 + Px**2) + S / 4 * (3 * X * Px**2 - X**3)
+    if normalized:
+        Hsep = (4 * np.pi * d) ** 3 / S**2
+        H = H / Hsep
+
+    return H
 
 
 ## Restrict star imports to local namespace

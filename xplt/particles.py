@@ -13,8 +13,7 @@ __date__ = "2022-12-07"
 import types
 import numpy as np
 import pint
-
-from .util import c0, get, defaults, normalized_coordinates
+from .util import c0, get, val, defaults, normalized_coordinates
 from .base import XPlot, config
 
 
@@ -31,7 +30,22 @@ class XParticlePlot(XPlot):
         wrap_zeta=False,
         **kwargs,
     ):
-        """Base plotting class for particle data
+        r"""Base plotting class for particle data
+
+        In addition to the inherent particle properties (like ``x``, ``y``, ``px``, ``py``, ``zeta``, ``delta``, ...)
+        the following derived properties are supported (but may require passing of twiss etc.):
+
+        - Normalized coordinates: ``X``, ``Y``, ``Px``, ``Py``
+           |  :math:`X = x/\sqrt{\beta_x} = \sqrt{2J_x} \cos(\Theta_x)`
+           |  :math:`P_x = (\alpha_x x + \beta_x p_x)/\sqrt{\beta_x} = -\sqrt{2J_x} \sin(\Theta_x)`
+        - Action-angle coordinates: ``Jx``, ``Jy``, ``Θx``, ``Θy``
+           |  :math:`J_x = (X^2+P_x^2)/2`
+           |  :math:`\Theta_x = -\mathrm{atan2}(P_x, X)`
+        - Particle arrival time: ``t``
+           |  t = at_turn / frev - zeta / beta / c0
+
+        Prefix notation is also available, i.e. ``P`` for ``Px+Py`` or ``Θ`` for ``Θx+Θy``
+
 
         Args:
             data_units (dict, optional): Units of the data. If None, the units are determined from the data.
@@ -62,9 +76,9 @@ class XParticlePlot(XPlot):
             prefix_suffix_config=prefix_suffix_config,
         )
         self.twiss = twiss
-        self.beta = beta
-        self._frev = frev
-        self._circumference = circumference
+        self._beta = val(beta)
+        self._frev = val(frev)
+        self._circumference = val(circumference)
         self.wrap_zeta = wrap_zeta
 
     @property
@@ -74,19 +88,33 @@ class XParticlePlot(XPlot):
         if self.twiss is not None:
             return self.twiss.circumference
 
+    def beta(self, particles=None):
+        """Get reference relativistic beta as float"""
+        if self._beta is not None:
+            return self._beta
+        if self._frev is not None and self.circumference is not None:
+            return self._frev * self.circumference / c0
+        if particles is not None:
+            try:
+                beta = get(particles, "beta0")
+                if np.size(beta) > 1:
+                    mean_beta = np.mean(beta)
+                    if not np.allclose(beta, mean_beta):
+                        raise ValueError(
+                            "Particle beta0 is not constant. Please specify beta in constructor!"
+                        )
+                    beta = mean_beta
+                return beta
+            except:
+                pass
+
     def frev(self, particles=None):
-        if self._frev is None and self.circumference is None:
-            raise ValueError(
-                "Particle arrival time requested while at_turn > 0, but neither frev or circumference is set"
-            )
-        beta = self.beta or get(particles, "beta0").flatten()
-        if hasattr(beta, "__iter__"):
-            if not np.allclose(beta, beta[0]):
-                raise ValueError(
-                    "Particle arrival time requested without passing beta, and particle beta is not constant"
-                )
-            beta = beta[0]
-        return self._frev or beta * c0 / self.circumference
+        """Get reference revolution frequency"""
+        if self._frev is not None:
+            return self._frev
+        beta = self.beta(particles)
+        if beta is not None and self.circumference is not None:
+            return beta * c0 / self.circumference
 
     def _get_masked(self, particles, prop, mask=None):
         """Get masked particle property"""
@@ -117,9 +145,16 @@ class XParticlePlot(XPlot):
             zeta = self._get_masked(particles, "zeta", mask)
             time = -zeta / beta / c0  # zeta>0 means early; zeta<0 means late
             if np.any(turn != 0):
-                time = time + turn / self.frev(particles)
-            return time
+                frev = self.frev(particles)
+                if frev is None:
+                    raise ValueError(
+                        "Particle arrival time requested while at_turn > 0, but neither frev is set, "
+                        "nor is circumference and beta known."
+                    )
+                time = time + turn / frev
+            return np.array(time).flatten()
 
+        # default
         v = get(particles, prop)
 
         if mask is not None:
