@@ -302,6 +302,10 @@ class XPlot:
         """Save the figure"""
         self.fig.savefig(fname, **defaults(kwargs, dpi=300))
 
+    def title(self, title, **kwargs):
+        """Set figure title"""
+        self.fig.suptitle(title, **kwargs)
+
     def factor_for(self, p):
         """Return factor to convert parameter into display unit"""
         quantity = pint.Quantity(self.data_unit_for(p))
