@@ -340,9 +340,22 @@ class PhaseSpacePlot(XParticlePlot):
                 if c is not None:
                     v = self.factor_for(c) * self._get_masked(particles, c, masks[i])
                     if autoscale:
-                        # scatter.set_clim(np.min(v), np.max(v)) # does not always work (bug?)
+                        # scatter.set_clim(np.min(v), np.max(v)) # sometimes leaves behind black dots (bug?)
                         # scatter.norm = mpl.colors.Normalize(np.min(v), np.max(v)) # works, but resets colorbar locator/formatter
-                        scatter.norm.autoscale(v)
+                        # scatter.norm.autoscale(v) # also sometimes leaves behind black dots (bug?)
+
+                        if scatter.colorbar is not None:
+                            locator, formatter = (
+                                scatter.colorbar.locator,
+                                scatter.colorbar.formatter,
+                            )
+                        scatter.norm = mpl.colors.Normalize(np.min(v), np.max(v))
+                        if scatter.colorbar is not None:
+                            scatter.colorbar.locator, scatter.colorbar.formatter = (
+                                locator,
+                                formatter,
+                            )
+
                     cm = mpl.cm.ScalarMappable(norm=scatter.norm, cmap=scatter.cmap)
                     scatter.set_facecolor(cm.to_rgba(v))
 
@@ -541,10 +554,10 @@ class PhaseSpacePlot(XParticlePlot):
             if self.twiss is None:
                 raise ValueError("No twiss parameters provided during plot creation")
             alfx, betx, mux, x, px = [
-                get(self.twiss, pre + xy).squeeze() for pre in ["alf", "bet", "mu", "", "p"]
+                get(self.twiss, pre + xy) for pre in ["alf", "bet", "mu", "", "p"]
             ]
-            q = get(self.twiss, "q" + xy).squeeze()
-            q = q + delta * get(self.twiss, "dq" + xy).squeeze()
+            q = get(self.twiss, "q" + xy)
+            q = q + delta * get(self.twiss, "dq" + xy)
 
             # distance d to nearby 3rd order resonance r
             r = round(3 * q) / 3
