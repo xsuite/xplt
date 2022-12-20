@@ -123,7 +123,8 @@ def data_unit(p):
 
     if p not in units:
         raise NotImplementedError(
-            f"Data unit for {p} not known. Please specify via register_data_unit method or data_units keyword."
+            f"Data unit for {p} not known. "
+            "Please specify via register_data_unit method or data_units keyword.",
         )
     return units.get(p, "1")
 

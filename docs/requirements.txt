@@ -5,4 +5,4 @@ sphinx-toolbox==3.2.0
 sphinx-autoapi==2.0.0
 myst-nb==0.17.1
 ipython==8.4.0
-sphinx-codeautolink=0.12.1
+sphinx-codeautolink==0.12.1
