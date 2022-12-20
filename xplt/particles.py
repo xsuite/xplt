@@ -15,7 +15,7 @@ import numpy as np
 import pint
 
 from .util import c0, get, defaults, normalized_coordinates
-from .base import XPlot
+from .base import XPlot, config
 
 
 class XParticlePlot(XPlot):
@@ -50,15 +50,16 @@ class XParticlePlot(XPlot):
             J="mm",  # Action
             Θ="rad",  # Angle
         )
+        prefix_suffix_config = {
+            "J": ("Jx", "Jy"),
+            "Θ": ("Θx", "Θy"),
+        }
+        if not config.use_xprime_labels:
+            prefix_suffix_config["P"] = ("Px", "Py")
         super().__init__(
             data_units=data_units,
             display_units=display_units,
-            prefix_suffix_config={
-                " ": ("X", "Y"),
-                "P": ("Px", "Py"),
-                "J": ("Jx", "Jy"),
-                "Θ": ("Θx", "Θy"),
-            },
+            prefix_suffix_config=prefix_suffix_config,
         )
         self.twiss = twiss
         self.beta = beta

@@ -50,6 +50,23 @@ def defaults(kwargs, **default_style):
     return dict(default_style, **kwargs)
 
 
+class AttrDict(dict):
+    """Dict which allows accessing values via key attributes"""
+
+    def __init__(self, *args, **kwargs):
+        super(AttrDict, self).__init__(*args, **kwargs)
+        self.__dict__ = self
+
+
+#    def update_recursive(self, other):
+#        for k, v in other.items():
+#            if k in self and isinstance(self[k], collections.abc.Mapping):
+#                self[k] = AttrDict(self[k])
+#                self[k].update_recursive(v)
+#            else:
+#                self[k] = v
+
+
 def average(*data, n=100, function=np.mean):
     """Average the data
 

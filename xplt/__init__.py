@@ -10,6 +10,7 @@ __version__ = "0.2.1"
 # allow usage of xplt.mpl.* without importing matplotlib
 import matplotlib as mpl
 
+from .base import config, register_data_unit, register_data_symbol
 from .colors import *
 from .line import KnlPlot
 from .phasespace import PhaseSpacePlot

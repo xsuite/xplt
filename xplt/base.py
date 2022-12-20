@@ -20,7 +20,16 @@ import pint
 
 from .util import defaults
 
+
+class config:
+    """Global configuration options"""
+
+    #: Use x' and y' labels instead of px and py
+    use_xprime_labels = True
+
+
 _custom_data_units = {}
+_custom_data_symbols = {}
 
 
 def register_data_unit(**kwargs):
@@ -32,6 +41,15 @@ def register_data_unit(**kwargs):
     for unit in kwargs.values():
         pint.Unit(unit)  # raises an error if not a valid unit
     _custom_data_units.update(kwargs)
+
+
+def register_data_symbol(**kwargs):
+    """Register custom symbol for parameters
+
+    Args:
+        kwargs: key-value pairs of parameter name and symbol (latex supported)
+    """
+    _custom_data_symbols.update(kwargs)
 
 
 def data_unit(p):
@@ -107,7 +125,19 @@ def data_unit(p):
         raise NotImplementedError(
             f"Data unit for {p} not known. Please specify via register_data_unit method or data_units keyword."
         )
-    return units.get(p)
+    return units.get(p, "1")
+
+
+def data_symbol(p):
+    """Return data symbol of parameter p as used by xsuite"""
+    if p in _custom_data_symbols:
+        return _custom_data_symbols.get(p)
+
+    labels = dict(at_turn="\\mathrm{turn}")
+    if config.use_xprime_labels:
+        labels.update(dict(px="x'", py="y'", Px="X'", Py="Y'"))
+
+    return labels.get(p, p)
 
 
 class ManifoldMultipleLocator(mpl.ticker.MaxNLocator):
@@ -197,7 +227,9 @@ class XPlot:
 
         self._data_units = data_units or {}
         self._display_units = defaults(display_units, s="m", x="mm", y="mm", p="mrad")
-        self._prefix_suffix_config = {"": ("x", "y"), "p": ("px", "py")}
+        self._prefix_suffix_config = {}
+        if not config.use_xprime_labels:
+            self._prefix_suffix_config["p"] = ("px", "py")
         self._prefix_suffix_config.update(prefix_suffix_config or {})
 
     @classmethod
@@ -339,6 +371,10 @@ class XPlot:
         Returns:
             str: The texified label (without enclosing $)
         """
+
+        label = data_symbol(label)
+
+        # greek letters
         greek = (
             "alpha beta gamma delta epsilon zeta eta theta iota kappa lambda "
             "mu nu xi pi rho sigma tau upsilon phi chi psi omega".split(" ")
@@ -346,6 +382,7 @@ class XPlot:
         if label in greek:
             label = "\\" + label
 
+        # add suffixes as subscripts
         if len(suffixes) > 0:
             label += "_{" + ",".join(suffixes) + "}"
         return label
@@ -359,33 +396,44 @@ class XPlot:
             unit: Wheather to include unit
         """
 
+        # if there are different units, treat them separately
+        units = np.array([self.display_unit_for(p) for p in pp])
+        if unit and np.unique(units).size > 1:
+            # different units, treat parameters for each unit separately
+            lines = []
+            for u in np.unique(units):
+                pp_with_unit = np.array(pp)[units == u]
+                lines.append(self.label_for(*pp_with_unit, unit=unit))
+            return "\n".join(lines)
+
+        # reduce complexity, by combining labels with common prefix
+        prefixes = {}
+
         def split(p):
             for pre, matches in self._prefix_suffix_config.items():
                 if p in matches:
                     return pre, p.lstrip(pre)
             return p, None
 
-        # split pre- and suffix
-        prefix, _ = split(pp[0])
-        display_unit = self.display_unit_for(pp[0])
-        suffixes = []
         for p in pp:
             pre, suf = split(p)
-            if suf:
-                suffixes.append(suf)
-            if pre != prefix or self.display_unit_for(p) != display_unit:
-                # no common prefix or different units, treat separately!
-                return " ,  ".join([self.label_for(p) for p in pp])
+            if pre not in prefixes:
+                prefixes[pre] = []
+            if suf is not None:
+                prefixes[pre].append(suf)
 
         # build label
-        if prefix.strip():
-            label = "$" + self._texify_label(prefix, suffixes) + "$"
-        else:
-            label = "$" + ",".join([self._texify_label(s) for s in suffixes]) + "$"
+        labels = []
+        for prefix, suffixes in prefixes.items():
+            labels.append("$" + self._texify_label(prefix, suffixes) + "$")
+            # label = "$" + ",".join([self._texify_label(s) for s in suffixes]) + "$"
+
+        label = ", ".join(labels)
 
         # add unit
-        if unit and display_unit:
-            display_unit = pint.Unit(display_unit)
+        if unit:
+            # at this point, all have the same unit (see above)
+            display_unit = pint.Unit(units[0])
             if display_unit != pint.Unit("1"):
                 label += f" / ${display_unit:~l}$"
 
