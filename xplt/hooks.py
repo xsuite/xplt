@@ -23,6 +23,11 @@ def register_matplotlib_options():
     """Register default options for matplotlib"""
     import matplotlib as mpl
 
+    # register named colors
+    for i, color in enumerate(petroff_colors):
+        mpl.colors.get_named_colors_mapping().update({f"pet{i}": color})
+
+    # register named colormaps
     for cmap in (
         cmap_petroff,
         cmap_petroff_gradient,
@@ -34,6 +39,7 @@ def register_matplotlib_options():
         cmap_r.name = cmap.name + "_r"
         mpl.cm.register_cmap(cmap=cmap_r)
 
+    # set rcParams
     mpl.rcParams.update(
         {
             "figure.constrained_layout.use": True,
