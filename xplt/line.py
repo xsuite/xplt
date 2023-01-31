@@ -300,7 +300,9 @@ class FloorPlot(XPlot):
             ############
             self.artist_beamline.set_data(X, Y)
             changed.append(self.artist_beamline)
-            self.artist_startpoint.set_positions((2 * X[0] - X[1], 2 * Y[0] - Y[1]), (X[0], Y[0]))
+            # start point arrow
+            i = np.argmax((X > X[0]) | (Y > Y[0]))
+            self.artist_startpoint.set_positions((2 * X[0] - X[i], 2 * Y[0] - Y[i]), (X[0], Y[0]))
             changed.append(self.artist_startpoint)
 
             # elements
@@ -395,7 +397,7 @@ class FloorPlot(XPlot):
 
                 if label_style is not None:
                     width = label_style.pop("width", self.element_width * scale)
-                    label_style["text"] = label_style["text"].format(name=name)
+                    label_style["text"] = label_style["text"].format(name=name, element=element)
 
                     label = self.ax.annotate(
                         **defaults(
@@ -465,7 +467,11 @@ class FloorPlot(XPlot):
         elif isinstance(config, dict):
             for pattern, args in config.items():
                 if re.match(pattern, name):
-                    return defaults(args, **default)
+                    if args is False:
+                        return None
+                    if isinstance(args, dict):
+                        return defaults(args, **default)
+                    return default
         elif config:
             return default
 
