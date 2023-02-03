@@ -776,14 +776,13 @@ class TimeVariationPlot(XParticlePlot):
         times = self._get_masked(particles, "t", mask)
 
         # re-sample times into equally binned time series
-        bin_time = self.counting_dt or (np.max(times) - np.min(times)) / self.counting_bins
         ncbins = self.counting_bins or int(
             np.ceil((np.max(times) - np.min(times)) / self.counting_dt)
         )
         if self.evaluate_bins is not None:
             nebins = int(ncbins / self.evaluate_bins)
         else:
-            nebins = int(self.evaluate_dt / bin_time)
+            nebins = int(ncbins * self.evaluate_dt / (np.max(times) - np.min(times)))
 
         # update plots
         changed = []
