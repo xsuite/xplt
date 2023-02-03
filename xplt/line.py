@@ -18,6 +18,7 @@ import re
 
 from .util import defaults, get
 from .base import XPlot
+from .units import Prop
 
 
 def iter_elements(line):
@@ -68,7 +69,7 @@ class KnlPlot(XPlot):
               This leads to glitches of knl being doubled or zero at element overlaps for lines containing such elements.
 
         """
-        super().__init__(display_units=defaults(display_units, k0l="rad"))
+        super().__init__(data_units=data_units, display_units=display_units)
 
         if knl is None:
             if line is None:
@@ -100,11 +101,13 @@ class KnlPlot(XPlot):
                     self.S,
                     np.zeros_like(self.S),
                     alpha=0.5,
-                    label=self.label_for(f"k{n}l"),
+                    label=self.label_for(f"k{n}l", unit=True),
                     zorder=3,
                 )
             else:
-                (artist,) = self.ax.plot([], [], alpha=0.5, label=self.label_for(f"k{n}l"))
+                (artist,) = self.ax.plot(
+                    [], [], alpha=0.5, label=self.label_for(f"k{n}l", unit=True)
+                )
             self.artists.append(artist)
         self.ax.plot(self.S, np.zeros_like(self.S), "k-", lw=1)
         self.ax.legend(ncol=5)
@@ -160,10 +163,11 @@ class KnlPlot(XPlot):
 
         return changed
 
-    def _texify_label(self, label, suffixes=()):
-        if m := re.fullmatch(r"k(\d+)l", label):
-            label = f"k_{m.group(1)}l"
-        return super()._texify_label(label, suffixes)
+    def _get_property(self, p):
+        if match := re.fullmatch(r"k(\d+)l", p):
+            n = match.group(1)
+            return Prop(f"$k_{n}l$", unit="rad" if n == "0" else f"m^-{n}")
+        return super()._get_property(p)
 
 
 class FloorPlot(XPlot):
@@ -212,9 +216,7 @@ class FloorPlot(XPlot):
         """
 
         super().__init__(
-            data_units=defaults(
-                data_units, X="m", Y="m", Z="m", theta="rad", phi="rad", psi="rad"
-            ),
+            data_units=data_units,
             display_units=display_units,
         )
 

@@ -86,7 +86,7 @@ class TwissPlot(XPlot):
 
         # create plot elements
         def create_artists(i, j, k, a, p):
-            return a.plot([], [], label=self.label_for(p, unit=False))[0]
+            return a.plot([], [], label=self._legend_label_for(p))[0]
 
         self._init_artists([[], *self.kind] if line else self.kind, create_artists)
 
@@ -123,18 +123,6 @@ class TwissPlot(XPlot):
             self.lineplot.update(line, autoscale=autoscale)
 
         return changed
-
-    def _texify_label(self, label, suffixes=()):
-        label = {
-            "alf": "\\alpha",
-            "bet": "\\beta",
-            "gam": "\\gamma",
-            "mu": "\\mu",
-            "d": "D",
-            "dzeta": "D_\\zeta",
-            "ptau": "p_\\tau",
-        }.get(label, label)
-        return super()._texify_label(label, suffixes)
 
     def axline(self, kind, val, subplots="all", **kwargs):
         """Plot a vertical or horizontal line for a given coordinate

@@ -15,6 +15,7 @@ import numpy as np
 import pint
 from .util import c0, get, val, defaults, normalized_coordinates
 from .base import XPlot, config
+from .units import get_property, Prop
 
 
 class XParticlePlot(XPlot):
@@ -56,24 +57,28 @@ class XParticlePlot(XPlot):
             circumference (float, optional): Path length of circular line if frev is not given.
             wrap_zeta: If set, wrap the zeta-coordinate plotted at the machine circumference. Either pass the circumference directly or set this to True to use the circumference from twiss.
         """
-        display_units = defaults(
-            display_units,
-            X="mm^(1/2)",
-            Y="mm^(1/2)",
-            P="mm^(1/2)",
-            J="mm",  # Action
-            Θ="rad",  # Angle
-        )
-        prefix_suffix_config = {
-            "J": ("Jx", "Jy"),
-            "Θ": ("Θx", "Θy"),
-        }
-        if not config.use_xprime_labels:
-            prefix_suffix_config["P"] = ("Px", "Py")
         super().__init__(
-            data_units=data_units,
-            display_units=display_units,
-            prefix_suffix_config=prefix_suffix_config,
+            data_units=defaults(
+                data_units,
+                # fmt: off
+                X  = Prop("$X$",   unit=f"({get_property('x').unit})/({get_property('betx').unit})^(1/2)"),   # Normalized X
+                Y  = Prop("$Y$",   unit=f"({get_property('y').unit})/({get_property('bety').unit})^(1/2)"),   # Normalized Y
+                Px = Prop("$X'$",  unit=f"({get_property('px').unit})*({get_property('betx').unit})^(1/2)"),  # Normalized Px
+                Py = Prop("$Y'$",  unit=f"({get_property('py').unit})*({get_property('bety').unit})^(1/2)"),  # Normalized Py
+                Jx = Prop("$J_x$", unit=f"({get_property('x').unit})^2/({get_property('betx').unit})"),       # Action Jx
+                Jy = Prop("$J_y$", unit=f"({get_property('y').unit})^2/({get_property('bety').unit})"),       # Action Jy
+                Θx = Prop("$Θ_x$", unit=f"rad"),
+                Θy = Prop("$Θ_y$", unit=f"rad"),
+                # fmt: on
+            ),
+            display_units=defaults(
+                display_units,
+                X="mm^(1/2)",
+                Y="mm^(1/2)",
+                P="mm^(1/2)",
+                J="mm",  # Action
+                Θ="rad",  # Angle
+            ),
         )
         self.twiss = twiss
         self._beta = val(beta)
@@ -174,46 +179,6 @@ class XParticlePlot(XPlot):
 
         return np.array(v).flatten()
 
-    def factor_for(self, p):
-        """Return factor to convert parameter into display unit"""
-        data_unit = None
-
-        if p in ("X", "Y"):  # normalized coordinates
-            xy = p.lower()
-            data_unit = f"({self.data_unit_for(xy)})/({self.data_unit_for('bet'+xy)})^(1/2)"
-
-        elif p in ("Px", "Py"):  # normalized coordinates
-            xy = p[-1]
-            data_unit = f"({self.data_unit_for('p'+xy)})*({self.data_unit_for('bet'+xy)})^(1/2)"
-
-        elif p in ("Jx", "Jy"):  # Action
-            xy = p[-1]
-            data_unit = f"({self.data_unit_for(xy)})^2/({self.data_unit_for('bet'+xy)})"
-
-        elif p in ("Θx", "Θy"):  # Angle
-            data_unit = "rad"
-
-        if data_unit is not None:
-            quantity = pint.Quantity(data_unit)
-            return (quantity / pint.Quantity(self.display_unit_for(p))).to("").magnitude
-
-        return super().factor_for(p)
-
-    def _texify_label(self, label, suffixes=()):
-        label = {
-            "energy": "E",  # total energy
-            "ptau": "p_\\tau",
-            "pzeta": "p_\\zeta",
-            "chi": "\\chi",
-            "energy0": "E_\\mathrm{ref}",  # total energy of reference particle
-            "mass0": "m_\\mathrm{ref}",  # mass of reference particle
-            "q0": "q_\\mathrm{ref}",  # charge of reference particle
-            "p0c": "p_\\mathrm{ref}c",  # momentum of reference particle
-            "gamma0": "\\gamma_\\mathrm{ref}",  # relativistic gamma of reference particle
-            "beta0": "\\beta_\\mathrm{ref}",  # relativistic beta of reference particle
-        }.get(label, label)
-        return super()._texify_label(label, suffixes)
-
 
 class ParticlesPlot(XParticlePlot):
     def __init__(
@@ -273,7 +238,7 @@ class ParticlesPlot(XParticlePlot):
         )
 
         # parse kind string
-        subs = {p: "+".join(s) for p, s in self._prefix_suffix_config.items()}
+        subs = {"J": "Jx+Jy", "Θ": "Θx+Θy"}
         self.kind = self._parse_nested_list_string(kind, subs=subs)
         self.as_function_of = as_function_of
         self.sort_by = sort_by
@@ -287,7 +252,7 @@ class ParticlesPlot(XParticlePlot):
 
         # create plot elements
         def create_artists(i, j, k, a, p):
-            kwargs = defaults(plot_kwargs, marker=".", ls="", label=self.label_for(p, unit=False))
+            kwargs = defaults(plot_kwargs, marker=".", ls="", label=self._legend_label_for(p))
             return a.plot([], [], **kwargs)[0]
 
         self._init_artists(self.kind, create_artists)

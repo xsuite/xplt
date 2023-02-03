@@ -19,6 +19,7 @@ import numpy as np
 import pint
 
 from .util import defaults
+from .units import get_property, Prop
 
 
 class config:
@@ -26,119 +27,6 @@ class config:
 
     #: Use x' and y' labels instead of px and py
     use_xprime_labels = True
-
-
-_custom_data_units = {}
-_custom_data_symbols = {}
-
-
-def register_data_unit(**kwargs):
-    """Register custom data units for parameters
-
-    Args:
-        kwargs: key-value pairs of parameter name and unit
-    """
-    for unit in kwargs.values():
-        pint.Unit(unit)  # raises an error if not a valid unit
-    _custom_data_units.update(kwargs)
-
-
-def register_data_symbol(**kwargs):
-    """Register custom symbol for parameters
-
-    Args:
-        kwargs: key-value pairs of parameter name and symbol (latex supported)
-    """
-    _custom_data_symbols.update(kwargs)
-
-
-def data_unit(p):
-    """Return data unit of parameter p as used by xsuite"""
-    if p in _custom_data_units:
-        return _custom_data_units.get(p)
-
-    # https://github.com/xsuite/xsuite/raw/main/docs/physics_manual/physics_man.pdf
-    if re.fullmatch(r"k(\d+)l", p):
-        return 1 if p == "k0l" else "m^-" + p[1:-1]
-    # fmt: off
-    units = dict(
-
-        ## particles
-        ###################
-        at_turn="1",      # Turn count
-        s='m',            # Reference accumulated path length
-        x='m',            # Horizontal position
-        px="1",           # Px / (m/m0 * p0c) = beta_x gamma /(beta0 gamma0)
-        y='m',            # Vertical position
-        py="1",           # Py / (m/m0 * p0c)
-        delta="1",        # (Pc m0/m - p0c) /p0c
-        ptau="1",         # (Energy m0/m - Energy0) / p0c
-        pzeta="1",        # ptau / beta0
-        rvv="1",          # beta / beta0
-        rpp="1",          # m/m0 P0c / Pc = 1/(1+delta)
-        zeta='m',         # (s - beta0 c t )
-        tau='m',          # (s / beta0 - ct)
-        energy='eV',      # Energy (total energy E = sqrt(mc^2 + pc^2))
-        chi="1",          # q/ q0 * m0/m = qratio / mratio
-
-        mass0='eV',       # Reference rest mass
-        q0='e',           # Reference charge
-        p0c='eV',         # Reference momentum
-        energy0='eV',     # Reference energy (total energy)
-        gamma0="1",       # Reference relativistic gamma
-        beta0="1",        # Reference relativistic beta
-        
-        ## twiss
-        ###################
-        betx='m',         # Horizontal twiss beta-function
-        bety='m',         # Vertical twiss beta-function
-        alfx="1",         # Horizontal twiss alpha-function
-        alfy="1",         # Vertical twiss alpha-function
-        gamx='1/m',       # Horizontal twiss gamma-function
-        gamy='1/m',       # Vertical twiss gamma-function
-        mux="1",          # Horizontal phase advance
-        muy="1",          # Vertical phase advance
-        #muzeta
-        qx="1",           # Horizontal tune qx=mux[-1]
-        qy="1",           # Vertical tune qy=mux[-1]
-        #qs
-        dx='m',           # Horizontal dispersion $D_{x,y}$ [m]
-        dy='m',           # $D_{x,y}$ [m]
-        #dzeta
-        dpx="1",
-        dpy="1",
-        circumference='m',
-        T_rev='s',
-        slip_factor="1",                 # eta
-        momentum_compaction_factor="1",  # alpha_c = eta+1/gamma0^2 = 1/gamma0_tr^2
-        #betz0
-
-        ## derived quantities
-        ######################
-        t='s',
-        f='Hz',
-        
-    )   
-    # fmt: on
-
-    if p not in units:
-        raise NotImplementedError(
-            f"Data unit for {p} not known. "
-            "Please specify via register_data_unit method or data_units keyword.",
-        )
-    return units.get(p, "1")
-
-
-def data_symbol(p):
-    """Return data symbol of parameter p as used by xsuite"""
-    if p in _custom_data_symbols:
-        return _custom_data_symbols.get(p)
-
-    labels = dict(at_turn="\\mathrm{turn}")
-    if config.use_xprime_labels:
-        labels.update(dict(px="x'", py="y'", Px="X'", Py="Y'"))
-
-    return labels.get(p, p)
 
 
 class ManifoldMultipleLocator(mpl.ticker.MaxNLocator):
@@ -220,13 +108,17 @@ class XPlot:
         Base class for plotting
 
         Args:
-            data_units (dict, optional): Units of the data. If None, the units are determined from the data.
+            data_units (dict, optional): Units of the data. If None, the units are determined from default and user property settings.
             display_units (dict, optional): Units to display the data in. If None, the units are determined from the data.
             prefix_suffix_config (dict, optional): Prefix and suffix config for joining axes labels. A dict with prefixes and
                 corresponding full names, e.g. {"p": ("px", "py", ...), ...} to join labels for px and py as $p_{x,y}$.
         """
 
-        self._data_units = data_units or {}
+        self._properties = {}
+        if data_units:
+            for name, arg in data_units.items():
+                self._properties[name] = arg if isinstance(arg, Prop) else Prop(name, unit=arg)
+
         self._display_units = defaults(display_units, s="m", x="mm", y="mm", p="mrad")
         self._prefix_suffix_config = {}
         if not config.use_xprime_labels:
@@ -346,12 +238,7 @@ class XPlot:
 
     def data_unit_for(self, p):
         """Return data unit for parameter"""
-        if p in self._data_units:
-            return self._data_units[p]
-        prefix = p[:-1] if len(p) > 1 and p[-1] in "xy" else p
-        if prefix in self._data_units:
-            return self._data_units[prefix]
-        return data_unit(p)
+        return self._get_property(p).unit
 
     def display_unit_for(self, p):
         """Return display unit for parameter"""
@@ -362,39 +249,27 @@ class XPlot:
             return self._display_units[prefix]
         return self.data_unit_for(p)
 
-    def _texify_label(self, label, suffixes=()):
-        """Return tex string representation for label and suffixes
+    def _get_property(self, p):
+        return get_property(p, self._properties)
+
+    def _legend_label_for(self, p):
+        """
+        Return legend label for a single property
 
         Args:
-            label (str): The label to texify
-            suffixes (list): A list of suffixes to append to the label
-
-        Returns:
-            str: The texified label (without enclosing $)
+            p: Property name
         """
+        prop = self._get_property(p)
+        return prop.description or prop.symbol
 
-        label = data_symbol(label)
-
-        # greek letters
-        greek = (
-            "alpha beta gamma delta epsilon zeta eta theta iota kappa lambda "
-            "mu nu xi pi rho sigma tau upsilon phi chi psi omega".split(" ")
-        )
-        if label in greek:
-            label = "\\" + label
-
-        # add suffixes as subscripts
-        if len(suffixes) > 0:
-            label += "_{" + ",".join(suffixes) + "}"
-        return label
-
-    def label_for(self, *pp, unit=True):
+    def label_for(self, *pp, unit=True, description=True):
         """
-        Return label for list of parameters, joining where possible
+        Return axis label for list of properties, joining where possible
 
         Args:
-            pp: Parameter names
+            pp: Property names
             unit: Wheather to include unit
+            description: Wheather to include description
         """
 
         # if there are different units, treat them separately
@@ -408,35 +283,37 @@ class XPlot:
             return "\n".join(lines)
 
         # reduce complexity, by combining labels with common prefix
-        prefixes = {}
-
-        def split(p):
-            for pre, matches in self._prefix_suffix_config.items():
-                if p in matches:
-                    return pre, p.lstrip(pre)
-            return p, None
+        labels, combined = [], {}
 
         for p in pp:
-            pre, suf = split(p)
-            if pre not in prefixes:
-                prefixes[pre] = []
-            if suf is not None:
-                prefixes[pre].append(suf)
+            prop = self._get_property(p)
+            label = prop.symbol
+            if description and prop.description:
+                label = prop.description + "   " + label
+
+            if m := re.fullmatch("\\$(.+)_(.)\\$", label):
+                pre, suf = m.groups()
+                if pre not in combined:
+                    combined[pre] = []
+                combined[pre].append(suf)
+            else:
+                labels.append(label)
+
+        for pre, ss in combined.items():
+            s = ",".join(ss)
+            labels.append(f"${pre}_{{{s}}}$")
 
         # build label
-        labels = []
-        for prefix, suffixes in prefixes.items():
-            labels.append("$" + self._texify_label(prefix, suffixes) + "$")
-            # label = "$" + ",".join([self._texify_label(s) for s in suffixes]) + "$"
-
         label = ", ".join(labels)
 
         # add unit
         if unit:
-            # at this point, all have the same unit (see above)
-            display_unit = pint.Unit(units[0])
-            if display_unit != pint.Unit("1"):
-                label += f" / ${display_unit:~l}$"
+            if units[0] == "a.u.":  # arbitrary unit
+                label += f" / a.u."
+            else:
+                display_unit = pint.Unit(units[0])  # all have the same unit (see above)
+                if display_unit != pint.Unit("1"):
+                    label += f" / ${display_unit:~l}$"
 
         return label
 

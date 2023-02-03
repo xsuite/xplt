@@ -13,9 +13,11 @@ import types
 
 import matplotlib as mpl
 import numpy as np
+import pint
 
 from .util import defaults
 from .particles import XParticlePlot, ParticlesPlot
+from .units import Prop
 
 
 def binned_timeseries(times, n, what=None):
@@ -139,7 +141,12 @@ class TimeBinPlot(XParticlePlot):
 
         """
         super().__init__(
-            data_units=data_units,
+            data_units=defaults(
+                data_units,
+                count=Prop("$N$", unit="1", description="Particles per bin"),
+                cumulative=Prop("$N$", unit="1", description="Particles (cumulative)"),
+                rate=Prop("$\\dot{N}$", unit="1/s", description="Particle rate"),
+            ),
             display_units=display_units,
             twiss=twiss,
             beta=beta,
@@ -167,7 +174,7 @@ class TimeBinPlot(XParticlePlot):
 
         # Create plot elements
         def create_artists(i, j, k, ax, p):
-            kwargs = defaults(plot_kwargs, lw=1, label=self.label_for(p, unit=False))
+            kwargs = defaults(plot_kwargs, lw=1, label=self._legend_label_for(p))
             if p in ("count", "rate", "cumulative"):
                 kwargs = defaults(kwargs, drawstyle="steps-pre")
             return ax.plot([], [], **kwargs)[0]
@@ -177,6 +184,13 @@ class TimeBinPlot(XParticlePlot):
         # set data
         if particles is not None:
             self.update(particles, mask=mask, autoscale=True)
+
+    def _get_property(self, p):
+        prop = super()._get_property(p)
+        if p not in ("count", "rate", "cumulative", "t"):
+            # it is averaged
+            prop = P(f"\\langle {prop.symbol} \\rangle", prop.unit, prop.description)
+        return prop
 
     def update(self, particles, mask=None, autoscale=False):
         """Update plot with new data
@@ -246,25 +260,6 @@ class TimeBinPlot(XParticlePlot):
 
         return changed
 
-    def data_unit_for(self, p):
-        if p in ("count", "cumulative"):
-            return "1"
-        if p == "rate":
-            return "1/s"
-        return super().data_unit_for(p)
-
-    def _texify_label(self, label, suffixes=()):
-        if label == "count":
-            label = "\\mathrm{Particles}"
-        elif label == "rate":
-            label = "\\mathrm{Particle~rate}"
-        elif label == "cumulative":
-            label = "\\mathrm{Particles~(cumulative)}"
-        elif label != "t":
-            return f"\\langle {super()._texify_label(label, suffixes)} \\rangle"
-
-        return super()._texify_label(label, suffixes)
-
 
 class TimeFFTPlot(XParticlePlot):
     def __init__(
@@ -325,10 +320,12 @@ class TimeFFTPlot(XParticlePlot):
                 subplots_kwargs: Keyword arguments passed to matplotlib.pyplot.subplots command when a new figure is created.
 
         """
-        display_units = defaults(display_units, f="Hz" if log else "kHz")
         super().__init__(
-            data_units=data_units,
-            display_units=display_units,
+            data_units=defaults(
+                data_units,
+                count=Prop("N", unit="1", description="Particles per bin"),
+            ),
+            display_units=defaults(display_units, f="Hz" if log else "kHz"),
             twiss=twiss,
             beta=beta,
             frev=frev,
@@ -361,7 +358,7 @@ class TimeFFTPlot(XParticlePlot):
 
         # Create plot elements
         def create_artists(i, j, k, ax, p):
-            kwargs = defaults(plot_kwargs, lw=1, label=self.label_for(p, unit=False))
+            kwargs = defaults(plot_kwargs, lw=1, label=self._legend_label_for(p))
             return ax.plot([], [], **kwargs)[0]
 
         self._init_artists(self.kind, create_artists)
@@ -443,26 +440,22 @@ class TimeFFTPlot(XParticlePlot):
 
         return changed
 
-    def data_unit_for(self, p):
-        if p == "count":
-            return "1"
-        return super().data_unit_for(p)
-
-    def display_unit_for(self, p):
-        if p != "f" and self.scaling.lower() == "pds":
-            return "a.u."
-        return super().display_unit_for(p)
-
-    def _texify_label(self, label, suffixes=()):
-        if label != "f":  # don't change the x-axis label
+    def _get_property(self, p):
+        prop = super()._get_property(p)
+        if p not in ("f"):
+            # it is the FFT of it
+            sym = prop.symbol.strip("$")
             if self.scaling.lower() == "amplitude":
-                if label == "count":
-                    label = "\\mathrm{Particles}"
-                else:
-                    label = "\\hat{" + label + "}"
+                prop = Prop(f"$\\hat{{{sym}}}$", prop.unit, prop.description)
             elif self.scaling.lower() == "pds":
-                return "|\\mathrm{FFT(" + super()._texify_label(label, suffixes) + ")}|^2"
-        return super()._texify_label(label, suffixes)
+                prop = Prop(
+                    f"$|\\mathrm{{FFT({sym})}}|^2$", "a.u.", prop.description
+                )  # a.u. = arbitrary unit
+            else:
+                prop = Prop(
+                    f"$|\\mathrm{{FFT({sym})}}|$", "a.u.", prop.description
+                )  # a.u. = arbitrary unit
+        return prop
 
     def plot_harmonics(self, f, df=0, *, n=20, **plot_kwargs):
         """Add vertical lines or spans indicating the location of values or spans and their harmonics
@@ -672,7 +665,15 @@ class TimeVariationPlot(XParticlePlot):
 
         """
         super().__init__(
-            data_units=data_units,
+            data_units=defaults(
+                data_units,
+                cv=Prop("$c_v=\\sigma/\\mu$", unit="1", description="Coefficient of variation"),
+                duty=Prop(
+                    "$F=\\langle N \\rangle^2/\\langle N^2 \\rangle$",
+                    unit="1",
+                    description="Spill duty factor",
+                ),
+            ),
             display_units=display_units,
             beta=beta,
             frev=frev,
@@ -703,7 +704,7 @@ class TimeVariationPlot(XParticlePlot):
 
         # Create plot elements
         def create_artists(i, j, k, ax, p):
-            kwargs = defaults(plot_kwargs, lw=1, label=self.label_for(p, unit=False))
+            kwargs = defaults(plot_kwargs, lw=1, label=self._legend_label_for(p))
             step = ax.step([], [], **kwargs)[0]
             if poisson:
                 kwargs.update(
@@ -789,18 +790,6 @@ class TimeVariationPlot(XParticlePlot):
                     a.autoscale()
                     a.set(ylim=(0, None))
         return changed
-
-    def data_unit_for(self, p):
-        if p in ("cv", "duty"):
-            return "1"
-        return super().data_unit_for(p)
-
-    def _texify_label(self, label, suffixes=()):
-        if label == "cv":
-            label = "\\mathrm{Coefficient~of~variation}~ c_v=\\sigma/\\mu"
-        elif label == "duty":
-            label = "\\mathrm{Spill~duty~factor}~ F=\\langle N \\rangle^2/\\langle N^2 \\rangle"
-        return super()._texify_label(label, suffixes)
 
 
 ## Restrict star imports to local namespace
