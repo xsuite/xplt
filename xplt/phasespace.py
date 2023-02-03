@@ -209,8 +209,10 @@ class PhaseSpacePlot(XParticlePlot):
             # scatter plot
             kwargs = defaults(scatter_kwargs, s=4, cmap=cmap, lw=0, animated=animated)
             scatter_cmap = kwargs.pop("cmap")  # bypass UserWarning: ignored
+            vmin, vmax = kwargs.pop("vmin", None), kwargs.pop("vmax", None)
             self.artists_scatter[i] = ax.scatter([], [], **kwargs)
             self.artists_scatter[i].cmap = mpl.colormaps[scatter_cmap]
+            self.artists_scatter[i].vmin_vmax = vmin, vmax
             # add colorbar
             if c is not None and (np.any(self.color != c) or i == n - 1):
                 cbargs = dict(label=self.label_for(c))
@@ -320,10 +322,9 @@ class PhaseSpacePlot(XParticlePlot):
 
             # statistics
             XY = np.array((x, y))
+
             XY0 = np.mean(XY, axis=1)
             UV = XY - XY0[:, np.newaxis]  # centered coordinates
-            if self.artists_std[i] or self.artists_percentiles[i]:
-                evals, evecs = np.linalg.eig(np.cov(UV))  # eigenvalues and -vectors
 
             # 2D phase space distribution
             ##############################
@@ -349,7 +350,8 @@ class PhaseSpacePlot(XParticlePlot):
                                 scatter.colorbar.locator,
                                 scatter.colorbar.formatter,
                             )
-                        scatter.norm = mpl.colors.Normalize(np.min(v), np.max(v))
+                        vmin, vmax = scatter.vmin_vmax
+                        scatter.norm = mpl.colors.Normalize(vmin or np.min(v), vmax or np.max(v))
                         if scatter.colorbar is not None:
                             scatter.colorbar.locator, scatter.colorbar.formatter = (
                                 locator,
@@ -377,37 +379,41 @@ class PhaseSpacePlot(XParticlePlot):
                 self.artists_hexbin[i] = [hexbin_bg, hexbin_fg]
                 changed_artists.extend(self.artists_hexbin[i])
 
-            # 2D mean indicator
+            # 2D mean indicator (cross)
             if self.artists_mean[i]:
                 self.artists_mean[i].set_data(XY0)
                 changed_artists.append(self.artists_mean[i])
 
-            # 2D std indicator
-            if self.artists_std[i]:
-                w, h = 2 * np.sqrt(evals)
-                self.artists_std[i].set(
-                    center=XY0,
-                    width=w,
-                    height=h,
-                    angle=np.degrees(np.arctan2(*evecs[1])),
-                )
-                changed_artists.append(self.artists_std[i])
+            # 2D size indicator (ellipses)
+            if UV.shape[1] > 1 and (self.artists_std[i] or self.artists_percentiles[i]):
+                evals, evecs = np.linalg.eig(np.cov(UV))  # eigenvalues and -vectors
 
-            # 2D percentile indicator
-            if self.artists_percentiles[i]:
-                # normalize distribution using eigenvalues and -vectors
-                NN = np.dot(evecs.T, UV) / np.sqrt(evals)[:, np.newaxis]
-                for j, p in enumerate(self.percentiles[i]):
-                    # percentile in normalized distribution
-                    e = np.percentile(np.sum(NN**2, axis=0), p) ** 0.5
-                    w, h = 2 * e * np.sqrt(evals)
-                    self.artists_percentiles[i][j].set(
+                # 2D std indicator
+                if self.artists_std[i]:
+                    w, h = 2 * np.sqrt(evals)
+                    self.artists_std[i].set(
                         center=XY0,
                         width=w,
                         height=h,
                         angle=np.degrees(np.arctan2(*evecs[1])),
                     )
-                    changed_artists.append(self.artists_percentiles[i][j])
+                    changed_artists.append(self.artists_std[i])
+
+                # 2D percentile indicator
+                if self.artists_percentiles[i]:
+                    # normalize distribution using eigenvalues and -vectors
+                    NN = np.dot(evecs.T, UV) / np.sqrt(evals)[:, np.newaxis]
+                    for j, p in enumerate(self.percentiles[i]):
+                        # percentile in normalized distribution
+                        e = np.percentile(np.sum(NN**2, axis=0), p) ** 0.5
+                        w, h = 2 * e * np.sqrt(evals)
+                        self.artists_percentiles[i][j].set(
+                            center=XY0,
+                            width=w,
+                            height=h,
+                            angle=np.degrees(np.arctan2(*evecs[1])),
+                        )
+                        changed_artists.append(self.artists_percentiles[i][j])
 
             # 1D histogram projections
             ###########################
@@ -463,14 +469,15 @@ class PhaseSpacePlot(XParticlePlot):
         }
         return titles.get(f"{a}-{b}", titles.get(f"{b}-{a}", f"{a}-{b} phase space"))
 
-    def axline(self, kind, val, also_on_normalized=True, subplots="all", **kwargs):
+    def axline(self, kind, val, *, subplots="all", also_on_normalized=False, delta=0, **kwargs):
         """Plot a vertical or horizontal line for a given coordinate
 
         Args:
             kind (str): Phase space coordinate
             val (float): Value of phase space coordinate
-            also_on_normalized (bool, optional): If true, also plot line for related (de-)normalized phase space coordinate
             subplots (list of int): Subplots to plot line onto. Defaults to all with matching coordinates.
+            also_on_normalized (bool, optional): If true, also plot line for related (de-)normalized phase space coordinates.
+            delta (float, optional): The momentrum error used to convert to (de-)normalized  phase space coordinates.
             kwargs: Arguments for axvline or axhline
 
         """
@@ -486,17 +493,17 @@ class PhaseSpacePlot(XParticlePlot):
                     # same axis found, draw line
                     line(val * self.factor_for(kind), **kwargs)
 
-                elif self.twiss is not None and kind.lower() == a.lower():
+                elif also_on_normalized and self.twiss is not None and kind.lower() == a.lower():
                     # related (de-)normalized axis found, transform and draw line
                     xy = kind.lower()[-1]
                     if kind in "x,y":  # x,y -> X,Y
-                        v = normalized_coordinates(val, 0, self.twiss, xy)[0]
+                        v = normalized_coordinates(val, 0, self.twiss, xy, delta)[0]
                     elif kind in "X,Y":  # X,Y -> x,y
-                        v = denormalized_coordinates(val, 0, self.twiss, xy)[0]
+                        v = denormalized_coordinates(val, 0, self.twiss, xy, delta)[0]
                     elif kind in "px,py":  # px,py -> Px,Py
-                        v = normalized_coordinates(0, val, self.twiss, xy)[1]
+                        v = normalized_coordinates(0, val, self.twiss, xy, delta)[1]
                     elif kind in "Px,Py":  # Px,Py -> px,py
-                        v = denormalized_coordinates(0, val, self.twiss, xy)[1]
+                        v = denormalized_coordinates(0, val, self.twiss, xy, delta)[1]
                     else:
                         continue
                     line(v * self.factor_for(a), **kwargs)
