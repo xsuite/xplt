@@ -18,6 +18,14 @@ from dataclasses import dataclass
 
 @dataclass
 class Prop:
+    """Class holding property informations
+
+    Args:
+        symbol: Short physical symbol representing property. Preferably latex, e.g. $x$.
+        unit: Physical unit of property data.
+        description (optional): Longer description of the property to display on legend and axes labels.
+    """
+
     symbol: str
     unit: str
     description: str = None
@@ -129,6 +137,12 @@ def register_property(name, unit, symbol=None, description=None):
 
 
 def get_property(name, custom_properties=None):
+    """Get property information
+
+    Args:
+        name: Name of property to return information for
+        custom_properties (optional): Dict with custom properties to supersede user and default properties.
+    """
     if custom_properties and name in custom_properties:
         return custom_properties[name]
     if name in user_properties:
