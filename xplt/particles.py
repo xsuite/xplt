@@ -148,7 +148,7 @@ class XParticlePlot(XPlot):
             beta = self.beta(particles)
             if beta is None:
                 raise ValueError(
-                    "Particle arrival time requested, but enither beta nor beta0 is known. "
+                    "Particle arrival time requested, but neither beta nor beta0 is known. "
                     "Either pass beta or pass both frev and circumference."
                 )
             turn = get(particles, "at_turn")[mask]
