@@ -166,7 +166,11 @@ class XPlot:
 
         # Create plot axes
         if ax is None:
-            _, ax = plt.subplots(nrow, ncol, **subplots_kwargs)
+            fig, ax = plt.subplots(nrow, ncol, **subplots_kwargs)
+            self.annotation = fig.text(
+                0.005, 0.005, "", ha="left", c="gray", linespacing=1, fontsize=8
+            )
+
         self.ax = ax
         self.fig = self.axflat[0].figure
 
@@ -184,6 +188,11 @@ class XPlot:
                 if j > 0:
                     twin.spines.right.set_position(("axes", 1 + 0.2 * j))
                 self.axflat_twin[i].append(twin)
+
+    def _annotate(self, text, **kwargs):
+        if not hasattr(self, "annotation"):
+            return
+        self.annotation.set(text=text, **kwargs)
 
     @property
     def axflat(self):

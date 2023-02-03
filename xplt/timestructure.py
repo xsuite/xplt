@@ -223,6 +223,10 @@ class TimeBinPlot(XParticlePlot):
                     timeseries = timeseries.astype(np.float64)
                     edges = np.linspace(t_min, t_min + dt * n, n + 1)
 
+                    self._annotate(
+                        f'$t_\\mathrm{{bin}} = {pint.Quantity(dt, "s").to_compact():~.4L}$'
+                    )
+
                     if self.relative:
                         if not count_based:
                             raise ValueError(
@@ -438,6 +442,8 @@ class TimeFFTPlot(XParticlePlot):
                     if a.get_yscale() != "log":
                         a.set_ylim(0, None)
 
+        self._annotate(f"$t_\\mathrm{{bin}} = {pint.Quantity(dt, 's').to_compact():~.4L}$")
+
         return changed
 
     def _get_property(self, p):
@@ -586,6 +592,10 @@ class TimeIntervalPlot(XParticlePlot):
         )
         steps = (np.append(edges, edges[-1]), np.concatenate(([0], counts, [0])))
         self.artist.set_data(steps)
+
+        self._annotate(
+            f"$t_\\mathrm{{bin}} = {pint.Quantity(self.bin_time, 's').to_compact():~.4L}$"
+        )
 
         if autoscale:
             ax = self.axis_for(-1)
@@ -762,6 +772,11 @@ class TimeVariationPlot(XParticlePlot):
                         (-1, nebins)
                     )
                     edges = edges[: int(len(edges) / nebins + 1) * nebins : nebins]
+
+                    self._annotate(
+                        f'$t_\\mathrm{{bin}} = {pint.Quantity(dt*nebins, "s").to_compact():~.4L}$\n'
+                        f'$t_\\mathrm{{measure}} = {pint.Quantity(dt, "s").to_compact():~.4L}$'
+                    )
 
                     # calculate metrics
                     if p == "cv":
