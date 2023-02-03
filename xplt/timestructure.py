@@ -288,7 +288,7 @@ class TimeFFTPlot(XParticlePlot):
         fmax=None,
         relative=False,
         log=None,
-        scaling="amplitude",
+        scaling=None,
         mask=None,
         plot_kwargs=None,
         grid=True,
@@ -323,7 +323,7 @@ class TimeFFTPlot(XParticlePlot):
                 fmax (float): Maximum frequency (in Hz) to plot.
                 relative (bool): If True, plot relative frequencies (f/frev) instead of absolute frequencies (f).
                 log (bool, optional): If True, plot on a log scale.
-                scaling: Scaling of the FFT. Can be 'amplitude' (default) or 'pds'.
+                scaling: Scaling of the FFT. Can be 'amplitude' or 'pds'.
                 mask: An index mask to select particles to plot. If None, all particles are plotted.
                 plot_kwargs: Keyword arguments passed to the plot function.
                 grid: If True, show grid lines.
@@ -350,6 +350,9 @@ class TimeFFTPlot(XParticlePlot):
             circumference=circumference,
             wrap_zeta=wrap_zeta,
         )
+
+        if scaling is None:
+            scaling = "pds" if kind == "count" else "amplitude"
 
         self.kind = self._parse_nested_list_string(kind)
         self._fmax = fmax
