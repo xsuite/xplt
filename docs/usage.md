@@ -7,17 +7,18 @@ The following pages describe how to use Xplt for plotting of data from Xsuite or
 :caption: Contents
 :maxdepth: 1
 
-examples/colors
 examples/line
 examples/twiss
 examples/phasespace
 examples/hamiltonians
 examples/timestructure
 examples/animations
+examples/colors
+examples/units
 ```
 
 :::{tip}
-Xsuite is not an explicit dependency, rather an API assumption on available attributes, indices and units. You can use data from any source, and also custom attributes. Use the `data_unit` keyword argument to specify the unit of custom attributes.
+Xsuite is not an explicit dependency, rather an API assumption on available attributes, indices and units. You can use data from any source, and also custom attributes. See {doc}`examples/units` on how to specify units of custom attributes.
 
 ```python
 import xplt
