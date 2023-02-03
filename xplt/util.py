@@ -12,11 +12,7 @@ __date__ = "2022-11-15"
 import types
 
 import numpy as np
-
-try:
-    import pandas as pd
-except ImportError:
-    pd = None  # pandas is not required
+import pandas as pd
 
 
 VOID = object()
@@ -34,7 +30,7 @@ def val(obj):
 
 def get(obj, value, default=VOID):
     """Get value from object"""
-    if pd is not None and isinstance(obj, pd.DataFrame):
+    if isinstance(obj, pd.DataFrame):
         return val(obj[value].values)
     try:
         return val(getattr(obj, value))
@@ -143,7 +139,7 @@ def denormalized_coordinates(X, Px, twiss, xy, delta=0):
     return x, px
 
 
-def virtual_sextupole(tracker, particle_ref=None):
+def virtual_sextupole(tracker, particle_ref=None, *, verbose=False):
     """Determine virtual sextupole strength from twiss data
 
     The normalized strenght is defined as S = -1/2 * betx^(3/2) * k2l
@@ -153,6 +149,7 @@ def virtual_sextupole(tracker, particle_ref=None):
     Args:
         tracker: Tracker object with line and twiss methods
         particle_ref: Reference particle. Defaults to reference particle of tracker.
+        verbose: If True, print information on sextupoles
 
     Returns:
         Tuple (S, mu) with normalized strength in m^(-1/2) and phase in rad/2pi
@@ -175,9 +172,29 @@ def virtual_sextupole(tracker, particle_ref=None):
 
     # determine virtual sextupole
     Sn = -1 / 2 * betx ** (3 / 2) * k2l
-    Stotal = np.sum(Sn * np.exp(3j * mux * 2 * np.pi))
-    S = np.abs(Stotal)
-    mu = np.angle(Stotal) / 3 / 2 / np.pi
+    vectors = Sn * np.exp(3j * mux * 2 * np.pi)
+    V = np.sum(vectors)
+    S = np.abs(V)
+    mu = np.angle(V) / 3 / 2 / np.pi
+
+    if verbose:
+        print("Sextupoles")
+        df = pd.DataFrame(
+            dict(
+                name=sextupoles,
+                k2l=k2l,
+                betx=betx,
+                mux=mux,
+                dx=tw.dx,
+                S_abs=np.abs(vectors),
+                S_deg=np.rad2deg(np.angle(vectors)),
+            )
+        )
+        info = str(df).split("\n")
+        print("  " + "\n  ".join(info))
+        print("  " + "-" * len(info[0]))
+        print("  Virtual sextupole:", f"S = {S:g} at mu = {mu:g}")
+
     return S, mu
 
 
