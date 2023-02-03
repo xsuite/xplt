@@ -218,7 +218,15 @@ class XPlot:
             legend = [], []
             for j, pp in enumerate(ppp):
                 a = self.axis_for(i, j)
+
+                # format axes
                 a.set(ylabel=self.label_for(*pp))
+                units = np.unique([self.display_unit_for(p) for p in pp])
+                if len(units) == 1:
+                    if units[0] == "rad":
+                        self.set_axis_ticks_angle(a.yaxis, minor=True, deg=False)
+                    elif units[0] in ("deg", "°"):
+                        self.set_axis_ticks_angle(a.yaxis, minor=True, deg=True)
 
                 # create artists for traces
                 self.artists[i].append([])
