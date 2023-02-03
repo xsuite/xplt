@@ -53,7 +53,8 @@ def binned_timeseries(times, n, what=None, range=None):
     # count timestamps in bins
     bins = ((times - t_min) / dt).astype(int)
     # bins are i*dt <= t < (i+1)*dt where i = 0 .. n-1
-    bins = bins[(bins >= 0) & (bins < n)]  # igore times outside range
+    mask = (bins >= 0) & (bins < n)  # igore times outside range
+    bins = bins[mask]
     # count particles per time bin
     counts = np.bincount(bins, minlength=n)[:n]
 
@@ -65,7 +66,7 @@ def binned_timeseries(times, n, what=None, range=None):
         # Return 'what' averaged
         v = np.zeros(n)
         # sum up 'what' for all the particles in each bin
-        np.add.at(v, bins, what)
+        np.add.at(v, bins, what[mask])
         # divide by particle count to get mean (default to 0)
         v[counts > 0] /= counts[counts > 0]
         return t_min, dt, v
