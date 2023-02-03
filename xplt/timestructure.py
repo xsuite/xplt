@@ -20,7 +20,7 @@ from .particles import XParticlePlot, ParticlesPlot
 from .units import Prop
 
 
-def binned_timeseries(times, n, what=None):
+def binned_timeseries(times, n, what=None, range=None):
     """Get binned timeseries with equally spaced time bins
 
     From the particle arrival times (non-equally distributed timestamps), a timeseries with equally
@@ -32,8 +32,8 @@ def binned_timeseries(times, n, what=None):
 
     Args:
         times: Array of particle arrival times.
-        what: Array of associated data or None. Must have same shape as times. See above.
         n: Number of bins.
+        what: Array of associated data or None. Must have same shape as times. See above.
         range: Tuple of (min, max) time values to consider. If None, the range is determined from the data.
 
     Returns:
@@ -47,14 +47,15 @@ def binned_timeseries(times, n, what=None):
     # np.histogram, which quickly slows down for large datasets.
     # If you intend to change something here, make sure to benchmark it!
 
-    t_min = np.min(times)
-    dt = (np.max(times) - t_min) / n
+    t_min = np.min(times) if range is None or range[0] is None else range[0]
+    t_max = np.max(times) if range is None or range[1] is None else range[1]
+    dt = (t_max - t_min) / n
     # count timestamps in bins
     bins = ((times - t_min) / dt).astype(int)
     # bins are i*dt <= t < (i+1)*dt where i = 0 .. n-1
-    bins = np.clip(bins, None, n - 1)  # but for the last bin use t <= n*dt
+    bins = bins[(bins >= 0) & (bins < n)]  # igore times outside range
     # count particles per time bin
-    counts = np.bincount(bins)  # , minlength=n)[:n]
+    counts = np.bincount(bins, minlength=n)[:n]
 
     if what is None:
         # Return particle counts
@@ -92,6 +93,7 @@ class TimeBinPlot(XParticlePlot):
         *,
         bin_time=None,
         bin_count=None,
+        exact_bin_time=True,
         relative=False,
         mask=None,
         plot_kwargs=None,
@@ -124,6 +126,9 @@ class TimeBinPlot(XParticlePlot):
                     'rate', 'cumulative', or a particle property to average.
                 bin_time: Time bin width if bin_count is None.
                 bin_count: Number of bins if bin_time is None.
+                exact_bin_time (bool): What to do if bin_time is given but length of data is not an exact multiple of it.
+                    If True, overhanging data is removed such that the data length is a multiple of bin_time.
+                    If False, bin_time is adjusted instead.
                 relative: If True, plot relative numbers normalized to total count.
                     If what is a particle property, this has no effect.
                 mask: An index mask to select particles to plot. If None, all particles are plotted.
@@ -160,6 +165,7 @@ class TimeBinPlot(XParticlePlot):
         self.kind = self._parse_nested_list_string(kind)
         self.bin_time = bin_time
         self.bin_count = bin_count
+        self.exact_bin_time = exact_bin_time
         self.relative = relative
 
         # initialize figure with n subplots
@@ -205,7 +211,15 @@ class TimeBinPlot(XParticlePlot):
         times = self._get_masked(particles, "t", mask)
 
         # re-sample times into equally binned time series
-        n = self.bin_count or int(np.ceil((np.max(times) - np.min(times)) / self.bin_time))
+        if self.bin_count:
+            n = self.bin_count
+            t_range = None
+        elif self.exact_bin_time:
+            n = int((np.max(times) - np.min(times)) / self.bin_time)
+            t_range = np.min(times) + np.array([0, n * self.bin_time])
+        else:
+            n = int(round((np.max(times) - np.min(times)) / self.bin_time))
+            t_range = None
 
         # update plots
         changed = []
@@ -219,7 +233,7 @@ class TimeBinPlot(XParticlePlot):
                     else:
                         property = self._get_masked(particles, p, mask)
 
-                    t_min, dt, timeseries = binned_timeseries(times, n, property)
+                    t_min, dt, timeseries = binned_timeseries(times, n, property, t_range)
                     timeseries = timeseries.astype(np.float64)
                     edges = np.linspace(t_min, t_min + dt * n, n + 1)
 
@@ -486,6 +500,7 @@ class TimeIntervalPlot(XParticlePlot):
         tmax=None,
         bin_time=None,
         bin_count=None,
+        exact_bin_time=True,
         log=True,
         mask=None,
         plot_kwargs=None,
@@ -512,6 +527,9 @@ class TimeIntervalPlot(XParticlePlot):
                 tmax: Maximum interval (in s) to plot.
                 bin_time: Time bin width if bin_count is None.
                 bin_count: Number of bins if bin_time is None.
+                exact_bin_time (bool): What to do if bin_time is given but tmax is not an exact multiple of it.
+                    If True, tmax is adjusted to be a multiple of bin_time.
+                    If False, bin_time is adjusted instead.
                 log: If True, plot on a log scale.
                 mask: An index mask to select particles to plot. If None, all particles are plotted.
                 plot_kwargs: Keyword arguments passed to the plot function.
@@ -527,6 +545,12 @@ class TimeIntervalPlot(XParticlePlot):
         """
         if tmax is None:
             raise ValueError("tmax must be specified.")
+
+        if bin_time is not None:
+            if exact_bin_time:
+                tmax = bin_time * round(tmax / bin_time)
+            else:
+                bin_time = tmax / round(tmax / bin_time)
 
         super().__init__(
             data_units=data_units,
