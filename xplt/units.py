@@ -10,6 +10,7 @@ __contact__ = "eltos@outlook.de"
 __date__ = "2023-02-03"
 
 
+import types
 import numpy as np
 import pint
 from dataclasses import dataclass
@@ -138,3 +139,11 @@ def get_property(name, custom_properties=None):
         raise ValueError(
             f"Property `{name}` is not known, please register it using xplt.register_property"
         )
+
+
+## Restrict star imports to local namespace
+__all__ = [
+    name
+    for name, thing in globals().items()
+    if not (name.startswith("_") or isinstance(thing, types.ModuleType))
+]
