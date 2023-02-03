@@ -213,9 +213,10 @@ class XPlot:
                 It should take the indices i, j, k, the axis, and the element as arguments.
         """
         self.artists = []
+        self._legend_entries = []
         for i, ppp in enumerate(subplots_twin_elements):
             self.artists.append([])
-            legend = [], []
+            self._legend_entries.append([])
             for j, pp in enumerate(ppp):
                 a = self.axis_for(i, j)
 
@@ -234,11 +235,28 @@ class XPlot:
                     artist = create_artist(i, j, k, a, p)
                     self.artists[i][j].append(artist)
                     for art in artist if hasattr(artist, "__iter__") else [artist]:
-                        legend[0].append(art)
-                        legend[1].append(art.get_label())
+                        self._legend_entries[i].append(art)
 
-            if len(legend[0]) > 1:
-                a.legend(*legend)
+            if len(self._legend_entries[i]) > 1:
+                self.legend(i)
+
+    def legend(self, subplot="all", **kwargs):
+        """
+
+        Args:
+            subplot (int or iterable): Subplot axis index or indices
+            kwargs: Keyword arguments passed to :func:`matplotlib.axes.Axes.legend`
+
+        """
+        if subplot == "all":
+            subplot = range(len(self.axflat))
+        if isinstance(subplot, int):
+            subplot = [subplot]
+
+        for s in subplot:
+            ax = self.axflat_twin[s][-1] if len(self.axflat_twin[s]) > 0 else self.axflat[s]
+            handles = self._legend_entries[s]
+            ax.legend(handles=handles, **kwargs)
 
     def save(self, fname, **kwargs):
         """Save the figure"""
