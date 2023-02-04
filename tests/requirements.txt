@@ -1,4 +1,5 @@
 pytest==6.2.5
 pytest-cov==4.0.0
+darglint==1.8.1
 testbook==0.4.2
 -r ../examples/requirements.txt

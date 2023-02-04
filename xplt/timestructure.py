@@ -83,6 +83,16 @@ class TimePlot(ParticlesPlot):
             - For circular lines: at_turn / frev - zeta / beta / c0
             - For linear lines: zeta / beta / c0
 
+        Args:
+            particles: Particles data to plot.
+            kind: Defines the properties to plot.
+                    This can be a nested list or a separated string or a mixture of lists and strings where
+                    the first list level (or separator ``,``) determines the subplots,
+                    the second list level (or separator ``-``) determines any twinx-axes,
+                    and the third list level (or separator ``+``) determines plots on the same axis.
+                    In addition, abbreviations for x-y-parameter pairs are supported (e.g. 'bet' for 'betx+bety').
+            kwargs: See :class:`~xplt.particles.ParticlesPlot` for more options.
+
         """
         super().__init__(particles, kind, as_function_of="t", **kwargs)
 
@@ -119,24 +129,24 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
         Useful to plot time structures of particles loss, such as spill structures.
 
         Args:
-                particles: Particles data to plot.
-                kind (str, optional): What to plot as function of time. Can be 'count' (default),
-                    'rate', 'cumulative', or a particle property to average.
-                bin_time: Time bin width if bin_count is None.
-                bin_count: Number of bins if bin_time is None.
-                exact_bin_time (bool): What to do if bin_time is given but length of data is not an exact multiple of it.
-                    If True, overhanging data is removed such that the data length is a multiple of bin_time.
-                    If False, bin_time is adjusted instead.
-                relative: If True, plot relative numbers normalized to total count.
-                    If what is a particle property, this has no effect.
-                mask: An index mask to select particles to plot. If None, all particles are plotted.
-                plot_kwargs: Keyword arguments passed to the plot function.
-                twiss (dict, optional): Twiss parameters (alfx, alfy, betx and bety) to use for conversion to normalized phase space coordinates.
-                beta (float, optional): Relativistic beta of particles. Defaults to particles.beta0.
-                frev (float, optional): Revolution frequency of circular line for calculation of particle time.
-                circumference (float, optional): Path length of circular line if frev is not given.
-                wrap_zeta: If set, wrap the zeta-coordinate plotted at the machine circumference. Either pass the circumference directly or set this to True to use the circumference from twiss.
-                xplot_kwargs: See :class:`xplt.XPlot` for additional arguments
+            particles: Particles data to plot.
+            kind (str, optional): What to plot as function of time. Can be 'count' (default),
+                'rate', 'cumulative', or a particle property to average.
+            bin_time: Time bin width if bin_count is None.
+            bin_count: Number of bins if bin_time is None.
+            exact_bin_time (bool): What to do if bin_time is given but length of data is not an exact multiple of it.
+                If True, overhanging data is removed such that the data length is a multiple of bin_time.
+                If False, bin_time is adjusted instead.
+            relative: If True, plot relative numbers normalized to total count.
+                If what is a particle property, this has no effect.
+            mask: An index mask to select particles to plot. If None, all particles are plotted.
+            plot_kwargs: Keyword arguments passed to the plot function.
+            twiss (dict, optional): Twiss parameters (alfx, alfy, betx and bety) to use for conversion to normalized phase space coordinates.
+            beta (float, optional): Relativistic beta of particles. Defaults to particles.beta0.
+            frev (float, optional): Revolution frequency of circular line for calculation of particle time.
+            circumference (float, optional): Path length of circular line if frev is not given.
+            wrap_zeta: If set, wrap the zeta-coordinate plotted at the machine circumference. Either pass the circumference directly or set this to True to use the circumference from twiss.
+            xplot_kwargs: See :class:`xplt.XPlot` for additional arguments
 
         """
         xplot_kwargs = self._init_particle_mixin(
@@ -199,6 +209,9 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
             particles: Particles data to plot.
             mask: An index mask to select particles to plot. If None, all particles are plotted.
             autoscale: Whether or not to perform autoscaling on all axes.
+
+        Returns:
+            list: Changed artists
         """
 
         # extract times
@@ -387,6 +400,9 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
             particles: Particles data to plot.
             mask: An index mask to select particles to plot. If None, all particles are plotted.
             autoscale: Whether or not to perform autoscaling on all axes.
+
+        Returns:
+            list: Changed artists
         """
 
         # extract times and associated property
@@ -520,8 +536,6 @@ class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin):
             beta (float, optional): Relativistic beta of particles. Defaults to particles.beta0.
             frev (float, optional): Revolution frequency of circular line for calculation of particle time.
             circumference (float, optional): Path length of circular line if frev is not given.
-            subplots_kwargs: Keyword arguments passed to matplotlib.pyplot.subplots command when a new figure is created.
-            data_units: See :class:`xplt.XPlot`
             xplot_kwargs: See :class:`xplt.XPlot` for additional arguments
 
         """
@@ -664,7 +678,6 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin):
             evaluate_dt: Time bin width for metric evaluation if evaluate_bins is None.
             evaluate_bins: Number of bins if evaluate_dt is None.
             poisson (bool): If true, indicate poisson limit.
-
             mask: An index mask to select particles to plot. If None, all particles are plotted.
             plot_kwargs: Keyword arguments passed to the plot function.
             beta (float, optional): Relativistic beta of particles. Defaults to particles.beta0.
@@ -741,6 +754,9 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin):
             particles: Particles data to plot.
             mask: An index mask to select particles to plot. If None, all particles are plotted.
             autoscale: Whether or not to perform autoscaling on all axes.
+
+        Returns:
+            Changed artists
         """
 
         # extract times

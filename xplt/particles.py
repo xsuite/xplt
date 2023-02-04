@@ -271,6 +271,9 @@ class ParticlesPlot(XManifoldPlot, ParticlePlotMixin):
             particles: Particles data to plot.
             mask: An index mask to select particles to plot. If None, all particles are plotted.
             autoscale: Whether or not to perform autoscaling on all axes.
+
+        Returns:
+            List of artists that have been updated.
         """
 
         xdata = self._get_masked(particles, self.on_x, mask)

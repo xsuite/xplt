@@ -142,6 +142,12 @@ def get_property(name, custom_properties=None):
     Args:
         name: Name of property to return information for
         custom_properties (optional): Dict with custom properties to supersede user and default properties.
+
+    Returns:
+        Prop: Property information
+
+    Raises:
+        ValueError: If property is not known
     """
     if custom_properties and name in custom_properties:
         return custom_properties[name]

@@ -33,18 +33,11 @@ class TwissPlot(XManifoldPlot):
         Args:
             twiss: Dictionary with twiss information
             kind: Defines the properties to plot.
-                     This can be a nested list or a separated string or a mixture of lists and strings where
-                     the first list level (or separator ``,``) determines the subplots,
-                     the second list level (or separator ``-``) determines any twinx-axes,
-                     and the third list level (or separator ``+``) determines plots on the same axis.
-                     In addition, abbreviations for x-y-parameter pairs are supported (e.g. 'bet' for 'betx+bety').
-
-                     Examples:
-                      - ``'bet-dx'``: single subplot with 'betx' and 'bety' on the left and 'dx' on the right axis
-                      - ``[[['betx', 'bety'], ['dx']]]``: same as above
-                      - ``'betx+alf,mu'``: two suplots the first with 'betx', 'alfx' and 'alfy' and the second with 'mux' and 'muy'
-                      - ``[[['betx', 'alfx', 'alfy']], [['mux', 'muy']]]``: same as above
-
+                    This can be a nested list or a separated string or a mixture of lists and strings where
+                    the first list level (or separator ``,``) determines the subplots,
+                    the second list level (or separator ``-``) determines any twinx-axes,
+                    and the third list level (or separator ``+``) determines plots on the same axis.
+                    In addition, abbreviations for x-y-parameter pairs are supported (e.g. 'bet' for 'betx+bety').
             line: Line of elements. If given, adds a line plot to the top.
             line_kwargs: Keyword arguments passed to line plot.
             display_units: See :class:`xplt.XPlot`
@@ -90,10 +83,13 @@ class TwissPlot(XManifoldPlot):
         """
         Update the twiss data this plot shows
 
-        :param twiss: Dictionary with twiss information.
-        :param line: Line of elements.
-        :param autoscale: Whether or not to perform autoscaling on all axes.
-        :return: changed artists.
+        Args:
+            twiss: Dictionary with twiss information
+            autoscale: Whether or not to perform autoscaling on all axes.
+            line: Line of elements.
+
+        Returns:
+            changed artists
         """
         s = self.factor_for("s")
         changed = []
@@ -126,7 +122,7 @@ class TwissPlot(XManifoldPlot):
             kwargs: Arguments for axvline or axhline
 
         """
-        return self.axspan(kind, val, None, subplots=subplots, **kwargs)
+        self.axspan(kind, val, None, subplots=subplots, **kwargs)
 
     def axspan(self, kind, val, val_to=None, subplots="all", **kwargs):
         """Plot a vertical or horizontal span (or line) for a given coordinate

@@ -79,6 +79,7 @@ def average(*data, n=100, function=np.mean):
         data (np.ndarray): the data to average over
         n (int): number of subsequent datapoints of intput to average into one point in the output. If the input size is not a multiple of n, the data will be clipped.
         function (callable, optional): averaging function to apply to last axis of input data. Defaults to np.mean
+
     Returns:
         averaged data
     """

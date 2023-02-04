@@ -166,7 +166,15 @@ class XPlot:
         return np.array(self.ax).flatten()
 
     def axis(self, subplot=0, twin=0):
-        """Return the axis for a given flat subplot index and twin index"""
+        """Return the axis for a given flat subplot index and twin index
+
+        Args:
+            subplot (int, optional): Flat subplot index
+            twin (int, optional): Twin index
+
+        Returns:
+            matplotlib.axes.Axes: Axis for the given subplot and twin index
+        """
         return self.axflat_twin[subplot][twin - 1] if twin else self.axflat[subplot]
 
     def legend(self, subplot="all", **kwargs):
@@ -188,24 +196,55 @@ class XPlot:
             ax.legend(handles=handles, **kwargs)
 
     def save(self, fname, **kwargs):
-        """Save the figure"""
+        """Save the figure
+
+        Args:
+            fname (str): Filename
+            kwargs: Keyword arguments passed to :func:`matplotlib.figure.Figure.savefig`
+        """
         self.fig.savefig(fname, **defaults(kwargs, dpi=300))
 
     def title(self, title, **kwargs):
-        """Set figure title"""
+        """Set figure title
+
+        Args:
+            title (str): Title
+            kwargs: Keyword arguments passed to :func:`matplotlib.figure.Figure.suptitle`
+        """
         self.fig.suptitle(title, **kwargs)
 
     def factor_for(self, p):
-        """Return factor to convert parameter into display unit"""
+        """Return factor to convert parameter into display unit
+
+        Args:
+            p (str): Property name
+
+        Returns:
+            float: Factor to convert parameter into display unit
+        """
         quantity = pint.Quantity(self.data_unit_for(p))
         return (quantity / pint.Quantity(self.display_unit_for(p))).to("").magnitude
 
     def data_unit_for(self, p):
-        """Return data unit for parameter"""
+        """Return data unit for parameter
+
+        Args:
+            p (str): Property name
+
+        Returns:
+            str: Data unit
+        """
         return self._get_property(p).unit
 
     def display_unit_for(self, p):
-        """Return display unit for parameter"""
+        """Return display unit for parameter
+
+        Args:
+            p (str): Property name
+
+        Returns:
+            str: Display unit
+        """
         if p is None:
             return None
         if p in self._display_units:
@@ -224,6 +263,9 @@ class XPlot:
 
         Args:
             p: Property name
+
+        Returns:
+            str: Legend label
         """
         prop = self._get_property(p)
         return prop.description or prop.symbol
@@ -236,6 +278,9 @@ class XPlot:
             pp: Property names
             unit: Wheather to include unit
             description: Wheather to include description
+
+        Returns:
+            str: Axis label
         """
 
         # filter out None
