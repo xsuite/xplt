@@ -170,24 +170,6 @@ class XPlot:
         """
         return self.axflat_twin[subplot][twin - 1] if twin else self.axflat[subplot]
 
-    def legend(self, subplot="all", **kwargs):
-        """
-
-        Args:
-            subplot (int or iterable): Subplot axis index or indices
-            kwargs: Keyword arguments passed to :func:`matplotlib.axes.Axes.legend`
-
-        """
-        if subplot == "all":
-            subplot = range(len(self.axflat))
-        if isinstance(subplot, int):
-            subplot = [subplot]
-
-        for s in subplot:
-            ax = self.axflat_twin[s][-1] if len(self.axflat_twin[s]) > 0 else self.axflat[s]
-            handles = self._legend_entries[s]
-            ax.legend(handles=handles, **kwargs)
-
     def save(self, fname, **kwargs):
         """Save the figure
 
@@ -518,8 +500,33 @@ class XManifoldPlot(XPlot):
                     for art in artist if hasattr(artist, "__iter__") else [artist]:
                         self._legend_entries[i].append(art)
 
-            if len(self._legend_entries[i]) > 1:
-                self.legend(i)
+            self.legend(i, show="auto")
+
+        self.axis(-1).set(xlabel=self.label_for(self.on_x))
+
+    def legend(self, subplot="all", show=True, **kwargs):
+        """
+
+        Args:
+            subplot (int or iterable): Subplot axis index or indices
+            show (bool or "auto"): If True, show the legend. If "auto", show the legend if there are more than one entries.
+            kwargs: Keyword arguments passed to :func:`matplotlib.axes.Axes.legend`
+
+        """
+        if subplot == "all":
+            subplot = range(len(self.axflat))
+        if isinstance(subplot, int):
+            subplot = [subplot]
+
+        for s in subplot:
+            # use topmost axes for legend
+            ax = self.axflat_twin[s][-1] if len(self.axflat_twin[s]) > 0 else self.axflat[s]
+            handles = self._legend_entries[s]
+            if not show or show == "auto" and len(handles) <= 1:
+                if ax.get_legend():
+                    ax.get_legend().remove()
+            else:
+                ax.legend(handles=handles, **kwargs)
 
     @staticmethod
     def _parse_nested_list_string(list_string, separators=",-+", subs={}):
