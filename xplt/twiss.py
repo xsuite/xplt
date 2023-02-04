@@ -58,16 +58,13 @@ class TwissPlot(XManifoldPlot):
             **xplot_kwargs,
         )
 
-        # Format plot axes
-        self.axis(-1).set(xlabel=self.label_for("s"))
-
         # create plot elements
         def create_artists(i, j, k, a, p):
             if line and i == 0:
                 return None  # skip line plot placeholder
             return a.plot([], [], label=self._legend_label_for(p))[0]
 
-        self._init_artists(self.on_y, create_artists)
+        self._create_artists(create_artists)
 
         # Create line plot
         self.lineplot = None

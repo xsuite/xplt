@@ -257,7 +257,7 @@ class ParticlesPlot(XManifoldPlot, ParticlePlotMixin):
             kwargs = defaults(plot_kwargs, marker=".", ls="", label=self._legend_label_for(p))
             return a.plot([], [], **kwargs)[0]
 
-        self._init_artists(self.on_y, create_artists)
+        self._create_artists(create_artists)
 
         # set data
         if particles is not None:

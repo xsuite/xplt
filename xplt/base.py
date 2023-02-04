@@ -459,32 +459,12 @@ class XManifoldPlot(XPlot):
             **kwargs,
         )
 
-        ## Create artists
-        # TODO: revise below
-
-    def _init_artists(self, subplots_twin_elements, create_artist):
-        # TODO: revise
-        # TODO: subplots_twin_elements may contain None
-        # TODO: move to ManifoldSubplot mixin
-        # TODO: rename: it also formats axes! Or maybe make a unified init manifold stuff... ?
-        """Helper method to create artists for subplots and twin axes
-
-        Args:
-            subplots_twin_elements (list): A list of lists of elements to create artists for.
-                The outer list is for subplots, the inner list for twin axes.
-            create_artist (function): A function that creates an artist for a given element.
-                It should take the indices i, j, k, the axis, and the element as arguments.
-        """
-        self.artists = []
-        self._legend_entries = []
-        for i, ppp in enumerate(subplots_twin_elements):
-            self.artists.append([])
-            self._legend_entries.append([])
+        # Format axes
+        for i, ppp in enumerate(self.on_y):
             for j, pp in enumerate(ppp):
                 a = self.axis(i, j)
-
-                # format axes
                 a.set(ylabel=self.label_for(*pp))
+
                 units = np.unique([self.display_unit_for(p) for p in pp])
                 if len(units) == 1:
                     if units[0] == "rad":
@@ -492,17 +472,32 @@ class XManifoldPlot(XPlot):
                     elif units[0] in ("deg", "°"):
                         self._set_axis_ticks_angle(a.yaxis, minor=True, deg=True)
 
-                # create artists for traces
+        self.axis(-1).set(xlabel=self.label_for(self.on_x))
+
+    def _create_artists(self, callback):
+        """Helper method to create artists for subplots and twin axes
+
+        Args:
+            callback (function): Callback function to create artists.
+                Signature: (i, j, k, axis, p) -> artist
+                Where i, j, k are the subplot, twin-axis, trace indices respectively;
+                axis is the axis and the string p is the property to plot.
+        """
+        self.artists = []
+        self._legend_entries = []
+        for i, ppp in enumerate(self.on_y):
+            self.artists.append([])
+            self._legend_entries.append([])
+            for j, pp in enumerate(ppp):
                 self.artists[i].append([])
+                a = self.axis(i, j)
                 for k, p in enumerate(pp):
-                    artist = create_artist(i, j, k, a, p)
+                    artist = callback(i, j, k, a, p)
                     self.artists[i][j].append(artist)
                     for art in artist if hasattr(artist, "__iter__") else [artist]:
                         self._legend_entries[i].append(art)
 
             self.legend(i, show="auto")
-
-        self.axis(-1).set(xlabel=self.label_for(self.on_x))
 
     def legend(self, subplot="all", show=True, **kwargs):
         """

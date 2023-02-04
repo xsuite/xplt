@@ -105,7 +105,7 @@ class KnlPlot(XManifoldPlot):
             else:
                 return a.plot([], [], **kwargs)[0]
 
-        self._init_artists(self.on_y, create_artists)
+        self._create_artists(create_artists)
 
         for a in self.axflat:
             a.plot(self.S, np.zeros_like(self.S), "k-", lw=1, zorder=4)

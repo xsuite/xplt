@@ -189,7 +189,7 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
                 kwargs = defaults(kwargs, drawstyle="steps-pre")
             return ax.plot([], [], **kwargs)[0]
 
-        self._init_artists(self.on_y, create_artists)
+        self._create_artists(create_artists)
 
         # set data
         if particles is not None:
@@ -336,6 +336,16 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
             wrap_zeta: If set, wrap the zeta-coordinate plotted at the machine circumference. Either pass the circumference directly or set this to True to use the circumference from twiss.
             xplot_kwargs: See :class:`xplt.XPlot` for additional arguments
         """
+
+        if scaling is None:
+            scaling = "pds" if kind == "count" else "amplitude"
+
+        self._fmax = fmax
+        self.relative = relative
+        self.scaling = scaling
+        if log is None:
+            log = not relative
+
         xplot_kwargs = self._init_particle_mixin(
             twiss=twiss,
             beta=beta,
@@ -354,15 +364,6 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
             **xplot_kwargs,
         )
 
-        if scaling is None:
-            scaling = "pds" if kind == "count" else "amplitude"
-
-        self._fmax = fmax
-        self.relative = relative
-        self.scaling = scaling
-        if log is None:
-            log = not relative
-
         # Format plot axes
         self.axis(-1).set(
             xlabel="$f/f_{rev}$" if self.relative else self.label_for("f"),
@@ -380,7 +381,7 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
             kwargs = defaults(plot_kwargs, lw=1, label=self._legend_label_for(p))
             return ax.plot([], [], **kwargs)[0]
 
-        self._init_artists(self.on_y, create_artists)
+        self._create_artists(create_artists)
 
         # set data
         if particles is not None:
@@ -554,9 +555,14 @@ class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin):
             circumference=circumference,
             xplot_kwargs=xplot_kwargs,
         )
+        xplot_kwargs["data_units"] = defaults(
+            xplot_kwargs.get("data_units"),
+            dt=Prop("$\\Delta t$", unit="s", description="Delay between consecutive particles"),
+            count=Prop("$N$", unit="1", description="Particles per bin"),
+        )
         super().__init__(
-            on_x="t",
-            on_y="dt",
+            on_x="dt",
+            on_y="count",
             **xplot_kwargs,
         )
 
@@ -566,21 +572,19 @@ class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin):
         self._bin_count = bin_count
         self.tmax = tmax
 
+        # create plot elements
+        def create_artists(i, j, k, ax, p):
+            return ax.step([], [], **defaults(plot_kwargs, lw=1))[0]
+
+        self._create_artists(create_artists)
+
         # Format plot axes
         ax = self.axis(-1)
-        ax.set(
-            xlabel="Delay between consecutive particles " + self.label_for("t"),
-            xlim=(self.bin_time if log else 0, self.tmax * self.factor_for("t")),
-            ylabel=f"Occurrences",
-        )
+        ax.set(xlim=(self.bin_time if log else 0, self.tmax * self.factor_for("t")))
         if log:
             ax.set(xscale="log", yscale="log")
         else:
             ax.set(ylim=(0, None))
-
-        # Create plot elements
-        kwargs = defaults(plot_kwargs, lw=1)
-        (self.artist,) = self.ax.step([], [], **kwargs)
 
         # set data
         if particles is not None:
@@ -612,18 +616,24 @@ class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin):
             delay, bins=self.bin_count, range=(0, self.bin_count * self.bin_time)
         )
         steps = (np.append(edges, edges[-1]), np.concatenate(([0], counts, [0])))
-        self.artist.set_data(steps)
 
         self.annotate(
             f"$t_\\mathrm{{bin}} = {pint.Quantity(self.bin_time, 's').to_compact():~.4L}$"
         )
 
-        if autoscale:
-            ax = self.axis(-1)
-            ax.relim()
-            ax.autoscale()
-            if not ax.get_yscale() == "log":
-                ax.set(ylim=(0, None))
+        for i, ppp in enumerate(self.on_y):
+            for j, pp in enumerate(ppp):
+                ax = self.axis(i, j)
+                for k, p in enumerate(pp):
+                    if p != "count":
+                        raise ValueError(f"Invalid plot parameter {p}.")
+                    self.artists[i][j][k].set_data(steps)
+
+                if autoscale:
+                    ax.relim()
+                    ax.autoscale()
+                    if not ax.get_yscale() == "log":
+                        ax.set(ylim=(0, None))
 
     def plot_harmonics(self, t, *, n=20, **plot_kwargs):
         """Add vertical lines or spans indicating the location of values or spans and their harmonics
@@ -741,7 +751,7 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin):
                 pstep = None
             return step, pstep
 
-        self._init_artists(self.on_y, create_artists)
+        self._create_artists(create_artists)
 
         # set data
         if particles is not None:
