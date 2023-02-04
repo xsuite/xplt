@@ -53,7 +53,7 @@ class KnlPlot(XManifoldPlot):
         filled=True,
         resolution=1000,
         line_length=None,
-        **xplot_kwargs,
+        **kwargs,
     ):
         """
         A plot for knl values along line
@@ -66,7 +66,7 @@ class KnlPlot(XManifoldPlot):
             filled (bool): If True, make a filled plot instead of a line plot.
             resolution: Number of points to use for plot.
             line_length: Length of line (only required if line is None).
-            xplot_kwargs: See :class:`xplt.XPlot` for additional arguments
+            kwargs: See :class:`~.base.XPlot` for additional arguments
 
         Known issues:
             - Thin elements produced with MAD-X MAKETHIN do overlap due to the displacement introduced by the TEAPOT algorithm.
@@ -90,7 +90,7 @@ class KnlPlot(XManifoldPlot):
         super().__init__(
             on_x="s",
             on_y=knl,
-            **xplot_kwargs,
+            **kwargs,
         )
 
         # create plot elements
@@ -207,7 +207,7 @@ class FloorPlot(XPlot):
         boxes=None,
         labels=False,
         element_width=1,
-        **xplot_kwargs,
+        **kwargs,
     ):
         """
         A floor plan of the line based on survey data
@@ -225,7 +225,8 @@ class FloorPlot(XPlot):
                 replaced with the element name) and all options suitable for an annotation,
                 such as "color", "alpha", etc.
             element_width (float): Width of element boxes.
-            xplot_kwargs: See :class:`xplt.XPlot` for additional arguments
+            kwargs: See :class:`~.base.XPlot` for additional arguments
+
 
         The config options can be:
             - None: Use good defaults.
@@ -236,7 +237,7 @@ class FloorPlot(XPlot):
 
         """
 
-        super().__init__(**xplot_kwargs)
+        super().__init__(**kwargs)
 
         if projection == "3D":
             raise NotImplementedError()

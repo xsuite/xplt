@@ -25,7 +25,7 @@ class TwissPlot(XManifoldPlot):
         line=None,
         line_kwargs={},
         display_units=None,
-        **xplot_kwargs,
+        **kwargs,
     ):
         """
         A plot for twiss parameters and closed orbit
@@ -41,7 +41,8 @@ class TwissPlot(XManifoldPlot):
             line: Line of elements. If given, adds a line plot to the top.
             line_kwargs: Keyword arguments passed to line plot.
             display_units: See :class:`xplt.XPlot`
-            xplot_kwargs: See :class:`xplt.XPlot` for additional arguments
+            kwargs: See :class:`~.base.XPlot` for additional arguments
+
 
         """
         subs = {p: f"{p}x+{p}y" for p in "alf,bet,gam,mu,d,dp,q,dq".split(",")}
@@ -55,7 +56,7 @@ class TwissPlot(XManifoldPlot):
             on_y=kind,
             on_y_subs=subs,
             display_units=defaults(display_units, bet="m", d="m"),
-            **xplot_kwargs,
+            **kwargs,
         )
 
         # create plot elements

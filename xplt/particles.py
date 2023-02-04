@@ -20,17 +20,8 @@ from .util import c0, get, val, defaults, normalized_coordinates
 
 
 class ParticlePlotMixin:
-    # TODO: this should be a mixin, it does not rely on Xplot, it only sets some additional data and display units
-
     def _init_particle_mixin(
-        self,
-        *,
-        twiss=None,
-        beta=None,
-        frev=None,
-        circumference=None,
-        wrap_zeta=False,
-        xplot_kwargs=None,
+        self, *, twiss=None, beta=None, frev=None, circumference=None, wrap_zeta=False, **kwargs
     ):
         r"""Mixin for plotting of particle data
 
@@ -54,11 +45,12 @@ class ParticlePlotMixin:
             beta (float, optional): Relativistic beta of particles. Defaults to particles.beta0.
             frev (float, optional): Revolution frequency of circular line for calculation of particle time.
             circumference (float, optional): Path length of circular line if frev is not given.
-            wrap_zeta: If set, wrap the zeta-coordinate plotted at the machine circumference. Either pass the circumference directly or set this to True to use the circumference from twiss.
-            xplot_kwargs: Keyword arguments for Xplot constructor.
+            wrap_zeta: If set, wrap the zeta-coordinate plotted at the machine circumference.
+                Either pass the circumference directly or set this to True to use the circumference from twiss.
+            kwargs: Keyword arguments for :class:`~.base.XPlot`
 
         Returns:
-            Updated keyword arguments for Xplot constructor.
+            Updated keyword arguments for :class:`~.base.XPlot` constructor.
 
         """
         self.twiss = twiss
@@ -67,12 +59,9 @@ class ParticlePlotMixin:
         self._circumference = val(circumference)
         self.wrap_zeta = wrap_zeta
 
-        # Update xplot_kwargs with particle specific settings
-        if xplot_kwargs is None:
-            xplot_kwargs = {}
-
-        xplot_kwargs["data_units"] = defaults(
-            xplot_kwargs.get("data_units"),
+        # Update kwargs with particle specific settings
+        kwargs["data_units"] = defaults(
+            kwargs.get("data_units"),
             # fmt: off
             X  = Prop("$X$",   unit=f"({get_property('x').unit})/({get_property('betx').unit})^(1/2)"),   # Normalized X
             Y  = Prop("$Y$",   unit=f"({get_property('y').unit})/({get_property('bety').unit})^(1/2)"),   # Normalized Y
@@ -84,8 +73,8 @@ class ParticlePlotMixin:
             Θy = Prop("$Θ_y$", unit=f"rad"),
             # fmt: on
         )
-        xplot_kwargs["display_units"] = defaults(
-            xplot_kwargs.get("display_units"),
+        kwargs["display_units"] = defaults(
+            kwargs.get("display_units"),
             X="mm^(1/2)",
             Y="mm^(1/2)",
             P="mm^(1/2)",
@@ -93,7 +82,7 @@ class ParticlePlotMixin:
             Θ="rad",  # Angle
         )
 
-        return xplot_kwargs
+        return kwargs
 
     @property
     def circumference(self):
@@ -106,8 +95,11 @@ class ParticlePlotMixin:
         """Get reference relativistic beta as float"""
         if self._beta is not None:
             return self._beta
-        if self._frev is not None and self.circumference is not None:
-            return self._frev * self.circumference / c0
+        if self.circumference is not None:
+            if self._frev is not None:
+                return self._frev * self.circumference / c0
+            if self.twiss is not None:
+                return self.circumference / self.twiss.T_rev / c0
         if particles is not None:
             try:
                 beta = get(particles, "beta0")
@@ -126,6 +118,8 @@ class ParticlePlotMixin:
         """Get reference revolution frequency"""
         if self._frev is not None:
             return self._frev
+        if self.twiss is not None:
+            return 1 / self.twiss.T_rev
         beta = self.beta(particles)
         if beta is not None and self.circumference is not None:
             return beta * c0 / self.circumference
@@ -157,8 +151,11 @@ class ParticlePlotMixin:
             beta = self.beta(particles)
             if beta is None:
                 raise ValueError(
-                    "Particle arrival time requested, but neither beta nor beta0 is known. "
-                    "Either pass beta or pass both frev and circumference."
+                    "Particle arrival time can not be determined "
+                    "because all of the following are unknown: "
+                    "beta, (frev and circumference), twiss. "
+                    "To resolve this error, pass either to the plot constructor "
+                    "or specify particle.beta0."
                 )
             turn = get(particles, "at_turn")[mask]
             zeta = get(particles, "zeta")[
@@ -169,8 +166,11 @@ class ParticlePlotMixin:
                 frev = self.frev(particles)
                 if frev is None:
                     raise ValueError(
-                        "Particle arrival time requested while at_turn > 0, but neither frev is set, "
-                        "nor is circumference and beta known."
+                        "Particle arrival time can not be determined while at_turn > 0 "
+                        "because all of the following are unknown: "
+                        "frev, twiss, (bata and circumference). "
+                        "To resolve this error, pass either to the plot constructor "
+                        "and/or specify particle.beta0."
                     )
                 time = time + turn / frev
             return np.array(time).flatten()
@@ -199,12 +199,7 @@ class ParticlesPlot(XManifoldPlot, ParticlePlotMixin):
         mask=None,
         plot_kwargs=None,
         sort_by=None,
-        twiss=None,
-        beta=None,
-        frev=None,
-        circumference=None,
-        wrap_zeta=False,
-        **xplot_kwargs,
+        **kwargs,
     ):
         """
         A plot of particle properties as function of another property.
@@ -226,24 +221,18 @@ class ParticlesPlot(XManifoldPlot, ParticlePlotMixin):
             circumference (float): Path length of circular line if frev is not given. Defaults to twiss.circumference.
             wrap_zeta (bool or float): If set, wrap the zeta-coordinate plotted at the machine circumference. Set to
                 True to wrap at the circumference or to a value to wrap at this value.
-            xplot_kwargs: See :class:`xplt.XPlot` for additional arguments
+            kwargs: See :class:`~.base.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
+
         """
-        xplot_kwargs = self._init_particle_mixin(
-            twiss=twiss,
-            beta=beta,
-            frev=frev,
-            circumference=circumference,
-            wrap_zeta=wrap_zeta,
-            xplot_kwargs=xplot_kwargs,
+        kwargs = self._init_particle_mixin(
+            **kwargs,
         )
-        xplot_kwargs["display_units"] = defaults(
-            xplot_kwargs.get("display_units"), bet="m", d="m"
-        )
+        kwargs["display_units"] = defaults(kwargs.get("display_units"), bet="m", d="m")
         super().__init__(
             on_x=as_function_of,
             on_y=kind,
             on_y_subs={"J": "Jx+Jy", "Θ": "Θx+Θy"},
-            **xplot_kwargs,
+            **kwargs,
         )
 
         # parse kind string

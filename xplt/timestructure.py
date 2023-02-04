@@ -109,12 +109,7 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
         relative=False,
         mask=None,
         plot_kwargs=None,
-        twiss=None,
-        beta=None,
-        frev=None,
-        circumference=None,
-        wrap_zeta=False,
-        **xplot_kwargs,
+        **kwargs,
     ):
         """
         A binned histogram plot of particles as function of times.
@@ -141,24 +136,12 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
                 If what is a particle property, this has no effect.
             mask: An index mask to select particles to plot. If None, all particles are plotted.
             plot_kwargs: Keyword arguments passed to the plot function.
-            twiss (dict, optional): Twiss parameters (alfx, alfy, betx and bety) to use for conversion to normalized phase space coordinates.
-            beta (float, optional): Relativistic beta of particles. Defaults to particles.beta0.
-            frev (float, optional): Revolution frequency of circular line for calculation of particle time.
-            circumference (float, optional): Path length of circular line if frev is not given.
-            wrap_zeta: If set, wrap the zeta-coordinate plotted at the machine circumference. Either pass the circumference directly or set this to True to use the circumference from twiss.
-            xplot_kwargs: See :class:`xplt.XPlot` for additional arguments
+            kwargs: See :class:`~.base.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
         """
-        xplot_kwargs = self._init_particle_mixin(
-            twiss=twiss,
-            beta=beta,
-            frev=frev,
-            circumference=circumference,
-            wrap_zeta=wrap_zeta,
-            xplot_kwargs=xplot_kwargs,
-        )
-        xplot_kwargs["data_units"] = defaults(
-            xplot_kwargs.get("data_units"),
+        kwargs = self._init_particle_mixin(**kwargs)
+        kwargs["data_units"] = defaults(
+            kwargs.get("data_units"),
             count=Prop("$N$", unit="1", description="Particles per bin"),
             cumulative=Prop("$N$", unit="1", description="Particles (cumulative)"),
             rate=Prop("$\\dot{N}$", unit="1/s", description="Particle rate"),
@@ -166,7 +149,7 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
         super().__init__(
             on_x="t",
             on_y=kind,
-            **xplot_kwargs,
+            **kwargs,
         )
 
         if bin_time is None and bin_count is None:
@@ -298,12 +281,7 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
         scaling=None,
         mask=None,
         plot_kwargs=None,
-        twiss=None,
-        beta=None,
-        frev=None,
-        circumference=None,
-        wrap_zeta=False,
-        **xplot_kwargs,
+        **kwargs,
     ):
         """
         A frequency plot based on particle arrival times.
@@ -329,12 +307,8 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
             scaling: Scaling of the FFT. Can be 'amplitude' or 'pds'.
             mask: An index mask to select particles to plot. If None, all particles are plotted.
             plot_kwargs: Keyword arguments passed to the plot function.
-            twiss (dict, optional): Twiss parameters (alfx, alfy, betx and bety) to use for conversion to normalized phase space coordinates.
-            beta (float, optional): Relativistic beta of particles. Defaults to particles.beta0.
-            frev (float, optional): Revolution frequency of circular line for calculation of particle time.
-            circumference (float, optional): Path length of circular line if frev is not given.
-            wrap_zeta: If set, wrap the zeta-coordinate plotted at the machine circumference. Either pass the circumference directly or set this to True to use the circumference from twiss.
-            xplot_kwargs: See :class:`xplt.XPlot` for additional arguments
+            kwargs: See :class:`~.base.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
+
         """
 
         if scaling is None:
@@ -346,22 +320,17 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
         if log is None:
             log = not relative
 
-        xplot_kwargs = self._init_particle_mixin(
-            twiss=twiss,
-            beta=beta,
-            frev=frev,
-            circumference=circumference,
-            wrap_zeta=wrap_zeta,
-            xplot_kwargs=xplot_kwargs,
+        kwargs = self._init_particle_mixin(
+            **kwargs,
         )
-        xplot_kwargs["data_units"] = defaults(
-            xplot_kwargs.get("data_units"),
+        kwargs["data_units"] = defaults(
+            kwargs.get("data_units"),
             count=Prop("N", unit="1", description="Particles per bin"),
         )
         super().__init__(
             on_x="t",
             on_y=kind,
-            **xplot_kwargs,
+            **kwargs,
         )
 
         # Format plot axes
@@ -509,10 +478,7 @@ class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin):
         log=True,
         mask=None,
         plot_kwargs=None,
-        beta=None,
-        frev=None,
-        circumference=None,
-        **xplot_kwargs,
+        **kwargs,
     ):
         """
         A histogram plot of particle arrival intervals (i.e. delay between consecutive particles).
@@ -534,10 +500,8 @@ class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin):
             log: If True, plot on a log scale.
             mask: An index mask to select particles to plot. If None, all particles are plotted.
             plot_kwargs: Keyword arguments passed to the plot function.
-            beta (float, optional): Relativistic beta of particles. Defaults to particles.beta0.
-            frev (float, optional): Revolution frequency of circular line for calculation of particle time.
-            circumference (float, optional): Path length of circular line if frev is not given.
-            xplot_kwargs: See :class:`xplt.XPlot` for additional arguments
+            kwargs: See :class:`~.base.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
+
 
         """
         if tmax is None:
@@ -549,21 +513,16 @@ class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin):
             else:
                 bin_time = tmax / round(tmax / bin_time)
 
-        xplot_kwargs = self._init_particle_mixin(
-            beta=beta,
-            frev=frev,
-            circumference=circumference,
-            xplot_kwargs=xplot_kwargs,
-        )
-        xplot_kwargs["data_units"] = defaults(
-            xplot_kwargs.get("data_units"),
+        kwargs = self._init_particle_mixin(**kwargs)
+        kwargs["data_units"] = defaults(
+            kwargs.get("data_units"),
             dt=Prop("$\\Delta t$", unit="s", description="Delay between consecutive particles"),
             count=Prop("$N$", unit="1", description="Particles per bin"),
         )
         super().__init__(
             on_x="dt",
             on_y="count",
-            **xplot_kwargs,
+            **kwargs,
         )
 
         if bin_time is None and bin_count is None:
@@ -660,10 +619,7 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin):
         poisson=True,
         mask=None,
         plot_kwargs=None,
-        beta=None,
-        frev=None,
-        circumference=None,
-        **xplot_kwargs,
+        **kwargs,
     ):
         """
         Plot for variability of particles arriving as function of arrival time
@@ -690,19 +646,14 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin):
             poisson (bool): If true, indicate poisson limit.
             mask: An index mask to select particles to plot. If None, all particles are plotted.
             plot_kwargs: Keyword arguments passed to the plot function.
-            beta (float, optional): Relativistic beta of particles. Defaults to particles.beta0.
-            frev (float, optional): Revolution frequency of circular line for calculation of particle time.
-            circumference (float, optional): Path length of circular line if frev is not given.
-            xplot_kwargs: See :class:`xplt.XPlot` for additional arguments
+            kwargs: See :class:`~.base.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
+
         """
-        xplot_kwargs = self._init_particle_mixin(
-            beta=beta,
-            frev=frev,
-            circumference=circumference,
-            xplot_kwargs=xplot_kwargs,
+        kwargs = self._init_particle_mixin(
+            **kwargs,
         )
-        xplot_kwargs["data_units"] = defaults(
-            xplot_kwargs.get("data_units"),
+        kwargs["data_units"] = defaults(
+            kwargs.get("data_units"),
             cv=Prop("$c_v=\\sigma/\\mu$", unit="1", description="Coefficient of variation"),
             duty=Prop(
                 "$F=\\langle N \\rangle^2/\\langle N^2 \\rangle$",
@@ -713,7 +664,7 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin):
         super().__init__(
             on_x="t",
             on_y=metric,
-            **xplot_kwargs,
+            **kwargs,
         )
 
         if counting_dt is None and counting_bins is None:

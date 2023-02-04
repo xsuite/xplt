@@ -34,7 +34,6 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
         hist_kwargs=None,
         mask=None,
         masks=None,
-        twiss=None,
         color=None,
         cmap="magma_r" or "Blues",
         cbar_loc=None,
@@ -49,12 +48,9 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
         nrows=None,
         ncols=None,
         titles="auto",
-        wrap_zeta=None,
-        beta=None,
-        frev=None,
-        circumference=None,
         animated=False,
-        **xplot_kwargs,
+        twiss=None,
+        **kwargs,
     ):
         """
         A plot for phase space distributions
@@ -72,7 +68,6 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
             hist_kwargs: Additional kwargs for hexbin histogram plot
             mask: An index mask to select particles to plot. If None, all particles are plotted.
             masks: List of masks for each subplot.
-            twiss (dict, optional): Twiss parameters (alfx, alfy, betx and bety) to use for conversion to normalized phase space coordinates.
             color (str or list of str): Properties defining the color of points for the scatter plot(s). Implies plot='scatter'. Pass a list of properties to use different values for each subplot
             cmap: Colormap to use for the hist plot.
             cbar_loc: Location of the colorbar, such as 'right', 'inside upper right', etc.
@@ -87,12 +82,9 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
             ncols: Number of columns in subplot layout. If None, the layout is determined automatically.
             nrows: Number of columns in subplot layout. If None, the layout is determined automatically.
             titles: List of titles for each subplot or 'auto' to automatically set titles based on plot kind.
-            wrap_zeta: If set, wrap the zeta-coordinate plotted at the machine circumference. Either pass the circumference directly or set this to True to use the circumference from twiss.
-            beta (float, optional): Relativistic beta of particles. Defaults to particles.beta0.
-            frev (float, optional): Revolution frequency of circular line for calculation of particle time.
-            circumference (float, optional): Path length of circular line if frev is not given.
             animated: If True, improve plotting performance for creating an animation.
-            xplot_kwargs: See :class:`xplt.XPlot` for additional arguments
+            twiss (dict, optional): Twiss parameters (alfx, alfy, betx and bety) to use for conversion to normalized phase space coordinates.
+            kwargs: See :class:`~.base.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
 
         """
@@ -165,21 +157,17 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
                 f"Layout with {ncols} columns and {nrows} rows conflicts with {n} plots!"
             )
         nntwins = [0 for _ in self.kind]
-        xplot_kwargs = defaults(xplot_kwargs, figsize=(4 * ncols, 4 * nrows))
+        kwargs = defaults(kwargs, figsize=(4 * ncols, 4 * nrows))
 
-        xplot_kwargs = self._init_particle_mixin(
+        kwargs = self._init_particle_mixin(
             twiss=twiss,
-            beta=beta,
-            frev=frev,
-            circumference=circumference,
-            wrap_zeta=wrap_zeta,
-            xplot_kwargs=xplot_kwargs,
+            **kwargs,
         )
         super().__init__(
             nrows=nrows,
             ncols=ncols,
             nntwins=nntwins,
-            **xplot_kwargs,
+            **kwargs,
         )
 
         if len(self.axflat) < n:
