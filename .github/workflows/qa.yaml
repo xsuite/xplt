@@ -21,9 +21,11 @@ jobs:
           darglint ../xplt
 
   formatting:
+    # see also pre-commit
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: psf/black@stable
         with:
+          version: "22.10.0"
           jupyter: true
