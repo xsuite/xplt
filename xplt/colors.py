@@ -55,7 +55,14 @@ cmap_petroff_cyclic = mpl.colors.LinearSegmentedColormap.from_list(
 
 
 def make_unicoloured_cmap(color):
-    """Make a linear colormap of a given color from transparent to black"""
+    """Make a linear colormap of a given color from transparent to black
+
+    Args:
+        color: Color as hex string or RGB tuple
+
+    Returns:
+        Colormap
+    """
     return mpl.colors.LinearSegmentedColormap.from_list(
         "gradient",
         (

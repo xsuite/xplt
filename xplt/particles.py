@@ -226,7 +226,6 @@ class ParticlesPlot(XManifoldPlot, ParticlePlotMixin):
             circumference (float): Path length of circular line if frev is not given. Defaults to twiss.circumference.
             wrap_zeta (bool or float): If set, wrap the zeta-coordinate plotted at the machine circumference. Set to
                 True to wrap at the circumference or to a value to wrap at this value.
-            display_units: See :class:`xplt.XPlot`
             xplot_kwargs: See :class:`xplt.XPlot` for additional arguments
         """
         xplot_kwargs = self._init_particle_mixin(
@@ -271,6 +270,9 @@ class ParticlesPlot(XManifoldPlot, ParticlePlotMixin):
             particles: Particles data to plot.
             mask: An index mask to select particles to plot. If None, all particles are plotted.
             autoscale: Whether or not to perform autoscaling on all axes.
+
+        Returns:
+            List of artists that have been updated.
         """
 
         xdata = self._get_masked(particles, self.on_x, mask)

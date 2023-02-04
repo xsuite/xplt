@@ -23,7 +23,11 @@ from .util import defaults, get
 def iter_elements(line):
     """Iterate over elements in line
 
-    Yields (name, element, s_from, s_to) with
+    Args:
+        line: Line of elements.
+
+    Yields:
+        (name, element, s_from, s_to): Name, element, start and end s position of element.
 
     """
     el_s0 = line.get_s_elements("upstream")
@@ -114,9 +118,12 @@ class KnlPlot(XManifoldPlot):
         """
         Update the line data this plot shows
 
-        :param line: Line of elements.
-        :param autoscale: Whether or not to perform autoscaling on all axes
-        :return: changed artists
+        Args:
+            line: Line of elements.
+            autoscale: Whether or not to perform autoscaling on all axes
+
+        Returns:
+            changed artists
         """
         # compute knl as function of s
         KNL = np.zeros((len(self.knl), self.S.size))
@@ -247,8 +254,10 @@ class FloorPlot(XPlot):
             survey: Survey data.
             line: Line data.
             autoscale: Whether or not to perform autoscaling on all axes
+
         Returns:
             changed artists
+
         """
 
         changed = []
@@ -438,7 +447,7 @@ class FloorPlot(XPlot):
             unit = self.display_unit_for(self.projection[0])
             label = f"{scale:g} {unit}"
 
-        super(FloorPlot, self).add_scale(
+        return super(FloorPlot, self).add_scale(
             self.ax, scale, label=label, loc=loc, color=color, fontsize=fontsize
         )
 

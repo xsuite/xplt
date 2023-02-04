@@ -67,13 +67,6 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
                      and the second list level (or separator ``-``) determines coordinate pairs.
                      In addition, abbreviations for x-y-parameter pairs are supported (e.g. 'x' for 'x-px').
                      For normalized coordinates, use uppercase letters (e.g. 'X' for 'X-Px').
-
-                     Examples:
-                      - ``'x'``: single subplot with x-px phase space
-                      - ``[['x', 'px']]``: same as above
-                      - ``'x,x-y'``: two suplots the first with x-px and the second with x-y phase space
-                      - ``[['x', 'px'], ['x', 'y']]``: same as above
-
             plot: Defines the type of plot. Can be 'auto', 'scatter' or 'hist'. Default is 'auto' for which the plot type is chosen automatically based on the number of particles.
             scatter_kwargs: Additional kwargs for scatter plot
             hist_kwargs: Additional kwargs for hexbin histogram plot
