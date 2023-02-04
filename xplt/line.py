@@ -39,6 +39,11 @@ def iter_elements(line):
         yield name, el, s0, s1
 
 
+def order(knl):
+    """Get order of knl string as int"""
+    return int(re.match(r"k(\d+)l", knl).group(1))
+
+
 class KnlPlot(XManifoldPlot):
     def __init__(
         self,
@@ -55,7 +60,9 @@ class KnlPlot(XManifoldPlot):
 
         Args:
             line: Line of elements.
-            knl (int or list of int): Maximum order or list of orders n to plot knl values for. If None, automatically determine from line.
+            knl (int or list of int or str): Maximum order or list of orders n to plot knl values for.
+                This can also be a manifold subplot specification string, e.g. ``"k0l+k1l,k2l"``.
+                If None, automatically determine from line.
             filled (bool): If True, make a filled plot instead of a line plot.
             resolution: Number of points to use for plot.
             line_length: Length of line (only required if line is None).
@@ -66,11 +73,6 @@ class KnlPlot(XManifoldPlot):
               This leads to glitches of knl being doubled or zero at element overlaps for lines containing such elements.
 
         """
-        super().__init__(
-            on_x="s",
-            on_y="knl",
-            **xplot_kwargs,
-        )
 
         if knl is None:
             if line is None:
@@ -78,37 +80,36 @@ class KnlPlot(XManifoldPlot):
             knl = range(max([e.order for e in line.elements if hasattr(e, "order")]) + 1)
         if isinstance(knl, int):
             knl = range(knl + 1)
-        self.knl = knl
+        if not isinstance(knl, str):
+            knl = [[[f"k{n}l" for n in knl]]]
         if line is None and line_length is None:
             raise ValueError("Either line or line_length parameter must not be None")
         self.S = np.linspace(0, line_length or line.get_length(), resolution)
         self.filled = filled
 
-        # Create plot
-        # TODO: revise
-        self.ax.set(
-            xlabel=self.label_for("s"),
-            ylabel="$k_nl$",
+        super().__init__(
+            on_x="s",
+            on_y=knl,
+            **xplot_kwargs,
         )
 
         # create plot elements
-        self.artists = []
-        for n in self.knl:
+        def create_artists(i, j, k, a, p):
+            kwargs = dict(
+                color=f"C{order(p)}",
+                alpha=0.5,
+                label=self.label_for(p, unit=True),
+            )
             if self.filled:
-                artist = self.ax.fill_between(
-                    self.S,
-                    np.zeros_like(self.S),
-                    alpha=0.5,
-                    label=self.label_for(f"k{n}l", unit=True),
-                    zorder=3,
-                )
+                return a.fill_between(self.S, np.zeros_like(self.S), zorder=3, lw=0, **kwargs)
             else:
-                (artist,) = self.ax.plot(
-                    [], [], alpha=0.5, label=self.label_for(f"k{n}l", unit=True)
-                )
-            self.artists.append(artist)
-        self.ax.plot(self.S, np.zeros_like(self.S), "k-", lw=1)
-        self.ax.legend(ncol=5)
+                return a.plot([], [], **kwargs)[0]
+
+        self._init_artists(self.on_y, create_artists)
+
+        for a in self.axflat:
+            a.plot(self.S, np.zeros_like(self.S), "k-", lw=1, zorder=4)
+        self.legend(show="auto", ncol=5)
 
         # set data
         if line is not None:
@@ -126,41 +127,47 @@ class KnlPlot(XManifoldPlot):
             changed artists
         """
         # compute knl as function of s
-        KNL = np.zeros((len(self.knl), self.S.size))
+        keys = [p for ppp in self.on_y for pp in ppp for p in pp]
+        values = {p: np.zeros(self.S.size) for p in keys}
+        orders = {p: order(p) for p in keys}
         Smax = line.get_length()
         for name, el, s0, s1 in iter_elements(line):
             if hasattr(el, "knl"):
-                for i, n in enumerate(self.knl):
+                if 0 <= s0 <= Smax:
+                    mask = (self.S >= s0) & (self.S < s1)
+                else:
+                    # handle wrap around
+                    mask = (self.S >= s0 % Smax) | (self.S < s1 % Smax)
+                for knl, n in orders.items():
                     if n <= el.order:
-                        if 0 <= s0 <= Smax:
-                            mask = (self.S >= s0) & (self.S < s1)
-                        else:
-                            # handle wrap around
-                            mask = (self.S >= s0 % Smax) | (self.S < s1 % Smax)
-                        KNL[i, mask] += el.knl[n]
+                        values[knl][mask] += el.knl[n]
 
         # plot
         s = self.factor_for("s")
         changed = []
-        for n, art, knl in zip(self.knl, self.artists, KNL):
-            f = self.factor_for(f"k{n}l")
-            if self.filled:
-                art.get_paths()[0].vertices[1 : 1 + knl.size, 1] = f * knl
-            else:
-                art.set_data((s * self.S, f * knl))
-            changed.append(art)
+        for i, ppp in enumerate(self.on_y):
+            for j, pp in enumerate(ppp):
+                for k, p in enumerate(pp):
+                    art = self.artists[i][j][k]
+                    y = self.factor_for(p) * values[p]
+                    if self.filled:
+                        art.get_paths()[0].vertices[1 : 1 + y.size, 1] = y
+                    else:
+                        art.set_data((s * self.S, y))
+                    changed.append(art)
 
-        if autoscale:
-            if self.filled:  # At present, relim does not support collection instances.
-                self.ax.update_datalim(
-                    mpl.transforms.Bbox.union(
-                        [a.get_datalim(self.ax.transData) for a in self.artists]
-                    )
-                )
-            else:
-                self.ax.relim()
-            self.ax.autoscale()
-            self.ax.set(xlim=(s * self.S.min(), s * self.S.max()))
+                if autoscale:
+                    ax = self.axis(i, j)
+                    if self.filled:  # At present, relim does not support collection instances.
+                        ax.update_datalim(
+                            mpl.transforms.Bbox.union(
+                                [a.get_datalim(ax.transData) for a in self.artists[i][j]]
+                            )
+                        )
+                    else:
+                        ax.relim()
+                    ax.autoscale()
+                    ax.set(xlim=(s * np.min(self.S), s * np.max(self.S)))
 
         return changed
 
@@ -169,6 +176,25 @@ class KnlPlot(XManifoldPlot):
             n = match.group(1)
             return Prop(f"$k_{n}l$", unit="rad" if n == "0" else f"m^-{n}")
         return super()._get_property(p)
+
+    def label_for(self, *pp, unit=True, description=True):
+        """
+        Return axis label for list of properties, joining where possible
+
+        Args:
+            pp: Property names
+            unit: Wheather to include unit
+            description: Wheather to include description
+
+        Returns:
+            str: Axis label
+        """
+        if len(pp) > 1 and np.all([re.match(r"k\d+l", p) for p in pp]):
+            label = "$k_nl$"
+            if unit:
+                label += " / $m^{-n}$"
+            return label
+        return super().label_for(*pp, unit=unit, description=description)
 
 
 class FloorPlot(XPlot):
