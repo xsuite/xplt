@@ -22,13 +22,6 @@ from .util import defaults
 from .units import get_property, Prop
 
 
-class config:
-    """Global configuration options"""
-
-    #: Use x' and y' labels instead of px and py
-    use_xprime_labels = True
-
-
 class ManifoldMultipleLocator(mpl.ticker.MaxNLocator):
     def __init__(self, fixed_multiples, n=5, minor_n=None):
         """A multiple locator that chooses its base from a set of multiples to yield about n ticks
@@ -335,7 +328,7 @@ class XPlot:
         return label
 
     @staticmethod
-    def set_axis_ticks_angle(yaxis, minor=True, deg=False):
+    def _set_axis_ticks_angle(yaxis, minor=True, deg=False):
         """Set ticks locator and formatter to display an angle
 
         This will set ticks at multiples or fractions of 180° or pi with appropriate labels
@@ -513,9 +506,9 @@ class XManifoldPlot(XPlot):
                 units = np.unique([self.display_unit_for(p) for p in pp])
                 if len(units) == 1:
                     if units[0] == "rad":
-                        self.set_axis_ticks_angle(a.yaxis, minor=True, deg=False)
+                        self._set_axis_ticks_angle(a.yaxis, minor=True, deg=False)
                     elif units[0] in ("deg", "°"):
-                        self.set_axis_ticks_angle(a.yaxis, minor=True, deg=True)
+                        self._set_axis_ticks_angle(a.yaxis, minor=True, deg=True)
 
                 # create artists for traces
                 self.artists[i].append([])

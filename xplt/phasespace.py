@@ -270,9 +270,9 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
             # Set angle ticks
             for ab, axis in ((a, ax.xaxis), (b, ax.yaxis)):
                 if self.display_unit_for(ab) == "rad":
-                    self.set_axis_ticks_angle(axis, minor=True, deg=False)
+                    self._set_axis_ticks_angle(axis, minor=True, deg=False)
                 elif self.display_unit_for(a) in ("deg", "°"):
-                    self.set_axis_ticks_angle(axis, minor=True, deg=True)
+                    self._set_axis_ticks_angle(axis, minor=True, deg=True)
 
             # 1D histogram projections
             ###########################

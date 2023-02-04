@@ -11,7 +11,6 @@ __version__ = "0.3.0"
 import matplotlib as mpl
 
 from .units import register_property
-from .base import config
 from .colors import *
 from .line import KnlPlot, FloorPlot
 from .phasespace import PhaseSpacePlot
