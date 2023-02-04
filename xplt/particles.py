@@ -11,27 +11,28 @@ __date__ = "2022-12-07"
 
 
 import types
+
 import numpy as np
-import pint
-from .util import c0, get, val, defaults, normalized_coordinates
-from .base import XPlot, config
+
+from .base import XManifoldPlot
 from .units import get_property, Prop
+from .util import c0, get, val, defaults, normalized_coordinates
 
 
-class XParticlePlot(XPlot):
-    def __init__(
+class ParticlePlotMixin:
+    # TODO: this should be a mixin, it does not rely on Xplot, it only sets some additional data and display units
+
+    def _init_particle_mixin(
         self,
         *,
-        data_units=None,
-        display_units=None,
         twiss=None,
         beta=None,
         frev=None,
         circumference=None,
         wrap_zeta=False,
-        **kwargs,
+        xplot_kwargs=None,
     ):
-        r"""Base plotting class for particle data
+        r"""Mixin for plotting of particle data
 
         In addition to the inherent particle properties (like ``x``, ``y``, ``px``, ``py``, ``zeta``, ``delta``, ...)
         the following derived properties are supported (but may require passing of twiss etc.):
@@ -49,42 +50,50 @@ class XParticlePlot(XPlot):
 
 
         Args:
-            data_units (dict, optional): Units of the data. If None, the units are determined from the data.
-            display_units (dict, optional): Units to display the data in. If None, the units are determined from the data.
             twiss (dict, optional): Twiss parameters (alfx, alfy, betx and bety) to use for conversion to normalized phase space coordinates.
             beta (float, optional): Relativistic beta of particles. Defaults to particles.beta0.
             frev (float, optional): Revolution frequency of circular line for calculation of particle time.
             circumference (float, optional): Path length of circular line if frev is not given.
             wrap_zeta: If set, wrap the zeta-coordinate plotted at the machine circumference. Either pass the circumference directly or set this to True to use the circumference from twiss.
+            xplot_kwargs: Keyword arguments for Xplot constructor.
+
+        Returns:
+            Updated keyword arguments for Xplot constructor.
+
         """
-        super().__init__(
-            data_units=defaults(
-                data_units,
-                # fmt: off
-                X  = Prop("$X$",   unit=f"({get_property('x').unit})/({get_property('betx').unit})^(1/2)"),   # Normalized X
-                Y  = Prop("$Y$",   unit=f"({get_property('y').unit})/({get_property('bety').unit})^(1/2)"),   # Normalized Y
-                Px = Prop("$X'$",  unit=f"({get_property('px').unit})*({get_property('betx').unit})^(1/2)"),  # Normalized Px
-                Py = Prop("$Y'$",  unit=f"({get_property('py').unit})*({get_property('bety').unit})^(1/2)"),  # Normalized Py
-                Jx = Prop("$J_x$", unit=f"({get_property('x').unit})^2/({get_property('betx').unit})"),       # Action Jx
-                Jy = Prop("$J_y$", unit=f"({get_property('y').unit})^2/({get_property('bety').unit})"),       # Action Jy
-                Θx = Prop("$Θ_x$", unit=f"rad"),
-                Θy = Prop("$Θ_y$", unit=f"rad"),
-                # fmt: on
-            ),
-            display_units=defaults(
-                display_units,
-                X="mm^(1/2)",
-                Y="mm^(1/2)",
-                P="mm^(1/2)",
-                J="mm",  # Action
-                Θ="rad",  # Angle
-            ),
-        )
         self.twiss = twiss
         self._beta = val(beta)
         self._frev = val(frev)
         self._circumference = val(circumference)
         self.wrap_zeta = wrap_zeta
+
+        # Update xplot_kwargs with particle specific settings
+        if xplot_kwargs is None:
+            xplot_kwargs = {}
+
+        xplot_kwargs["data_units"] = defaults(
+            xplot_kwargs.get("data_units"),
+            # fmt: off
+            X  = Prop("$X$",   unit=f"({get_property('x').unit})/({get_property('betx').unit})^(1/2)"),   # Normalized X
+            Y  = Prop("$Y$",   unit=f"({get_property('y').unit})/({get_property('bety').unit})^(1/2)"),   # Normalized Y
+            Px = Prop("$X'$",  unit=f"({get_property('px').unit})*({get_property('betx').unit})^(1/2)"),  # Normalized Px
+            Py = Prop("$Y'$",  unit=f"({get_property('py').unit})*({get_property('bety').unit})^(1/2)"),  # Normalized Py
+            Jx = Prop("$J_x$", unit=f"({get_property('x').unit})^2/({get_property('betx').unit})"),       # Action Jx
+            Jy = Prop("$J_y$", unit=f"({get_property('y').unit})^2/({get_property('bety').unit})"),       # Action Jy
+            Θx = Prop("$Θ_x$", unit=f"rad"),
+            Θy = Prop("$Θ_y$", unit=f"rad"),
+            # fmt: on
+        )
+        xplot_kwargs["display_units"] = defaults(
+            xplot_kwargs.get("display_units"),
+            X="mm^(1/2)",
+            Y="mm^(1/2)",
+            P="mm^(1/2)",
+            J="mm",  # Action
+            Θ="rad",  # Angle
+        )
+
+        return xplot_kwargs
 
     @property
     def circumference(self):
@@ -180,7 +189,7 @@ class XParticlePlot(XPlot):
         return np.array(v).flatten()
 
 
-class ParticlesPlot(XParticlePlot):
+class ParticlesPlot(XManifoldPlot, ParticlePlotMixin):
     def __init__(
         self,
         particles=None,
@@ -190,16 +199,12 @@ class ParticlesPlot(XParticlePlot):
         mask=None,
         plot_kwargs=None,
         sort_by=None,
-        grid=True,
-        ax=None,
-        data_units=None,
-        display_units=None,
         twiss=None,
         beta=None,
         frev=None,
         circumference=None,
         wrap_zeta=False,
-        **subplots_kwargs,
+        **xplot_kwargs,
     ):
         """
         A plot of particle properties as function of another property.
@@ -215,47 +220,45 @@ class ParticlesPlot(XParticlePlot):
             mask: An index mask to select particles to plot. If None, all particles are plotted.
             plot_kwargs (dict): Keyword arguments passed to the plot function.
             sort_by (str or None): Sort the data by this property. Default is to sort by the ``as_function_of`` property.
-            grid (bool): If True, show grid lines.
-            ax: Axes to plot on. If None, a new figure is created.
-            data_units (dict): Units of the data. If None, the units are determined from the data.
-            display_units (dict): Units to display the data in. If None, the units are determined from the data.
             twiss (dict): Twiss parameters (alfx, alfy, betx and bety) to use for conversion to normalized phase space coordinates.
             beta (float): Relativistic beta of particles. Defaults to particles.beta0.
             frev (float): Revolution frequency of circular line for calculation of particle time.
             circumference (float): Path length of circular line if frev is not given. Defaults to twiss.circumference.
             wrap_zeta (bool or float): If set, wrap the zeta-coordinate plotted at the machine circumference. Set to
                 True to wrap at the circumference or to a value to wrap at this value.
-            subplots_kwargs: Keyword arguments passed to matplotlib.pyplot.subplots command when a new figure is created.
+            display_units: See :class:`xplt.XPlot`
+            xplot_kwargs: See :class:`xplt.XPlot` for additional arguments
         """
-        super().__init__(
-            data_units=data_units,
-            display_units=display_units,
+        xplot_kwargs = self._init_particle_mixin(
             twiss=twiss,
             beta=beta,
             frev=frev,
             circumference=circumference,
             wrap_zeta=wrap_zeta,
+            xplot_kwargs=xplot_kwargs,
+        )
+        xplot_kwargs["display_units"] = defaults(
+            xplot_kwargs.get("display_units"), bet="m", d="m"
+        )
+        super().__init__(
+            on_x=as_function_of,
+            on_y=kind,
+            on_y_subs={"J": "Jx+Jy", "Θ": "Θx+Θy"},
+            **xplot_kwargs,
         )
 
         # parse kind string
-        subs = {"J": "Jx+Jy", "Θ": "Θx+Θy"}
-        self.kind = self._parse_nested_list_string(kind, subs=subs)
-        self.as_function_of = as_function_of
         self.sort_by = sort_by
 
-        # initialize figure with n subplots
-        nntwins = [len(tw) - 1 for tw in self.kind]
-        self._init_axes(ax, len(self.kind), 1, nntwins, grid, sharex="col", **subplots_kwargs)
-
         # Format plot axes
-        self.axis_for(-1).set(xlabel=self.label_for(self.as_function_of))
+        self.axis(-1).set(xlabel=self.label_for(self.on_x))
 
         # create plot elements
         def create_artists(i, j, k, a, p):
             kwargs = defaults(plot_kwargs, marker=".", ls="", label=self._legend_label_for(p))
             return a.plot([], [], **kwargs)[0]
 
-        self._init_artists(self.kind, create_artists)
+        self._init_artists(self.on_y, create_artists)
 
         # set data
         if particles is not None:
@@ -270,14 +273,14 @@ class ParticlesPlot(XParticlePlot):
             autoscale: Whether or not to perform autoscaling on all axes.
         """
 
-        xdata = self._get_masked(particles, self.as_function_of, mask)
+        xdata = self._get_masked(particles, self.on_x, mask)
         order = np.argsort(
             xdata if self.sort_by is None else self._get_masked(particles, self.sort_by, mask)
         )
-        xdata = xdata[order] * self.factor_for(self.as_function_of)
+        xdata = xdata[order] * self.factor_for(self.on_x)
 
         changed = []
-        for i, ppp in enumerate(self.kind):
+        for i, ppp in enumerate(self.on_y):
             for j, pp in enumerate(ppp):
                 for k, p in enumerate(pp):
                     values = self._get_masked(particles, p, mask)
@@ -286,7 +289,7 @@ class ParticlesPlot(XParticlePlot):
                     changed.append(self.artists[i][j][k])
 
                 if autoscale:
-                    a = self.axis_for(i, j)
+                    a = self.axis(i, j)
                     a.relim()
                     a.autoscale()
 

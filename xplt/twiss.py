@@ -12,27 +12,26 @@ __date__ = "2022-11-08"
 import types
 
 from .util import defaults
-from .base import XPlot
+from .base import XManifoldPlot
 from .line import KnlPlot
 
 
-class TwissPlot(XPlot):
+class TwissPlot(XManifoldPlot):
     def __init__(
         self,
         twiss=None,
         kind="bet-dx,x+y",
         *,
-        ax=None,
         line=None,
-        line_kwargs=dict(),
-        data_units=None,
+        line_kwargs={},
         display_units=None,
-        **subplots_kwargs,
+        **xplot_kwargs,
     ):
         """
         A plot for twiss parameters and closed orbit
 
         Args:
+            twiss: Dictionary with twiss information
             kind: Defines the properties to plot.
                      This can be a nested list or a separated string or a mixture of lists and strings where
                      the first list level (or separator ``,``) determines the subplots,
@@ -46,49 +45,42 @@ class TwissPlot(XPlot):
                       - ``'betx+alf,mu'``: two suplots the first with 'betx', 'alfx' and 'alfy' and the second with 'mux' and 'muy'
                       - ``[[['betx', 'alfx', 'alfy']], [['mux', 'muy']]]``: same as above
 
-            twiss: Dictionary with twiss information
-            ax: A list of axes to plot onto, length must match the number of subplots and optional line plot. If None, a new figure is created.
-                If required, twinx-axes will be added automatically.
             line: Line of elements. If given, adds a line plot to the top.
             line_kwargs: Keyword arguments passed to line plot.
-            data_units (dict, optional): Units of the data. If None, the units are determined from the data.
-            display_units (dict, optional): Units to display the data in. If None, the units are determined from the data.
-            subplots_kwargs: Keyword arguments passed to matplotlib.pyplot.subplots command when a new figure is created.
+            display_units: See :class:`xplt.XPlot`
+            xplot_kwargs: See :class:`xplt.XPlot` for additional arguments
 
         """
+        subs = {p: f"{p}x+{p}y" for p in "alf,bet,gam,mu,d,dp,q,dq".split(",")}
+
+        if line:
+            kind = self._parse_nested_list_string(kind, subs=subs)
+            kind = [[[None]], *kind]
+
         super().__init__(
-            data_units=data_units,
+            on_x="s",
+            on_y=kind,
+            on_y_subs=subs,
             display_units=defaults(display_units, bet="m", d="m"),
-            prefix_suffix_config={
-                p: (p + "x", p + "y") for p in "alf,bet,gam,mu,d,dp,q,dq".split(",")
-            },
+            **xplot_kwargs,
         )
 
-        # parse kind string
-        subs = {p: "+".join(s) for p, s in self._prefix_suffix_config.items()}
-        self.kind = self._parse_nested_list_string(kind, ",-+", subs)
+        # Format plot axes
+        self.axis(-1).set(xlabel=self.label_for("s"))
 
-        # initialize figure with n subplots
-        n, nntwin = len(self.kind), [len(tw) - 1 for tw in self.kind]
-        if line:
-            n += 1
-            nntwin = [0] + nntwin
-        self._init_axes(ax, n, 1, nntwin, sharex="col", **subplots_kwargs)
+        # create plot elements
+        def create_artists(i, j, k, a, p):
+            if line and i == 0:
+                return None  # skip line plot placeholder
+            return a.plot([], [], label=self._legend_label_for(p))[0]
+
+        self._init_artists(self.on_y, create_artists)
 
         # Create line plot
         self.lineplot = None
         if line:
-            self.lineplot = KnlPlot(line, ax=self.axis_for(0), **line_kwargs)
+            self.lineplot = KnlPlot(line, ax=self.axis(0), **line_kwargs)
             self.lineplot.ax.set(xlabel=None)
-
-        # Format plot axes
-        self.axis_for(-1).set(xlabel=self.label_for("s"))
-
-        # create plot elements
-        def create_artists(i, j, k, a, p):
-            return a.plot([], [], label=self._legend_label_for(p))[0]
-
-        self._init_artists([[], *self.kind] if line else self.kind, create_artists)
 
         # set data
         if twiss is not None:
@@ -105,11 +97,11 @@ class TwissPlot(XPlot):
         """
         s = self.factor_for("s")
         changed = []
-        for i, ppp in enumerate(self.kind):
-            if self.lineplot is not None:
-                i += 1  # skip line plot
+        for i, ppp in enumerate(self.on_y):
+            if self.lineplot is not None and i == 0:
+                continue  # skip line plot
             for j, pp in enumerate(ppp):
-                a = self.axis_for(i, j)
+                a = self.axis(i, j)
                 for k, p in enumerate(pp):
                     f = self.factor_for(p)
                     self.artists[i][j][k].set_data((s * twiss["s"], f * twiss[p]))
@@ -120,7 +112,7 @@ class TwissPlot(XPlot):
                     a.set(xlim=(s * min(twiss["s"]), s * max(twiss["s"])))
 
         if line:
-            self.lineplot.update(line, autoscale=autoscale)
+            changed.append(self.lineplot.update(line, autoscale=autoscale))
 
         return changed
 
@@ -167,12 +159,12 @@ class TwissPlot(XPlot):
 
         else:
             # horizontal span or line
-            for i, p_subplot in enumerate(self.kind):
+            for i, p_subplot in enumerate(self.on_y):
                 if subplots != "all" and i not in subplots:
                     continue
 
                 for j, p_axis in enumerate(p_subplot):
-                    a = self.axis_for(i, j)
+                    a = self.axis(i, j)
                     for k, p in enumerate(p_axis):
                         if p == kind:  # axis found
                             if val_to is None:  # only a line

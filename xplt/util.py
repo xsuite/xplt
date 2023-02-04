@@ -43,14 +43,14 @@ def get(obj, value, default=VOID):
     raise AttributeError(f"{obj} does not provide an attribute or index '{value}'")
 
 
-def defaults(kwargs, **default_style):
-    """Return kwargs or defaults"""
+def defaults(kwargs, **default_kwargs):
+    """Return kwargs or default_kwargs"""
     kwargs = kwargs or {}
     if "c" in kwargs or "color" in kwargs:
         # c and color are common aliases, remove both from default_style if either present
-        default_style.pop("c", None)
-        default_style.pop("color", None)
-    return dict(default_style, **kwargs)
+        default_kwargs.pop("c", None)
+        default_kwargs.pop("color", None)
+    return dict(default_kwargs, **kwargs)
 
 
 class AttrDict(dict):

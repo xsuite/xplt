@@ -9,16 +9,15 @@ __author__ = "Philipp Niedermayer"
 __contact__ = "eltos@outlook.de"
 __date__ = "2022-11-08"
 
+import re
 import types
 
 import matplotlib as mpl
-import matplotlib.pyplot as plt
 import numpy as np
-import re
 
-from .util import defaults, get
-from .base import XPlot
+from .base import XPlot, XManifoldPlot
 from .units import Prop
+from .util import defaults, get
 
 
 def iter_elements(line):
@@ -36,19 +35,16 @@ def iter_elements(line):
         yield name, el, s0, s1
 
 
-class KnlPlot(XPlot):
+class KnlPlot(XManifoldPlot):
     def __init__(
         self,
         line=None,
         *,
         knl=None,
-        ax=None,
         filled=True,
-        data_units=None,
-        display_units=None,
         resolution=1000,
         line_length=None,
-        **subplots_kwargs,
+        **xplot_kwargs,
     ):
         """
         A plot for knl values along line
@@ -56,20 +52,21 @@ class KnlPlot(XPlot):
         Args:
             line: Line of elements.
             knl (int or list of int): Maximum order or list of orders n to plot knl values for. If None, automatically determine from line.
-            ax: An axes to plot onto. If None, a new figure is created.
             filled (bool): If True, make a filled plot instead of a line plot.
-            data_units (dict, optional): Units of the data. If None, the units are determined from the data.
-            display_units (dict, optional): Units to display the data in. If None, the units are determined from the data.
             resolution: Number of points to use for plot.
             line_length: Length of line (only required if line is None).
-            subplots_kwargs: Keyword arguments passed to matplotlib.pyplot.subplots command when a new figure is created.
+            xplot_kwargs: See :class:`xplt.XPlot` for additional arguments
 
         Known issues:
             - Thin elements produced with MAD-X MAKETHIN do overlap due to the displacement introduced by the TEAPOT algorithm.
               This leads to glitches of knl being doubled or zero at element overlaps for lines containing such elements.
 
         """
-        super().__init__(data_units=data_units, display_units=display_units)
+        super().__init__(
+            on_x="s",
+            on_y="knl",
+            **xplot_kwargs,
+        )
 
         if knl is None:
             if line is None:
@@ -84,14 +81,11 @@ class KnlPlot(XPlot):
         self.filled = filled
 
         # Create plot
-        if ax is None:
-            _, ax = plt.subplots(**subplots_kwargs)
-        self.fig, self.ax = ax.figure, ax
+        # TODO: revise
         self.ax.set(
             xlabel=self.label_for("s"),
             ylabel="$k_nl$",
         )
-        self.ax.grid()
 
         # create plot elements
         self.artists = []
@@ -180,10 +174,7 @@ class FloorPlot(XPlot):
         boxes=None,
         labels=False,
         element_width=1,
-        ax=None,
-        data_units=None,
-        display_units=None,
-        **subplots_kwargs,
+        **xplot_kwargs,
     ):
         """
         A floor plan of the line based on survey data
@@ -201,10 +192,7 @@ class FloorPlot(XPlot):
                 replaced with the element name) and all options suitable for an annotation,
                 such as "color", "alpha", etc.
             element_width (float): Width of element boxes.
-            ax: An axes to plot onto. If None, a new figure is created.
-            data_units (dict, optional): Units of the data. If None, the units are determined from the data.
-            display_units (dict, optional): Units to display the data in. If None, the units are determined from the data.
-            subplots_kwargs: Keyword arguments passed to matplotlib.pyplot.subplots command when a new figure is created.
+            xplot_kwargs: See :class:`xplt.XPlot` for additional arguments
 
         The config options can be:
             - None: Use good defaults.
@@ -215,10 +203,7 @@ class FloorPlot(XPlot):
 
         """
 
-        super().__init__(
-            data_units=data_units,
-            display_units=display_units,
-        )
+        super().__init__(**xplot_kwargs)
 
         if projection == "3D":
             raise NotImplementedError()
@@ -229,14 +214,10 @@ class FloorPlot(XPlot):
         self.element_width = element_width
 
         # Create plot
-        if ax is None:
-            _, self.ax = plt.subplots(**subplots_kwargs)
-        self.fig = self.ax.figure
         self.ax.set(
             xlabel=self.label_for(self.projection[0]),
             ylabel=self.label_for(self.projection[1]),
         )
-        self.ax.grid()
         self.ax.axis("equal")
 
         # create plot elements

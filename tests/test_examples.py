@@ -21,6 +21,11 @@ def test_hamiltonians(tb):
     tb.execute()  # just confirm that the notebook runs
 
 
+@testbook(f"{dir}/line.ipynb")
+def test_line(tb):
+    tb.execute()  # just confirm that the notebook runs
+
+
 @testbook(f"{dir}/phasespace.ipynb")
 def test_phasespace(tb):
     tb.execute()  # just confirm that the notebook runs
@@ -33,4 +38,9 @@ def test_timestructure(tb):
 
 @testbook(f"{dir}/twiss.ipynb")
 def test_twiss(tb):
+    tb.execute()  # just confirm that the notebook runs
+
+
+@testbook(f"{dir}/units.ipynb")
+def test_units(tb):
     tb.execute()  # just confirm that the notebook runs

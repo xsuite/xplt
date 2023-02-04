@@ -16,7 +16,8 @@ import numpy as np
 import pint
 
 from .util import defaults
-from .particles import XParticlePlot, ParticlesPlot
+from .base import XManifoldPlot
+from .particles import ParticlePlotMixin, ParticlesPlot
 from .units import Prop
 
 
@@ -86,7 +87,7 @@ class TimePlot(ParticlesPlot):
         super().__init__(particles, kind, as_function_of="t", **kwargs)
 
 
-class TimeBinPlot(XParticlePlot):
+class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
     def __init__(
         self,
         particles=None,
@@ -98,16 +99,12 @@ class TimeBinPlot(XParticlePlot):
         relative=False,
         mask=None,
         plot_kwargs=None,
-        grid=True,
-        ax=None,
-        data_units=None,
-        display_units=None,
         twiss=None,
         beta=None,
         frev=None,
         circumference=None,
         wrap_zeta=False,
-        **subplots_kwargs,
+        **xplot_kwargs,
     ):
         """
         A binned histogram plot of particles as function of times.
@@ -134,47 +131,43 @@ class TimeBinPlot(XParticlePlot):
                     If what is a particle property, this has no effect.
                 mask: An index mask to select particles to plot. If None, all particles are plotted.
                 plot_kwargs: Keyword arguments passed to the plot function.
-                grid: If True, show grid lines.
-                ax: Axes to plot on. If None, a new figure is created.
-                data_units (dict, optional): Units of the data. If None, the units are determined from the data.
-                display_units (dict, optional): Units to display the data in. If None, the units are determined from the data.
                 twiss (dict, optional): Twiss parameters (alfx, alfy, betx and bety) to use for conversion to normalized phase space coordinates.
                 beta (float, optional): Relativistic beta of particles. Defaults to particles.beta0.
                 frev (float, optional): Revolution frequency of circular line for calculation of particle time.
                 circumference (float, optional): Path length of circular line if frev is not given.
                 wrap_zeta: If set, wrap the zeta-coordinate plotted at the machine circumference. Either pass the circumference directly or set this to True to use the circumference from twiss.
-                subplots_kwargs: Keyword arguments passed to matplotlib.pyplot.subplots command when a new figure is created.
+                xplot_kwargs: See :class:`xplt.XPlot` for additional arguments
 
         """
-        super().__init__(
-            data_units=defaults(
-                data_units,
-                count=Prop("$N$", unit="1", description="Particles per bin"),
-                cumulative=Prop("$N$", unit="1", description="Particles (cumulative)"),
-                rate=Prop("$\\dot{N}$", unit="1/s", description="Particle rate"),
-            ),
-            display_units=display_units,
+        xplot_kwargs = self._init_particle_mixin(
             twiss=twiss,
             beta=beta,
             frev=frev,
             circumference=circumference,
             wrap_zeta=wrap_zeta,
+            xplot_kwargs=xplot_kwargs,
+        )
+        xplot_kwargs["data_units"] = defaults(
+            xplot_kwargs.get("data_units"),
+            count=Prop("$N$", unit="1", description="Particles per bin"),
+            cumulative=Prop("$N$", unit="1", description="Particles (cumulative)"),
+            rate=Prop("$\\dot{N}$", unit="1/s", description="Particle rate"),
+        )
+        super().__init__(
+            on_x="t",
+            on_y=kind,
+            **xplot_kwargs,
         )
 
         if bin_time is None and bin_count is None:
             bin_count = 100
-        self.kind = self._parse_nested_list_string(kind)
         self.bin_time = bin_time
         self.bin_count = bin_count
         self.exact_bin_time = exact_bin_time
         self.relative = relative
 
-        # initialize figure with n subplots
-        nntwins = [len(tw) - 1 for tw in self.kind]
-        self._init_axes(ax, len(self.kind), 1, nntwins, grid, sharex="col", **subplots_kwargs)
-
         # Format plot axes
-        self.axis_for(-1).set(xlabel=self.label_for("t"), ylim=(0, None))
+        self.axis(-1).set(xlabel=self.label_for("t"), ylim=(0, None))
         if self.relative:
             for a in self.axflat:
                 a.yaxis.set_major_formatter(mpl.ticker.PercentFormatter(1))
@@ -186,7 +179,7 @@ class TimeBinPlot(XParticlePlot):
                 kwargs = defaults(kwargs, drawstyle="steps-pre")
             return ax.plot([], [], **kwargs)[0]
 
-        self._init_artists(self.kind, create_artists)
+        self._init_artists(self.on_y, create_artists)
 
         # set data
         if particles is not None:
@@ -196,7 +189,7 @@ class TimeBinPlot(XParticlePlot):
         prop = super()._get_property(p)
         if p not in ("count", "rate", "cumulative", "t"):
             # it is averaged
-            prop = P(f"\\langle {prop.symbol} \\rangle", prop.unit, prop.description)
+            prop = Prop(f"\\langle {prop.symbol} \\rangle", prop.unit, prop.description)
         return prop
 
     def update(self, particles, mask=None, autoscale=False):
@@ -224,7 +217,7 @@ class TimeBinPlot(XParticlePlot):
 
         # update plots
         changed = []
-        for i, ppp in enumerate(self.kind):
+        for i, ppp in enumerate(self.on_y):
             for j, pp in enumerate(ppp):
                 count_based = False
                 for k, p in enumerate(pp):
@@ -238,7 +231,7 @@ class TimeBinPlot(XParticlePlot):
                     timeseries = timeseries.astype(np.float64)
                     edges = np.linspace(t_min, t_min + dt * n, n + 1)
 
-                    self._annotate(
+                    self.annotate(
                         f'$t_\\mathrm{{bin}} = {pint.Quantity(dt, "s").to_compact():~.4L}$'
                     )
 
@@ -271,7 +264,7 @@ class TimeBinPlot(XParticlePlot):
                     changed.append(self.artists[i][j][k])
 
                 if autoscale:
-                    a = self.axis_for(i, j)
+                    a = self.axis(i, j)
                     a.relim()
                     a.autoscale()
                     if count_based:
@@ -280,7 +273,7 @@ class TimeBinPlot(XParticlePlot):
         return changed
 
 
-class TimeFFTPlot(XParticlePlot):
+class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
     def __init__(
         self,
         particles=None,
@@ -292,16 +285,12 @@ class TimeFFTPlot(XParticlePlot):
         scaling=None,
         mask=None,
         plot_kwargs=None,
-        grid=True,
-        ax=None,
-        data_units=None,
-        display_units=None,
         twiss=None,
         beta=None,
         frev=None,
         circumference=None,
         wrap_zeta=False,
-        **subplots_kwargs,
+        **xplot_kwargs,
     ):
         """
         A frequency plot based on particle arrival times.
@@ -319,55 +308,50 @@ class TimeFFTPlot(XParticlePlot):
         Useful to plot time structures of particles loss, such as spill structures.
 
         Args:
-                particles: Particles data to plot.
-                kind (str, optional): What to make the FFT over. Can be 'count' (default), or a particle property (in which case averaging applies).
-                fmax (float): Maximum frequency (in Hz) to plot.
-                relative (bool): If True, plot relative frequencies (f/frev) instead of absolute frequencies (f).
-                log (bool, optional): If True, plot on a log scale.
-                scaling: Scaling of the FFT. Can be 'amplitude' or 'pds'.
-                mask: An index mask to select particles to plot. If None, all particles are plotted.
-                plot_kwargs: Keyword arguments passed to the plot function.
-                grid: If True, show grid lines.
-                ax: Axes to plot on. If None, a new figure is created.
-                data_units (dict, optional): Units of the data. If None, the units are determined from the data.
-                display_units (dict, optional): Units to display the data in. If None, the units are determined from the data.
-                twiss (dict, optional): Twiss parameters (alfx, alfy, betx and bety) to use for conversion to normalized phase space coordinates.
-                beta (float, optional): Relativistic beta of particles. Defaults to particles.beta0.
-                frev (float, optional): Revolution frequency of circular line for calculation of particle time.
-                circumference (float, optional): Path length of circular line if frev is not given.
-                wrap_zeta: If set, wrap the zeta-coordinate plotted at the machine circumference. Either pass the circumference directly or set this to True to use the circumference from twiss.
-                subplots_kwargs: Keyword arguments passed to matplotlib.pyplot.subplots command when a new figure is created.
-
+            particles: Particles data to plot.
+            kind (str, optional): What to make the FFT over. Can be 'count' (default), or a particle property (in which case averaging applies).
+            fmax (float): Maximum frequency (in Hz) to plot.
+            relative (bool): If True, plot relative frequencies (f/frev) instead of absolute frequencies (f).
+            log (bool, optional): If True, plot on a log scale.
+            scaling: Scaling of the FFT. Can be 'amplitude' or 'pds'.
+            mask: An index mask to select particles to plot. If None, all particles are plotted.
+            plot_kwargs: Keyword arguments passed to the plot function.
+            twiss (dict, optional): Twiss parameters (alfx, alfy, betx and bety) to use for conversion to normalized phase space coordinates.
+            beta (float, optional): Relativistic beta of particles. Defaults to particles.beta0.
+            frev (float, optional): Revolution frequency of circular line for calculation of particle time.
+            circumference (float, optional): Path length of circular line if frev is not given.
+            wrap_zeta: If set, wrap the zeta-coordinate plotted at the machine circumference. Either pass the circumference directly or set this to True to use the circumference from twiss.
+            xplot_kwargs: See :class:`xplt.XPlot` for additional arguments
         """
-        super().__init__(
-            data_units=defaults(
-                data_units,
-                count=Prop("N", unit="1", description="Particles per bin"),
-            ),
-            display_units=defaults(display_units, f="Hz" if log else "kHz"),
+        xplot_kwargs = self._init_particle_mixin(
             twiss=twiss,
             beta=beta,
             frev=frev,
             circumference=circumference,
             wrap_zeta=wrap_zeta,
+            xplot_kwargs=xplot_kwargs,
+        )
+        xplot_kwargs["data_units"] = defaults(
+            xplot_kwargs.get("data_units"),
+            count=Prop("N", unit="1", description="Particles per bin"),
+        )
+        super().__init__(
+            on_x="t",
+            on_y=kind,
+            **xplot_kwargs,
         )
 
         if scaling is None:
             scaling = "pds" if kind == "count" else "amplitude"
 
-        self.kind = self._parse_nested_list_string(kind)
         self._fmax = fmax
         self.relative = relative
         self.scaling = scaling
         if log is None:
             log = not relative
 
-        # initialize figure with n subplots
-        nntwins = [len(tw) - 1 for tw in self.kind]
-        self._init_axes(ax, len(self.kind), 1, nntwins, grid, sharex="col", **subplots_kwargs)
-
         # Format plot axes
-        self.axis_for(-1).set(
+        self.axis(-1).set(
             xlabel="$f/f_{rev}$" if self.relative else self.label_for("f"),
         )
         for a in self.axflat:
@@ -383,7 +367,7 @@ class TimeFFTPlot(XParticlePlot):
             kwargs = defaults(plot_kwargs, lw=1, label=self._legend_label_for(p))
             return ax.plot([], [], **kwargs)[0]
 
-        self._init_artists(self.kind, create_artists)
+        self._init_artists(self.on_y, create_artists)
 
         # set data
         if particles is not None:
@@ -416,7 +400,7 @@ class TimeFFTPlot(XParticlePlot):
 
         # update plots
         changed = []
-        for i, ppp in enumerate(self.kind):
+        for i, ppp in enumerate(self.on_y):
             for j, pp in enumerate(ppp):
                 for k, p in enumerate(pp):
                     count_based = p == "count"
@@ -447,7 +431,7 @@ class TimeFFTPlot(XParticlePlot):
                     changed.append(self.artists[i][j][k])
 
                 if autoscale:
-                    a = self.axis_for(i, j)
+                    a = self.axis(i, j)
                     a.relim()
                     a.autoscale()
                     log = a.get_xscale() == "log"
@@ -460,13 +444,13 @@ class TimeFFTPlot(XParticlePlot):
                     if a.get_yscale() != "log":
                         a.set_ylim(0, None)
 
-        self._annotate(f"$t_\\mathrm{{bin}} = {pint.Quantity(dt, 's').to_compact():~.4L}$")
+        self.annotate(f"$t_\\mathrm{{bin}} = {pint.Quantity(dt, 's').to_compact():~.4L}$")
 
         return changed
 
     def _get_property(self, p):
         prop = super()._get_property(p)
-        if p not in ("f"):
+        if p not in "f":
             # it is the FFT of it
             sym = prop.symbol.strip("$")
             if self.scaling.lower() == "amplitude":
@@ -496,7 +480,7 @@ class TimeFFTPlot(XParticlePlot):
             )
 
 
-class TimeIntervalPlot(XParticlePlot):
+class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin):
     def __init__(
         self,
         particles=None,
@@ -508,14 +492,10 @@ class TimeIntervalPlot(XParticlePlot):
         log=True,
         mask=None,
         plot_kwargs=None,
-        grid=True,
-        ax=None,
-        data_units=None,
-        display_units=None,
         beta=None,
         frev=None,
         circumference=None,
-        **subplots_kwargs,
+        **xplot_kwargs,
     ):
         """
         A histogram plot of particle arrival intervals (i.e. delay between consecutive particles).
@@ -527,24 +507,22 @@ class TimeIntervalPlot(XParticlePlot):
         Useful to plot time structures of particles loss, such as spill structures.
 
         Args:
-                particles: Particles data to plot.
-                tmax: Maximum interval (in s) to plot.
-                bin_time: Time bin width if bin_count is None.
-                bin_count: Number of bins if bin_time is None.
-                exact_bin_time (bool): What to do if bin_time is given but tmax is not an exact multiple of it.
-                    If True, tmax is adjusted to be a multiple of bin_time.
-                    If False, bin_time is adjusted instead.
-                log: If True, plot on a log scale.
-                mask: An index mask to select particles to plot. If None, all particles are plotted.
-                plot_kwargs: Keyword arguments passed to the plot function.
-                grid: If True, show grid lines.
-                ax: Axes to plot on. If None, a new figure is created.
-                data_units (dict, optional): Units of the data. If None, the units are determined from the data.
-                display_units (dict, optional): Units to display the data in. If None, the units are determined from the data.
-                beta (float, optional): Relativistic beta of particles. Defaults to particles.beta0.
-                frev (float, optional): Revolution frequency of circular line for calculation of particle time.
-                circumference (float, optional): Path length of circular line if frev is not given.
-                subplots_kwargs: Keyword arguments passed to matplotlib.pyplot.subplots command when a new figure is created.
+            particles: Particles data to plot.
+            tmax: Maximum interval (in s) to plot.
+            bin_time: Time bin width if bin_count is None.
+            bin_count: Number of bins if bin_time is None.
+            exact_bin_time (bool): What to do if bin_time is given but tmax is not an exact multiple of it.
+                If True, tmax is adjusted to be a multiple of bin_time.
+                If False, bin_time is adjusted instead.
+            log: If True, plot on a log scale.
+            mask: An index mask to select particles to plot. If None, all particles are plotted.
+            plot_kwargs: Keyword arguments passed to the plot function.
+            beta (float, optional): Relativistic beta of particles. Defaults to particles.beta0.
+            frev (float, optional): Revolution frequency of circular line for calculation of particle time.
+            circumference (float, optional): Path length of circular line if frev is not given.
+            subplots_kwargs: Keyword arguments passed to matplotlib.pyplot.subplots command when a new figure is created.
+            data_units: See :class:`xplt.XPlot`
+            xplot_kwargs: See :class:`xplt.XPlot` for additional arguments
 
         """
         if tmax is None:
@@ -556,12 +534,16 @@ class TimeIntervalPlot(XParticlePlot):
             else:
                 bin_time = tmax / round(tmax / bin_time)
 
-        super().__init__(
-            data_units=data_units,
-            display_units=display_units,
+        xplot_kwargs = self._init_particle_mixin(
             beta=beta,
             frev=frev,
             circumference=circumference,
+            xplot_kwargs=xplot_kwargs,
+        )
+        super().__init__(
+            on_x="t",
+            on_y="dt",
+            **xplot_kwargs,
         )
 
         if bin_time is None and bin_count is None:
@@ -570,11 +552,8 @@ class TimeIntervalPlot(XParticlePlot):
         self._bin_count = bin_count
         self.tmax = tmax
 
-        # initialize figure with 1 subplot
-        self._init_axes(ax, 1, 1, [0], grid, **subplots_kwargs)
-
         # Format plot axes
-        ax = self.axis_for(-1)
+        ax = self.axis(-1)
         ax.set(
             xlabel="Delay between consecutive particles " + self.label_for("t"),
             xlim=(self.bin_time if log else 0, self.tmax * self.factor_for("t")),
@@ -621,12 +600,12 @@ class TimeIntervalPlot(XParticlePlot):
         steps = (np.append(edges, edges[-1]), np.concatenate(([0], counts, [0])))
         self.artist.set_data(steps)
 
-        self._annotate(
+        self.annotate(
             f"$t_\\mathrm{{bin}} = {pint.Quantity(self.bin_time, 's').to_compact():~.4L}$"
         )
 
         if autoscale:
-            ax = self.axis_for(-1)
+            ax = self.axis(-1)
             ax.relim()
             ax.autoscale()
             if not ax.get_yscale() == "log":
@@ -644,7 +623,7 @@ class TimeIntervalPlot(XParticlePlot):
             super().plot_harmonics(a, self.factor_for("t") * t, n=n, **plot_kwargs)
 
 
-class TimeVariationPlot(XParticlePlot):
+class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin):
     def __init__(
         self,
         particles=None,
@@ -657,14 +636,10 @@ class TimeVariationPlot(XParticlePlot):
         poisson=True,
         mask=None,
         plot_kwargs=None,
-        grid=True,
-        ax=None,
-        data_units=None,
-        display_units=None,
         beta=None,
         frev=None,
         circumference=None,
-        **subplots_kwargs,
+        **xplot_kwargs,
     ):
         """
         Plot for variability of particles arriving as function of arrival time
@@ -692,51 +667,46 @@ class TimeVariationPlot(XParticlePlot):
 
             mask: An index mask to select particles to plot. If None, all particles are plotted.
             plot_kwargs: Keyword arguments passed to the plot function.
-            grid: If True, show grid lines.
-            ax: Axes to plot on. If None, a new figure is created.
-            data_units (dict, optional): Units of the data. If None, the units are determined from the data.
-            display_units (dict, optional): Units to display the data in. If None, the units are determined from the data.
             beta (float, optional): Relativistic beta of particles. Defaults to particles.beta0.
             frev (float, optional): Revolution frequency of circular line for calculation of particle time.
             circumference (float, optional): Path length of circular line if frev is not given.
-            subplots_kwargs: Keyword arguments passed to matplotlib.pyplot.subplots command when a new figure is created.
-
+            xplot_kwargs: See :class:`xplt.XPlot` for additional arguments
         """
-        super().__init__(
-            data_units=defaults(
-                data_units,
-                cv=Prop("$c_v=\\sigma/\\mu$", unit="1", description="Coefficient of variation"),
-                duty=Prop(
-                    "$F=\\langle N \\rangle^2/\\langle N^2 \\rangle$",
-                    unit="1",
-                    description="Spill duty factor",
-                ),
-            ),
-            display_units=display_units,
+        xplot_kwargs = self._init_particle_mixin(
             beta=beta,
             frev=frev,
             circumference=circumference,
+            xplot_kwargs=xplot_kwargs,
+        )
+        xplot_kwargs["data_units"] = defaults(
+            xplot_kwargs.get("data_units"),
+            cv=Prop("$c_v=\\sigma/\\mu$", unit="1", description="Coefficient of variation"),
+            duty=Prop(
+                "$F=\\langle N \\rangle^2/\\langle N^2 \\rangle$",
+                unit="1",
+                description="Spill duty factor",
+            ),
+        )
+        super().__init__(
+            on_x="t",
+            on_y=metric,
+            **xplot_kwargs,
         )
 
         if counting_dt is None and counting_bins is None:
             counting_bins = 100 * 100
         if evaluate_dt is None and evaluate_bins is None:
             evaluate_bins = 100
-        self.kind = self._parse_nested_list_string(metric)
         self.counting_dt = counting_dt
         self.counting_bins = counting_bins
         self.evaluate_dt = evaluate_dt
         self.evaluate_bins = evaluate_bins
 
-        # initialize figure with n subplots
-        nntwins = [len(tw) - 1 for tw in self.kind]
-        self._init_axes(ax, len(self.kind), 1, nntwins, grid, sharex="col", **subplots_kwargs)
-
         # Format plot axes
-        self.axis_for(-1).set(xlabel=self.label_for("t"), ylim=(0, None))
-        for i, ppp in enumerate(self.kind):
+        self.axis(-1).set(xlabel=self.label_for("t"), ylim=(0, None))
+        for i, ppp in enumerate(self.on_y):
             for j, pp in enumerate(ppp):
-                a = self.axis_for(i, j)
+                a = self.axis(i, j)
                 if np.all(np.array(pp) == "duty"):
                     a.yaxis.set_major_formatter(mpl.ticker.PercentFormatter(1))
 
@@ -758,7 +728,7 @@ class TimeVariationPlot(XParticlePlot):
                 pstep = None
             return step, pstep
 
-        self._init_artists(self.kind, create_artists)
+        self._init_artists(self.on_y, create_artists)
 
         # set data
         if particles is not None:
@@ -787,7 +757,7 @@ class TimeVariationPlot(XParticlePlot):
 
         # update plots
         changed = []
-        for i, ppp in enumerate(self.kind):
+        for i, ppp in enumerate(self.on_y):
             for j, pp in enumerate(ppp):
                 for k, p in enumerate(pp):
                     # bin into counting bins
@@ -800,7 +770,7 @@ class TimeVariationPlot(XParticlePlot):
                     )
                     edges = edges[: int(len(edges) / nebins + 1) * nebins : nebins]
 
-                    self._annotate(
+                    self.annotate(
                         f'$t_\\mathrm{{bin}} = {pint.Quantity(dt*nebins, "s").to_compact():~.4L}$\n'
                         f'$t_\\mathrm{{measure}} = {pint.Quantity(dt, "s").to_compact():~.4L}$'
                     )
@@ -827,7 +797,7 @@ class TimeVariationPlot(XParticlePlot):
                         changed.append(pstep)
 
                 if autoscale:
-                    a = self.axis_for(i, j)
+                    a = self.axis(i, j)
                     a.relim()
                     a.autoscale()
                     a.set(ylim=(0, None))

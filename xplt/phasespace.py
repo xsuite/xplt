@@ -16,14 +16,14 @@ import numpy as np
 from matplotlib.patches import Ellipse
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
+from .base import XPlot, XManifoldPlot, FixedLimits, AngleLocator, RadiansFormatter
+from .particles import ParticlePlotMixin
 from .util import get, defaults, normalized_coordinates, denormalized_coordinates
-from .base import FixedLimits, AngleLocator, RadiansFormatter
-from .particles import XParticlePlot
 
 pairwise = np.c_
 
 
-class PhaseSpacePlot(XParticlePlot):
+class PhaseSpacePlot(XPlot, ParticlePlotMixin):
     def __init__(
         self,
         particles=None,
@@ -32,11 +32,8 @@ class PhaseSpacePlot(XParticlePlot):
         *,
         scatter_kwargs=None,
         hist_kwargs=None,
-        ax=None,
         mask=None,
         masks=None,
-        display_units=None,
-        data_units=None,
         twiss=None,
         color=None,
         cmap="magma_r" or "Blues",
@@ -49,14 +46,15 @@ class PhaseSpacePlot(XParticlePlot):
         std_kwargs=None,
         percentiles=None,
         percentile_kwargs=None,
-        grid=None,
+        nrows=None,
+        ncols=None,
         titles="auto",
         wrap_zeta=None,
         beta=None,
         frev=None,
         circumference=None,
         animated=False,
-        **subplots_kwargs,
+        **xplot_kwargs,
     ):
         """
         A plot for phase space distributions
@@ -79,11 +77,8 @@ class PhaseSpacePlot(XParticlePlot):
             plot: Defines the type of plot. Can be 'auto', 'scatter' or 'hist'. Default is 'auto' for which the plot type is chosen automatically based on the number of particles.
             scatter_kwargs: Additional kwargs for scatter plot
             hist_kwargs: Additional kwargs for hexbin histogram plot
-            ax: A list of axes to plot onto, length must match the number of subplots. If None, a new figure is created.
             mask: An index mask to select particles to plot. If None, all particles are plotted.
             masks: List of masks for each subplot.
-            display_units (dict, optional): Units to display the data in. If None, the units are determined from the data.
-            data_units (dict, optional): Units of the data. If None, the units are determined from the data.
             twiss (dict, optional): Twiss parameters (alfx, alfy, betx and bety) to use for conversion to normalized phase space coordinates.
             color (str or list of str): Properties defining the color of points for the scatter plot(s). Implies plot='scatter'. Pass a list of properties to use different values for each subplot
             cmap: Colormap to use for the hist plot.
@@ -96,26 +91,18 @@ class PhaseSpacePlot(XParticlePlot):
             std_kwargs: Additional kwargs for std ellipses.
             percentiles: List of percentiles (in percent) to indicate in the distribution with ellipses. Can also be a list of lists for each subplot.
             percentile_kwargs: Additional kwargs for percentile ellipses.
-            grid: Tuple (ncol, nrow) for subplot layout. If None, the layout is determined automatically.
+            ncols: Number of columns in subplot layout. If None, the layout is determined automatically.
+            nrows: Number of columns in subplot layout. If None, the layout is determined automatically.
             titles: List of titles for each subplot or 'auto' to automatically set titles based on plot kind.
             wrap_zeta: If set, wrap the zeta-coordinate plotted at the machine circumference. Either pass the circumference directly or set this to True to use the circumference from twiss.
             beta (float, optional): Relativistic beta of particles. Defaults to particles.beta0.
             frev (float, optional): Revolution frequency of circular line for calculation of particle time.
             circumference (float, optional): Path length of circular line if frev is not given.
             animated: If True, improve plotting performance for creating an animation.
-            subplots_kwargs: Keyword arguments passed to matplotlib.pyplot.subplots command when a new figure is created.
+            xplot_kwargs: See :class:`xplt.XPlot` for additional arguments
 
 
         """
-        super().__init__(
-            data_units=data_units,
-            display_units=display_units,
-            twiss=twiss,
-            beta=beta,
-            frev=frev,
-            circumference=circumference,
-            wrap_zeta=wrap_zeta,
-        )
 
         # parse kind string by splitting at commas and dashes and replacing abbreviations
         abbreviations = dict(
@@ -127,8 +114,8 @@ class PhaseSpacePlot(XParticlePlot):
         )
         if kind is None:
             kind = "x,y,z" if twiss is None else "X,Y,z"
-        self.kind = self._parse_nested_list_string(
-            self._parse_nested_list_string(kind, ",", abbreviations),
+        self.kind = XManifoldPlot._parse_nested_list_string(
+            XManifoldPlot._parse_nested_list_string(kind, ",", abbreviations),
             ",-",  # no abbreviations on second level!
         )
         if np.any([len(k) != 2 for k in self.kind]):
@@ -151,8 +138,6 @@ class PhaseSpacePlot(XParticlePlot):
             raise ValueError(f"std must be a boolean or a list of length {n}")
         if len(percentiles) != n:
             raise ValueError(f"percentiles list must be flat or of length {n}")
-        if grid and (len(grid) != 2 or grid[0] * grid[1] < n):
-            raise ValueError(f"grid must be a tuple (n, m) with n*m >= {n}")
         if plot not in ["auto", "scatter", "hist"]:
             raise ValueError("plot must be 'auto', 'scatter' or 'hist'")
         if color is not None:
@@ -172,22 +157,38 @@ class PhaseSpacePlot(XParticlePlot):
         self.color = color
         self.percentiles = percentiles
         self.projections = projections
-        self.twiss = twiss
-        self.wrap_zeta = wrap_zeta
 
         # Create plot axes
 
         # initialize figure with n subplots
-        if grid:
-            ncol, nrow = grid
-        else:
-            nrow = int(np.sqrt(n))
-            while n % nrow != 0:
-                nrow -= 1
-            ncol = n // nrow
+        if ncols is None:
+            if nrows is None:
+                nrows = int(np.sqrt(n))
+                while n % nrows != 0:
+                    nrows -= 1
+            ncols = n // nrows
+        if ncols * nrows != n:
+            raise ValueError(
+                f"Layout with {ncols} columns and {nrows} rows conflicts with {n} plots!"
+            )
         nntwins = [0 for _ in self.kind]
-        kwargs = defaults(subplots_kwargs, figsize=(4 * ncol, 4 * nrow))
-        self._init_axes(ax, nrow, ncol, nntwins, grid, **kwargs)
+        xplot_kwargs = defaults(xplot_kwargs, figsize=(4 * ncols, 4 * nrows))
+
+        xplot_kwargs = self._init_particle_mixin(
+            twiss=twiss,
+            beta=beta,
+            frev=frev,
+            circumference=circumference,
+            wrap_zeta=wrap_zeta,
+            xplot_kwargs=xplot_kwargs,
+        )
+        super().__init__(
+            nrows=nrows,
+            ncols=ncols,
+            nntwins=nntwins,
+            **xplot_kwargs,
+        )
+
         if len(self.axflat) < n:
             raise ValueError(f"Need {n} axes but got only {len(self.axflat)}")
 
@@ -211,6 +212,7 @@ class PhaseSpacePlot(XParticlePlot):
             scatter_cmap = kwargs.pop("cmap")  # bypass UserWarning: ignored
             vmin, vmax = kwargs.pop("vmin", None), kwargs.pop("vmax", None)
             self.artists_scatter[i] = ax.scatter([], [], **kwargs)
+            # TODO: if color is None, use ax.plot([], [], marker=".", ls="") since it is faster
             self.artists_scatter[i].cmap = mpl.colormaps[scatter_cmap]
             self.artists_scatter[i].vmin_vmax = vmin, vmax
             # add colorbar
@@ -244,7 +246,7 @@ class PhaseSpacePlot(XParticlePlot):
             if std[i]:
                 kwargs = defaults(std_kwargs, color="k", lw=1, ls="-", zorder=100)
                 self.artists_std[i] = Ellipse(
-                    [0, 0], 0, 0, fill=False, **kwargs, animated=animated
+                    (0, 0), 0, 0, fill=False, **kwargs, animated=animated
                 )
                 ax.add_artist(self.artists_std[i])
 
@@ -259,7 +261,7 @@ class PhaseSpacePlot(XParticlePlot):
                         ls=(0, [5, 5] + [1, 5] * j),
                         zorder=100,
                     )
-                    artist = Ellipse([0, 0], 0, 0, fill=False, **kwargs, animated=animated)
+                    artist = Ellipse((0, 0), 0, 0, fill=False, **kwargs, animated=animated)
                     ax.add_artist(artist)
                     self.artists_percentiles[i].append(artist)
 
@@ -271,7 +273,6 @@ class PhaseSpacePlot(XParticlePlot):
             else:
                 title = titles[i]
             ax.set(title=title, xlabel=self.label_for(a), ylabel=self.label_for(b))
-            ax.grid(alpha=0.5)
 
             # Set angle ticks
             for ab, axis in ((a, ax.xaxis), (b, ax.yaxis)):
@@ -474,6 +475,7 @@ class PhaseSpacePlot(XParticlePlot):
             "Y-Py": "Normalized vertical phase space",
             "x-y": "Transverse profile",
         }
+        # TODO: fallback to f"{self.label_for(a, unit=False)}-{self.label_for(b, unit=False)} phase space"
         return titles.get(f"{a}-{b}", titles.get(f"{b}-{a}", f"{a}-{b} phase space"))
 
     def axline(self, kind, val, *, subplots="all", also_on_normalized=False, delta=0, **kwargs):

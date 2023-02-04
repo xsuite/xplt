@@ -102,94 +102,60 @@ class XPlot:
         *,
         data_units=None,
         display_units=None,
-        prefix_suffix_config=None,
+        ax=None,
+        grid=True,
+        nntwins=None,
+        **subplots_kwargs,
     ):
         """
         Base class for plotting
 
+        Initialize the subplots, axes and twin axes
+
         Args:
             data_units (dict, optional): Units of the data. If None, the units are determined from default and user property settings.
             display_units (dict, optional): Units to display the data in. If None, the units are determined from the data.
-            prefix_suffix_config (dict, optional): Prefix and suffix config for joining axes labels. A dict with prefixes and
-                corresponding full names, e.g. {"p": ("px", "py", ...), ...} to join labels for px and py as $p_{x,y}$.
+            ax (matplotlib.axes.Axes, optional): Axes to plot onto. If None, a new figure is created.
+            grid (bool): If True, show grid lines on all axes.
+            nntwins (list): List defining how many twin axes to create for each subplot.
+            subplots_kwargs: Keyword arguments passed to matplotlib.pyplot.subplots command when a new figure is created.
         """
 
         self._properties = {}
         if data_units:
             for name, arg in data_units.items():
                 self._properties[name] = arg if isinstance(arg, Prop) else Prop(name, unit=arg)
-
         self._display_units = defaults(display_units, s="m", x="mm", y="mm", p="mrad")
-        self._prefix_suffix_config = {}
-        if not config.use_xprime_labels:
-            self._prefix_suffix_config["p"] = ("px", "py")
-        self._prefix_suffix_config.update(prefix_suffix_config or {})
-
-    @classmethod
-    def _parse_nested_list_string(cls, list_string, separators=",-+", subs={}):
-        """Parse a separated string or nested list or a mixture of both
-
-        Args:
-            list_string (str or list): The string or nested list to parse
-            separators (str): The characters that separate the elements
-            subs (dict): A dictionary of substitutions to apply to the elements
-
-        Returns:
-            nested list of elements in the string
-        """
-        if type(list_string) is str:
-            elements = []
-            for element in list_string.split(separators[0]):
-                element = subs.get(element, element)
-                # split again in case subs contains a separator
-                elements.extend(element.split(separators[0]))
-        else:
-            elements = list(list_string)
-        if len(separators) > 1:
-            for i in range(len(elements)):
-                elements[i] = cls._parse_nested_list_string(elements[i], separators[1:], subs)
-        return elements
-
-    def _init_axes(self, ax, nrow=1, ncol=1, nntwins=None, grid=False, **subplots_kwargs):
-        """Helper method to initialize a default manifold plot with subplots, twin axes and line plots
-
-        Args:
-            ax (matplotlib.axes.Axes or None): If given, use these axes for the plot.
-                Otherwise create a new figure and axes.
-            nrow (int): Number of rows in the plot.
-            ncol (int): Number of columns in the plot.
-            nntwins (list): List defining how many twin axes to create for each subplot.
-                If None, the number of twins is automatically determined based on self.kind.
-            grid (bool): If true, add a grid to the plot.
-            subplots_kwargs: Additional keyword arguments to pass to matplotlib.pyplot.subplots
-        """
 
         # Create plot axes
         if ax is None:
-            fig, ax = plt.subplots(nrow, ncol, **subplots_kwargs)
+            fig, ax = plt.subplots(**subplots_kwargs)
             self.annotation = fig.text(
                 0.005, 0.005, "", ha="left", c="gray", linespacing=1, fontsize=8
             )
 
+        else:
+            self.annotation = None
+
         self.ax = ax
         self.fig = self.axflat[0].figure
-
         self.axflat_twin = []
 
         for i, a in enumerate(self.axflat):
             if grid:
-                a.grid(grid)
+                a.grid(grid, alpha=0.5)
 
             # Create twin axes
             self.axflat_twin.append([])
-            for j in range(nntwins[i]):
-                twin = a.twinx()
-                twin._get_lines.prop_cycler = a._get_lines.prop_cycler
-                if j > 0:
-                    twin.spines.right.set_position(("axes", 1 + 0.2 * j))
-                self.axflat_twin[i].append(twin)
+            if nntwins is not None:
+                for j in range(nntwins[i]):
+                    twin = a.twinx()
+                    twin._get_lines.prop_cycler = a._get_lines.prop_cycler
+                    if j > 0:
+                        twin.spines.right.set_position(("axes", 1 + 0.2 * j))
+                    self.axflat_twin[i].append(twin)
 
-    def _annotate(self, text, **kwargs):
+    def annotate(self, text, **kwargs):
         if not hasattr(self, "annotation"):
             return
         self.annotation.set(text=text, **kwargs)
@@ -199,46 +165,9 @@ class XPlot:
         """Return a flat list of all primary axes"""
         return np.array(self.ax).flatten()
 
-    def axis_for(self, subplot=0, twin=0):
+    def axis(self, subplot=0, twin=0):
         """Return the axis for a given flat subplot index and twin index"""
         return self.axflat_twin[subplot][twin - 1] if twin else self.axflat[subplot]
-
-    def _init_artists(self, subplots_twin_elements, create_artist):
-        """Helper method to create artists for subplots and twin axes
-
-        Args:
-            subplots_twin_elements (list): A list of lists of elements to create artists for.
-                The outer list is for subplots, the inner list for twin axes.
-            create_artist (function): A function that creates an artist for a given element.
-                It should take the indices i, j, k, the axis, and the element as arguments.
-        """
-        self.artists = []
-        self._legend_entries = []
-        for i, ppp in enumerate(subplots_twin_elements):
-            self.artists.append([])
-            self._legend_entries.append([])
-            for j, pp in enumerate(ppp):
-                a = self.axis_for(i, j)
-
-                # format axes
-                a.set(ylabel=self.label_for(*pp))
-                units = np.unique([self.display_unit_for(p) for p in pp])
-                if len(units) == 1:
-                    if units[0] == "rad":
-                        self.set_axis_ticks_angle(a.yaxis, minor=True, deg=False)
-                    elif units[0] in ("deg", "°"):
-                        self.set_axis_ticks_angle(a.yaxis, minor=True, deg=True)
-
-                # create artists for traces
-                self.artists[i].append([])
-                for k, p in enumerate(pp):
-                    artist = create_artist(i, j, k, a, p)
-                    self.artists[i][j].append(artist)
-                    for art in artist if hasattr(artist, "__iter__") else [artist]:
-                        self._legend_entries[i].append(art)
-
-            if len(self._legend_entries[i]) > 1:
-                self.legend(i)
 
     def legend(self, subplot="all", **kwargs):
         """
@@ -277,6 +206,8 @@ class XPlot:
 
     def display_unit_for(self, p):
         """Return display unit for parameter"""
+        if p is None:
+            return None
         if p in self._display_units:
             return self._display_units[p]
         prefix = p[:-1] if len(p) > 1 and p[-1] in "xy" else p
@@ -306,6 +237,12 @@ class XPlot:
             unit: Wheather to include unit
             description: Wheather to include description
         """
+
+        # filter out None
+        pp = [p for p in pp if p is not None]
+
+        if len(pp) == 0:
+            return ""
 
         # if there are different units, treat them separately
         units = np.array([self.display_unit_for(p) for p in pp])
@@ -466,6 +403,117 @@ class XPlot:
         ab.set_child(aux)
         ax.add_artist(ab)
         return ab
+
+
+class XManifoldPlot(XPlot):
+    def __init__(
+        self,
+        on_x,
+        on_y,
+        *,
+        on_y_separators=",-+",
+        on_y_subs={},
+        **kwargs,
+    ):
+        """
+        Base class for plotting manifold plots
+
+        A manifold plot consists of multiple subplots, axes and twin axes, all of which
+        share the x-axis. The kind string defines what is plotted on the y-axis.
+
+        Args:
+            on_x (str): What to plot on the x-axis
+            on_y (str or list): What to plot on the y-axis. See XManifoldPlot._parse_nested_list_string
+            on_y_separators (str): See :meth:`~XManifoldPlot._parse_nested_list_string`
+            on_y_subs (dict): See :meth:`~XManifoldPlot._parse_nested_list_string`
+            kwargs: Keyword arguments passed to :meth:`Xplot.__init__`
+        """
+        self.on_x = on_x
+        self.on_y = self._parse_nested_list_string(on_y, on_y_separators, on_y_subs)
+
+        super().__init__(
+            nrows=len(self.on_y),
+            ncols=1,
+            nntwins=[len(tw) - 1 for tw in self.on_y],
+            sharex="all",
+            **kwargs,
+        )
+
+        ## Create artists
+        # TODO: revise below
+
+    def _init_artists(self, subplots_twin_elements, create_artist):
+        # TODO: revise
+        # TODO: subplots_twin_elements may contain None
+        # TODO: move to ManifoldSubplot mixin
+        # TODO: rename: it also formats axes! Or maybe make a unified init manifold stuff... ?
+        """Helper method to create artists for subplots and twin axes
+
+        Args:
+            subplots_twin_elements (list): A list of lists of elements to create artists for.
+                The outer list is for subplots, the inner list for twin axes.
+            create_artist (function): A function that creates an artist for a given element.
+                It should take the indices i, j, k, the axis, and the element as arguments.
+        """
+        self.artists = []
+        self._legend_entries = []
+        for i, ppp in enumerate(subplots_twin_elements):
+            self.artists.append([])
+            self._legend_entries.append([])
+            for j, pp in enumerate(ppp):
+                a = self.axis(i, j)
+
+                # format axes
+                a.set(ylabel=self.label_for(*pp))
+                units = np.unique([self.display_unit_for(p) for p in pp])
+                if len(units) == 1:
+                    if units[0] == "rad":
+                        self.set_axis_ticks_angle(a.yaxis, minor=True, deg=False)
+                    elif units[0] in ("deg", "°"):
+                        self.set_axis_ticks_angle(a.yaxis, minor=True, deg=True)
+
+                # create artists for traces
+                self.artists[i].append([])
+                for k, p in enumerate(pp):
+                    artist = create_artist(i, j, k, a, p)
+                    self.artists[i][j].append(artist)
+                    for art in artist if hasattr(artist, "__iter__") else [artist]:
+                        self._legend_entries[i].append(art)
+
+            if len(self._legend_entries[i]) > 1:
+                self.legend(i)
+
+    @staticmethod
+    def _parse_nested_list_string(list_string, separators=",-+", subs={}):
+        """Parse a separated string or nested list or a mixture of both
+
+        Args:
+            list_string (str or list): The string or nested list to parse
+            separators (str): The characters that separate the elements
+            subs (dict): A dictionary of substitutions to apply to the elements
+
+        Returns:
+            nested list of elements in the string
+
+        Example:
+            ::
+                XManifoldPlot._parse_nested_list_string("a+b,c-d,e")
+                # --> [[['a', 'b']], [['c'], ['d']], [['e']]]
+        """
+        if type(list_string) is str:
+            elements = []
+            for element in list_string.split(separators[0]):
+                element = subs.get(element, element)
+                # split again in case subs contains a separator
+                elements.extend(element.split(separators[0]))
+        else:
+            elements = list(list_string)
+        if len(separators) > 1:
+            for i in range(len(elements)):
+                elements[i] = XManifoldPlot._parse_nested_list_string(
+                    elements[i], separators[1:], subs
+                )
+        return elements
 
 
 class FixedLimits:
