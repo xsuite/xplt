@@ -215,13 +215,7 @@ class ParticlesPlot(XManifoldPlot, ParticlePlotMixin):
             mask: An index mask to select particles to plot. If None, all particles are plotted.
             plot_kwargs (dict): Keyword arguments passed to the plot function.
             sort_by (str or None): Sort the data by this property. Default is to sort by the ``as_function_of`` property.
-            twiss (dict): Twiss parameters (alfx, alfy, betx and bety) to use for conversion to normalized phase space coordinates.
-            beta (float): Relativistic beta of particles. Defaults to particles.beta0.
-            frev (float): Revolution frequency of circular line for calculation of particle time.
-            circumference (float): Path length of circular line if frev is not given. Defaults to twiss.circumference.
-            wrap_zeta (bool or float): If set, wrap the zeta-coordinate plotted at the machine circumference. Set to
-                True to wrap at the circumference or to a value to wrap at this value.
-            kwargs: See :class:`~.base.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
+            kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
         """
         kwargs = self._init_particle_mixin(

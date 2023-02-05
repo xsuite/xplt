@@ -175,7 +175,7 @@ class XPlot:
 
         Args:
             fname (str): Filename
-            kwargs: Keyword arguments passed to :func:`matplotlib.figure.Figure.savefig`
+            kwargs: Keyword arguments passed to :meth:`matplotlib.figure.Figure.savefig`
         """
         self.fig.savefig(fname, **defaults(kwargs, dpi=300))
 
@@ -184,7 +184,7 @@ class XPlot:
 
         Args:
             title (str): Title
-            kwargs: Keyword arguments passed to :func:`matplotlib.figure.Figure.suptitle`
+            kwargs: Keyword arguments passed to :meth:`matplotlib.figure.Figure.suptitle`
         """
         self.fig.suptitle(title, **kwargs)
 
@@ -443,13 +443,13 @@ class XManifoldPlot(XPlot):
 
         Args:
             on_x (str): What to plot on the x-axis
-            on_y (str or list): What to plot on the y-axis. See XManifoldPlot._parse_nested_list_string
-            on_y_separators (str): See :meth:`~XManifoldPlot._parse_nested_list_string`
-            on_y_subs (dict): See :meth:`~XManifoldPlot._parse_nested_list_string`
-            kwargs: Keyword arguments passed to :meth:`Xplot.__init__`
+            on_y (str or list): What to plot on the y-axis. See :meth:`~.base.XManifoldPlot.parse_nested_list_string`.
+            on_y_separators (str): See :meth:`~.base.XManifoldPlot.parse_nested_list_string`
+            on_y_subs (dict): See :meth:`~.base.XManifoldPlot.parse_nested_list_string`
+            kwargs: Keyword arguments passed to :class:`~.base.XPlot`
         """
         self.on_x = on_x
-        self.on_y = self._parse_nested_list_string(on_y, on_y_separators, on_y_subs)
+        self.on_y = self.parse_nested_list_string(on_y, on_y_separators, on_y_subs)
 
         super().__init__(
             nrows=len(self.on_y),
@@ -505,7 +505,7 @@ class XManifoldPlot(XPlot):
         Args:
             subplot (int or iterable): Subplot axis index or indices
             show (bool or "auto"): If True, show the legend. If "auto", show the legend if there are more than one entries.
-            kwargs: Keyword arguments passed to :func:`matplotlib.axes.Axes.legend`
+            kwargs: Keyword arguments passed to :meth:`matplotlib.axes.Axes.legend`
 
         """
         if subplot == "all":
@@ -524,7 +524,7 @@ class XManifoldPlot(XPlot):
                 ax.legend(handles=handles, **kwargs)
 
     @staticmethod
-    def _parse_nested_list_string(list_string, separators=",-+", subs={}):
+    def parse_nested_list_string(list_string, separators=",-+", subs={}):
         """Parse a separated string or nested list or a mixture of both
 
         Args:
@@ -536,9 +536,8 @@ class XManifoldPlot(XPlot):
             nested list of elements in the string
 
         Example:
-            ::
-                XManifoldPlot._parse_nested_list_string("a+b,c-d,e")
-                # --> [[['a', 'b']], [['c'], ['d']], [['e']]]
+            >>> XManifoldPlot.parse_nested_list_string("a+b,c-d,e")
+            [[['a', 'b']], [['c'], ['d']], [['e']]]
         """
         if type(list_string) is str:
             elements = []
@@ -550,7 +549,7 @@ class XManifoldPlot(XPlot):
             elements = list(list_string)
         if len(separators) > 1:
             for i in range(len(elements)):
-                elements[i] = XManifoldPlot._parse_nested_list_string(
+                elements[i] = XManifoldPlot.parse_nested_list_string(
                     elements[i], separators[1:], subs
                 )
         return elements

@@ -33,12 +33,6 @@ class Prop:
     def __post_init__(self):
         pint.Unit(self.unit)  # to raise an error if not a valid unit
 
-    def axis_label(self):
-        ...
-
-    def legend_label(self):
-        ...
-
 
 default_properties = dict(
     # fmt: off

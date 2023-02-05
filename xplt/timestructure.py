@@ -136,7 +136,7 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
                 If what is a particle property, this has no effect.
             mask: An index mask to select particles to plot. If None, all particles are plotted.
             plot_kwargs: Keyword arguments passed to the plot function.
-            kwargs: See :class:`~.base.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
+            kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
         """
         kwargs = self._init_particle_mixin(**kwargs)
@@ -307,7 +307,7 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
             scaling: Scaling of the FFT. Can be 'amplitude' or 'pds'.
             mask: An index mask to select particles to plot. If None, all particles are plotted.
             plot_kwargs: Keyword arguments passed to the plot function.
-            kwargs: See :class:`~.base.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
+            kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
         """
 
@@ -500,7 +500,7 @@ class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin):
             log: If True, plot on a log scale.
             mask: An index mask to select particles to plot. If None, all particles are plotted.
             plot_kwargs: Keyword arguments passed to the plot function.
-            kwargs: See :class:`~.base.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
+            kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
 
         """
@@ -646,7 +646,7 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin):
             poisson (bool): If true, indicate poisson limit.
             mask: An index mask to select particles to plot. If None, all particles are plotted.
             plot_kwargs: Keyword arguments passed to the plot function.
-            kwargs: See :class:`~.base.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
+            kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
         """
         kwargs = self._init_particle_mixin(

@@ -84,7 +84,7 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
             titles: List of titles for each subplot or 'auto' to automatically set titles based on plot kind.
             animated: If True, improve plotting performance for creating an animation.
             twiss (dict, optional): Twiss parameters (alfx, alfy, betx and bety) to use for conversion to normalized phase space coordinates.
-            kwargs: See :class:`~.base.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
+            kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
 
         """
@@ -99,8 +99,8 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
         )
         if kind is None:
             kind = "x,y,z" if twiss is None else "X,Y,z"
-        self.kind = XManifoldPlot._parse_nested_list_string(
-            XManifoldPlot._parse_nested_list_string(kind, ",", abbreviations),
+        self.kind = XManifoldPlot.parse_nested_list_string(
+            XManifoldPlot.parse_nested_list_string(kind, ",", abbreviations),
             ",-",  # no abbreviations on second level!
         )
         if np.any([len(k) != 2 for k in self.kind]):

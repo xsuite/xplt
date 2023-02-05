@@ -228,12 +228,12 @@ class FloorPlot(XPlot):
             kwargs: See :class:`~.base.XPlot` for additional arguments
 
 
-        The config options can be:
+        The config options passed to boxes and labels can be:
             - None: Use good defaults.
             - A bool: En-/disable option for all elements (except drifts).
             - A str (regex): Filter by element name.
             - A dict: Detailed options to apply for each element in the form of
-                {"regex": {...}}. For each matching element name, the options are used.
+              `{"regex": {...}}`. For each matching element name, the options are used.
 
         """
 

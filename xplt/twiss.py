@@ -24,7 +24,6 @@ class TwissPlot(XManifoldPlot):
         *,
         line=None,
         line_kwargs={},
-        display_units=None,
         **kwargs,
     ):
         """
@@ -40,7 +39,6 @@ class TwissPlot(XManifoldPlot):
                     In addition, abbreviations for x-y-parameter pairs are supported (e.g. 'bet' for 'betx+bety').
             line: Line of elements. If given, adds a line plot to the top.
             line_kwargs: Keyword arguments passed to line plot.
-            display_units: See :class:`xplt.XPlot`
             kwargs: See :class:`~.base.XPlot` for additional arguments
 
 
@@ -48,14 +46,14 @@ class TwissPlot(XManifoldPlot):
         subs = {p: f"{p}x+{p}y" for p in "alf,bet,gam,mu,d,dp,q,dq".split(",")}
 
         if line:
-            kind = self._parse_nested_list_string(kind, subs=subs)
+            kind = self.parse_nested_list_string(kind, subs=subs)
             kind = [[[None]], *kind]
 
         super().__init__(
             on_x="s",
             on_y=kind,
             on_y_subs=subs,
-            display_units=defaults(display_units, bet="m", d="m"),
+            display_units=defaults(kwargs.pop("display_units", None), bet="m", d="m"),
             **kwargs,
         )
 
