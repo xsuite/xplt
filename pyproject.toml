@@ -54,3 +54,12 @@ packages = ['xplt']
 line-length = 98
 target-version = ['py38']
 
+[tool.pylint.main]
+load-plugins = "pylint.extensions.docparams"
+disable = "all"
+enable = ["parameter_documentation"]
+[tool.pylint.parameter_documentation]
+default-docstring-type = "google"
+[tool.pylint.basic]
+no-docstring-rgx = "^(?!.*)_" # also check private and magic methods "^(?!__init__$)_"
+

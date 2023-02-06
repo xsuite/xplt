@@ -30,15 +30,15 @@ class TwissPlot(XManifoldPlot):
         A plot for twiss parameters and closed orbit
 
         Args:
-            twiss: Dictionary with twiss information
-            kind: Defines the properties to plot.
+            twiss (Any): Dictionary with twiss information
+            kind (str | list): Defines the properties to plot.
                     This can be a nested list or a separated string or a mixture of lists and strings where
                     the first list level (or separator ``,``) determines the subplots,
                     the second list level (or separator ``-``) determines any twinx-axes,
                     and the third list level (or separator ``+``) determines plots on the same axis.
                     In addition, abbreviations for x-y-parameter pairs are supported (e.g. 'bet' for 'betx+bety').
-            line: Line of elements. If given, adds a line plot to the top.
-            line_kwargs: Keyword arguments passed to line plot.
+            line (xtrack.Line): Line of elements. If given, adds a line plot to the top.
+            line_kwargs (dict): Keyword arguments passed to line plot.
             kwargs: See :class:`~.base.XPlot` for additional arguments
 
 
@@ -80,9 +80,9 @@ class TwissPlot(XManifoldPlot):
         Update the twiss data this plot shows
 
         Args:
-            twiss: Dictionary with twiss information
-            autoscale: Whether or not to perform autoscaling on all axes.
-            line: Line of elements.
+            twiss (Any): Dictionary with twiss information
+            autoscale (bool): Whether or not to perform autoscaling on all axes.
+            line (xtack.Line): Line of elements.
 
         Returns:
             changed artists

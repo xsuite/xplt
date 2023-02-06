@@ -134,8 +134,8 @@ def get_property(name, custom_properties=None):
     """Get property information
 
     Args:
-        name: Name of property to return information for
-        custom_properties (optional): Dict with custom properties to supersede user and default properties.
+        name (str): Name of property to return information for
+        custom_properties (dict | None): Dict with custom properties to supersede user and default properties.
 
     Returns:
         Prop: Property information

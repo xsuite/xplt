@@ -32,10 +32,10 @@ def binned_timeseries(times, n, what=None, range=None):
     the respective bin (or 0 if no particles arrive within a time bin).
 
     Args:
-        times: Array of particle arrival times.
-        n: Number of bins.
-        what: Array of associated data or None. Must have same shape as times. See above.
-        range: Tuple of (min, max) time values to consider. If None, the range is determined from the data.
+        times (np.ndarray): Array of particle arrival times.
+        n (int): Number of bins.
+        what (np.ndarray | None): Array of associated data or None. Must have same shape as times. See above.
+        range (tuple[int] | None): Tuple of (min, max) time values to consider. If None, the range is determined from the data.
 
     Returns:
         The timeseries as tuple (t_min, dt, values) where
@@ -84,8 +84,8 @@ class TimePlot(ParticlesPlot):
             - For linear lines: zeta / beta / c0
 
         Args:
-            particles: Particles data to plot.
-            kind: Defines the properties to plot.
+            particles (Any): Particles data to plot.
+            kind (str | list): Defines the properties to plot.
                     This can be a nested list or a separated string or a mixture of lists and strings where
                     the first list level (or separator ``,``) determines the subplots,
                     the second list level (or separator ``-``) determines any twinx-axes,
@@ -124,18 +124,18 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
         Useful to plot time structures of particles loss, such as spill structures.
 
         Args:
-            particles: Particles data to plot.
-            kind (str, optional): What to plot as function of time. Can be 'count' (default),
+            particles (Any): Particles data to plot.
+            kind (str | list): What to plot as function of time. Can be 'count' (default),
                 'rate', 'cumulative', or a particle property to average.
-            bin_time: Time bin width if bin_count is None.
-            bin_count: Number of bins if bin_time is None.
+            bin_time (float): Time bin width if bin_count is None.
+            bin_count (int): Number of bins if bin_time is None.
             exact_bin_time (bool): What to do if bin_time is given but length of data is not an exact multiple of it.
                 If True, overhanging data is removed such that the data length is a multiple of bin_time.
                 If False, bin_time is adjusted instead.
-            relative: If True, plot relative numbers normalized to total count.
+            relative (bool): If True, plot relative numbers normalized to total count.
                 If what is a particle property, this has no effect.
-            mask: An index mask to select particles to plot. If None, all particles are plotted.
-            plot_kwargs: Keyword arguments passed to the plot function.
+            mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
+            plot_kwargs (dict): Keyword arguments passed to the plot function.
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
         """
@@ -189,9 +189,9 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
         """Update plot with new data
 
         Args:
-            particles: Particles data to plot.
-            mask: An index mask to select particles to plot. If None, all particles are plotted.
-            autoscale: Whether or not to perform autoscaling on all axes.
+            particles (Any): Particles data to plot.
+            mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
+            autoscale (bool): Whether or not to perform autoscaling on all axes.
 
         Returns:
             list: Changed artists
@@ -299,14 +299,14 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
         Useful to plot time structures of particles loss, such as spill structures.
 
         Args:
-            particles: Particles data to plot.
-            kind (str, optional): What to make the FFT over. Can be 'count' (default), or a particle property (in which case averaging applies).
+            particles (Any): Particles data to plot.
+            kind (str | list): What to make the FFT over. Can be 'count' (default), or a particle property (in which case averaging applies).
             fmax (float): Maximum frequency (in Hz) to plot.
             relative (bool): If True, plot relative frequencies (f/frev) instead of absolute frequencies (f).
-            log (bool, optional): If True, plot on a log scale.
-            scaling: Scaling of the FFT. Can be 'amplitude' or 'pds'.
-            mask: An index mask to select particles to plot. If None, all particles are plotted.
-            plot_kwargs: Keyword arguments passed to the plot function.
+            log (bool): If True, plot on a log scale.
+            scaling (str): Scaling of the FFT. Can be 'amplitude' or 'pds'.
+            mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
+            plot_kwargs (dict): Keyword arguments passed to the plot function.
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
         """
@@ -367,9 +367,9 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
         """Update plot with new data
 
         Args:
-            particles: Particles data to plot.
-            mask: An index mask to select particles to plot. If None, all particles are plotted.
-            autoscale: Whether or not to perform autoscaling on all axes.
+            particles (Any): Particles data to plot.
+            mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
+            autoscale (bool): Whether or not to perform autoscaling on all axes.
 
         Returns:
             list: Changed artists
@@ -490,16 +490,16 @@ class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin):
         Useful to plot time structures of particles loss, such as spill structures.
 
         Args:
-            particles: Particles data to plot.
-            tmax: Maximum interval (in s) to plot.
-            bin_time: Time bin width if bin_count is None.
-            bin_count: Number of bins if bin_time is None.
+            particles (Any): Particles data to plot.
+            tmax (float): Maximum interval (in s) to plot.
+            bin_time (float): Time bin width if bin_count is None.
+            bin_count (int): Number of bins if bin_time is None.
             exact_bin_time (bool): What to do if bin_time is given but tmax is not an exact multiple of it.
                 If True, tmax is adjusted to be a multiple of bin_time.
                 If False, bin_time is adjusted instead.
-            log: If True, plot on a log scale.
-            mask: An index mask to select particles to plot. If None, all particles are plotted.
-            plot_kwargs: Keyword arguments passed to the plot function.
+            log (bool): If True, plot on a log scale.
+            mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
+            plot_kwargs (dict): Keyword arguments passed to the plot function.
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
 
@@ -561,9 +561,9 @@ class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin):
         """Update plot with new data
 
         Args:
-            particles: Particles data to plot.
-            mask: An index mask to select particles to plot. If None, all particles are plotted.
-            autoscale: Whether or not to perform autoscaling on all axes.
+            particles (Any): Particles data to plot.
+            mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
+            autoscale (bool): Whether or not to perform autoscaling on all axes.
         """
 
         # extract times
@@ -637,15 +637,15 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin):
                 F = mean(N)**2 / mean(N**2)
 
         Args:
-            particles: Particles data to plot.
-            metric (str): Metric to plot. See above for list of implemented metrics.
-            counting_dt: Time bin width for counting if counting_bins is None.
-            counting_bins: Number of bins if counting_dt is None.
-            evaluate_dt: Time bin width for metric evaluation if evaluate_bins is None.
-            evaluate_bins: Number of bins if evaluate_dt is None.
+            particles (Any): Particles data to plot.
+            metric (str | list): Metric to plot. See above for list of implemented metrics.
+            counting_dt (float): Time bin width for counting if counting_bins is None.
+            counting_bins (int): Number of bins if counting_dt is None.
+            evaluate_dt (float): Time bin width for metric evaluation if evaluate_bins is None.
+            evaluate_bins (int): Number of bins if evaluate_dt is None.
             poisson (bool): If true, indicate poisson limit.
-            mask: An index mask to select particles to plot. If None, all particles are plotted.
-            plot_kwargs: Keyword arguments passed to the plot function.
+            mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
+            plot_kwargs (dict): Keyword arguments passed to the plot function.
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
         """
@@ -712,9 +712,9 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin):
         """Update plot with new data
 
         Args:
-            particles: Particles data to plot.
-            mask: An index mask to select particles to plot. If None, all particles are plotted.
-            autoscale: Whether or not to perform autoscaling on all axes.
+            particles (Any): Particles data to plot.
+            mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
+            autoscale (bool): Whether or not to perform autoscaling on all axes.
 
         Returns:
             Changed artists

@@ -237,7 +237,7 @@ class XPlot:
         Return legend label for a single property
 
         Args:
-            p: Property name
+            p (str): Property name
 
         Returns:
             str: Legend label
@@ -251,8 +251,8 @@ class XPlot:
 
         Args:
             pp: Property names
-            unit: Wheather to include unit
-            description: Wheather to include description
+            unit (bool): Whether to include unit
+            description (bool): Whether to include description
 
         Returns:
             str: Axis label
@@ -316,7 +316,7 @@ class XPlot:
         This will set ticks at multiples or fractions of 180° or pi with appropriate labels
 
         Args:
-            yaxis: The axis to format (ax.xaxis or ax.yaxis)
+            yaxis (matplotlib.axis.Axis): The axis to format (ax.xaxis or ax.yaxis)
             minor (bool): If true (default), also set the minor locator
             deg (bool): If true, use angles in degree. If false (default), in radians.
         """
@@ -339,7 +339,7 @@ class XPlot:
         - 1 / ( v/h ± dv/2 )  if inverse and not scale_width
 
         Args:
-            ax: Axis to plot onto.
+            ax (matplotlib.axes.Axes): Axes to plot onto.
             v (float or list of float): Value or list of values.
             dv (float or list of float, optional): Width or list of widths centered around value(s).
             n (int): Number of harmonics to plot.
@@ -389,15 +389,15 @@ class XPlot:
         """Add a scale patch (a yardstick or ruler)
 
         Args:
-            ax: The axis to add it to.
-            scale: The size of the scale in data units.
+            ax (matplotlib.axes.Axes): The axis to add it to.
+            scale (float): The size of the scale in data units.
             label (str, optional): A label for the scale.
             vertical (bool): If true, make a vertical one (default is a horizontal one).
             width (float): The line width of the scale in axis units.
             padding (float): The padding between the scale and the axis.
             loc (str): The location of the scale. Can be any of the usual matplotlib locations, e.g. 'auto', 'upper left', 'upper center', 'upper right', 'center left', 'center', 'center right', 'lower left', 'lower center, 'lower right'.
-            color: Color for the patch.
-            fontsize: Font size of the label.
+            color (str): Color for the patch.
+            fontsize (str): Font size of the label.
 
         Returns:
             The artist added (an AnchoredOffsetbox).
@@ -500,11 +500,12 @@ class XManifoldPlot(XPlot):
             self.legend(i, show="auto")
 
     def legend(self, subplot="all", show=True, **kwargs):
-        """
+        """Add, update or remove legend for a subplot
 
         Args:
-            subplot (int or iterable): Subplot axis index or indices
-            show (bool or "auto"): If True, show the legend. If "auto", show the legend if there are more than one entries.
+            subplot (Union[int, iterable, "all"]): Subplot axis index or indices
+            show (Union[bool, "auto"]): If True, show the legend. If "auto", show
+              the legend if there are more than one entries.
             kwargs: Keyword arguments passed to :meth:`matplotlib.axes.Axes.legend`
 
         """

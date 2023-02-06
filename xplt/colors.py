@@ -58,7 +58,7 @@ def make_unicoloured_cmap(color):
     """Make a linear colormap of a given color from transparent to black
 
     Args:
-        color: Color as hex string or RGB tuple
+        color (Union[str, tuple]): Color as hex string or RGB tuple
 
     Returns:
         Colormap

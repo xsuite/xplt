@@ -56,34 +56,34 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
         A plot for phase space distributions
 
         Args:
-            particles: A dictionary with particle information
-            kind: Defines the properties to plot.
+            particles (Any): A dictionary with particle information
+            kind (str | list): Defines the properties to plot.
                      This can be a nested list or a separated string or a mixture of lists and strings where
                      the first list level (or separator ``,``) determines the subplots,
                      and the second list level (or separator ``-``) determines coordinate pairs.
                      In addition, abbreviations for x-y-parameter pairs are supported (e.g. 'x' for 'x-px').
                      For normalized coordinates, use uppercase letters (e.g. 'X' for 'X-Px').
-            plot: Defines the type of plot. Can be 'auto', 'scatter' or 'hist'. Default is 'auto' for which the plot type is chosen automatically based on the number of particles.
-            scatter_kwargs: Additional kwargs for scatter plot
-            hist_kwargs: Additional kwargs for hexbin histogram plot
-            mask: An index mask to select particles to plot. If None, all particles are plotted.
-            masks: List of masks for each subplot.
-            color (str or list of str): Properties defining the color of points for the scatter plot(s). Implies plot='scatter'. Pass a list of properties to use different values for each subplot
-            cmap: Colormap to use for the hist plot.
-            cbar_loc: Location of the colorbar, such as 'right', 'inside upper right', etc.
-            projections: Add histogrammed projections onto axis. Can be True, False, "x", "y", "auto" or a list of these for each subplot
-            projections_kwargs: Additional kwargs for histogram projection (step plot)
-            mean: Whether to indicate mean of distribution with a cross marker. Boolean or list of booleans for each subplot.
-            mean_kwargs: Additional kwargs for mean cross
-            std: Whether to indicate standard deviation of distribution with an ellipse. Boolean or list of booleans for each subplot.
-            std_kwargs: Additional kwargs for std ellipses.
-            percentiles: List of percentiles (in percent) to indicate in the distribution with ellipses. Can also be a list of lists for each subplot.
-            percentile_kwargs: Additional kwargs for percentile ellipses.
-            ncols: Number of columns in subplot layout. If None, the layout is determined automatically.
-            nrows: Number of columns in subplot layout. If None, the layout is determined automatically.
-            titles: List of titles for each subplot or 'auto' to automatically set titles based on plot kind.
-            animated: If True, improve plotting performance for creating an animation.
-            twiss (dict, optional): Twiss parameters (alfx, alfy, betx and bety) to use for conversion to normalized phase space coordinates.
+            plot (str): Defines the type of plot. Can be 'auto', 'scatter' or 'hist'. Default is 'auto' for which the plot type is chosen automatically based on the number of particles.
+            scatter_kwargs (dict): Additional kwargs for scatter plot
+            hist_kwargs (dist): Additional kwargs for hexbin histogram plot
+            mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
+            masks (list[mask]): List of masks for each subplot.
+            color (str | list[str]): Properties defining the color of points for the scatter plot(s). Implies plot='scatter'. Pass a list of properties to use different values for each subplot
+            cmap (str): Colormap to use for the hist plot.
+            cbar_loc (str): Location of the colorbar, such as 'right', 'inside upper right', etc.
+            projections (bool | str | list): Add histogrammed projections onto axis. Can be True, False, "x", "y", "auto" or a list of these for each subplot
+            projections_kwargs (dict): Additional kwargs for histogram projection (step plot)
+            mean (bool | list): Whether to indicate mean of distribution with a cross marker. Boolean or list of booleans for each subplot.
+            mean_kwargs (dict): Additional kwargs for mean cross
+            std (bool | list): Whether to indicate standard deviation of distribution with an ellipse. Boolean or list of booleans for each subplot.
+            std_kwargs (dict): Additional kwargs for std ellipses.
+            percentiles (list): List of percentiles (in percent) to indicate in the distribution with ellipses. Can also be a list of lists for each subplot.
+            percentile_kwargs (dict): Additional kwargs for percentile ellipses.
+            ncols (int | None): Number of columns in subplot layout. If None, the layout is determined automatically.
+            nrows (int | None): Number of columns in subplot layout. If None, the layout is determined automatically.
+            titles (list[str]): List of titles for each subplot or 'auto' to automatically set titles based on plot kind.
+            animated (bool): If True, improve plotting performance for creating an animation.
+            twiss (dict | None): Twiss parameters (alfx, alfy, betx and bety) to use for conversion to normalized phase space coordinates.
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
 
@@ -285,10 +285,10 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
         Update the data this plot shows
 
         Args:
-            particles: A dictionary with particle information
-            mask: An index mask to select particles to plot. If None, all particles are plotted.
-            masks: List of masks for each subplot.
-            autoscale: Whether or not to perform autoscaling on all axes.
+            particles (Any): A dictionary with particle information
+            mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
+            masks (list): List of masks for each subplot.
+            autoscale (bool): Whether or not to perform autoscaling on all axes.
 
         Returns:
             List of changed artists.

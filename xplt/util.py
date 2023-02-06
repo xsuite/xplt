@@ -98,9 +98,9 @@ def normalized_coordinates(x, px, twiss, xy, delta=0):
     """Convert physical to normalized coordinates
 
     Args:
-        x: Physical x-coordinate in m
-        px: Physical px-coordinate in rad
-        twiss: Object or dict with twiss information in m and rad
+        x (float): Physical x-coordinate in m
+        px (float): Physical px-coordinate in rad
+        twiss (Any): Object or dict with twiss information in m and rad
         xy (str): Plane. Either "x" or "y".
         delta (float): Momentum deviation to account for dispersive orbit.
 
@@ -121,9 +121,9 @@ def denormalized_coordinates(X, Px, twiss, xy, delta=0):
     """Convert normalized to physical coordinates
 
     Args:
-        X: Normalized X-coordinate in m^(1/2)
-        Px: Normalized Px-coordinate in m^(1/2)
-        twiss: Object or dict with local twiss information in m and rad
+        X (float): Normalized X-coordinate in m^(1/2)
+        Px (float): Normalized Px-coordinate in m^(1/2)
+        twiss (Any): Object or dict with local twiss information in m and rad
         xy (str): Plane. Either "x" or "y".
         delta (float): Momentum deviation to account for dispersive orbit.
 
@@ -148,9 +148,9 @@ def virtual_sextupole(tracker, particle_ref=None, *, verbose=False):
     The implementation considers only normal sextupole components.
 
     Args:
-        tracker: Tracker object with line and twiss methods
-        particle_ref: Reference particle. Defaults to reference particle of tracker.
-        verbose: If True, print information on sextupoles
+        tracker (xtrack.Tracker): Tracker object with line and twiss methods
+        particle_ref (xpart.Particles): Reference particle. Defaults to reference particle of tracker.
+        verbose (bool): If True, print information on sextupoles
 
     Returns:
         Tuple (S, mu) with normalized strength in m^(-1/2) and phase in rad/2pi
@@ -203,14 +203,14 @@ def hamiltonian_kobayashi(X, Px, S, mu, twiss, xy="x", delta=0, *, normalized=Fa
     """Calculate the kobayashi hamiltonian
 
     Args:
-        X: Normalized X-coordinate in m^(1/2)
-        Px: Normalized Px-coordinate in m^(1/2)
-        S: Normalized sextupole strength in m^(-1/2)
-        mu: Sextupole phase in rad/2pi
-        twiss: Object or dict with local twiss information in m and rad
+        X (float): Normalized X-coordinate in m^(1/2)
+        Px (float): Normalized Px-coordinate in m^(1/2)
+        S (float): Normalized sextupole strength in m^(-1/2)
+        mu (float): Sextupole phase in rad/2pi
+        twiss (Any): Object or dict with local twiss information in m and rad
         xy (str): Plane. Either "x" or "y".
         delta (float): Momentum deviation to account for dispersive orbit.
-        normalized: If true, return value of hamiltonian normalized to value at separatrix.
+        normalized (bool): If true, return value of hamiltonian normalized to value at separatrix.
 
     Returns:
         Value of the hamiltonian (normalized if specified)

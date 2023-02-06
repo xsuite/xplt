@@ -41,11 +41,11 @@ class ParticlePlotMixin:
 
 
         Args:
-            twiss (dict, optional): Twiss parameters (alfx, alfy, betx and bety) to use for conversion to normalized phase space coordinates.
-            beta (float, optional): Relativistic beta of particles. Defaults to particles.beta0.
-            frev (float, optional): Revolution frequency of circular line for calculation of particle time.
-            circumference (float, optional): Path length of circular line if frev is not given.
-            wrap_zeta: If set, wrap the zeta-coordinate plotted at the machine circumference.
+            twiss (dict | None): Twiss parameters (alfx, alfy, betx and bety) to use for conversion to normalized phase space coordinates.
+            beta (float | None): Relativistic beta of particles. Defaults to particles.beta0.
+            frev (float | None): Revolution frequency of circular line for calculation of particle time.
+            circumference (float | None): Path length of circular line if frev is not given.
+            wrap_zeta (bool | float | None): If set, wrap the zeta-coordinate plotted at the machine circumference.
                 Either pass the circumference directly or set this to True to use the circumference from twiss.
             kwargs: Keyword arguments for :class:`~.base.XPlot`
 
@@ -205,16 +205,16 @@ class ParticlesPlot(XManifoldPlot, ParticlePlotMixin):
         A plot of particle properties as function of another property.
 
         Args:
-            particles: Particles data to plot.
-            kind (str or list): Defines the properties to plot.
+            particles (Any): Particles data to plot.
+            kind (str | list): Defines the properties to plot.
                  This can be a separated string or a nested list or a mixture of both where
                  the first list level (or separator ``,``) determines the subplots,
                  the second list level (or separator ``-``) determines any twinx-axes,
                  and the third list level (or separator ``+``) determines plots on the same axis.
             as_function_of (str): The property to plot as function of.
-            mask: An index mask to select particles to plot. If None, all particles are plotted.
+            mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
             plot_kwargs (dict): Keyword arguments passed to the plot function.
-            sort_by (str or None): Sort the data by this property. Default is to sort by the ``as_function_of`` property.
+            sort_by (str | None): Sort the data by this property. Default is to sort by the ``as_function_of`` property.
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
         """
@@ -250,9 +250,9 @@ class ParticlesPlot(XManifoldPlot, ParticlePlotMixin):
         """Update plot with new data
 
         Args:
-            particles: Particles data to plot.
-            mask: An index mask to select particles to plot. If None, all particles are plotted.
-            autoscale: Whether or not to perform autoscaling on all axes.
+            particles (Any): Particles data to plot.
+            mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
+            autoscale (bool): Whether or not to perform autoscaling on all axes.
 
         Returns:
             List of artists that have been updated.

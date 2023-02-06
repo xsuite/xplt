@@ -24,7 +24,7 @@ def iter_elements(line):
     """Iterate over elements in line
 
     Args:
-        line: Line of elements.
+        line (xtrack.Line): Line of elements.
 
     Yields:
         (name, element, s_from, s_to): Name, element, start and end s position of element.
@@ -59,13 +59,13 @@ class KnlPlot(XManifoldPlot):
         A plot for knl values along line
 
         Args:
-            line: Line of elements.
-            knl (int or list of int or str): Maximum order or list of orders n to plot knl values for.
+            line (xtrack.Line): Line of elements.
+            knl (int | list[int] | str): Maximum order or list of orders n to plot knl values for.
                 This can also be a manifold subplot specification string, e.g. ``"k0l+k1l,k2l"``.
                 If None, automatically determine from line.
             filled (bool): If True, make a filled plot instead of a line plot.
-            resolution: Number of points to use for plot.
-            line_length: Length of line (only required if line is None).
+            resolution (int): Number of points to use for plot.
+            line_length (float, optional): Length of line (only required if line is None).
             kwargs: See :class:`~.base.XPlot` for additional arguments
 
         Known issues:
@@ -120,8 +120,8 @@ class KnlPlot(XManifoldPlot):
         Update the line data this plot shows
 
         Args:
-            line: Line of elements.
-            autoscale: Whether or not to perform autoscaling on all axes
+            line (xtrack.Line): Line of elements.
+            autoscale (bool): Whether or not to perform autoscaling on all axes
 
         Returns:
             changed artists
@@ -183,8 +183,8 @@ class KnlPlot(XManifoldPlot):
 
         Args:
             pp: Property names
-            unit: Wheather to include unit
-            description: Wheather to include description
+            unit (bool): Whether to include unit
+            description (bool): Whether to include description
 
         Returns:
             str: Axis label
@@ -213,14 +213,14 @@ class FloorPlot(XPlot):
         A floor plan of the line based on survey data
 
         Args:
-            survey: Survey data.
-            projection: The projection to use: A pair of coordinates ('XZ', 'ZY' etc.)
-            line: Line data with additional information about elements.
+            survey (Any): Survey data.
+            projection (str): The projection to use: A pair of coordinates ('XZ', 'ZY' etc.)
+            line (xtrack.Line): Line data with additional information about elements.
                 Use this to have colored boxes of correct size etc.
-            boxes: Config option for showing colored boxes for elements. See below.
+            boxes (None | bool | str | dict): Config option for showing colored boxes for elements. See below.
                 Detailed options can be "length" and all options suitable for a patch,
                 such as "color", "alpha", etc.
-            labels: Config option for showing labels for elements. See below.
+            labels (None | bool | str | dict): Config option for showing labels for elements. See below.
                 Detailed options can be "text" (e.g. "Dipole {name}" where name will be
                 replaced with the element name) and all options suitable for an annotation,
                 such as "color", "alpha", etc.
@@ -278,9 +278,9 @@ class FloorPlot(XPlot):
         Update the survey data this plot shows
 
         Args:
-            survey: Survey data.
-            line: Line data.
-            autoscale: Whether or not to perform autoscaling on all axes
+            survey (Any): Survey data.
+            line (xtrack.Line): Line data.
+            autoscale (bool): Whether or not to perform autoscaling on all axes
 
         Returns:
             changed artists
@@ -455,11 +455,11 @@ class FloorPlot(XPlot):
         """Add a scale patch (a yardstick or ruler)
 
         Args:
-            scale: The length of the scale in data units (typically meter).
-            label (str, optional): A label for the scale.
+            scale (float): The length of the scale in data units (typically meter).
+            label (str | None): A label for the scale.
             loc (str): The location of the scale. Can be any of the usual matplotlib locations, e.g. 'auto', 'upper left', 'upper center', 'upper right', 'center left', 'center', 'center right', 'lower left', 'lower center, 'lower right'.
-            color: Color for the patch.
-            fontsize: Font size of the label.
+            color (Any): Color for the patch.
+            fontsize (Any): Font size of the label.
 
         Returns:
             The artist added (an AnchoredOffsetbox).

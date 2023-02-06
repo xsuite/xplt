@@ -3,29 +3,36 @@ name: Quality Assurance
 on: [push, pull_request]
 
 jobs:
-  docstrings:
+  pre-commit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-      - name: Install dependencies
-        run: |
-          pip install -e .
-          pip install -r tests/requirements.txt
-      - name: Darglint Docstring QA
-        run: |
-          cd tests
-          echo "Checking for the following errors:"
-          darglint --list-errors
-          echo "Checking docstrings..."
-          darglint ../xplt
-
-  formatting:
-    # see also pre-commit
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: psf/black@stable
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v3
+      - uses: pre-commit/action@v3.0.0
         with:
-          version: "22.10.0"
-          jupyter: true
+          extra_args: --all-files --hook-stage=manual
+
+#  formatting:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v2
+#      - uses: psf/black@stable
+#        with:
+#          version: "22.10.0"
+#          jupyter: true
+#
+#  docstrings:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v2
+#      - uses: actions/setup-python@v2
+#      - name: Install dependencies
+#        run: |
+#          pip install darglint==1.8.1
+#      - name: Darglint Docstring QA
+#        run: |
+#          cd tests
+#          echo "Checking for the following errors:"
+#          darglint --list-errors
+#          echo "Checking docstrings..."
+#          darglint ../xplt
