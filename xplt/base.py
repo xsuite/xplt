@@ -149,9 +149,8 @@ class XPlot:
                     self.axflat_twin[i].append(twin)
 
     def annotate(self, text, **kwargs):
-        if not hasattr(self, "annotation"):
-            return
-        self.annotation.set(text=text, **kwargs)
+        if self.annotation is not None:
+            self.annotation.set(text=text, **kwargs)
 
     @property
     def axflat(self):
