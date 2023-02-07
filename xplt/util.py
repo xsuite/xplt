@@ -210,7 +210,7 @@ def hamiltonian_kobayashi(X, Px, S, mu, twiss, xy="x", delta=0, *, normalized=Fa
         twiss (Any): Object or dict with local twiss information in m and rad
         xy (str): Plane. Either "x" or "y".
         delta (float): Momentum deviation to account for dispersive orbit.
-        normalized (bool): If true, return value of hamiltonian normalized to value at separatrix.
+        normalized (bool): If true, return value of hamiltonian divided by value at separatrix.
 
     Returns:
         Value of the hamiltonian (normalized if specified)

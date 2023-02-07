@@ -118,16 +118,18 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
             projections = n * [projections]
 
         if len(mean) != n:
-            raise ValueError(f"mean must be a boolean or a list of length {n}")
+            raise ValueError(f"mean must be a boolean or a list of length {n}, but got {mean!r}")
         if len(std) != n:
-            raise ValueError(f"std must be a boolean or a list of length {n}")
+            raise ValueError(f"std must be a boolean or a list of length {n}, but got {std!r}")
         if len(percentiles) != n:
-            raise ValueError(f"percentiles list must be flat or of length {n}")
+            raise ValueError(
+                f"percentiles list must be flat or of length {n}, but got {percentiles!r}"
+            )
         if plot not in ["auto", "scatter", "hist"]:
-            raise ValueError("plot must be 'auto', 'scatter' or 'hist'")
+            raise ValueError(f"plot must be 'auto', 'scatter' or 'hist', but got {plot!r}")
         if color is not None:
             if plot not in ["auto", "scatter"]:
-                raise ValueError(f"Setting color requires plot='scatter', but plot was {plot}")
+                raise ValueError(f"Setting color requires plot='scatter', but got plot={plot!r}")
             plot = "scatter"
             if isinstance(color, str):
                 color = np.resize(color.split(","), n)
