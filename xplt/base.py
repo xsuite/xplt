@@ -148,6 +148,46 @@ class XPlot:
                         twin.spines.right.set_position(("axes", 1 + 0.2 * j))
                     self.axflat_twin[i].append(twin)
 
+    def _autoscale(self, ax, artists=[], data=[], *, ignore_present_limits=True, freeze=True):
+        """Autoscale axes to fit given artists
+
+        Args:
+            ax (matplotlib.axes.Axes): Axes to autoscale
+            artists (list): Artists to consider (if any)
+            data (list): Data points to consider (if any) in the form [(x1,y1), (x2,y2), ...]
+            ignore_present_limits (bool): Whether to ignore any data limits already registerd.
+            freeze (bool): Whether to keep the updated axes limits (True) or enable automatic
+                autoscaling on future draws (for all present and new artists).
+        """
+        limits = []
+        data = data[:]  # make a copy so we can savely append
+        for art in artists:
+            lim = art.get_datalim(ax.transData)
+            if not np.all(np.isfinite(lim)):
+                # fallback to offsets (e.g. for hexbin)
+                data.extend(art.get_offsets())
+            else:
+                limits.append(lim)
+        for x, y in data:
+            lim = mpl.transforms.Bbox.from_extents(x.min(), y.min(), x.max(), y.max())
+            limits.append(lim)
+        dataLim = mpl.transforms.Bbox.union(limits)
+
+        if ignore_present_limits:
+            ax.dataLim = dataLim
+        else:
+            ax.update_datalim(dataLim)  # takes previous datalim into account
+
+        if freeze:
+            # autoscale once and freeze new limits
+            ax.set_autoscale_on(True)
+            ax.autoscale_view()
+            ax.set(xlim=ax.get_xlim(), ylim=ax.get_ylim())
+            ax.set_autoscale_on(False)
+        else:
+            # autoscale on next draw (and also on any future draws)
+            ax.autoscale()
+
     def annotate(self, text, **kwargs):
         if self.annotation is not None:
             self.annotation.set(text=text, **kwargs)
@@ -553,19 +593,6 @@ class XManifoldPlot(XPlot):
                     elements[i], separators[1:], subs
                 )
         return elements
-
-
-class FixedLimits:
-    """Context manager for keeping axis limits fixed while plotting"""
-
-    def __init__(self, axis):
-        self.axis = axis
-
-    def __enter__(self):
-        self.limits = self.axis.get_xlim(), self.axis.get_ylim()
-
-    def __exit__(self, *args):
-        self.axis.set(xlim=self.limits[0], ylim=self.limits[1])
 
 
 ## Restrict star imports to local namespace

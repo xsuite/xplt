@@ -16,7 +16,7 @@ import numpy as np
 from matplotlib.patches import Ellipse
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
-from .base import XPlot, XManifoldPlot, FixedLimits, AngleLocator, RadiansFormatter
+from .base import XPlot, XManifoldPlot, AngleLocator, RadiansFormatter
 from .particles import ParticlePlotMixin
 from .util import get, defaults, normalized_coordinates, denormalized_coordinates
 
@@ -187,6 +187,9 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
 
         for i, ((a, b), c, ax) in enumerate(zip(self.kind, self.color, self.axflat)):
 
+            # we handle autoscaling manually
+            ax.set_autoscale_on(False)
+
             # 2D phase space distribution
             ##############################
 
@@ -305,7 +308,6 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
         changed_artists = []
 
         for i, ((a, b), c, ax) in enumerate(zip(self.kind, self.color, self.axflat)):
-            ax.autoscale(autoscale)
 
             # coordinates
             x = self.factor_for(a) * self._get_masked(particles, a, masks[i])
@@ -408,17 +410,10 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
 
             # Autoscale
             if autoscale:
-                # ax.relim()  # At present, relim does not support collection instances.
                 if plot == "scatter":
-                    artists = [self.artists_scatter[i]]
+                    self._autoscale(ax, [self.artists_scatter[i]])
                 elif plot == "hist":
-                    artists = self.artists_hexbin[i]
-                else:
-                    artists = []
-                ax.update_datalim(
-                    mpl.transforms.Bbox.union([a.get_datalim(ax.transData) for a in artists])
-                )
-                ax.autoscale(True)
+                    self._autoscale(ax, self.artists_hexbin[i])
 
             # 1D histogram projections
             ###########################
@@ -429,12 +424,11 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
 
             for xy, v in zip("xy", (x, y)):
                 if xy in self.artists_twin[i]:
-                    axt = self.ax_twin[i][xy]
                     hist = self.artists_twin[i][xy]
                     hist.set_visible(project)
                     if project:
                         # 1D histogram
-                        rng = getattr(axt, f"get_{xy}lim")()
+                        rng = getattr(ax, f"get_{xy}lim")()
                         counts, edges = np.histogram(v, bins=101, range=rng)
                         counts = counts / len(v)
 
@@ -582,42 +576,41 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
                 return XY
 
             lim = ax.dataLim
-            with FixedLimits(ax):
 
-                # plot separatrix
-                if separatrix:
-                    kwarg = defaults(separatrix_kwargs, color="r", ls="--", label="Separatrix")
+            # plot separatrix
+            if separatrix:
+                kwarg = defaults(separatrix_kwargs, color="r", ls="--", label="Separatrix")
 
-                    t = extend
-                    for X, Y in (  # triangle edges
-                        [(-2, -2), (-2 * t, 2 * t)],
-                        [(1 - 3 * t, 1 + 3 * t), (1 + t, 1 - t)],
-                        [(1 - 3 * t, 1 + 3 * t), (-1 - t, -1 + t)],
-                    ):
-                        X = h * np.array(X) / 2
-                        Y = h * 3**0.5 * np.array(Y) / 2
-                        ax.plot(*transform((X, Y)), **kwarg)
-                        kwarg.pop("label", None)
+                t = extend
+                for X, Y in (  # triangle edges
+                    [(-2, -2), (-2 * t, 2 * t)],
+                    [(1 - 3 * t, 1 + 3 * t), (1 + t, 1 - t)],
+                    [(1 - 3 * t, 1 + 3 * t), (-1 - t, -1 + t)],
+                ):
+                    X = h * np.array(X) / 2
+                    Y = h * 3**0.5 * np.array(Y) / 2
+                    ax.plot(*transform((X, Y)), **kwarg)
+                    kwarg.pop("label", None)
 
-                # plot equipotential lines
-                if equipotentials:
-                    kwargs = defaults(
-                        equipotentials_kwargs,
-                        colors="lightgray",
-                        linewidths=1,
-                        alpha=0.5,
-                    )
+            # plot equipotential lines
+            if equipotentials:
+                kwargs = defaults(
+                    equipotentials_kwargs,
+                    colors="lightgray",
+                    linewidths=1,
+                    alpha=0.5,
+                )
 
-                    # Hamiltonian normalized to value at separatrix
-                    X = extend * h * np.linspace(-1, 2, 500)
-                    Y = extend * h * 3**0.5 * np.linspace(-1, 1, 500)
-                    X, Y = np.meshgrid(X, Y)
-                    H = (3 * h * (X**2 + Y**2) + 3 * X * Y**2 - X**3) / h**3 / 4
-                    levels = np.linspace(0, extend, int(10 * extend)) ** 2
+                # Hamiltonian normalized to value at separatrix
+                X = extend * h * np.linspace(-1, 2, 500)
+                Y = extend * h * 3**0.5 * np.linspace(-1, 1, 500)
+                X, Y = np.meshgrid(X, Y)
+                H = (3 * h * (X**2 + Y**2) + 3 * X * Y**2 - X**3) / h**3 / 4
+                levels = np.linspace(0, extend, int(10 * extend)) ** 2
 
-                    ax.contour(*transform((X, Y)), H, levels=levels, **kwargs)
+                ax.contour(*transform((X, Y)), H, levels=levels, **kwargs)
 
-                    ax.grid(False)
+                ax.grid(False)
 
             # autoscale to separatrix
             if autoscale:
@@ -625,10 +618,7 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
                 X = np.array((-2, -2, 1 - 3 * t, 1 + 3 * t, 1 - 3 * t, 1 + 3 * t)) / 2
                 Y = np.array((-2 * t, 2 * t, 1 + t, 1 - t, -1 - t, -1 + t)) * 3**0.5 / 2
                 x, y = transform((h * X, h * Y))
-                ax.dataLim = lim.union(
-                    [mpl.transforms.Bbox([[min(x), min(y)], [max(x), max(y)]])]
-                )
-                ax.autoscale()
+                self._autoscale(ax, data=np.transpose((x, y)))
 
 
 ## Restrict star imports to local namespace
