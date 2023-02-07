@@ -404,31 +404,7 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
                         )
                         changed_artists.append(self.artists_percentiles[i][j])
 
-            # 1D histogram projections
-            ###########################
-
-            project = self.projections[i]
-            if project == "auto":
-                project = len(x) >= 200
-
-            for xy, v in zip("xy", (x, y)):
-                if xy in self.artists_twin[i]:
-                    hist = self.artists_twin[i][xy]
-                    hist.set_visible(project)
-                    if project:
-                        # 1D histogram
-                        counts, edges = np.histogram(v, bins=101)
-                        counts = counts / len(v)
-                        # counts = np.bincount((101 * (v - np.min(v)) / (np.max(v) - np.min(v))).astype(int))[:101] / len(v)
-                        # edges = np.linspace(np.min(v), np.max(v), 102)
-
-                        steps = (
-                            np.append(edges, edges[-1]),
-                            np.concatenate(([0], counts, [0])),
-                        )
-                        hist.set_data(steps if xy == "x" else steps[::-1])
-                        changed_artists.append(hist)
-
+            # Autoscale
             if autoscale:
                 # ax.relim()  # At present, relim does not support collection instances.
                 if plot == "scatter":
@@ -441,6 +417,31 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
                     mpl.transforms.Bbox.union([a.get_datalim(ax.transData) for a in artists])
                 )
                 ax.autoscale(True)
+
+            # 1D histogram projections
+            ###########################
+
+            project = self.projections[i]
+            if project == "auto":
+                project = len(x) >= 200
+
+            for xy, v in zip("xy", (x, y)):
+                if xy in self.artists_twin[i]:
+                    axt = self.ax_twin[i][xy]
+                    hist = self.artists_twin[i][xy]
+                    hist.set_visible(project)
+                    if project:
+                        # 1D histogram
+                        rng = getattr(axt, f"get_{xy}lim")()
+                        counts, edges = np.histogram(v, bins=101, range=rng)
+                        counts = counts / len(v)
+
+                        steps = (
+                            np.append(edges, edges[-1]),
+                            np.concatenate(([0], counts, [0])),
+                        )
+                        hist.set_data(steps if xy == "x" else steps[::-1])
+                        changed_artists.append(hist)
 
         return changed_artists
 
