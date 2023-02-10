@@ -13,12 +13,13 @@ __date__ = "2023-02-03"
 import types
 import numpy as np
 import pint
+import re
 from dataclasses import dataclass
 
 
 @dataclass
 class Prop:
-    """Class holding property informations
+    """Class holding generic property information
 
     Args:
         symbol: Short physical symbol representing property. Preferably latex, e.g. $x$.
@@ -123,36 +124,74 @@ def register_property(name, unit, symbol=None, description=None):
 
     Args:
         name (str): Property name
-        unit (str): Unit of data values assosiated with this property
+        unit (str): Unit of data values associated with this property
         symbol (str, optional): Symbol to display in plots, e.g. $a_1$
         description (str, optional): Description
     """
     user_properties[name] = Prop(symbol or name, unit, description)
 
 
-def get_property(name, custom_properties=None):
-    """Get property information
+@dataclass
+class PropToPlot(Prop):
+    """Class holding specific property information about something to be plotted
 
     Args:
-        name (str): Name of property to return information for
-        custom_properties (dict | None): Dict with custom properties to supersede user and default properties.
-
-    Returns:
-        Prop: Property information
-
-    Raises:
-        ValueError: If property is not known
+        symbol: Short physical symbol representing property. Preferably latex, e.g. $x$.
+        unit: Physical unit of property data.
+        description (optional): Longer description of the property to display on legend and axes labels.
+        key: The property key
+        modifier (optional): Additional information to modify property values.
     """
-    if custom_properties and name in custom_properties:
-        return custom_properties[name]
-    if name in user_properties:
-        return user_properties[name]
-    elif name in default_properties:
-        return default_properties[name]
-    else:
-        raise ValueError(
-            f"Property `{name}` is not known, please register it using xplt.register_property"
-        )
+
+    key: str = None
+    modifier: str = None
+
+    def __post_init__(self):
+        super().__post_init__()
+        if self.key is None:
+            raise TypeError("Property key must be set")
+
+    # def __eq__(self, other):
+    #    return self.key == other
+
+    # def __str__(self):
+    #    return self.key
+
+    @staticmethod
+    def get(p, custom_properties=None):
+        """Create PropToPlot from string
+
+        Args:
+            p (str): String to parse. Should be the key of the property to plot,
+                optionally followed by a modifier in square brackets, e.g. "betx[mod]".
+                See each plots documentation on which modifiers are supported.
+            custom_properties (dict | None): Dict with custom properties
+                to supersede user and default properties.
+
+        Returns:
+            Prop: Property information
+
+        Raises:
+            ValueError: If property is not known
+        """
+
+        # parse modifier (if any)
+        mod = None
+        if m := re.fullmatch(r"(.+)\[(.+)\]", p):
+            p, mod = m.groups()
+
+        if custom_properties and p in custom_properties:
+            prop = custom_properties[p]
+        elif p in user_properties:
+            prop = user_properties[p]
+        elif p in default_properties:
+            prop = default_properties[p]
+        else:
+            raise ValueError(
+                f"Property `{p}` is not known, please register it using xplt.register_property"
+            )
+
+        return PropToPlot(**prop.__dict__, key=p, modifier=mod)
 
 
 ## Restrict star imports to local namespace

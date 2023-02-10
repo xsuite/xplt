@@ -16,7 +16,7 @@ import matplotlib as mpl
 import numpy as np
 
 from .base import XPlot, XManifoldPlot
-from .units import Prop
+from .units import Prop, PropToPlot
 from .util import defaults, get
 
 
@@ -173,7 +173,7 @@ class KnlPlot(XManifoldPlot):
     def _get_property(self, p):
         if match := re.fullmatch(r"k(\d+)l", p):
             n = match.group(1)
-            return Prop(f"$k_{n}l$", unit="rad" if n == "0" else f"m^-{n}")
+            return PropToPlot(key=p, symbol=f"$k_{n}l$", unit="rad" if n == "0" else f"m^-{n}")
         return super()._get_property(p)
 
     def label_for(self, *pp, unit=True, description=True):

@@ -15,7 +15,7 @@ import types
 import numpy as np
 
 from .base import XManifoldPlot
-from .units import get_property, Prop
+from .units import PropToPlot, Prop
 from .util import c0, get, val, defaults, normalized_coordinates
 
 
@@ -63,12 +63,12 @@ class ParticlePlotMixin:
         kwargs["data_units"] = defaults(
             kwargs.get("data_units"),
             # fmt: off
-            X  = Prop("$X$",   unit=f"({get_property('x').unit})/({get_property('betx').unit})^(1/2)"),   # Normalized X
-            Y  = Prop("$Y$",   unit=f"({get_property('y').unit})/({get_property('bety').unit})^(1/2)"),   # Normalized Y
-            Px = Prop("$X'$",  unit=f"({get_property('px').unit})*({get_property('betx').unit})^(1/2)"),  # Normalized Px
-            Py = Prop("$Y'$",  unit=f"({get_property('py').unit})*({get_property('bety').unit})^(1/2)"),  # Normalized Py
-            Jx = Prop("$J_x$", unit=f"({get_property('x').unit})^2/({get_property('betx').unit})"),       # Action Jx
-            Jy = Prop("$J_y$", unit=f"({get_property('y').unit})^2/({get_property('bety').unit})"),       # Action Jy
+            X  = Prop("$X$",   unit=f"({PropToPlot.get('x').unit})/({PropToPlot.get('betx').unit})^(1/2)"),   # Normalized X
+            Y  = Prop("$Y$",   unit=f"({PropToPlot.get('y').unit})/({PropToPlot.get('bety').unit})^(1/2)"),   # Normalized Y
+            Px = Prop("$X'$",  unit=f"({PropToPlot.get('px').unit})*({PropToPlot.get('betx').unit})^(1/2)"),  # Normalized Px
+            Py = Prop("$Y'$",  unit=f"({PropToPlot.get('py').unit})*({PropToPlot.get('bety').unit})^(1/2)"),  # Normalized Py
+            Jx = Prop("$J_x$", unit=f"({PropToPlot.get('x').unit})^2/({PropToPlot.get('betx').unit})"),       # Action Jx
+            Jy = Prop("$J_y$", unit=f"({PropToPlot.get('y').unit})^2/({PropToPlot.get('bety').unit})"),       # Action Jy
             Θx = Prop("$Θ_x$", unit=f"rad"),
             Θy = Prop("$Θ_y$", unit=f"rad"),
             # fmt: on
@@ -124,29 +124,29 @@ class ParticlePlotMixin:
         if beta is not None and self.circumference is not None:
             return beta * c0 / self.circumference
 
-    def _get_masked(self, particles, prop, mask=None):
+    def _get_masked(self, particles, key, mask=None):
         """Get masked particle property"""
 
-        if prop in ("X", "Px", "Y", "Py"):
+        if key in ("X", "Px", "Y", "Py"):
             # normalized coordinates
             if self.twiss is None:
                 raise ValueError("Normalized coordinates requested but twiss is None")
-            xy = prop.lower()[-1]
+            xy = key.lower()[-1]
             coords = [self._get_masked(particles, p, mask) for p in (xy, "p" + xy)]
             delta = self._get_masked(particles, "delta", mask)
             X, Px = normalized_coordinates(*coords, self.twiss, xy, delta=delta)
-            return X if prop.lower() == xy else Px
+            return X if key.lower() == xy else Px
 
-        if prop in ("Jx", "Jy", "Θx", "Θy"):
+        if key in ("Jx", "Jy", "Θx", "Θy"):
             # action angle coordinates
-            X = self._get_masked(particles, prop[-1].upper(), mask)
-            Px = self._get_masked(particles, "P" + prop[-1].lower(), mask)
-            if prop in ("Jx", "Jy"):  # Action
+            X = self._get_masked(particles, key[-1].upper(), mask)
+            Px = self._get_masked(particles, "P" + key[-1].lower(), mask)
+            if key in ("Jx", "Jy"):  # Action
                 return (X**2 + Px**2) / 2
-            if prop in ("Θx", "Θy"):  # Angle
+            if key in ("Θx", "Θy"):  # Angle
                 return -np.arctan2(Px, X)
 
-        if prop == "t":
+        if key == "t":
             # particle arrival time (t = at_turn / frev - zeta / beta / c0)
             beta = self.beta(particles)
             if beta is None:
@@ -176,12 +176,12 @@ class ParticlePlotMixin:
             return np.array(time).flatten()
 
         # default
-        v = get(particles, prop)
+        v = get(particles, key)
 
         if mask is not None:
             v = v[mask]
 
-        if prop == "zeta" and self.wrap_zeta:
+        if key == "zeta" and self.wrap_zeta:
             # wrap values at machine circumference
             w = self.circumference if self.wrap_zeta is True else self.wrap_zeta
             v = np.mod(v + w / 2, w) - w / 2

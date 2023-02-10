@@ -180,9 +180,9 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
 
     def _get_property(self, p):
         prop = super()._get_property(p)
-        if p not in ("count", "rate", "cumulative", "t"):
+        if prop.key not in ("count", "rate", "cumulative", "t"):
             # it is averaged
-            prop = Prop(f"\\langle {prop.symbol} \\rangle", prop.unit, prop.description)
+            prop.symbol = f"$\\langle${prop.symbol}$\\rangle$"
         return prop
 
     def update(self, particles, mask=None, autoscale=False):
@@ -217,11 +217,12 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
             for j, pp in enumerate(ppp):
                 count_based = False
                 for k, p in enumerate(pp):
-                    count_based = p in ("count", "rate", "cumulative")
+                    prop = self._get_property(p)
+                    count_based = prop.key in ("count", "rate", "cumulative")
                     if count_based:
                         property = None
                     else:
-                        property = self._get_masked(particles, p, mask)
+                        property = self._get_masked(particles, prop.key, mask)
 
                     t_min, dt, timeseries = binned_timeseries(times, n, property, t_range)
                     timeseries = timeseries.astype(np.float64)
@@ -238,16 +239,15 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
                             )
                         timeseries /= len(times)
 
-                    if p == "rate":
+                    if prop.key == "rate":
                         timeseries /= dt
 
                     # target units
                     edges *= self.factor_for("t")
-                    if not count_based:
-                        timeseries *= self.factor_for(p)
+                    timeseries *= self.factor_for(p)
 
                     # update plot
-                    if p == "cumulative":
+                    if prop.key == "cumulative":
                         # steps open after last bin
                         timeseries = np.concatenate(([0], np.cumsum(timeseries)))
                     elif count_based:
@@ -440,15 +440,13 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
             # it is the FFT of it
             sym = prop.symbol.strip("$")
             if self.scaling.lower() == "amplitude":
-                prop = Prop(f"$\\hat{{{sym}}}$", prop.unit, prop.description)
+                prop.symbol = f"$\\hat{{{sym}}}$"
             elif self.scaling.lower() == "pds":
-                prop = Prop(
-                    f"$|\\mathrm{{FFT({sym})}}|^2$", "a.u.", prop.description
-                )  # a.u. = arbitrary unit
+                prop.symbol = f"$|\\mathrm{{FFT({sym})}}|^2$"
+                prop.unit = "a.u."  # arbitrary unit
             else:
-                prop = Prop(
-                    f"$|\\mathrm{{FFT({sym})}}|$", "a.u.", prop.description
-                )  # a.u. = arbitrary unit
+                prop.symbol = f"$|\\mathrm{{FFT({sym})}}|$"
+                prop.unit = "a.u."  # arbitrary unit
         return prop
 
     def plot_harmonics(self, f, df=0, *, n=20, **plot_kwargs):

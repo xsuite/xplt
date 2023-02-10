@@ -19,7 +19,7 @@ import numpy as np
 import pint
 
 from .util import defaults
-from .units import get_property, Prop
+from .units import PropToPlot, Prop
 
 
 class ManifoldMultipleLocator(mpl.ticker.MaxNLocator):
@@ -261,15 +261,18 @@ class XPlot:
         """
         if p is None:
             return None
-        if p in self._display_units:
-            return self._display_units[p]
-        prefix = p[:-1] if len(p) > 1 and p[-1] in "xy" else p
-        if prefix in self._display_units:
-            return self._display_units[prefix]
+
+        prop = self._get_property(p)
+        if prop.key in self._display_units:
+            return self._display_units[prop.key]
+        if len(prop.key) > 1 and prop.key[-1] in "xy":
+            if prop.key[:-1] in self._display_units:
+                return self._display_units[prop.key[:-1]]
+
         return self.data_unit_for(p)
 
     def _get_property(self, p):
-        return get_property(p, self._properties)
+        return PropToPlot.get(p, self._properties)
 
     def _legend_label_for(self, p):
         """
