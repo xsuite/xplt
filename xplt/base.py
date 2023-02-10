@@ -505,6 +505,11 @@ class XManifoldPlot(XPlot):
             on_y_subs (dict): See :meth:`~.base.XManifoldPlot.parse_nested_list_string`
             kwargs: Keyword arguments passed to :class:`~.base.XPlot`
         """
+        if len(on_y_separators) != 3:
+            raise ValueError(
+                f"Exactly 3 separators required but got on_y_separators={on_y_separators!r}"
+            )
+
         self.on_x = on_x
         self.on_y = self.parse_nested_list_string(on_y, on_y_separators, on_y_subs)
 
