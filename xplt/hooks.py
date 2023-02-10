@@ -56,7 +56,7 @@ def register_pint_options():
     """Register default options for pint"""
     import pint
 
-    @pint.register_unit_format("l")
+    # @pint.register_unit_format("l")
     def format_latex(unit, registry, **options):
         """Slightly modified latex formatter"""
         preprocessed = {
@@ -74,7 +74,8 @@ def register_pint_options():
         )
         return formatted.replace("[", "{").replace("]", "}").replace("^{0.5}", "^{1/2}")
 
-    pint.formatting.format_default = "l"
+    pint.formatting._FORMATTERS["L"] = format_latex
+    pint.formatting.format_default = "L"
 
 
 ## Restrict star imports to local namespace

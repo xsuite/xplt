@@ -344,7 +344,7 @@ class XPlot:
             else:
                 display_unit = pint.Unit(units[0])  # all have the same unit (see above)
                 if display_unit != pint.Unit("1"):
-                    label += f" / ${display_unit:~l}$"
+                    label += f" / ${display_unit:~L}$"
 
         return label
 
