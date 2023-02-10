@@ -127,9 +127,8 @@ class KnlPlot(XManifoldPlot):
             changed artists
         """
         # compute knl as function of s
-        keys = [p for ppp in self.on_y for pp in ppp for p in pp]
-        values = {p: np.zeros(self.S.size) for p in keys}
-        orders = {p: order(p) for p in keys}
+        values = {p: np.zeros(self.S.size) for p in self.on_y_unique}
+        orders = {p: order(p) for p in self.on_y_unique}
         Smax = line.get_length()
         for name, el, s0, s1 in iter_elements(line):
             if hasattr(el, "knl"):

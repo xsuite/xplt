@@ -513,6 +513,10 @@ class XManifoldPlot(XPlot):
 
         self.axis(-1).set(xlabel=self.label_for(self.on_x))
 
+    @property
+    def on_y_unique(self):
+        return np.unique([p for ppp in self.on_y for pp in ppp for p in pp])
+
     def _create_artists(self, callback):
         """Helper method to create artists for subplots and twin axes
 
