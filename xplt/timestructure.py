@@ -230,7 +230,7 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
                     edges = np.linspace(t_min, t_min + dt * n, n + 1)
 
                     self.annotate(
-                        f'$t_\\mathrm{{bin}} = {pint.Quantity(dt, "s").to_compact():~.4L}$'
+                        f'$\\Delta t_\\mathrm{{bin}} = {pint.Quantity(dt, "s").to_compact():~.4L}$'
                     )
 
                     if self.relative:
@@ -431,7 +431,7 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
                     if a.get_yscale() != "log":
                         a.set_ylim(0, None)
 
-        self.annotate(f"$t_\\mathrm{{bin}} = {pint.Quantity(dt, 's').to_compact():~.4L}$")
+        self.annotate(f"$\\Delta t_\\mathrm{{bin}} = {pint.Quantity(dt, 's').to_compact():~.4L}$")
 
         return changed
 
@@ -576,7 +576,7 @@ class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin):
         steps = (np.append(edges, edges[-1]), np.concatenate(([0], counts, [0])))
 
         self.annotate(
-            f"$t_\\mathrm{{bin}} = {pint.Quantity(self.bin_time, 's').to_compact():~.4L}$"
+            f"$\\Delta t_\\mathrm{{bin}} = {pint.Quantity(self.bin_time, 's').to_compact():~.4L}$"
         )
 
         for i, ppp in enumerate(self.on_y):
@@ -948,7 +948,7 @@ class TimeVariationScalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
         self.annotate(
             "$\\Delta t_\\mathrm{evaluate} = "
             + (
-                f"{self.counting_bins_per_evaluation:g} \\Delta t_\\mathrm{{count}}$"
+                f"{self.counting_bins_per_evaluation:g}\\,\\Delta t_\\mathrm{{count}}$"
                 if self.counting_bins_per_evaluation
                 else f"{pint.Quantity(duration, 's'):#~.4L}$"
             )
