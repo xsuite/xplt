@@ -23,6 +23,7 @@ requires-python = ">=3.8"
 dependencies = [
     "matplotlib>=3.2",
     "numpy",
+    "scipy",
     "pandas",
     "pint",
 ]
