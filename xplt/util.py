@@ -54,6 +54,13 @@ def defaults(kwargs, **default_kwargs):
     return dict(default_kwargs, **kwargs)
 
 
+def flattened(lists):
+    """Flatten a list of nested lists recursively"""
+    if hasattr(lists, "__iter__"):
+        return [item for sublist in lists for item in flattened(sublist)]
+    return [lists]
+
+
 class AttrDict(dict):
     """Dict which allows accessing values via key attributes"""
 

@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pint
 
-from .util import defaults
+from .util import defaults, flattened
 from .units import PropToPlot, Prop
 
 
@@ -195,7 +195,7 @@ class XPlot:
     @property
     def axflat(self):
         """Return a flat list of all primary axes"""
-        return np.array(self.ax).flatten()
+        return flattened(self.ax)
 
     def axis(self, subplot=0, twin=0):
         """Return the axis for a given flat subplot index and twin index
@@ -540,8 +540,9 @@ class XManifoldPlot(XPlot):
                 for k, p in enumerate(pp):
                     artist = callback(i, j, k, a, p)
                     self.artists[i][j].append(artist)
-                    for art in artist if hasattr(artist, "__iter__") else [artist]:
-                        self._legend_entries[i].append(art)
+                    for art in flattened(artist):
+                        if art:
+                            self._legend_entries[i].append(art)
 
             self.legend(i, show="auto")
 
