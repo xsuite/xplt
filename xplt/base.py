@@ -335,7 +335,7 @@ class XPlot:
             labels.append(f"${pre}_{{{s}}}$")
 
         # build label
-        label = ", ".join(labels)
+        label = ", ".join(np.unique(labels))
 
         # add unit
         if unit:
