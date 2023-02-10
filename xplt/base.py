@@ -148,36 +148,51 @@ class XPlot:
                         twin.spines.right.set_position(("axes", 1 + 0.2 * j))
                     self.axflat_twin[i].append(twin)
 
-    def _autoscale(self, ax, artists=[], data=[], *, ignore_present_limits=True, freeze=True):
+    def _autoscale(self, ax, artists=[], data=[], *, reset=False, freeze=True):
         """Autoscale axes to fit given artists
 
         Args:
             ax (matplotlib.axes.Axes): Axes to autoscale
             artists (list): Artists to consider (if any)
             data (list): Data points to consider (if any) in the form [(x1,y1), (x2,y2), ...]
-            ignore_present_limits (bool): Whether to ignore any data limits already registerd.
+            reset (bool): Whether to ignore any data limits already registered.
             freeze (bool): Whether to keep the updated axes limits (True) or enable automatic
                 autoscaling on future draws (for all present and new artists).
         """
         limits = []
-        data = data[:]  # make a copy so we can savely append
-        for art in artists:
-            lim = art.get_datalim(ax.transData)
-            if not np.all(np.isfinite(lim)):
-                # fallback to offsets (e.g. for hexbin)
-                data.extend(art.get_offsets())
-            else:
-                limits.append(lim)
+        data = data[:]  # make a copy so we can safely append
+
+        # Get data limits from artists
+        for art in flattened(artists):
+            if hasattr(art, "get_datalim"):
+                # Collections, patches, etc.
+                lim = art.get_datalim(ax.transData)
+                if not np.all(np.isfinite(lim)):
+                    # fallback to offsets (e.g. for hexbin)
+                    data.extend(art.get_offsets())
+                else:
+                    limits.append(lim)
+            elif hasattr(art, "get_data"):
+                # Line2D
+                data.extend(np.transpose(art.get_data()))
+            elif art is not None:
+                raise NotImplementedError(f"Autoscaling not implemented for {art!r}")
+
+        # Add limits from raw data
         for x, y in data:
             lim = mpl.transforms.Bbox.from_extents(x.min(), y.min(), x.max(), y.max())
             limits.append(lim)
-        dataLim = mpl.transforms.Bbox.union(limits)
 
-        if ignore_present_limits:
-            ax.dataLim = dataLim
-        else:
-            ax.update_datalim(dataLim)  # takes previous datalim into account
+        # Update axes limits
+        if len(limits) > 0:
+            dataLim = mpl.transforms.Bbox.union(limits)
 
+            if reset:
+                ax.dataLim = dataLim
+            else:
+                ax.update_datalim(dataLim)  # takes previous datalim into account
+
+        # Autoscale
         if freeze:
             # autoscale once and freeze new limits
             ax.set_autoscale_on(True)
@@ -570,6 +585,25 @@ class XManifoldPlot(XPlot):
                     ax.get_legend().remove()
             else:
                 ax.legend(handles=handles, **kwargs)
+
+    def autoscale(self, subplot="all", reset=False, freeze=True):
+        """Autoscale the axes of a subplot
+
+        Args:
+            subplot (int | iterable | str): Subplot axis index, indices or "all"
+            reset (bool): Whether to ignore any data limits already registered.
+            freeze (bool): Whether to keep the updated axes limits (True) or enable automatic
+                autoscaling on future draws (for all present and new artists).
+        """
+        kwargs = dict(reset=reset, freeze=freeze)
+
+        if subplot == "all":
+            subplot = range(len(self.axflat))
+
+        for s in flattened(subplot):
+            self._autoscale(self.axflat[s], flattened(self.artists[s][0]), **kwargs)
+            for i, axt in enumerate(self.axflat_twin[s]):
+                self._autoscale(axt, flattened(self.artists[s][i]), **kwargs)
 
     @staticmethod
     def parse_nested_list_string(list_string, separators=",-+", subs={}):
