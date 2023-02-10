@@ -14,7 +14,14 @@ from .units import register_property
 from .colors import *
 from .line import KnlPlot, FloorPlot
 from .phasespace import PhaseSpacePlot
-from .timestructure import TimePlot, TimeBinPlot, TimeFFTPlot, TimeIntervalPlot, TimeVariationPlot
+from .timestructure import (
+    TimePlot,
+    TimeBinPlot,
+    TimeFFTPlot,
+    TimeIntervalPlot,
+    TimeVariationPlot,
+    TimeVariationScalePlot,
+)
 from .twiss import TwissPlot
 from .util import average, normalized_coordinates, denormalized_coordinates
 

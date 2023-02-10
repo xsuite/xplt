@@ -14,6 +14,7 @@ import types
 import matplotlib as mpl
 import numpy as np
 import pint
+import re
 
 from .util import defaults
 from .base import XManifoldPlot
@@ -604,7 +605,67 @@ class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin):
             super().plot_harmonics(a, self.factor_for("t") * t, n=n, **plot_kwargs)
 
 
-class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin):
+class MetricesMixin:
+    """Mixin to evaluate particle fluctuation metrices for spill quality analysis
+
+    The following metrics are implemented:
+        cv: Coefficient of variation
+            cv = std(N)/mean(N)
+        duty: Spill duty factor
+            F = mean(N)**2 / mean(N**2)
+
+    """
+
+    _metric_properties = dict(
+        cv=Prop("$c_v=\\sigma/\\mu$", unit="1", description="Coefficient of variation"),
+        duty=Prop(
+            "$F=\\langle N \\rangle^2/\\langle N^2 \\rangle$",
+            unit="1",
+            description="Spill duty factor",
+        ),
+    )
+
+    @staticmethod
+    def _calculate_metric(N, metric, axis=None):
+        """Calculate the metric over the array N"""
+        if metric == "cv":
+            Cv = np.std(N, axis=axis) / np.mean(N, axis=axis)
+            Cv_poisson = 1 / np.mean(N, axis=axis) ** 0.5
+            return Cv, Cv_poisson
+        elif metric == "duty":
+            F = np.mean(N, axis=axis) ** 2 / np.mean(N**2, axis=axis)
+            F_poisson = 1 / (1 + 1 / np.mean(N, axis=axis))
+            return F, F_poisson
+        else:
+            raise ValueError(f"Unknown metric {metric}")
+
+    def _format_metric_axes(self, add_compatible_twin_axes):
+        for i, ppp in enumerate(self.on_y):
+            for j, pp in enumerate(ppp):
+                a = self.axis(i, j)
+                if np.all(np.array(pp) == "duty"):
+                    a.yaxis.set_major_formatter(mpl.ticker.PercentFormatter(1))
+
+            # indicate compatible metric on opposite axis (if free space)
+            if add_compatible_twin_axes and len(ppp) == 1:
+                if np.all(np.array(ppp[0]) == "duty"):
+                    other = "cv"
+                    formatter = lambda du, i: "∞" if du <= 0 else f"{(1/du-1)**0.5:.1f}"
+                elif np.all(np.array(ppp[0]) == "cv"):
+                    other = "duty"
+                    formatter = lambda cv, i: f"{100/(1+cv**2):.1f} %"
+                else:
+                    other = None
+
+                if other is not None:
+                    a = self.axis(i)
+                    at = a.twinx()
+                    at.set(ylabel=self.label_for(other), ylim=a.get_ylim())
+                    at.yaxis.set_major_formatter(mpl.ticker.FuncFormatter(formatter))
+                    a.callbacks.connect("ylim_changed", lambda a: at.set(ylim=a.get_ylim()))
+
+
+class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
     def __init__(
         self,
         particles=None,
@@ -620,19 +681,17 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin):
         **kwargs,
     ):
         """
-        Plot for variability of particles arriving as function of arrival time
+        Plot variability of particle time on microscopic scale as function of time on macroscopic scale
 
-        The plot is based on the particle arrival time, which is:
-            - For circular lines: at_turn / frev - zeta / beta / c0
-            - For linear lines: zeta / beta / c0
+        The particle arrival times are histogramed into counting bins, the width of which
+        corresponds to the time resolution of a detector (`counting_dt`).
+        The plot estimates fluctuations in these particle counts by applying a metric
+        over an evaluation window (`evaluation_dt`).
 
-        Useful to plot time structures of particles loss, such as spill structures.
+        See :class:`~.timestructure.MetricesMixin` for a list of implemented metrics.
 
-        The following metrics are implemented:
-            cv: Coefficient of variation
-                cv = std(N)/mean(N)
-            duty: Spill duty factor
-                F = mean(N)**2 / mean(N**2)
+        If the particle data corresponds to particles lost at the extraction septum,
+        the plot yields the spill quality as function of extraction time.
 
         Args:
             particles (Any): Particles data to plot.
@@ -652,12 +711,7 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin):
         )
         kwargs["data_units"] = defaults(
             kwargs.get("data_units"),
-            cv=Prop("$c_v=\\sigma/\\mu$", unit="1", description="Coefficient of variation"),
-            duty=Prop(
-                "$F=\\langle N \\rangle^2/\\langle N^2 \\rangle$",
-                unit="1",
-                description="Spill duty factor",
-            ),
+            **self._metric_properties,
         )
         super().__init__(
             on_x="t",
@@ -675,12 +729,7 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin):
         self.evaluate_bins = evaluate_bins
 
         # Format plot axes
-        self.axis(-1).set(xlabel=self.label_for("t"), ylim=(0, None))
-        for i, ppp in enumerate(self.on_y):
-            for j, pp in enumerate(ppp):
-                a = self.axis(i, j)
-                if np.all(np.array(pp) == "duty"):
-                    a.yaxis.set_major_formatter(mpl.ticker.PercentFormatter(1))
+        self._format_metric_axes(kwargs.get("ax") is None)
 
         # Create plot elements
         def create_artists(i, j, k, ax, p):
@@ -730,39 +779,31 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin):
         else:
             nebins = int(ncbins * self.evaluate_dt / (np.max(times) - np.min(times)))
 
+        # bin into counting bins
+        t_min, dt, counts = binned_timeseries(times, ncbins)
+        edges = np.linspace(t_min, t_min + dt * ncbins, ncbins + 1)
+
+        # make 2D array by subdividing into evaluation bins
+        N = counts[: int(len(counts) / nebins) * nebins].reshape((-1, nebins))
+        E = edges[: int(len(edges) / nebins + 1) * nebins : nebins]
+
+        self.annotate(
+            f'$\\Delta t_\\mathrm{{count}} = {pint.Quantity(dt, "s"):#~.4L}$\n'
+            f'$\\Delta t_\\mathrm{{evaluate}} = {pint.Quantity(dt*nebins, "s"):#~.4L}$'
+        )
+
         # update plots
         changed = []
         for i, ppp in enumerate(self.on_y):
             for j, pp in enumerate(ppp):
                 for k, p in enumerate(pp):
-                    # bin into counting bins
-                    t_min, dt, counts = binned_timeseries(times, ncbins)
-                    edges = np.linspace(t_min, t_min + dt * ncbins, ncbins + 1)
-
-                    # make 2D array by subdividing into evaluation bins
-                    N = counts = counts[: int(len(counts) / nebins) * nebins].reshape(
-                        (-1, nebins)
-                    )
-                    edges = edges[: int(len(edges) / nebins + 1) * nebins : nebins]
-
-                    self.annotate(
-                        f'$t_\\mathrm{{bin}} = {pint.Quantity(dt*nebins, "s").to_compact():~.4L}$\n'
-                        f'$t_\\mathrm{{measure}} = {pint.Quantity(dt, "s").to_compact():~.4L}$'
-                    )
 
                     # calculate metrics
-                    if p == "cv":
-                        F = np.std(N, axis=1) / np.mean(N, axis=1)
-                        F_poisson = 1 / np.mean(N, axis=1) ** 0.5
-                    elif p == "duty":
-                        F = np.mean(N, axis=1) ** 2 / np.mean(N**2, axis=1)
-                        F_poisson = 1 / (1 + 1 / np.mean(N, axis=1))
-                    else:
-                        raise ValueError(f"Unknown metric {p}")
+                    F, F_poisson = self._calculate_metric(N, p, axis=1)
 
                     # update plot
                     step, pstep = self.artists[i][j][k]
-                    edges = self.factor_for("t") * np.append(edges, edges[-1])
+                    edges = self.factor_for("t") * np.append(E, E[-1])
                     steps = np.concatenate(([0], F, [0]))
                     step.set_data((edges, steps))
                     changed.append(step)
@@ -775,7 +816,219 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin):
                     a = self.axis(i, j)
                     a.relim()
                     a.autoscale()
-                    a.set(ylim=(0, None))
+        return changed
+
+
+class TimeVariationScalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
+    def __init__(
+        self,
+        particles=None,
+        kind="cv",
+        *,
+        time_range=None,
+        counting_dt_min=None,
+        counting_dt_max=None,
+        counting_bins_per_evaluation=50,
+        poisson=True,
+        mask=None,
+        log=True,
+        plot_kwargs=None,
+        **kwargs,
+    ):
+        """Plot variability of particle time as function of timescale
+
+        The particle arrival times are histogramed into counting bins, the width of which
+        corresponds to the time resolution of a detector (`counting_dt`).
+        The plot estimates fluctuations in these particle counts by applying a metric
+        over an evaluation window (`counting_bins_per_evaluation*counting_dt`).
+
+        See :class:`~.timestructure.MetricesMixin` for a list of implemented metrics.
+
+        If the particle data corresponds to particles lost at the extraction septum,
+        the plot yields the spill quality on different timescales.
+
+
+        Args:
+            particles (Any): Particles data to plot.
+            kind (str | list): Metric to plot. See above for list of implemented metrics.
+            time_range (tuple): Time range of particles to consider. If None, all particles are considered.
+            counting_dt_min (float): Minimum time bin width for counting.
+            counting_dt_max (float): Maximum time bin width for counting.
+            counting_bins_per_evaluation (int): Number of counting bins used to evaluate metric over.
+                Use None to evaluate metric once over all bins. Otherwise, the metric is evaluated
+                over each `counting_bins_per_evaluation` consecutive bins, and average and std of
+                all evaluations plotted. This suppresses fluctuations on timescales > 100*t_bin
+                to influence the metric.
+            poisson (bool): Whether or not to plot the Poisson limit.
+            mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
+            log (bool): Whether or not to plot the x-axis in log scale.
+            plot_kwargs (dict): Keyword arguments passed to the plot function.
+            kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
+
+
+        """
+        kwargs = self._init_particle_mixin(
+            **kwargs,
+        )
+        kwargs["data_units"] = defaults(
+            kwargs.get("data_units"),
+            tbin=Prop("$\\Delta t_\\mathrm{count}$", unit="s", description="Time resolution"),
+            **self._metric_properties,
+        )
+        super().__init__(
+            on_x="tbin",
+            on_y=kind,
+            **kwargs,
+        )
+
+        self.time_range = time_range
+        self.counting_dt_min = counting_dt_min
+        self.counting_dt_max = counting_dt_max
+        self.counting_bins_per_evaluation = counting_bins_per_evaluation
+        self.log = log
+
+        # Format plot axes
+        self._format_metric_axes(kwargs.get("ax") is None)
+        for a in self.axflat:
+            a.set(xscale="log" if self.log else "lin")
+
+        # Create plot elements
+        def create_artists(i, j, k, ax, p):
+            kwargs = defaults(plot_kwargs, label=self._legend_label_for(p))
+            plot = ax.plot([], [], **kwargs)[0]
+            kwargs.update(color=plot.get_color())
+            if self.counting_bins_per_evaluation:
+                self._errkw = kwargs.copy()
+                self._errkw.update(zorder=1.8, alpha=0.3, ls="-", lw=0)
+                errorbar = ax.fill_between([], [], [], **self._errkw)
+            else:
+                errorbar = None
+            if poisson:
+                kwargs.update(zorder=1.9, ls=":", label="Poisson limit")
+                pstep = ax.plot([], [], **kwargs)[0]
+            else:
+                pstep = None
+            return [plot, errorbar, pstep]
+
+        self._create_artists(create_artists)
+
+        # legend with combined patch
+        if self.counting_bins_per_evaluation:
+            # merge plot and errorbar patches
+            for i, h in enumerate(self._legend_entries):
+                labels = [h[0].get_label()] + [_.get_label() for _ in h[2:]]
+                self._legend_entries[i] = [tuple(h[0:2])] + h[2:]
+                self.legend(i, show="auto", labels=labels)
+
+        # set data
+        if particles is not None:
+            self.update(particles, mask=mask, autoscale=True)
+
+    def update(self, particles, mask=None, autoscale=False):
+        """Update plot with new data
+
+        Args:
+            particles (Any): Particles data to plot.
+            mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
+            autoscale (bool): Whether or not to perform autoscaling on all axes.
+
+        Returns:
+            Changed artists
+        """
+
+        # extract times
+        times = self._get_masked(particles, "t", mask)
+        if self.time_range:
+            times = times[(self.time_range[0] < times) & (times < self.time_range[1])]
+        ntotal = times.size
+        duration = np.max(times) - np.min(times)
+
+        # annotate plot
+        # f'$\\langle\\dot{{N}}\\rangle = {pint.Quantity(ntotal/duration, "1/s"):~.4L}$\n'
+        self.annotate(
+            "$\\Delta t_\\mathrm{evaluate} = "
+            + (
+                f"{self.counting_bins_per_evaluation:g} \\Delta t_\\mathrm{{count}}$"
+                if self.counting_bins_per_evaluation
+                else f"{pint.Quantity(duration, 's'):#~.4L}$"
+            )
+        )
+
+        # determine timescales
+        if self.counting_dt_min is None:
+            ncbins_max = int(ntotal / 50)  # at least 50 particles per bin (on average)
+        else:
+            ncbins_max = int(duration / self.counting_dt_min + 1)
+
+        if self.counting_dt_max is None:
+            ncbins_min = 50  # at least 50 bins to calculate metric
+        else:
+            ncbins_min = int(duration / self.counting_dt_max + 1)
+
+        if ncbins_min > ncbins_max or ntotal < 1e4:
+            print(
+                f"Warning: Data length ({duration:g} s), counting_dt_min ({duration/ncbins_max:g} s), "
+                f"counting_dt_max ({duration/ncbins_min:g} s) and/or count ({ntotal:g}) insufficient. "
+                f"Nothing plotted."
+            )
+            return
+
+        if self.log:
+            ncbins_arr = np.unique(
+                (1 / np.geomspace(1 / ncbins_min, 1 / ncbins_max, 100)).astype(int)
+            )
+        else:
+            ncbins_arr = np.unique(
+                (1 / np.linspace(1 / ncbins_min, 1 / ncbins_max, 100)).astype(int)
+            )
+
+        # compute metrices
+        DT = np.empty(ncbins_arr.size)
+        F = {m: np.empty_like(DT) for m in self.on_y_unique}
+        F_std = {m: np.empty_like(DT) for m in self.on_y_unique}
+        F_poisson = {m: np.empty_like(DT) for m in self.on_y_unique}
+        for i, nbin in enumerate(ncbins_arr):
+            _, DT[i], N = binned_timeseries(times, nbin)
+
+            # calculate metric on sliding window
+            stride = min(self.counting_bins_per_evaluation or N.size, N.size)
+            N = np.lib.stride_tricks.sliding_window_view(N, stride)
+
+            for metric in F.keys():
+                # calculate metrics
+                v, lim = self._calculate_metric(N, metric, axis=1)
+                F[metric][i] = np.mean(v)
+                F_std[metric][i] = np.std(v) or np.nan
+                F_poisson[metric][i] = np.mean(lim)
+
+        DT = DT * self.factor_for(self.on_x)
+
+        # update plots
+        changed = []
+        for i, ppp in enumerate(self.on_y):
+            for j, pp in enumerate(ppp):
+                ax = self.axis(i, j)
+                for k, p in enumerate(pp):
+                    plot, errorbar, pstep = self.artists[i][j][k]
+
+                    # update plot
+                    plot.set_data((DT, F[p]))
+                    changed.append(plot)
+                    if errorbar:
+                        changed.append(errorbar)
+                        errorbar.remove()
+                        errorbar = ax.fill_between(
+                            DT, F[p] - F_std[p], F[p] + F_std[p], **self._errkw
+                        )
+                        self.artists[i][j][k][1] = errorbar
+                        changed.append(errorbar)
+                    if pstep:
+                        pstep.set_data((DT, F_poisson[p]))
+                        changed.append(pstep)
+
+                if autoscale:
+                    self._autoscale(ax, self.artists[i][j])
+
         return changed
 
 
