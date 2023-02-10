@@ -13,6 +13,7 @@ import types
 
 import numpy as np
 import pandas as pd
+import scipy.signal
 
 
 VOID = object()
@@ -90,8 +91,10 @@ def average(*data, n=100, function=np.mean):
     return result[0] if len(result) == 1 else result
 
 
-# def smooth(*data, n):
-#    return [scipy.signal.savgol_filter(d, n, 0) for d in data] if n else data
+def smooth(*data, n):
+    if n:
+        data = [scipy.signal.savgol_filter(d, n, 0) for d in data]  # , mode="nearest"
+    return data[0] if len(data) == 1 else data
 
 
 def normalized_coordinates(x, px, twiss, xy, delta=0):
