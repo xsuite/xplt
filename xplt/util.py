@@ -30,7 +30,22 @@ def val(obj):
 
 
 def get(obj, value, default=VOID):
-    """Get value from object"""
+    """Get value from object
+
+    Tries to get the value using attributes and indices,
+    and handles special objects like pandas data frames.
+
+    Args:
+        obj (Any): Object to get data from
+        value (str): Name of attribute, index, column etc. to get
+        default (Any): Default value to return. By default an exception is raised
+
+    Returns:
+        Any: Value of the object
+
+    Raises:
+        AttributeError: if object does not provide the value and no default was specified
+    """
     if isinstance(obj, pd.DataFrame):
         return val(obj[value].values)
     try:

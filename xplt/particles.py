@@ -127,66 +127,75 @@ class ParticlePlotMixin:
     def _get_masked(self, particles, key, mask=None):
         """Get masked particle property"""
 
-        if key in ("X", "Px", "Y", "Py"):
-            # normalized coordinates
-            if self.twiss is None:
-                raise ValueError("Normalized coordinates requested but twiss is None")
-            xy = key.lower()[-1]
-            coords = [self._get_masked(particles, p, mask) for p in (xy, "p" + xy)]
-            delta = self._get_masked(particles, "delta", mask)
-            X, Px = normalized_coordinates(*coords, self.twiss, xy, delta=delta)
-            return X if key.lower() == xy else Px
+        try:
+            # try to get requested property from particle data
+            v = get(particles, key)
 
-        if key in ("Jx", "Jy", "Θx", "Θy"):
-            # action angle coordinates
-            X = self._get_masked(particles, key[-1].upper(), mask)
-            Px = self._get_masked(particles, "P" + key[-1].lower(), mask)
-            if key in ("Jx", "Jy"):  # Action
-                return (X**2 + Px**2) / 2
-            if key in ("Θx", "Θy"):  # Angle
-                return -np.arctan2(Px, X)
+            if mask is not None:
+                v = v[mask]
 
-        if key == "t":
-            # particle arrival time (t = at_turn / frev - zeta / beta / c0)
-            beta = self.beta(particles)
-            if beta is None:
-                raise ValueError(
-                    "Particle arrival time can not be determined "
-                    "because all of the following are unknown: "
-                    "beta, (frev and circumference), twiss. "
-                    "To resolve this error, pass either to the plot constructor "
-                    "or specify particle.beta0."
-                )
-            turn = get(particles, "at_turn")[mask]
-            zeta = get(particles, "zeta")[
-                mask
-            ]  # do not use _get_masked as wrap_zeta might mess it up!
-            time = -zeta / beta / c0  # zeta>0 means early; zeta<0 means late
-            if np.any(turn != 0):
-                frev = self.frev(particles)
-                if frev is None:
+            if key == "zeta" and self.wrap_zeta:
+                # wrap values at machine circumference
+                w = self.circumference if self.wrap_zeta is True else self.wrap_zeta
+                v = np.mod(v + w / 2, w) - w / 2
+
+            return np.array(v).flatten()
+
+        except AttributeError:
+            # handle derived properties
+
+            if key in ("X", "Px", "Y", "Py"):
+                # normalized coordinates
+                if self.twiss is None:
+                    raise ValueError("Normalized coordinates requested but twiss is None")
+                xy = key.lower()[-1]
+                coords = [self._get_masked(particles, p, mask) for p in (xy, "p" + xy)]
+                delta = self._get_masked(particles, "delta", mask)
+                X, Px = normalized_coordinates(*coords, self.twiss, xy, delta=delta)
+                return X if key.lower() == xy else Px
+
+            if key in ("Jx", "Jy", "Θx", "Θy"):
+                # action angle coordinates
+                X = self._get_masked(particles, key[-1].upper(), mask)
+                Px = self._get_masked(particles, "P" + key[-1].lower(), mask)
+                if key in ("Jx", "Jy"):  # Action
+                    return (X**2 + Px**2) / 2
+                if key in ("Θx", "Θy"):  # Angle
+                    return -np.arctan2(Px, X)
+
+            if key == "t":
+                # particle arrival time (t = at_turn / frev - zeta / beta / c0)
+                beta = self.beta(particles)
+                if beta is None:
                     raise ValueError(
-                        "Particle arrival time can not be determined while at_turn > 0 "
+                        "Particle arrival time can not be determined "
                         "because all of the following are unknown: "
-                        "frev, twiss, (bata and circumference). "
+                        "beta, (frev and circumference), twiss. "
                         "To resolve this error, pass either to the plot constructor "
-                        "and/or specify particle.beta0."
+                        "or specify particle.beta0."
                     )
-                time = time + turn / frev
-            return np.array(time).flatten()
+                turn = get(particles, "at_turn")
+                zeta = get(particles, "zeta")
+                # do not use _get_masked as wrap_zeta might mess it up!
+                if mask is not None:
+                    turn = turn[mask]
+                    zeta = zeta[mask]
+                time = -zeta / beta / c0  # zeta>0 means early; zeta<0 means late
+                if np.any(turn != 0):
+                    frev = self.frev(particles)
+                    if frev is None:
+                        raise ValueError(
+                            "Particle arrival time can not be determined while at_turn > 0 "
+                            "because all of the following are unknown: "
+                            "frev, twiss, (bata and circumference). "
+                            "To resolve this error, pass either to the plot constructor "
+                            "and/or specify particle.beta0."
+                        )
+                    time = time + turn / frev
+                return np.array(time).flatten()
 
-        # default
-        v = get(particles, key)
-
-        if mask is not None:
-            v = v[mask]
-
-        if key == "zeta" and self.wrap_zeta:
-            # wrap values at machine circumference
-            w = self.circumference if self.wrap_zeta is True else self.wrap_zeta
-            v = np.mod(v + w / 2, w) - w / 2
-
-        return np.array(v).flatten()
+            # otherwise fail
+            raise
 
 
 class ParticlesPlot(XManifoldPlot, ParticlePlotMixin):
