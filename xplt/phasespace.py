@@ -618,7 +618,7 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
                 X = np.array((-2, -2, 1 - 3 * t, 1 + 3 * t, 1 - 3 * t, 1 + 3 * t)) / 2
                 Y = np.array((-2 * t, 2 * t, 1 + t, 1 - t, -1 - t, -1 + t)) * 3**0.5 / 2
                 x, y = transform((h * X, h * Y))
-                self._autoscale(ax, data=np.transpose((x, y)))
+                self._autoscale(ax, data=np.transpose((x, y)), reset=True)
 
 
 ## Restrict star imports to local namespace
