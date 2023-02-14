@@ -334,6 +334,7 @@ class FloorPlot(XPlot):
                 self.artists_labels.pop().remove()
 
             helicity = 1
+            legend_entries = []
             for i, (x, y, rt, name, arc) in enumerate(zip(X, Y, R, NAME, BEND)):
 
                 drift_length = get(survey, "drift_length", None)
@@ -361,6 +362,15 @@ class FloorPlot(XPlot):
                     box_style["color"] = f"C{order}"
                 if length is not None:
                     box_style["length"] = length
+
+                # legend label
+                box_style["label"] = {
+                    0: "Bending magnet" if arc else None,
+                    1: "Quadrupole magnet",
+                    2: "Sextupole magnet",
+                    3: "Octupole magnet",
+                }.get(order)
+
                 boxes = self.boxes
                 if boxes is None:
                     boxes = line is None or order is not None
@@ -369,7 +379,13 @@ class FloorPlot(XPlot):
                 if box_style is not None:
                     width = box_style.pop("width", self.element_width * scale)
                     length = box_style.pop("length", 0)
+                    if box_style.get("label") in legend_entries:
+                        box_style.pop("label")  # prevent duplicate legend entries
+                    else:
+                        legend_entries.append(box_style.get("label"))
+
                     if length > 0 and arc:
+                        # bending elements as wedge
                         rho = length / arc
                         box = mpl.patches.Wedge(
                             **defaults(
@@ -388,7 +404,9 @@ class FloorPlot(XPlot):
                                 zorder=3,
                             )
                         )
+
                     else:
+                        # other elements as rect
                         box = mpl.patches.Rectangle(
                             **defaults(
                                 box_style,
@@ -449,6 +467,9 @@ class FloorPlot(XPlot):
                 self.ax.autoscale()
 
         return changed
+
+    def legend(self, **kwargs):
+        self.ax.legend(**kwargs)
 
     def add_scale(self, scale=None, label=None, *, loc="auto", color="k", fontsize="x-small"):
         """Add a scale patch (a yardstick or ruler)
