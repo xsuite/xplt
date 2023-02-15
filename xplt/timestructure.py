@@ -619,6 +619,8 @@ class MetricesMixin:
             cv = std(N)/mean(N)
         duty: Spill duty factor
             F = mean(N)**2 / mean(N**2)
+        maxmean: Maximum to mean ratio
+            M = max(N) / mean(N)
 
     """
 
@@ -628,6 +630,9 @@ class MetricesMixin:
             "$F=\\langle N \\rangle^2/\\langle N^2 \\rangle$",
             unit="1",
             description="Spill duty factor",
+        ),
+        maxmean=Prop(
+            "$M=\\hat{N}/\\langle N \\rangle$", unit="1", description="Max-to-mean ratio"
         ),
     )
 
@@ -642,6 +647,9 @@ class MetricesMixin:
             F = np.mean(N, axis=axis) ** 2 / np.mean(N**2, axis=axis)
             F_poisson = 1 / (1 + 1 / np.mean(N, axis=axis))
             return F, F_poisson
+        elif metric == "maxmean":
+            M = np.max(N, axis=axis) / np.mean(N, axis=axis)
+            return M, np.nan * np.empty_like(M)
         else:
             raise ValueError(f"Unknown metric {metric}")
 
@@ -656,10 +664,10 @@ class MetricesMixin:
             if add_compatible_twin_axes and len(ppp) == 1:
                 if np.all(np.array(ppp[0]) == "duty"):
                     other = "cv"
-                    formatter = lambda du, i: "∞" if du <= 0 else f"{(1/du-1)**0.5:.1f}"
+                    formatter = lambda du, i: "∞" if du <= 0 else f"{abs(1/du-1)**0.5:.1f}"
                 elif np.all(np.array(ppp[0]) == "cv"):
                     other = "duty"
-                    formatter = lambda cv, i: f"{100/(1+cv**2):.1f} %"
+                    formatter = lambda cv, i: "" if cv < 0 else f"{100/(1+cv**2):.1f} %"
                 else:
                     other = None
 
