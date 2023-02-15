@@ -305,19 +305,16 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
             fmax (float): Maximum frequency (in Hz) to plot.
             relative (bool): If True, plot relative frequencies (f/frev) instead of absolute frequencies (f).
             log (bool): If True, plot on a log scale.
-            scaling (str): Scaling of the FFT. Can be 'amplitude' or 'pds'.
+            scaling (str | dict): Scaling of the FFT. Can be 'amplitude' or 'pds' or a dict with a scaling per property.
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
             plot_kwargs (dict): Keyword arguments passed to the plot function.
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
         """
 
-        if scaling is None:
-            scaling = "pds" if kind == "count" else "amplitude"
-
         self._fmax = fmax
         self.relative = relative
-        self.scaling = scaling
+        self._scaling = scaling
         if log is None:
             log = not relative
 
@@ -357,6 +354,13 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
         if particles is not None:
             self.update(particles, mask=mask, autoscale=True)
 
+    def _get_scaling(self, key):
+        if isinstance(self._scaling, str):
+            return self._scaling.lower()
+        if isinstance(self._scaling, dict) and key in self._scaling:
+            return self._scaling[key].lower()
+        return "pds" if key == "count" else "amplitude"
+
     def fmax(self, particles):
         if self._fmax is not None:
             return self._fmax
@@ -390,11 +394,13 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
         for i, ppp in enumerate(self.on_y):
             for j, pp in enumerate(ppp):
                 for k, p in enumerate(pp):
-                    count_based = p == "count"
+                    prop = self._get_property(p)
+                    count_based = prop.key == "count"
+
                     if count_based:
                         property = None
                     else:
-                        property = self._get_masked(particles, p, mask)
+                        property = self._get_masked(particles, prop.key, mask)
 
                     # compute binned timeseries
                     t_min, dt, timeseries = binned_timeseries(times, n, property)
@@ -406,10 +412,10 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
                     else:
                         freq *= self.factor_for("f")
                     mag = np.abs(np.fft.rfft(timeseries))[1:]
-                    if self.scaling.lower() == "amplitude":
+                    if self._get_scaling(prop.key) == "amplitude":
                         # amplitude in units of p
                         mag *= 2 / len(timeseries) * self.factor_for(p)
-                    elif self.scaling.lower() == "pds":
+                    elif self._get_scaling(prop.key) == "pds":
                         # power density spectrum in a.u.
                         mag = mag**2
 
@@ -440,9 +446,9 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
         if p not in "f":
             # it is the FFT of it
             sym = prop.symbol.strip("$")
-            if self.scaling.lower() == "amplitude":
+            if self._get_scaling(prop.key) == "amplitude":
                 prop.symbol = f"$\\hat{{{sym}}}$"
-            elif self.scaling.lower() == "pds":
+            elif self._get_scaling(prop.key) == "pds":
                 prop.symbol = f"$|\\mathrm{{FFT({sym})}}|^2$"
                 prop.unit = "a.u."  # arbitrary unit
             else:
