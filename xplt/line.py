@@ -61,7 +61,8 @@ class KnlPlot(XManifoldPlot):
         Args:
             line (xtrack.Line): Line of elements.
             knl (int | list[int] | str): Maximum order or list of orders n to plot knl values for.
-                This can also be a manifold subplot specification string, e.g. ``"k0l+k1l,k2l"``.
+                This can also be a manifold subplot specification string like ``"k0l+k1l,k2l"``,
+                see :class:`~.base.XManifoldPlot` for details.
                 If None, automatically determine from line.
             filled (bool): If True, make a filled plot instead of a line plot.
             resolution (int): Number of points to use for plot.

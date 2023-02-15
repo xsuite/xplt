@@ -32,11 +32,8 @@ class TwissPlot(XManifoldPlot):
         Args:
             twiss (Any): Dictionary with twiss information
             kind (str | list): Defines the properties to plot.
-                    This can be a nested list or a separated string or a mixture of lists and strings where
-                    the first list level (or separator ``,``) determines the subplots,
-                    the second list level (or separator ``-``) determines any twinx-axes,
-                    and the third list level (or separator ``+``) determines plots on the same axis.
-                    In addition, abbreviations for x-y-parameter pairs are supported (e.g. 'bet' for 'betx+bety').
+                This is a manifold subplot specification string like ``"bet-dx,x+y"``, see :class:`~.base.XManifoldPlot` for details.
+                In addition, abbreviations for x-y-parameter pairs are supported (e.g. 'bet' for 'betx+bety').
             line (xtrack.Line): Line of elements. If given, adds a line plot to the top.
             line_kwargs (dict): Keyword arguments passed to line plot.
             kwargs: See :class:`~.base.XPlot` for additional arguments

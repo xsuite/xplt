@@ -496,7 +496,12 @@ class XManifoldPlot(XPlot):
         Base class for plotting manifold plots
 
         A manifold plot consists of multiple subplots, axes and twin axes, all of which
-        share the x-axis. The kind string defines what is plotted on the y-axis.
+        share the x-axis. The **manifold subplot specification string** ``on_y`` defines what
+        is plotted on the y-axes. It should specify a property for each trace, separated
+        by ``,`` for each subplot, ``-`` for twin axes and ``+`` for traces. For example, the
+        string ``"a+b,c-d"`` specifies 2 subplots where traces a and b share the same
+        y-axis on the first subplot and traces c and d have individual y-axis on the
+        second subplot.
 
         Args:
             on_x (str): What to plot on the x-axis
@@ -615,9 +620,11 @@ class XManifoldPlot(XPlot):
         """Parse a separated string or nested list or a mixture of both
 
         Args:
-            list_string (str or list): The string or nested list to parse
-            separators (str): The characters that separate the elements
-            subs (dict): A dictionary of substitutions to apply to the elements
+            list_string (str or list): The string or nested list or a mixture of both to parse.
+            separators (str): The characters that separate the elements. The number of characters
+                determines the depth of the returned list.
+            subs (dict): A dictionary of substitutions to apply to the elements during parsing.
+                May introduce additional separators of equal or deeper level.
 
         Returns:
             nested list of elements in the string

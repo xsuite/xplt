@@ -27,7 +27,7 @@ def binned_timeseries(times, n, what=None, range=None):
 
     From the particle arrival times (non-equally distributed timestamps), a timeseries with equally
     spaced time bins is derived. The time bin size is determined based on the number of bins.
-    The parameter `what` determines what is returned for the timeseries. By default (what=None), the
+    The parameter ``what`` determines what is returned for the timeseries. By default (what=None), the
     number of particles arriving within each time bin is returned. Alternatively, a particle property
     can be passed as array, in which case that property is averaged over all particles arriving within
     the respective bin (or 0 if no particles arrive within a time bin).
@@ -87,11 +87,8 @@ class TimePlot(ParticlesPlot):
         Args:
             particles (Any): Particles data to plot.
             kind (str | list): Defines the properties to plot.
-                    This can be a nested list or a separated string or a mixture of lists and strings where
-                    the first list level (or separator ``,``) determines the subplots,
-                    the second list level (or separator ``-``) determines any twinx-axes,
-                    and the third list level (or separator ``+``) determines plots on the same axis.
-                    In addition, abbreviations for x-y-parameter pairs are supported (e.g. 'bet' for 'betx+bety').
+                This is a manifold subplot specification string like ``"x+y"``, see :class:`~.base.XManifoldPlot` for details.
+                In addition, abbreviations for x-y-parameter pairs are supported (e.g. ``P`` for ``Px+Py``).
             kwargs: See :class:`~xplt.particles.ParticlesPlot` for more options.
 
         """
@@ -126,8 +123,9 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
 
         Args:
             particles (Any): Particles data to plot.
-            kind (str | list): What to plot as function of time. Can be 'count' (default),
-                'rate', 'cumulative', or a particle property to average.
+            kind (str | list): Defines the properties to plot, including 'count' (default), 'rate', 'cumulative', or a particle property to average.
+                This is a manifold subplot specification string like ``"count-cumulative"``, see :class:`~.base.XManifoldPlot` for details.
+                In addition, abbreviations for x-y-parameter pairs are supported (e.g. ``P`` for ``Px+Py``).
             bin_time (float): Time bin width if bin_count is None.
             bin_count (int): Number of bins if bin_time is None.
             exact_bin_time (bool): What to do if bin_time is given but length of data is not an exact multiple of it.
@@ -301,7 +299,9 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
 
         Args:
             particles (Any): Particles data to plot.
-            kind (str | list): What to make the FFT over. Can be 'count' (default), or a particle property (in which case averaging applies).
+            kind (str | list): Defines the properties to make the FFT over, including 'count' (default), or a particle property to average.
+                This is a manifold subplot specification string like ``"count-cumulative"``, see :class:`~.base.XManifoldPlot` for details.
+                In addition, abbreviations for x-y-parameter pairs are supported (e.g. ``P`` for ``Px+Py``).
             fmax (float): Maximum frequency (in Hz) to plot.
             relative (bool): If True, plot relative frequencies (f/frev) instead of absolute frequencies (f).
             log (bool): If True, plot on a log scale.
@@ -690,9 +690,9 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
         Plot variability of particle time on microscopic scale as function of time on macroscopic scale
 
         The particle arrival times are histogramed into counting bins, the width of which
-        corresponds to the time resolution of a detector (`counting_dt`).
+        corresponds to the time resolution of a detector (``counting_dt``).
         The plot estimates fluctuations in these particle counts by applying a metric
-        over an evaluation window (`evaluation_dt`).
+        over an evaluation window (``evaluation_dt``).
 
         See :class:`~.timestructure.MetricesMixin` for a list of implemented metrics.
 
@@ -844,9 +844,9 @@ class TimeVariationScalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
         """Plot variability of particle time as function of timescale
 
         The particle arrival times are histogramed into counting bins, the width of which
-        corresponds to the time resolution of a detector (`counting_dt`).
+        corresponds to the time resolution of a detector (``counting_dt``).
         The plot estimates fluctuations in these particle counts by applying a metric
-        over an evaluation window (`counting_bins_per_evaluation*counting_dt`).
+        over an evaluation window (``counting_bins_per_evaluation*counting_dt``).
 
         See :class:`~.timestructure.MetricesMixin` for a list of implemented metrics.
 
@@ -862,7 +862,7 @@ class TimeVariationScalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
             counting_dt_max (float): Maximum time bin width for counting.
             counting_bins_per_evaluation (int): Number of counting bins used to evaluate metric over.
                 Use None to evaluate metric once over all bins. Otherwise, the metric is evaluated
-                over each `counting_bins_per_evaluation` consecutive bins, and average and std of
+                over each ``counting_bins_per_evaluation`` consecutive bins, and average and std of
                 all evaluations plotted. This suppresses fluctuations on timescales > 100*t_bin
                 to influence the metric.
             poisson (bool): Whether or not to plot the Poisson limit.
