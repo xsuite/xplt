@@ -865,6 +865,7 @@ class TimeVariationScalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
         counting_dt_min=None,
         counting_dt_max=None,
         counting_bins_per_evaluation=50,
+        std=True,
         poisson=True,
         mask=None,
         time_range=None,
@@ -895,6 +896,8 @@ class TimeVariationScalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
                 over each ``counting_bins_per_evaluation`` consecutive bins, and average and std of
                 all evaluations plotted. This suppresses fluctuations on larger timescales to affect
                 the metric of smaller timescales.
+            std (bool): Whether or not to plot standard deviation of variability.
+                Only relevant if counting_bins_per_evaluation is not None.
             poisson (bool): Whether or not to plot the Poisson limit.
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
             time_range (tuple): Time range of particles to consider. If None, all particles are considered.
@@ -923,6 +926,7 @@ class TimeVariationScalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
         self.counting_dt_max = counting_dt_max
         self.counting_bins_per_evaluation = counting_bins_per_evaluation
         self.log = log
+        std = std and self.counting_bins_per_evaluation
 
         # Format plot axes
         self._format_metric_axes(kwargs.get("ax") is None)
@@ -934,7 +938,7 @@ class TimeVariationScalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
             kwargs = defaults(plot_kwargs, label=self._legend_label_for(p))
             plot = ax.plot([], [], **kwargs)[0]
             kwargs.update(color=plot.get_color())
-            if self.counting_bins_per_evaluation:
+            if std:
                 self._errkw = kwargs.copy()
                 self._errkw.update(zorder=1.8, alpha=0.3, ls="-", lw=0)
                 errorbar = ax.fill_between([], [], [], **self._errkw)
@@ -950,7 +954,7 @@ class TimeVariationScalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
         self._create_artists(create_artists)
 
         # legend with combined patch
-        if self.counting_bins_per_evaluation:
+        if std:
             # merge plot and errorbar patches
             for i, h in enumerate(self._legend_entries):
                 labels = [h[0].get_label()] + [_.get_label() for _ in h[2:]]
