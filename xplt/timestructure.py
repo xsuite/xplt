@@ -419,6 +419,10 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
                         # power density spectrum in a.u.
                         mag = mag**2
 
+                    # cut data above fmax which was only added to increase FFT performance
+                    mask = np.argwhere(freq <= fmax)
+                    freq, mag = freq[mask], mag[mask]
+
                     # update plot
                     self.artists[i][j][k].set_data(freq, mag)
                     changed.append(self.artists[i][j][k])
