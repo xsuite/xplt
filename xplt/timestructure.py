@@ -22,21 +22,25 @@ from .particles import ParticlePlotMixin, ParticlesPlot
 from .units import Prop
 
 
-def binned_timeseries(times, n, what=None, range=None):
+def binned_timeseries(times, *, what=None, n=None, dt=None, t_range=None, moments=1):
     """Get binned timeseries with equally spaced time bins
 
     From the particle arrival times (non-equally distributed timestamps), a timeseries with equally
-    spaced time bins is derived. The time bin size is determined based on the number of bins.
-    The parameter ``what`` determines what is returned for the timeseries. By default (what=None), the
-    number of particles arriving within each time bin is returned. Alternatively, a particle property
-    can be passed as array, in which case that property is averaged over all particles arriving within
-    the respective bin (or 0 if no particles arrive within a time bin).
+    spaced time bins is derived. The parameter ``what`` determines what is returned for the timeseries.
+    By default (what=None), the number of particles arriving within each time bin is returned.
+    Alternatively, a particle property can be passed as array, in which case that property is averaged
+    over all particles arriving within the respective bin (or 0 if no particles arrive within a time bin).
+    It is also possible to specify the moments to return, i.e. the power to which the property is raised
+    before averaging. This allows to determine mean (1st moment, default) and variance (difference between
+    2nd and 1st moment) etc.
 
     Args:
         times (np.ndarray): Array of particle arrival times.
-        n (int): Number of bins.
+        n (int | None): Number of bins. Must not be used together with dt.
+        dt (float | None): Bin width in seconds. Must not be used together with n.
+        t_range (tuple[float] | None): Tuple of (min, max) time values to consider. If None, the range is determined from the data.
         what (np.ndarray | None): Array of associated data or None. Must have same shape as times. See above.
-        range (tuple[int] | None): Tuple of (min, max) time values to consider. If None, the range is determined from the data.
+        moments (int | list[int]): The moment(s) to return for associated data if what is not None. See above.
 
     Returns:
         The timeseries as tuple (t_min, dt, values) where
@@ -45,15 +49,24 @@ def binned_timeseries(times, n, what=None, range=None):
         values are the values of the timeseries as array of length n.
     """
 
+    t_min = np.min(times) if t_range is None or t_range[0] is None else t_range[0]
+    t_max = np.max(times) if t_range is None or t_range[1] is None else t_range[1]
+
+    if n is not None and dt is None:
+        # number of bins requested, adjust bin width accordingly
+        dt = (t_max - t_min) / n
+    elif n is None and dt is not None:
+        # bin width requested, adjust number of bins accordingly
+        n = int(np.ceil((t_max - t_min) / dt))
+    else:
+        raise ValueError(f"Exactly one of n or dt must be specified, but got n={n} and dt={dt}")
+
     # Note: The code below was optimized to run much faster than an ordinary
     # np.histogram, which quickly slows down for large datasets.
     # If you intend to change something here, make sure to benchmark it!
 
-    t_min = np.min(times) if range is None or range[0] is None else range[0]
-    t_max = np.max(times) if range is None or range[1] is None else range[1]
-    dt = (t_max - t_min) / n
     # count timestamps in bins
-    bins = ((times - t_min) / dt).astype(int)
+    bins = np.floor((times - t_min) / dt).astype(int)
     # bins are i*dt <= t < (i+1)*dt where i = 0 .. n-1
     mask = (bins >= 0) & (bins < n)  # igore times outside range
     bins = bins[mask]
@@ -66,12 +79,15 @@ def binned_timeseries(times, n, what=None, range=None):
 
     else:
         # Return 'what' averaged
-        v = np.zeros(n)
-        # sum up 'what' for all the particles in each bin
-        np.add.at(v, bins, what[mask])
-        # divide by particle count to get mean (default to 0)
-        v[counts > 0] /= counts[counts > 0]
-        return t_min, dt, v
+        result = [t_min, dt]
+        for m in [moments] if isinstance(moments, int) else moments:
+            v = np.zeros(n)
+            # sum up 'what' for all the particles in each bin
+            np.add.at(v, bins, what[mask] ** m)
+            # divide by particle count to get mean (default to 0)
+            v[counts > 0] /= counts[counts > 0]
+            result.append(v)
+        return result
 
 
 class TimePlot(ParticlesPlot):
@@ -103,9 +119,9 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
         *,
         bin_time=None,
         bin_count=None,
-        exact_bin_time=True,
         relative=False,
         mask=None,
+        time_range=None,
         plot_kwargs=None,
         **kwargs,
     ):
@@ -126,14 +142,12 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
             kind (str | list): Defines the properties to plot, including 'count' (default), 'rate', 'cumulative', or a particle property to average.
                 This is a manifold subplot specification string like ``"count-cumulative"``, see :class:`~.base.XManifoldPlot` for details.
                 In addition, abbreviations for x-y-parameter pairs are supported (e.g. ``P`` for ``Px+Py``).
-            bin_time (float): Time bin width if bin_count is None.
+            bin_time (float): Time bin width (in s) if bin_count is None.
             bin_count (int): Number of bins if bin_time is None.
-            exact_bin_time (bool): What to do if bin_time is given but length of data is not an exact multiple of it.
-                If True, overhanging data is removed such that the data length is a multiple of bin_time.
-                If False, bin_time is adjusted instead.
             relative (bool): If True, plot relative numbers normalized to total count.
                 If what is a particle property, this has no effect.
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
+            time_range (tuple): Time range of particles to consider. If None, all particles are considered.
             plot_kwargs (dict): Keyword arguments passed to the plot function.
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
@@ -153,10 +167,12 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
 
         if bin_time is None and bin_count is None:
             bin_count = 100
+        if bin_time is not None and bin_count is not None:
+            raise ValueError("Only one of bin_time or bin_count may be specified.")
         self.bin_time = bin_time
         self.bin_count = bin_count
-        self.exact_bin_time = exact_bin_time
         self.relative = relative
+        self.time_range = time_range
 
         # Format plot axes
         self.axis(-1).set(xlabel=self.label_for("t"), ylim=(0, None))
@@ -199,17 +215,6 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
         # extract times
         times = self._get_masked(particles, "t", mask)
 
-        # re-sample times into equally binned time series
-        if self.bin_count:
-            n = self.bin_count
-            t_range = None
-        elif self.exact_bin_time:
-            n = int((np.max(times) - np.min(times)) / self.bin_time)
-            t_range = np.min(times) + np.array([0, n * self.bin_time])
-        else:
-            n = int(round((np.max(times) - np.min(times)) / self.bin_time))
-            t_range = None
-
         # update plots
         changed = []
         for i, ppp in enumerate(self.on_y):
@@ -223,9 +228,15 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
                     else:
                         property = self._get_masked(particles, prop.key, mask)
 
-                    t_min, dt, timeseries = binned_timeseries(times, n, property, t_range)
+                    t_min, dt, timeseries = binned_timeseries(
+                        times,
+                        what=property,
+                        n=self.bin_count,
+                        dt=self.bin_time,
+                        t_range=self.time_range,
+                    )
                     timeseries = timeseries.astype(np.float64)
-                    edges = np.linspace(t_min, t_min + dt * n, n + 1)
+                    edges = np.linspace(t_min, t_min + dt * timeseries.size, timeseries.size + 1)
 
                     self.annotate(
                         f'$\\Delta t_\\mathrm{{bin}} = {pint.Quantity(dt, "s").to_compact():~.4L}$'
@@ -279,6 +290,7 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
         log=None,
         scaling=None,
         mask=None,
+        time_range=None,
         plot_kwargs=None,
         **kwargs,
     ):
@@ -307,6 +319,7 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
             log (bool): If True, plot on a log scale.
             scaling (str | dict): Scaling of the FFT. Can be 'amplitude' or 'pds' or a dict with a scaling per property.
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
+            time_range (tuple): Time range of particles to consider. If None, all particles are considered.
             plot_kwargs (dict): Keyword arguments passed to the plot function.
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
@@ -314,6 +327,7 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
 
         self._fmax = fmax
         self.relative = relative
+        self.time_range = time_range
         self._scaling = scaling
         if log is None:
             log = not relative
@@ -366,7 +380,7 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
             return self._fmax
         if self.relative:
             return self.frev(particles)
-        raise ValueError("fmax must be specified.")
+        raise ValueError("fmax must be specified when plotting absolut frequencies.")
 
     def update(self, particles, mask=None, autoscale=False):
         """Update plot with new data
@@ -403,7 +417,9 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
                         property = self._get_masked(particles, prop.key, mask)
 
                     # compute binned timeseries
-                    t_min, dt, timeseries = binned_timeseries(times, n, property)
+                    t_min, dt, timeseries = binned_timeseries(
+                        times, what=property, n=n, t_range=self.time_range
+                    )
 
                     # calculate fft without DC component
                     freq = np.fft.rfftfreq(n, d=dt)[1:]
@@ -480,12 +496,13 @@ class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin):
         self,
         particles=None,
         *,
-        tmax=None,
+        dt_max,
         bin_time=None,
         bin_count=None,
         exact_bin_time=True,
         log=True,
         mask=None,
+        time_range=None,
         plot_kwargs=None,
         **kwargs,
     ):
@@ -500,27 +517,26 @@ class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin):
 
         Args:
             particles (Any): Particles data to plot.
-            tmax (float): Maximum interval (in s) to plot.
-            bin_time (float): Time bin width if bin_count is None.
+            dt_max (float): Maximum interval (in s) to plot.
+            bin_time (float): Time bin width (in s) if bin_count is None.
             bin_count (int): Number of bins if bin_time is None.
-            exact_bin_time (bool): What to do if bin_time is given but tmax is not an exact multiple of it.
-                If True, tmax is adjusted to be a multiple of bin_time.
+            exact_bin_time (bool): What to do if bin_time is given but dt_max is not an exact multiple of it.
+                If True, dt_max is adjusted to be a multiple of bin_time.
                 If False, bin_time is adjusted instead.
             log (bool): If True, plot on a log scale.
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
+            time_range (tuple): Time range of particles to consider. If None, all particles are considered.
             plot_kwargs (dict): Keyword arguments passed to the plot function.
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
 
         """
-        if tmax is None:
-            raise ValueError("tmax must be specified.")
 
         if bin_time is not None:
             if exact_bin_time:
-                tmax = bin_time * round(tmax / bin_time)
+                dt_max = bin_time * round(dt_max / bin_time)
             else:
-                bin_time = tmax / round(tmax / bin_time)
+                bin_time = dt_max / round(dt_max / bin_time)
 
         kwargs = self._init_particle_mixin(**kwargs)
         kwargs["data_units"] = defaults(
@@ -538,7 +554,8 @@ class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin):
             bin_count = 100
         self._bin_time = bin_time
         self._bin_count = bin_count
-        self.tmax = tmax
+        self.time_range = time_range
+        self.dt_max = dt_max
 
         # create plot elements
         def create_artists(i, j, k, ax, p):
@@ -548,7 +565,7 @@ class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin):
 
         # Format plot axes
         ax = self.axis(-1)
-        ax.set(xlim=(self.bin_time if log else 0, self.tmax * self.factor_for("t")))
+        ax.set(xlim=(self.bin_time if log else 0, self.dt_max * self.factor_for("t")))
         if log:
             ax.set(xscale="log", yscale="log")
         else:
@@ -560,11 +577,11 @@ class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin):
 
     @property
     def bin_time(self):
-        return self._bin_time or self.tmax / self._bin_count
+        return self._bin_time or self.dt_max / self._bin_count
 
     @property
     def bin_count(self):
-        return int(np.ceil(self.tmax / self.bin_time))
+        return int(np.ceil(self.dt_max / self.bin_time))
 
     def update(self, particles, mask=None, autoscale=False):
         """Update plot with new data
@@ -577,6 +594,8 @@ class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin):
 
         # extract times
         times = self._get_masked(particles, "t", mask)
+        if self.time_range:
+            times = times[(self.time_range[0] <= times) & (times < self.time_range[1])]
         delay = self.factor_for("t") * np.diff(sorted(times))
 
         # calculate and plot histogram
@@ -798,7 +817,7 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
             nebins = int(ncbins * self.evaluate_dt / (np.max(times) - np.min(times)))
 
         # bin into counting bins
-        t_min, dt, counts = binned_timeseries(times, ncbins)
+        t_min, dt, counts = binned_timeseries(times, n=ncbins)
         edges = np.linspace(t_min, t_min + dt * ncbins, ncbins + 1)
 
         # make 2D array by subdividing into evaluation bins
@@ -843,12 +862,12 @@ class TimeVariationScalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
         particles=None,
         kind="cv",
         *,
-        time_range=None,
         counting_dt_min=None,
         counting_dt_max=None,
         counting_bins_per_evaluation=50,
         poisson=True,
         mask=None,
+        time_range=None,
         log=True,
         plot_kwargs=None,
         **kwargs,
@@ -869,16 +888,16 @@ class TimeVariationScalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
         Args:
             particles (Any): Particles data to plot.
             kind (str | list): Metric to plot. See above for list of implemented metrics.
-            time_range (tuple): Time range of particles to consider. If None, all particles are considered.
             counting_dt_min (float): Minimum time bin width for counting.
             counting_dt_max (float): Maximum time bin width for counting.
             counting_bins_per_evaluation (int): Number of counting bins used to evaluate metric over.
                 Use None to evaluate metric once over all bins. Otherwise, the metric is evaluated
                 over each ``counting_bins_per_evaluation`` consecutive bins, and average and std of
-                all evaluations plotted. This suppresses fluctuations on timescales > 100*t_bin
-                to influence the metric.
+                all evaluations plotted. This suppresses fluctuations on larger timescales to affect
+                the metric of smaller timescales.
             poisson (bool): Whether or not to plot the Poisson limit.
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
+            time_range (tuple): Time range of particles to consider. If None, all particles are considered.
             log (bool): Whether or not to plot the x-axis in log scale.
             plot_kwargs (dict): Keyword arguments passed to the plot function.
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
@@ -957,7 +976,7 @@ class TimeVariationScalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
         # extract times
         times = self._get_masked(particles, "t", mask)
         if self.time_range:
-            times = times[(self.time_range[0] < times) & (times < self.time_range[1])]
+            times = times[(self.time_range[0] <= times) & (times < self.time_range[1])]
         ntotal = times.size
         duration = np.max(times) - np.min(times)
 
@@ -1006,7 +1025,7 @@ class TimeVariationScalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
         F_std = {m: np.empty_like(DT) for m in self.on_y_unique}
         F_poisson = {m: np.empty_like(DT) for m in self.on_y_unique}
         for i, nbin in enumerate(ncbins_arr):
-            _, DT[i], N = binned_timeseries(times, nbin)
+            _, DT[i], N = binned_timeseries(times, n=nbin)
 
             # calculate metric on sliding window
             stride = min(self.counting_bins_per_evaluation or N.size, N.size)
