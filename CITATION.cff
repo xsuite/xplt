@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: Xplt
+authors:
+- given-names: Philipp
+  family-names: Niedermayer
+  orcid: "https://orcid.org/0000-0002-4722-6619"
+type: software
+url: "https://eltos.github.io/xplt"
+repository-code: "https://github.com/eltos/xplt"
+abstract: >-
+  A plotting library for Xsuite and simmilar accelerator physics codes.
+keywords:
+  - accelerator physics
+  - plotting
+  - data visualization
+  - beam dynamics
+  - particle tracking
