@@ -436,8 +436,8 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
                         mag = mag**2
 
                     # cut data above fmax which was only added to increase FFT performance
-                    mask = np.argwhere(freq <= fmax)
-                    freq, mag = freq[mask], mag[mask]
+                    visible = np.argwhere(freq <= fmax)
+                    freq, mag = freq[visible], mag[visible]
 
                     # update plot
                     self.artists[i][j][k].set_data(freq, mag)
