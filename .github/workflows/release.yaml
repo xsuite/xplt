@@ -6,7 +6,57 @@ on:
       - v*
 
 jobs:
-  docs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - run: |
+          # Assert git and python versions match
+          pip install -e .
+          VERSION_PY=$(python3 -c "from xplt import __version__;print('v' + __version__)")
+          echo "Python version: $VERSION_PY"
+          VERSION_GIT=$(git describe --tags)
+          echo "Git version tag: $VERSION_GIT"
+          if [ "$VERSION_GIT" != "$VERSION_PY" ] ; then
+            echo "Version mismatch!"
+            exit 1
+          fi
+  
+  pypi-test:
+    needs: checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - run: |
+          pip install build
+      - name: Build
+        run: |
+          python -m build
+      - name: Publish to Test PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
+          repository-url: https://test.pypi.org/legacy/
+
+  ready:
+    needs: [checks, pypi-test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          VERSION=$(git describe --tags)
+          echo "Version: $VERSION"
+          if [[ $VERSION =~ v[0-9]+(\.[0-9]+)*$ ]] ; then
+            echo "Ready for publication"
+          else
+            echo "Not publishing dirty versions"
+            exit 1
+          fi
+
+  docs-publish:
+    needs: ready
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -26,7 +76,8 @@ jobs:
           publish_dir: _build/
           force_orphan: true
 
-  pypi:
+  pypi-publish:
+    needs: ready
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -36,11 +87,6 @@ jobs:
       - name: Build
         run: |
           python -m build
-      - name: Publish to Test PyPI
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          password: ${{ secrets.TEST_PYPI_API_TOKEN }}
-          repository_url: https://test.pypi.org/legacy/
       - name: Publish to PyPI
         if: startsWith(github.ref, 'refs/tags')
         uses: pypa/gh-action-pypi-publish@release/v1
