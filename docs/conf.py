@@ -94,7 +94,7 @@ def linkcode_resolve(domain, info):
         else:
             path = (root + sourcefile.split(root)[-1]).replace(os.path.sep, "/")
             filename = f"{path}#L{line}-L{line + len(sourcecode) - 1}"
-            return f"https://github.com/eltos/xplt/blob/main/{filename}"
+            return f"https://github.com/eltos/xplt/blob/v{version}/{filename}"
     except:
         return None
 
