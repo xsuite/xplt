@@ -118,11 +118,11 @@ default_properties = dict(
     
     ## beam monitors
     #############################################################################
-    count   = Prop("$N$",                   units="1", description="Count"  ),  # Beam monitor: particle count
-    x_mean  = Prop("$\\langle x \\rangle$", units="m",                      ),  # Beam monitor: average x position
-    y_mean  = Prop("$\\langle y \\rangle$", units="m",                      ),  # Beam monitor: average y position
-    x_std   = Prop("$\\sigma_x$",           units="m",                      ),  # Beam monitor: std of x positions
-    y_std   = Prop("$\\sigma_y$",           units="m",                      ),  # Beam monitor: std of y positions
+    count   = Prop("$N$",                   unit="1", description="Count"   ),  # Beam monitor: particle count
+    x_mean  = Prop("$\\langle x \\rangle$", unit="m",                       ),  # Beam monitor: average x position
+    y_mean  = Prop("$\\langle y \\rangle$", unit="m",                       ),  # Beam monitor: average y position
+    x_std   = Prop("$\\sigma_x$",           unit="m",                       ),  # Beam monitor: std of x positions
+    y_std   = Prop("$\\sigma_y$",           unit="m",                       ),  # Beam monitor: std of y positions
     
     
     ## derived quantities
