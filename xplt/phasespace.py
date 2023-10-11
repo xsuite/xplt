@@ -134,7 +134,7 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
             plot = "scatter"
             if isinstance(color, str):
                 color = np.resize(color.split(","), n)
-            if cbar_loc is "auto":
+            if cbar_loc == "auto":
                 cbar_loc = (
                     "right"
                     if len(color) <= 1 or np.all(color == color[0])
