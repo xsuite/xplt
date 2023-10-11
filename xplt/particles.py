@@ -124,22 +124,45 @@ class ParticlePlotMixin:
         if beta is not None and self.circumference is not None:
             return beta * c0 / self.circumference
 
+    def _apply_mask(self, data, particles, mask=None):
+        """Apply mask to data
+
+        Args:
+            data (Any): The data to be masked
+            particles (Any): If mask is a callback, the particles object to be passed to it
+            mask (None | Any | callable): The mask. Can be None, a slice, a binary mask or a callback.
+                If a callback, it must have the signature ``(mask_1, get) -> mask_2`` where mask_1 is the
+                binary mask to be modified, mask_2 is the modified mask, and get is a method allowing the
+                callback to retriev particle properties in their respective data units.
+                Example:
+                    def mask_callback(mask, get):
+                        mask &= get("t") < 1e-3  # all particles with time < 1 ms
+                        return mask
+        """
+        if mask is None:
+            return data.flatten()
+        if callable(mask):
+            data = data.flatten()
+            mask = mask(
+                np.ones_like(data, dtype="bool"),
+                lambda key: self._get_masked(particles, key),
+            )
+        return data[mask].flatten()
+
     def _get_masked(self, particles, key, mask=None):
         """Get masked particle property"""
 
         try:
             # try to get requested property from particle data
             v = get(particles, key)
-
-            if mask is not None:
-                v = v[mask]
+            v = self._apply_mask(v, particles, mask)
 
             if key == "zeta" and self.wrap_zeta:
                 # wrap values at machine circumference
                 w = self.circumference if self.wrap_zeta is True else self.wrap_zeta
                 v = np.mod(v + w / 2, w) - w / 2
 
-            return np.array(v).flatten()
+            return np.array(v)
 
         except AttributeError:
             # handle derived properties
@@ -177,9 +200,8 @@ class ParticlePlotMixin:
                 turn = get(particles, "at_turn")
                 zeta = get(particles, "zeta")
                 # do not use _get_masked as wrap_zeta might mess it up!
-                if mask is not None:
-                    turn = turn[mask]
-                    zeta = zeta[mask]
+                turn = self._apply_mask(turn, particles, mask)
+                zeta = self._apply_mask(zeta, particles, mask)
                 time = -zeta / beta / c0  # zeta>0 means early; zeta<0 means late
                 if np.any(turn != 0):
                     frev = self.frev(particles)
@@ -192,7 +214,7 @@ class ParticlePlotMixin:
                             "and/or specify particle.beta0."
                         )
                     time = time + turn / frev
-                return np.array(time).flatten()
+                return np.array(time)
 
             # otherwise fail
             raise
