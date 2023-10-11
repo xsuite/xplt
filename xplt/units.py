@@ -134,16 +134,16 @@ default_properties = dict(
 user_properties = {}
 
 
-def register_property(name, unit, symbol=None, description=None):
+def register_property(key, unit, symbol=None, description=None):
     """Register a user defined property unit
 
     Args:
-        name (str): Property name
+        key (str): Property key as used in `kind` string
         unit (str): Unit of data values associated with this property
         symbol (str, optional): Symbol to display in plots, e.g. $a_1$
         description (str, optional): Description
     """
-    user_properties[name] = Prop(symbol or name, unit, description)
+    user_properties[key] = Prop(symbol or key, unit, description)
 
 
 @dataclass
