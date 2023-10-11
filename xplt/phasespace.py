@@ -611,7 +611,10 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
                 Y = extend * h * 3**0.5 * np.linspace(-1, 1, 500)
                 X, Y = np.meshgrid(X, Y)
                 H = (3 * h * (X**2 + Y**2) + 3 * X * Y**2 - X**3) / h**3 / 4
-                levels = np.linspace(0, extend, int(10 * extend)) ** 2
+                levels = np.linspace(0, min(extend, 1), int(10 * min(extend, 1))) ** 2
+                if extend > 1:
+                    levels2 = np.linspace(1, extend, int(5 * (extend - 1)))[1:] ** 2
+                    levels = np.hstack([levels, levels2])
 
                 ax.contour(*transform((X, Y)), H, levels=levels, **kwargs)
 
