@@ -871,6 +871,7 @@ class TimeVariationScalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
         time_range=None,
         log=True,
         plot_kwargs=None,
+        ignore_insufficient_statistics=False,
         **kwargs,
     ):
         """Plot variability of particle time as function of timescale
@@ -903,6 +904,7 @@ class TimeVariationScalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
             time_range (tuple): Time range of particles to consider. If None, all particles are considered.
             log (bool): Whether or not to plot the x-axis in log scale.
             plot_kwargs (dict): Keyword arguments passed to the plot function.
+            ignore_insufficient_statistics (bool): When set to True, the plot will include data with insufficient statistics.
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
 
@@ -963,15 +965,23 @@ class TimeVariationScalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
 
         # set data
         if particles is not None:
-            self.update(particles, mask=mask, autoscale=True)
+            self.update(
+                particles,
+                mask=mask,
+                autoscale=True,
+                ignore_insufficient_statistics=ignore_insufficient_statistics,
+            )
 
-    def update(self, particles, mask=None, autoscale=False):
+    def update(
+        self, particles, mask=None, autoscale=False, *, ignore_insufficient_statistics=False
+    ):
         """Update plot with new data
 
         Args:
             particles (Any): Particles data to plot.
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
             autoscale (bool): Whether or not to perform autoscaling on all axes.
+            ignore_insufficient_statistics (bool): When set to True, the plot will include data with insufficient statistics.
 
         Returns:
             Changed artists
@@ -1010,9 +1020,10 @@ class TimeVariationScalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
             print(
                 f"Warning: Data length ({duration:g} s), counting_dt_min ({duration/ncbins_max:g} s), "
                 f"counting_dt_max ({duration/ncbins_min:g} s) and/or count ({ntotal:g}) insufficient. "
-                f"Nothing plotted."
             )
-            return
+            if not ignore_insufficient_statistics:
+                print(f"Nothing plotted.")
+                return
 
         if self.log:
             ncbins_arr = np.unique(
