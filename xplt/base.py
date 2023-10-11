@@ -143,7 +143,15 @@ class XPlot:
             if nntwins is not None:
                 for j in range(nntwins[i]):
                     twin = a.twinx()
-                    twin._get_lines.prop_cycler = a._get_lines.prop_cycler
+                    try:
+                        # hack for shared cyclers
+                        # see https://github.com/matplotlib/matplotlib/issues/19479
+                        twin._get_lines = a._get_lines
+                    except:
+                        print(
+                            "Warning: failed to share cyclers, please manually set trace colors for twin axes and make sure to upvote https://github.com/matplotlib/matplotlib/issues/19479"
+                        )
+                        pass  # ignore
                     if j > 0:
                         twin.spines.right.set_position(("axes", 1 + 0.2 * j))
                     self.axflat_twin[i].append(twin)
