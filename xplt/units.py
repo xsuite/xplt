@@ -50,8 +50,8 @@ class Prop:
         return label
 
 
+# fmt: off
 default_properties = dict(
-    # fmt: off
     
     ## particles
     #############################################################################
@@ -71,19 +71,13 @@ default_properties = dict(
     energy  = Prop("$E$",          unit='eV',   description="Total energy"  ),  # Energy (total energy E = sqrt(mc^2 + pc^2))
     chi     = Prop("$\\chi$",      unit="1",                                ),  # q/ q0 * m0/m = qratio / mratio
     
-    #mass0   = Prop("m_\\mathrm{ref}", unit='eV',                               # Reference rest mass
-    #q0      = Prop("q_0",         unit='e',                                    # Reference charge
-    #p0c     = Prop("p_0c",        unit='eV',                                   # Reference momentum
-    #energy0 = Prop("E_\\mathrm{ref}",  unit='eV',                              # Reference energy (total energy)
-    #gamma0  = Prop("\\gamma_0",   unit="1",                                    # Reference relativistic gamma
-    #beta0   = Prop("\\beta_0",    unit="1",                                    # Reference relativistic beta
+    #mass0   = Prop("m_\\mathrm{ref}",         unit='eV',                    ),   # Reference rest mass
+    #q0      = Prop("q_\\mathrm{ref}",         unit='e',                     ),   # Reference charge
+    #p0c     = Prop("p_\\mathrm{ref}c",        unit='eV',                    ),   # Reference momentum
+    #energy0 = Prop("E_\\mathrm{ref}",         unit='eV',                    ),   # Reference energy (total energy)
+    #gamma0  = Prop("\\gamma_\\mathrm{ref}",   unit="1",                     ),   # Reference relativistic gamma
+    #beta0   = Prop("\\beta_\\mathrm{ref}",    unit="1",                     ),   # Reference relativistic beta
     
-    #        "energy0": "E_\\mathrm{ref}",  # total energy of reference particle
-    #        "mass0": "m_\\mathrm{ref}",  # mass of reference particle
-    #        "q0": "q_\\mathrm{ref}",  # charge of reference particle
-    #        "p0c": "p_\\mathrm{ref}c",  # momentum of reference particle
-    #        "gamma0": "\\gamma_\\mathrm{ref}",  # relativistic gamma of reference particle
-    #        "beta0": "\\beta_\\mathrm{ref}",  # relativistic beta of reference particle
     
     ## twiss
     #############################################################################
@@ -122,13 +116,24 @@ default_properties = dict(
     psi      = Prop("$\\Psi$",    unit="rad",                               ),  #
     
     
+    ## beam monitors
+    #############################################################################
+    count   = Prop("$N$",                   units="1", description="Count"  ),  # Beam monitor: particle count
+    x_mean  = Prop("$\\langle x \\rangle$", units="m",                      ),  # Beam monitor: average x position
+    y_mean  = Prop("$\\langle y \\rangle$", units="m",                      ),  # Beam monitor: average y position
+    x_std   = Prop("$\\sigma_x$",           units="m",                      ),  # Beam monitor: std of x positions
+    y_std   = Prop("$\\sigma_y$",           units="m",                      ),  # Beam monitor: std of y positions
+    
+    
     ## derived quantities
     #############################################################################
     t       = Prop("t",           unit='s',                                 ),  # time
     f       = Prop("f",           unit='Hz',                                ),
     # frequency
-    # fmt: on
+    
+    
 )
+# fmt: on
 
 
 user_properties = {}
