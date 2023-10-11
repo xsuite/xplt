@@ -124,7 +124,7 @@ class XPlot:
         if ax is None:
             fig, ax = plt.subplots(**subplots_kwargs)
             self.annotation = fig.text(
-                0.005, 0.005, "", ha="left", c="gray", linespacing=1, fontsize=8
+                0.005, 0.005, "", ha="left", va="bottom", c="gray", linespacing=1, fontsize=8
             )
 
         else:
