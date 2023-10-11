@@ -307,8 +307,7 @@ class XPlot:
         Returns:
             str: Legend label
         """
-        prop = self._get_property(p)
-        return prop.description or prop.symbol
+        return self._get_property(p).label_for_legend()
 
     def label_for(self, *pp, unit=True, description=True):
         """
@@ -344,9 +343,7 @@ class XPlot:
 
         for p in pp:
             prop = self._get_property(p)
-            label = prop.symbol
-            if description and prop.description:
-                label = prop.description + "   " + label
+            label = prop.label_for_axes(description)
 
             if m := re.fullmatch("\\$(.+)_(.)\\$", label):
                 pre, suf = m.groups()
@@ -370,7 +367,7 @@ class XPlot:
             else:
                 display_unit = pint.Unit(units[0])  # all have the same unit (see above)
                 if display_unit != pint.Unit("1"):
-                    label += f" / ${display_unit:~L}$"
+                    label += f" / ${display_unit:~L}$"  # see "NIST Guide to the SI"
 
         return label
 

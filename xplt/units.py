@@ -34,6 +34,21 @@ class Prop:
     def __post_init__(self):
         pint.Unit(self.unit)  # to raise an error if not a valid unit
 
+    def label_for_legend(self):
+        """Return label suited as legend entry"""
+        return self.description or self.symbol
+
+    def label_for_axes(self, description=True):
+        """Return label suited as axes label
+
+        Args:
+            description (bool): Whether to include the description (if any)
+        """
+        label = self.symbol
+        if description and self.description:
+            label = self.description + "   " + label
+        return label
+
 
 default_properties = dict(
     # fmt: off
