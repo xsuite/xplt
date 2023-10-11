@@ -36,7 +36,7 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
         masks=None,
         color=None,
         cmap="magma_r" or "Blues",
-        cbar_loc=None,
+        cbar_loc="auto",
         projections="auto",
         projections_kwargs=None,
         mean=False,
@@ -70,7 +70,8 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
             masks (list[mask]): List of masks for each subplot.
             color (str | list[str]): Properties defining the color of points for the scatter plot(s). Implies plot='scatter'. Pass a list of properties to use different values for each subplot
             cmap (str): Colormap to use for the hist plot.
-            cbar_loc (str): Location of the colorbar, such as 'right', 'inside upper right', etc.
+            cbar_loc (str): Location of the colorbar, such as 'auto', 'right', 'inside upper right', etc.
+                            Use None to disable colorbar.
             projections (bool | str | list): Add histogrammed projections onto axis. Can be True, False, "x", "y", "auto" or a list of these for each subplot
             projections_kwargs (dict): Additional kwargs for histogram projection (step plot)
             mean (bool | list): Whether to indicate mean of distribution with a cross marker. Boolean or list of booleans for each subplot.
@@ -133,12 +134,14 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
             plot = "scatter"
             if isinstance(color, str):
                 color = np.resize(color.split(","), n)
+            if cbar_loc is "auto":
+                cbar_loc = (
+                    "right"
+                    if len(color) <= 1 or np.all(color == color[0])
+                    else "inside upper right"
+                )
         else:
             color = n * [None]
-        if cbar_loc is None:
-            cbar_loc = (
-                "right" if len(color) <= 1 or np.all(color == color[0]) else "inside upper right"
-            )
 
         self.plot = plot
         self.color = color
@@ -199,14 +202,16 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
             vmin, vmax = kwargs.pop("vmin", None), kwargs.pop("vmax", None)
             self.artists_scatter[i] = ax.scatter([], [], **kwargs)
             # TODO: if color is None, use ax.plot([], [], marker=".", ls="") since it is faster
-            self.artists_scatter[i].cmap = mpl.colormaps[scatter_cmap]
+            self.artists_scatter[i].cmap = (
+                mpl.colormaps[scatter_cmap] if isinstance(scatter_cmap, str) else scatter_cmap
+            )
             self.artists_scatter[i].vmin_vmax = vmin, vmax
             # add colorbar
             if c is not None and (np.any(self.color != c) or i == n - 1):
                 cbargs = dict(label=self.label_for(c))
                 if self.display_unit_for(c) == "rad":
                     cbargs.update(ticks=AngleLocator(deg=False), format=RadiansFormatter())
-                if cbar_loc.startswith("inside "):
+                if cbar_loc and cbar_loc.startswith("inside "):
                     # colorbar inside plot
                     axins = inset_axes(
                         ax, width="50%", height="3%", loc=cbar_loc.lstrip("inside ")
@@ -217,7 +222,7 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
                     axins.tick_params(labelsize=8)
                     axins.xaxis.offsetText.set_fontsize(8)
                     axins.xaxis.label.set_size(8)
-                else:
+                elif cbar_loc:
                     self.fig.colorbar(self.artists_scatter[i], **cbargs, ax=ax, location=cbar_loc)
 
             # hexbin histogram
