@@ -160,11 +160,9 @@ class PropToPlot(Prop):
         unit: Physical unit of property data.
         description (optional): Longer description of the property to display on legend and axes labels.
         key: The property key
-        modifier (optional): Additional information to modify property values.
     """
 
     key: str = None
-    modifier: str = None
 
     def __post_init__(self):
         super().__post_init__()
@@ -182,9 +180,7 @@ class PropToPlot(Prop):
         """Create PropToPlot from string
 
         Args:
-            p (str): String to parse. Should be the key of the property to plot,
-                optionally followed by a modifier in square brackets, e.g. "betx[mod]".
-                See each plots documentation on which modifiers are supported.
+            p (str): String to parse. Should be the key of the property to plot.
             custom_properties (dict | None): Dict with custom properties
                 to supersede user and default properties.
 
@@ -194,11 +190,6 @@ class PropToPlot(Prop):
         Raises:
             ValueError: If property is not known
         """
-
-        # parse modifier (if any)
-        mod = None
-        if m := re.fullmatch(r"(.+)\[(.+)\]", p):
-            p, mod = m.groups()
 
         if custom_properties and p in custom_properties:
             prop = custom_properties[p]
@@ -211,7 +202,7 @@ class PropToPlot(Prop):
                 f"Property `{p}` is not known, please register it using xplt.register_property"
             )
 
-        return PropToPlot(**prop.__dict__, key=p, modifier=mod)
+        return PropToPlot(**prop.__dict__, key=p)
 
 
 ## Restrict star imports to local namespace
