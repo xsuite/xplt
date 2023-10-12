@@ -17,7 +17,7 @@ import pint
 import re
 
 from .util import defaults
-from .base import XManifoldPlot
+from .base import XManifoldPlot, TwinFunctionLocator, TransformedLocator
 from .particles import ParticlePlotMixin, ParticlesPlot
 from .units import Prop
 
@@ -680,6 +680,94 @@ class MetricesMixin:
         else:
             raise ValueError(f"Unknown metric {metric}")
 
+    @staticmethod
+    def _link_cv_duty_axes(
+        ax, at, twin_is_duty=True, orientation="y", factor_cv=1, factor_duty=1
+    ):
+        """Link twin axis with corresponding metric (cv or duty)
+
+        This ties the limits of the twin axis to the primary axis (registering change listeners)
+        and also applies the formatters and tick locators for coefficient-of-variation (cv) and
+        duty-factor (duty) metrices.
+
+        Args:
+            ax (mpl.axis.Axis): The primary axis (the limits of which might change)
+            at (mpl.axis.Axis): The twin axis
+            twin_is_duty (bool): True if cv data is on `ax` and duty data is on `at`. False if that is swapped.
+            orientation (str): "x" if data is on x-axis, "y" otherwise
+            factor_cv (float): Optional factor associated with cv axis
+            factor_duty (float): Optional factor associated with duty axis
+        """
+        xy = "x" if orientation[0].lower() in "xh" else "y"
+        ax_cv, ax_duty = (ax, at) if twin_is_duty else (at, ax)
+
+        cv2duty = lambda cv: factor_duty / (1 + (cv / factor_cv) ** 2)
+        duty2cv = lambda du: factor_cv * (factor_duty / du - 1) ** 0.5
+
+        # cv axis
+        axis_cv = getattr(ax_cv, f"{xy}axis")
+        ax_cv.set(**{f"{xy}label": MetricesMixin._metric_properties.get("cv").label_for_axes()})
+
+        # duty axis
+        axis_duty = getattr(ax_duty, f"{xy}axis")
+        ax_duty.set(
+            **{f"{xy}label": MetricesMixin._metric_properties.get("duty").label_for_axes()}
+        )
+
+        # tick locators and formatters
+        if twin_is_duty:
+            # duty ticks based on cv ticks
+            granularity = 1 / 100 * factor_duty
+            axis_duty.set_major_locator(
+                TwinFunctionLocator(axis_cv.get_major_locator(), cv2duty, duty2cv, granularity)
+            )
+            axis_duty.set_major_formatter(
+                mpl.ticker.FuncFormatter(lambda cv, i: f"{100*cv2duty(cv):.0f} %")
+            )
+            axis_duty.set_minor_locator(
+                mpl.ticker.FixedLocator(duty2cv(granularity * np.linspace(1, 100, 100)))
+            )
+            # ensure cv >= 0
+            axis_cv.set_major_locator(TransformedLocator(axis_cv.get_major_locator(), vmin=0))
+
+        else:
+            # ct ticks based on duty ticks
+            granularity = 0.1 * factor_cv
+            axis_cv.set_major_locator(
+                TwinFunctionLocator(axis_duty.get_major_locator(), duty2cv, cv2duty, granularity)
+            )
+            axis_cv.set_major_formatter(
+                mpl.ticker.FuncFormatter(lambda du, i: "∞" if du <= 0 else f"{duty2cv(du):.1f}")
+            )
+            axis_cv.set_minor_locator(
+                TransformedLocator(
+                    mpl.ticker.MultipleLocator(granularity),
+                    duty2cv,
+                    cv2duty,
+                    vmin=0.05 * factor_duty,
+                    vmax=factor_duty,
+                )
+            )
+            # ensure 0 < duty <= 1
+            axis_duty.set_major_locator(
+                TransformedLocator(axis_duty.get_major_locator(), vmin=1e-9, vmax=factor_duty)
+            )
+
+        # link twin axis limits to primary axis
+        at.set_navigate(False)  # we maintain limits ourselves
+        ax.set_zorder(at.get_zorder() + 1)  # make sure axis on top to capture events
+        if xy == "x":
+            callback = lambda a: at.set(xlim=a.get_xlim())
+        else:
+            callback = lambda a: at.set(ylim=a.get_ylim())
+        ax.callbacks.connect(f"{xy}lim_changed", callback)
+
+        # force update once to initial values
+        if xy == "x":
+            ax.set(xlim=ax.get_xlim())
+        else:
+            ax.set(ylim=ax.get_ylim())
+
     def _format_metric_axes(self, add_compatible_twin_axes):
         for i, ppp in enumerate(self.on_y):
             for j, pp in enumerate(ppp):
@@ -690,20 +778,23 @@ class MetricesMixin:
             # indicate compatible metric on opposite axis (if free space)
             if add_compatible_twin_axes and len(ppp) == 1:
                 if np.all(np.array(ppp[0]) == "duty"):
-                    other = "cv"
-                    formatter = lambda du, i: "∞" if du <= 0 else f"{abs(1/du-1)**0.5:.1f}"
+                    twin_is_duty = False
                 elif np.all(np.array(ppp[0]) == "cv"):
-                    other = "duty"
-                    formatter = lambda cv, i: "" if cv < 0 else f"{100/(1+cv**2):.1f} %"
+                    twin_is_duty = True
                 else:
-                    other = None
+                    twin_is_duty = None
 
-                if other is not None:
+                if twin_is_duty is not None:
                     a = self.axis(i)
                     at = a.twinx()
-                    at.set(ylabel=self.label_for(other), ylim=a.get_ylim())
-                    at.yaxis.set_major_formatter(mpl.ticker.FuncFormatter(formatter))
-                    a.callbacks.connect("ylim_changed", lambda a: at.set(ylim=a.get_ylim()))
+                    self._link_cv_duty_axes(
+                        a,
+                        at,
+                        twin_is_duty,
+                        factor_duty=self.factor_for("duty"),
+                        factor_cv=self.factor_for("cv"),
+                    )
+                    at.set(ylabel=self.label_for("duty" if twin_is_duty else "cv"))
 
 
 class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):

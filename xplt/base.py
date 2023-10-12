@@ -89,6 +89,73 @@ class RadiansFormatter(mpl.ticker.Formatter):
         return f"${x/np.pi:g}\\pi$"
 
 
+class TwinFunctionLocator(mpl.ticker.Locator):
+    def __init__(self, twin_locator, function_twin_to_this, function_this_to_twin, granularity=1):
+        """A locator for twin axes with non-linear functional dependence
+
+        Finds nice tick locations close to the twin, but uses a custom function to place ticks at integer multiples of granularity.
+        This is useful for twin axes which share the same limits, but are formatted with values based on different functions.
+
+        Args:
+            twin_locator (mpl.ticker.Locator): The other locator to align tick locations with
+            function_twin_to_this (callable): Function to calculate tick values of this axis given the tick values of the other axis.
+            function_this_to_twin (callable): Function to calculate tick values of the other axis given the tick values of this axis.
+            granularity (float): Base at multiples of which to locate ticks.
+        """
+        self.twin_locator = twin_locator
+        self.twin2this = function_twin_to_this
+        self.this2twin = function_this_to_twin
+        self.granularity = granularity
+
+    def __call__(self):
+        """Return the locations of the ticks."""
+        return self.tick_values(*self.axis.get_view_interval())
+
+    def tick_values(self, vmin, vmax):
+        twin_values = np.array(self.twin_locator.tick_values(vmin, vmax))
+        this_values = self.twin2this(twin_values)
+        this_values = np.round(this_values / self.granularity) * self.granularity
+        twin_values = self.this2twin(this_values)
+        twin_values = twin_values
+        return twin_values
+
+
+class TransformedLocator(mpl.ticker.Locator):
+    def __init__(
+        self, locator, transform=lambda x: x, inverse=lambda x: x, vmin=-np.inf, vmax=np.inf
+    ):
+        """A transformed locator with non-linear functional wrappers and limits
+
+        Clips ticks to limits and then transforms the values before calling the dependent locator.
+
+        Args:
+            locator (mpl.ticker.Locator): The dependent locator to use for actual tick locating
+            transform (callable): Function to transform tick values of this locator to the values of the dependent locator
+            inverse (callable): Inverse of transform
+            vmin (float): Optional lower limit for ticks in this locator
+            vmax (float): Optional upper limit for ticks in this locator
+        """
+        self.locator = locator
+        self.transform = transform
+        self.inverse = inverse
+        self.vmin = vmin
+        self.vmax = vmax
+
+    def __call__(self):
+        """Return the locations of the ticks."""
+        return self.tick_values(*self.axis.get_view_interval())
+
+    def tick_values(self, vmin, vmax):
+        # clip and transform limits
+        vmin = self.transform(max(vmin, self.vmin))
+        vmax = self.transform(min(vmax, self.vmax))
+        # locate ticks
+        ticks = self.locator.tick_values(vmin, vmax)
+        # inverse transform
+        ticks = self.inverse(ticks)
+        return ticks
+
+
 class XPlot:
     def __init__(
         self,
