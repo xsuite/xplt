@@ -160,9 +160,11 @@ class PropToPlot(Prop):
         unit: Physical unit of property data.
         description (optional): Longer description of the property to display on legend and axes labels.
         key: The property key
+        expression (optional): Expression containing some function(s) to evaluate such as `smooth(key,n=10)`.
     """
 
     key: str = None
+    expression: str = None
 
     def __post_init__(self):
         super().__post_init__()
@@ -181,6 +183,8 @@ class PropToPlot(Prop):
 
         Args:
             p (str): String to parse. Should be the key of the property to plot.
+                May optionally contain a wrapping function call with the property as first argument
+                such as `smooth(key)` or `smooth(key, n=10)`.
             custom_properties (dict | None): Dict with custom properties
                 to supersede user and default properties.
 
@@ -190,6 +194,11 @@ class PropToPlot(Prop):
         Raises:
             ValueError: If property is not known
         """
+
+        expression = None
+        if m := re.match(r".*\(([^(),\s]+)[^()]*\)", p):
+            expression = p
+            p = m.groups()[0]
 
         if custom_properties and p in custom_properties:
             prop = custom_properties[p]
@@ -202,7 +211,38 @@ class PropToPlot(Prop):
                 f"Property `{p}` is not known, please register it using xplt.register_property"
             )
 
-        return PropToPlot(**prop.__dict__, key=p)
+        return PropToPlot(**prop.__dict__, key=p, expression=expression)
+
+    def evaluate_expression(self, data):
+        """Evaluate the associated expression for the data"""
+        if self.expression:
+            from .util import smooth, average
+
+            methods = locals()
+            try:
+                return eval(self.expression, methods, {self.key: data})
+            except Exception as e:
+                import inspect, sys
+
+                print(f"Error evaluating exprssion `{self.expression}`", file=sys.stderr)
+                print(f"Reason: {e}", file=sys.stderr)
+                print(f"Supported methods:", file=sys.stderr)
+                for k, v in methods.items():
+                    if k in ("self", "data") or k.startswith("_"):
+                        continue
+                    print(f"  {k}{inspect.signature(v)}", file=sys.stderr)
+                raise
+        return data
+
+    def label_for_legend(self):
+        if self.expression:
+            ...  # TODO: expression
+        return super().label_for_legend()
+
+    def label_for_axes(self, description=True):
+        if self.expression:
+            ...  # TODO: expression
+        return super().label_for_axes()
 
 
 ## Restrict star imports to local namespace

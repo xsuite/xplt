@@ -635,15 +635,20 @@ class XManifoldPlot(XPlot):
             nested list of elements in the string
 
         Example:
-            >>> XManifoldPlot.parse_nested_list_string("a+b,c-d,e")
-            [[['a', 'b']], [['c'], ['d']], [['e']]]
+            >>> XManifoldPlot.parse_nested_list_string("a+b, c-d,e(1,2)")
+            [[['a', 'b']], [['c'], ['d']], [['e(1,2)']]]
         """
+
+        def savesplit(string, sep):
+            """Split the string at sep except inside parantheses"""
+            return re.split(f"\\{sep}\\s*(?![^()]*\\))", string)
+
         if type(list_string) is str:
             elements = []
-            for element in list_string.split(separators[0]):
+            for element in savesplit(list_string, separators[0]):
                 element = subs.get(element, element)
                 # split again in case subs contains a separator
-                elements.extend(element.split(separators[0]))
+                elements.extend(savesplit(element, separators[0]))
         else:
             elements = list(list_string)
         if len(separators) > 1:

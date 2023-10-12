@@ -115,7 +115,8 @@ def average(*data, n=100, function=np.mean):
 
 def smooth(*data, n):
     if n:
-        data = [scipy.signal.savgol_filter(d, n, 0) for d in data]  # , mode="nearest"
+        # preserves shape but first and last n/2 values will be np.nan
+        data = [scipy.signal.savgol_filter(d, n, 0, mode="constant", cval=np.nan) for d in data]
     return data[0] if len(data) == 1 else data
 
 

@@ -256,6 +256,8 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
                     edges *= self.factor_for("t")
                     timeseries *= self.factor_for(p)
 
+                    # expression wrappers
+                    timeseries = prop.evaluate_expression(timeseries)
                     # update plot
                     if prop.key == "cumulative":
                         # steps open after last bin
@@ -439,6 +441,8 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
                     visible = freq <= fmax
                     freq, mag = freq[visible], mag[visible]
 
+                    # expression wrappers
+                    mag = prop.evaluate_expression(mag)
                     # update plot
                     self.artists[i][j][k].set_data(freq, mag)
                     changed.append(self.artists[i][j][k])
