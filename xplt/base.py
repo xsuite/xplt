@@ -674,7 +674,7 @@ class XManifoldPlot(XPlot):
         Args:
             subplot (Union[int, iterable, "all"]): Subplot axis index or indices
             show (Union[bool, "auto"]): If True, show the legend. If "auto", show
-              the legend if there are more than one entries.
+              legend for subplots with more than one trace, or if subplot is specified explicitly.
             kwargs: Keyword arguments passed to :meth:`matplotlib.axes.Axes.legend`
 
         """
@@ -682,12 +682,14 @@ class XManifoldPlot(XPlot):
             subplot = range(len(self.axflat))
         if isinstance(subplot, int):
             subplot = [subplot]
+            if show == "auto":
+                show = True  # always show legend if single subplot is specified
 
         for s in subplot:
             # use topmost axes for legend
             ax = self.axflat_twin[s][-1] if len(self.axflat_twin[s]) > 0 else self.axflat[s]
             handles = self._legend_entries[s]
-            if not show or show == "auto" and len(handles) <= 1:
+            if not show or (show == "auto" and len(handles) <= 1):
                 if ax.get_legend():
                     ax.get_legend().remove()
             else:
