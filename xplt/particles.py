@@ -70,7 +70,8 @@ class ParticlePlotMixin:
             Jx = Prop("$J_x$", unit=f"({Prop.get('x').unit})^2/({Prop.get('betx').unit})"),       # Action Jx
             Jy = Prop("$J_y$", unit=f"({Prop.get('y').unit})^2/({Prop.get('bety').unit})"),       # Action Jy
             Θx = Prop("$Θ_x$", unit=f"rad"),  # angle
-            Θy = Prop("$Θ_y$", unit=f"rad"),
+            Θy = Prop("$Θ_y$", unit=f"rad"),  # angle
+            q  = Prop("q",     unit=Prop.get('q0').unit),
             # fmt: on
         )
         kwargs["display_units"] = defaults(
@@ -215,6 +216,9 @@ class ParticlePlotMixin:
                         )
                     time = time + turn / frev
                 return np.array(time)
+
+            if key == "q":
+                return get(particles, "q0") * self._get_masked(particles, "charge_ratio", mask)
 
             # otherwise fail
             raise

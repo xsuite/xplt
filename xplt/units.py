@@ -100,7 +100,7 @@ default_properties = dict(
     chi     = Prop("$\\chi$",      unit="1",                                ),  # q/ q0 * m0/m = qratio / mratio
     
     #mass0   = Prop("m_\\mathrm{ref}",         unit='eV',                    ),   # Reference rest mass
-    #q0      = Prop("q_\\mathrm{ref}",         unit='e',                     ),   # Reference charge
+    q0      = Prop("q_\\mathrm{ref}",         unit='e',                     ),   # Reference charge
     #p0c     = Prop("p_\\mathrm{ref}c",        unit='eV',                    ),   # Reference momentum
     #energy0 = Prop("E_\\mathrm{ref}",         unit='eV',                    ),   # Reference energy (total energy)
     #gamma0  = Prop("\\gamma_\\mathrm{ref}",   unit="1",                     ),   # Reference relativistic gamma
