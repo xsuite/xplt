@@ -1200,6 +1200,77 @@ class TimeVariationScalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
         return changed
 
 
+class TimeBinMetricHelper(ParticlePlotMixin, MetricesMixin):
+    def __init__(self, *, twiss=None, beta=None, frev=None, circumference=None):
+        """Helper class for binning and evaluating metrices on timeseries data.
+
+        Args:
+            twiss (dict | None): Twiss parameters (alfx, alfy, betx and bety) to use for conversion to normalized phase space coordinates.
+            beta (float | None): Relativistic beta of particles. Defaults to particles.beta0.
+            frev (float | None): Revolution frequency of circular line for calculation of particle time.
+            circumference (float | None): Path length of circular line if frev is not given.
+
+        """
+        self._init_particle_mixin(twiss=twiss, beta=beta, frev=frev, circumference=circumference)
+
+    def binned_timeseries(
+        self, particles, dt=None, *, mask=None, t_range=None, what=None, moments=1
+    ):
+        """Get binned timeseries with equally spaced time bins
+
+        Args:
+            particles (Any): Particles data to plot.
+            dt (float | None): Bin width in seconds.
+            mask (None | Any | callable): The mask. Can be None, a slice, a binary mask or a callback.
+                If a callback, it must have the signature ``(mask_1, get) -> mask_2`` where mask_1 is the
+                binary mask to be modified, mask_2 is the modified mask, and get is a method allowing the
+                callback to retriev particle properties in their respective data units.
+                Example:
+                    def mask_callback(mask, get):
+                        mask &= get("t") < 1e-3  # all particles with time < 1 ms
+                        return mask
+            t_range (tuple[float] | None): Tuple of (min, max) time values to consider. If None, the range is determined from the data.
+            what (str | None): Property to return per bin. Defaults to None, i.e. return counts per bins.
+            moments (int | list[int]): The moment(s) to return if what is not None.
+                Allows to get the mean (1st moment, default), variance (difference between 2nd and 1st moment) etc.
+
+        Returns:
+            tuple[np.array]: Tuple of (t_min, dt_count, values) where
+                t_min is the time of the first bin,
+                dt_count is the bin width and
+                values is the array of counts per bin (or whatever `what` was set to).
+        """
+        # extract times
+        times = self._get_masked(particles, "t", mask)
+        data = None if what is None else self._get_masked(particles, what, mask)
+
+        # bin into counting bins
+        t_min, dt_count, values = binned_timeseries(
+            times, what=data, dt=dt, t_range=t_range, moments=moments
+        )
+
+        return t_min, dt_count, values
+
+    def calculate_metric(self, counts, metric, nbins):
+        """Calculate metric on timeseries
+
+        Args:
+            counts (np.array): 1D timeseries of counts per bin.
+            metric (str): Metric to calculate. See :class:`MetricesMixin` for available metrics.
+            nbins (int): Number of subsequent bins to evaluate metric over.
+
+        Returns:
+            tuple[np.array]: Tuple of (value, limit) arrays for each evaluation of the metric.
+        """
+        # make 2D array by subdividing into evaluation bins
+        N = counts[: int(len(counts) / nbins) * nbins].reshape((-1, nbins))
+
+        # calculate metrics
+        F, F_limit = self._calculate_metric(N, metric, axis=1)
+
+        return F, F_limit
+
+
 ## Restrict star imports to local namespace
 __all__ = [
     name

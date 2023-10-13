@@ -21,6 +21,7 @@ from .timestructure import (
     TimeIntervalPlot,
     TimeVariationPlot,
     TimeVariationScalePlot,
+    TimeBinMetricHelper,
 )
 from .twiss import TwissPlot
 from .util import average, normalized_coordinates, denormalized_coordinates
