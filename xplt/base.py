@@ -575,6 +575,8 @@ class XManifoldPlot(XPlot):
         y-axis on the first subplot and traces c and d have individual y-axis on the
         second subplot.
 
+        When deriving from this class, you should call :meth:`~.base.XManifoldPlot._create_artists` during init
+
         Args:
             on_x (str): What to plot on the x-axis
             on_y (str or list): What to plot on the y-axis. See :meth:`~.base.XManifoldPlot.parse_nested_list_string`.
@@ -642,6 +644,29 @@ class XManifoldPlot(XPlot):
                             self._legend_entries[i].append(art)
 
             self.legend(i, show="auto")
+
+    def artist(self, name=None, subplot=None, twin=None, trace=None):
+        """Return the artist either by name, or by subplot, twin axes and trace index
+
+        Args:
+            name (str, optional): Name of the property the artist is plotting
+            subplot (int, optional): Flat subplot index
+            twin (int, optional): Twin axis index
+            trace (int, optional): Trace index
+
+        Returns:
+            matplotlib.artist.Artist: First artist that matches the given criteria
+        """
+        for i, ppp in enumerate(self.on_y):
+            for j, pp in enumerate(ppp):
+                for k, p in enumerate(pp):
+                    if (
+                        (p == name or name is None)
+                        and (i == subplot or subplot is None)
+                        and (j == twin or twin is None)
+                        and (k == trace or trace is None)
+                    ):
+                        return self.artists[i][j][k]
 
     def legend(self, subplot="all", show=True, **kwargs):
         """Add, update or remove legend for a subplot
