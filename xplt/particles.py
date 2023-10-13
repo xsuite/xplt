@@ -63,13 +63,13 @@ class ParticlePlotMixin:
         kwargs["data_units"] = defaults(
             kwargs.get("data_units"),
             # fmt: off
-            X  = Prop("$X$",   unit=f"({PropToPlot.get('x').unit})/({PropToPlot.get('betx').unit})^(1/2)"),   # Normalized X
-            Y  = Prop("$Y$",   unit=f"({PropToPlot.get('y').unit})/({PropToPlot.get('bety').unit})^(1/2)"),   # Normalized Y
-            Px = Prop("$X'$",  unit=f"({PropToPlot.get('px').unit})*({PropToPlot.get('betx').unit})^(1/2)"),  # Normalized Px
-            Py = Prop("$Y'$",  unit=f"({PropToPlot.get('py').unit})*({PropToPlot.get('bety').unit})^(1/2)"),  # Normalized Py
-            Jx = Prop("$J_x$", unit=f"({PropToPlot.get('x').unit})^2/({PropToPlot.get('betx').unit})"),       # Action Jx
-            Jy = Prop("$J_y$", unit=f"({PropToPlot.get('y').unit})^2/({PropToPlot.get('bety').unit})"),       # Action Jy
-            Θx = Prop("$Θ_x$", unit=f"rad"),
+            X  = Prop("$X$",   unit=f"({Prop.get('x').unit})/({Prop.get('betx').unit})^(1/2)"),   # Normalized X
+            Y  = Prop("$Y$",   unit=f"({Prop.get('y').unit})/({Prop.get('bety').unit})^(1/2)"),   # Normalized Y
+            Px = Prop("$X'$",  unit=f"({Prop.get('px').unit})*({Prop.get('betx').unit})^(1/2)"),  # Normalized Px
+            Py = Prop("$Y'$",  unit=f"({Prop.get('py').unit})*({Prop.get('bety').unit})^(1/2)"),  # Normalized Py
+            Jx = Prop("$J_x$", unit=f"({Prop.get('x').unit})^2/({Prop.get('betx').unit})"),       # Action Jx
+            Jy = Prop("$J_y$", unit=f"({Prop.get('y').unit})^2/({Prop.get('bety').unit})"),       # Action Jy
+            Θx = Prop("$Θ_x$", unit=f"rad"),  # angle
             Θy = Prop("$Θ_y$", unit=f"rad"),
             # fmt: on
         )

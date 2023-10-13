@@ -49,6 +49,34 @@ class Prop:
             label = self.description + "   " + label
         return label
 
+    @staticmethod
+    def get(p, custom_properties=None):
+        """Create Prop from string
+
+        Args:
+            p (str): String to parse. Should be the key of the property to plot.
+                May optionally contain a wrapping function call with the property as first argument
+                such as `smooth(key)` or `smooth(key, n=10)`.
+            custom_properties (dict | None): Dict with custom properties
+                to supersede user and default properties.
+
+        Returns:
+            Prop: Property information
+
+        Raises:
+            ValueError: If property is not known
+        """
+        if custom_properties and p in custom_properties:
+            return custom_properties[p]
+        elif p in user_properties:
+            return user_properties[p]
+        elif p in default_properties:
+            return default_properties[p]
+        else:
+            raise ValueError(
+                f"Property `{p}` is not known, please register it using xplt.register_property"
+            )
+
 
 # fmt: off
 default_properties = dict(
@@ -200,16 +228,7 @@ class PropToPlot(Prop):
             expression = p
             p = m.groups()[0]
 
-        if custom_properties and p in custom_properties:
-            prop = custom_properties[p]
-        elif p in user_properties:
-            prop = user_properties[p]
-        elif p in default_properties:
-            prop = default_properties[p]
-        else:
-            raise ValueError(
-                f"Property `{p}` is not known, please register it using xplt.register_property"
-            )
+        prop = Prop.get(p, custom_properties)
 
         return PropToPlot(**prop.__dict__, key=p, expression=expression)
 
