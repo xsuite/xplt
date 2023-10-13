@@ -32,7 +32,7 @@ def binned_timeseries(times, *, what=None, n=None, dt=None, t_range=None, moment
     over all particles arriving within the respective bin (or 0 if no particles arrive within a time bin).
     It is also possible to specify the moments to return, i.e. the power to which the property is raised
     before averaging. This allows to determine mean (1st moment, default) and variance (difference between
-    2nd and 1st moment) etc.
+    2nd and 1st moment) etc. To disable averaging, pass None as the moment
 
     Args:
         times (np.ndarray): Array of particle arrival times.
@@ -40,7 +40,7 @@ def binned_timeseries(times, *, what=None, n=None, dt=None, t_range=None, moment
         dt (float | None): Bin width in seconds. Must not be used together with n.
         t_range (tuple[float] | None): Tuple of (min, max) time values to consider. If None, the range is determined from the data.
         what (np.ndarray | None): Array of associated data or None. Must have same shape as times. See above.
-        moments (int | list[int]): The moment(s) to return for associated data if what is not None. See above.
+        moments (int | list[int | None] | None): The moment(s) to return for associated data if what is not None. See above.
 
     Returns:
         The timeseries as tuple (t_min, dt, values) where
@@ -80,12 +80,16 @@ def binned_timeseries(times, *, what=None, n=None, dt=None, t_range=None, moment
     else:
         # Return 'what' averaged
         result = [t_min, dt]
-        for m in [moments] if isinstance(moments, int) else moments:
+        if isinstance(moments, int) or moments is None:
+            moments = [moments]
+        for m in moments:
             v = np.zeros(n)
             # sum up 'what' for all the particles in each bin
-            np.add.at(v, bins, what[mask] ** m)
-            # divide by particle count to get mean (default to 0)
-            v[counts > 0] /= counts[counts > 0]
+            power = m if m is not None else 1
+            np.add.at(v, bins, what[mask] ** power)
+            if m is not None:
+                # divide by particle count to get mean (default to 0)
+                v[counts > 0] /= counts[counts > 0]
             result.append(v)
         return result
 
@@ -120,6 +124,7 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
         bin_time=None,
         bin_count=None,
         relative=False,
+        moment=1,
         mask=None,
         time_range=None,
         plot_kwargs=None,
@@ -146,18 +151,28 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
             bin_count (int): Number of bins if bin_time is None.
             relative (bool): If True, plot relative numbers normalized to total count.
                 If what is a particle property, this has no effect.
+            moment (int): The moment(s) to plot if kind is a particle property.
+                Allows to get the mean (1st moment, default), variance (difference between 2nd and 1st moment) etc.
+
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
             time_range (tuple): Time range of particles to consider. If None, all particles are considered.
             plot_kwargs (dict): Keyword arguments passed to the plot function.
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
         """
+        self.moment = moment
         kwargs = self._init_particle_mixin(**kwargs)
         kwargs["data_units"] = defaults(
             kwargs.get("data_units"),
             count=Prop("$N$", unit="1", description="Particles per bin"),
             cumulative=Prop("$N$", unit="1", description="Particles (cumulative)"),
             rate=Prop("$\\dot{N}$", unit="1/s", description="Particle rate"),
+            charge=Prop("$Q$", unit=Prop.get("q0").unit, description="Charge per bin"),
+            current=Prop("$I$", unit=f"({Prop.get('q0').unit})/s", description="Current"),
+        )
+        kwargs["display_units"] = defaults(
+            kwargs.get("display_units"),
+            current="nA",
         )
         super().__init__(
             on_x="t",
@@ -183,7 +198,7 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
         # Create plot elements
         def create_artists(i, j, k, ax, p):
             kwargs = defaults(plot_kwargs, lw=1, label=self._legend_label_for(p))
-            if p in ("count", "rate", "cumulative"):
+            if self._count_based(p):
                 kwargs = defaults(kwargs, drawstyle="steps-pre")
             return ax.plot([], [], **kwargs)[0]
 
@@ -193,9 +208,12 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
         if particles is not None:
             self.update(particles, mask=mask, autoscale=True)
 
+    def _count_based(self, key):
+        return key in ("count", "rate", "cumulative", "charge", "current")
+
     def _get_property(self, p):
         prop = super()._get_property(p)
-        if prop.key not in ("count", "rate", "cumulative", "t"):
+        if prop.key != "t" and self.moment is not None and not self._count_based(prop.key):
             # it is averaged
             prop.symbol = f"$\\langle${prop.symbol}$\\rangle$"
         return prop
@@ -222,8 +240,10 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
                 count_based = False
                 for k, p in enumerate(pp):
                     prop = self._get_property(p)
-                    count_based = prop.key in ("count", "rate", "cumulative")
-                    if count_based:
+                    count_based = self._count_based(prop.key)
+                    if prop.key in ("current", "charge"):
+                        property = self._get_masked(particles, "q", mask)
+                    elif count_based:
                         property = None
                     else:
                         property = self._get_masked(particles, prop.key, mask)
@@ -234,6 +254,7 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
                         n=self.bin_count,
                         dt=self.bin_time,
                         t_range=self.time_range,
+                        moments=None if count_based else self.moment,
                     )
                     timeseries = timeseries.astype(np.float64)
                     edges = np.linspace(t_min, t_min + dt * timeseries.size, timeseries.size + 1)
@@ -245,11 +266,11 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
                     if self.relative:
                         if not count_based:
                             raise ValueError(
-                                "Relative plots are only supported for kind 'count', 'rate' or 'cumulative'."
+                                "Relative plots are only supported for kind 'count', 'rate', 'cumulative', 'charge' or 'current'."
                             )
                         timeseries /= len(times)
 
-                    if prop.key == "rate":
+                    if prop.key in ("rate", "current"):
                         timeseries /= dt
 
                     # target units
