@@ -165,6 +165,7 @@ class XPlot:
         ax=None,
         grid=True,
         nntwins=None,
+        annotation=None,
         **subplots_kwargs,
     ):
         """
@@ -178,6 +179,7 @@ class XPlot:
             ax (matplotlib.axes.Axes, optional): Axes to plot onto. If None, a new figure is created.
             grid (bool): If True, show grid lines on all axes.
             nntwins (list): List defining how many twin axes to create for each subplot.
+            annotation (bool | None): Whether to add an annotation or not. If None (default) add it unless `ax` is passed.
             subplots_kwargs: Keyword arguments passed to matplotlib.pyplot.subplots command when a new figure is created.
         """
 
@@ -187,16 +189,12 @@ class XPlot:
                 self._properties[name] = arg if isinstance(arg, Prop) else Prop(name, unit=arg)
         self._display_units = defaults(display_units, s="m", x="mm", y="mm", p="mrad")
 
+        if annotation is None:
+            annotation = ax is None
+
         # Create plot axes
         if ax is None:
             fig, ax = plt.subplots(**subplots_kwargs)
-            self.annotation = fig.text(
-                0.005, 0.005, "", ha="left", va="bottom", c="gray", linespacing=1, fontsize=8
-            )
-
-        else:
-            self.annotation = None
-
         self.ax = ax
         self.fig = self.axflat[0].figure
         self.axflat_twin = []
@@ -222,6 +220,14 @@ class XPlot:
                     if j > 0:
                         twin.spines.right.set_position(("axes", 1 + 0.2 * j))
                     self.axflat_twin[i].append(twin)
+
+        # Create annotation
+        if annotation:
+            self.annotation = self.fig.text(
+                0.005, 0.005, "", ha="left", va="bottom", c="gray", linespacing=1, fontsize=8
+            )
+        else:
+            self.annotation = None
 
     def _autoscale(self, ax, artists=[], data=[], *, reset=False, freeze=True):
         """Autoscale axes to fit given artists
