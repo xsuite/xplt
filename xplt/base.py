@@ -361,8 +361,14 @@ class XPlot:
 
         return self.data_unit_for(p)
 
-    def _get_property(self, p):
-        return PropToPlot.get(p, self._properties)
+    def _get_property(self, key):
+        """Get property by key
+        Args:
+            key (str): Key
+        Returns:
+            PropToPlot: Property
+        """
+        return PropToPlot.get(key, self._properties)
 
     def _legend_label_for(self, p):
         """
