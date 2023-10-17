@@ -127,6 +127,7 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
         moment=1,
         mask=None,
         time_range=None,
+        time_offset=0,
         plot_kwargs=None,
         **kwargs,
     ):
@@ -156,6 +157,7 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
 
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
             time_range (tuple): Time range of particles to consider. If None, all particles are considered.
+            time_offset (float): Time offset for x-axis, i.e. show values as `time_offset+t`.
             plot_kwargs (dict): Keyword arguments passed to the plot function.
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
@@ -175,7 +177,7 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
             current="nA",
         )
         super().__init__(
-            on_x="t",
+            on_x=f"offset(t,{time_offset})" if time_offset else "t",
             on_y=kind,
             **kwargs,
         )
@@ -231,7 +233,8 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
         """
 
         # extract times
-        times = self._get_masked(particles, "t", mask)
+        t_prop = self._get_property(self.on_x)
+        times = self._get_masked(particles, t_prop.key, mask)
 
         # update plots
         changed = []
@@ -273,12 +276,14 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
                     if prop.key in ("rate", "current"):
                         timeseries /= dt
 
-                    # target units
-                    edges *= self.factor_for("t")
-                    timeseries *= self.factor_for(p)
-
                     # expression wrappers
+                    edges = t_prop.evaluate_expression(edges)
                     timeseries = prop.evaluate_expression(timeseries)
+
+                    # display units
+                    edges *= self.factor_for(t_prop.key)
+                    timeseries *= self.factor_for(prop.key)
+
                     # update plot
                     if prop.key == "cumulative":
                         # steps open after last bin
@@ -830,6 +835,8 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
         evaluate_bins=None,
         poisson=True,
         mask=None,
+        time_range=None,
+        time_offset=0,
         plot_kwargs=None,
         **kwargs,
     ):
@@ -855,6 +862,8 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
             evaluate_bins (int): Number of bins if evaluate_dt is None.
             poisson (bool): If true, indicate poisson limit.
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
+            time_range (tuple): Time range of particles to consider. If None, all particles are considered.
+            time_offset (float): Time offset for x-axis, i.e. show values as `time_offset+t`.
             plot_kwargs (dict): Keyword arguments passed to the plot function.
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
@@ -867,7 +876,7 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
             **self._metric_properties,
         )
         super().__init__(
-            on_x="t",
+            on_x=f"offset(t,{time_offset})" if time_offset else "t",
             on_y=metric,
             **kwargs,
         )
@@ -880,6 +889,7 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
         self.counting_bins = counting_bins
         self.evaluate_dt = evaluate_dt
         self.evaluate_bins = evaluate_bins
+        self.time_range = time_range
 
         # Format plot axes
         self._format_metric_axes(kwargs.get("ax") is None)
@@ -921,7 +931,8 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
         """
 
         # extract times
-        times = self._get_masked(particles, "t", mask)
+        t_prop = self._get_property(self.on_x)
+        times = self._get_masked(particles, t_prop.key, mask)
 
         # re-sample times into equally binned time series
         ncbins = self.counting_bins or int(
@@ -933,7 +944,7 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
             nebins = int(ncbins * self.evaluate_dt / (np.max(times) - np.min(times)))
 
         # bin into counting bins
-        t_min, dt, counts = binned_timeseries(times, n=ncbins)
+        t_min, dt, counts = binned_timeseries(times, n=ncbins, t_range=self.time_range)
         edges = np.linspace(t_min, t_min + dt * ncbins, ncbins + 1)
 
         # make 2D array by subdividing into evaluation bins
@@ -944,6 +955,11 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
             f'$\\Delta t_\\mathrm{{count}} = {pint.Quantity(dt, "s"):#~.4L}$\n'
             f'$\\Delta t_\\mathrm{{evaluate}} = {pint.Quantity(dt*nebins, "s"):#~.4L}$'
         )
+
+        # expression wrappers & display units
+        edges = np.append(E, E[-1])
+        edges = t_prop.evaluate_expression(edges)
+        edges *= self.factor_for(t_prop.key)
 
         # update plots
         changed = []
@@ -956,7 +972,6 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
 
                     # update plot
                     step, pstep = self.artists[i][j][k]
-                    edges = self.factor_for("t") * np.append(E, E[-1])
                     steps = np.concatenate(([0], F, [0]))
                     step.set_data((edges, steps))
                     changed.append(step)

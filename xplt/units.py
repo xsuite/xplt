@@ -237,7 +237,12 @@ class PropToPlot(Prop):
         if self.expression:
             from .util import smooth, average
 
-            methods = locals()
+            methods = dict(
+                smooth=smooth,
+                average=average,
+                offset=lambda x, o: x + o,
+            )
+
             try:
                 return eval(self.expression, methods, {self.key: data})
             except Exception as e:
