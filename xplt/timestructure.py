@@ -368,7 +368,7 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
             count=Prop("N", unit="1", description="Particles per bin"),
         )
         super().__init__(
-            on_x="t",
+            on_x=None,  # handled manually
             on_y=kind,
             **kwargs,
         )

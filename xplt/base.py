@@ -590,7 +590,7 @@ class XManifoldPlot(XPlot):
         When deriving from this class, you should call :meth:`~.base.XManifoldPlot._create_artists` during init
 
         Args:
-            on_x (str): What to plot on the x-axis
+            on_x (str | None): What to plot on the x-axis
             on_y (str or list): What to plot on the y-axis. See :meth:`~.base.XManifoldPlot.parse_nested_list_string`.
             on_y_separators (str): See :meth:`~.base.XManifoldPlot.parse_nested_list_string`
             on_y_subs (dict): See :meth:`~.base.XManifoldPlot.parse_nested_list_string`
