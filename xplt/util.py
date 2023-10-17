@@ -12,8 +12,13 @@ __date__ = "2022-11-15"
 import types
 
 import numpy as np
-import pandas as pd
 import scipy.signal
+
+try:
+    import pandas as pd
+except ImportError:
+    # pandas is an optional dependency
+    pd = None
 
 
 VOID = object()
@@ -46,7 +51,7 @@ def get(obj, value, default=VOID):
     Raises:
         AttributeError: if object does not provide the value and no default was specified
     """
-    if isinstance(obj, pd.DataFrame):
+    if pd and isinstance(obj, pd.DataFrame):
         return val(obj[value].values)
     try:
         return val(getattr(obj, value))
@@ -208,21 +213,22 @@ def virtual_sextupole(tracker_or_line, particle_ref=None, *, verbose=False):
 
     if verbose:
         print("Sextupoles")
-        df = pd.DataFrame(
-            dict(
-                name=sextupoles,
-                k2l=k2l,
-                betx=betx,
-                mux=mux,
-                dx=tw.dx,
-                S_abs=np.abs(vectors),
-                S_deg=np.rad2deg(np.angle(vectors)),
-            )
+        data = dict(
+            name=sextupoles,
+            k2l=k2l,
+            betx=betx,
+            mux=mux,
+            dx=tw.dx,
+            S_abs=np.abs(vectors),
+            S_deg=np.rad2deg(np.angle(vectors)),
         )
-        info = str(df).split("\n")
+        head = data.keys()
+        info = [[v if type(v) is str else f"{v:.5f}" for v in data[h]] for h in head]
+        colw = [max(len(h), *[len(v) for v in val]) for h, val in zip(head, info)]
+        info = ["  ".join([v.rjust(c) for v, c in zip(val, colw)]) for val in (head, *zip(*info))]
         print("  " + "\n  ".join(info))
         print("  " + "-" * len(info[0]))
-        print("  Virtual sextupole:", f"S = {S:g} at mu = {mu:g}")
+        print("  Virtual sextupole:", f"S = {S:g} m^(-1/2) at mu = {mu:g} rad/2pi")
 
     return S, mu
 
