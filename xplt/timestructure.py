@@ -263,7 +263,7 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
                     edges = np.linspace(t_min, t_min + dt * timeseries.size, timeseries.size + 1)
 
                     self.annotate(
-                        f'$\\Delta t_\\mathrm{{bin}} = {pint.Quantity(dt, "s").to_compact():~.4L}$'
+                        f'$\\Delta t_\\mathrm{{bin}} = {pint.Quantity(dt, "s"):#~.4gL}$'
                     )
 
                     if self.relative:
@@ -487,7 +487,7 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
                     if a.get_yscale() != "log":
                         a.set_ylim(0, None)
 
-        self.annotate(f"$\\Delta t_\\mathrm{{bin}} = {pint.Quantity(dt, 's').to_compact():~.4L}$")
+        self.annotate(f"$\\Delta t_\\mathrm{{bin}} = {pint.Quantity(dt, 's'):#~.4gL}$")
 
         return changed
 
@@ -634,9 +634,7 @@ class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin):
         )
         steps = (np.append(edges, edges[-1]), np.concatenate(([0], counts, [0])))
 
-        self.annotate(
-            f"$\\Delta t_\\mathrm{{bin}} = {pint.Quantity(self.bin_time, 's').to_compact():~.4L}$"
-        )
+        self.annotate(f"$\\Delta t_\\mathrm{{bin}} = {pint.Quantity(self.bin_time, 's'):#~.4gL}$")
 
         for i, ppp in enumerate(self.on_y):
             for j, pp in enumerate(ppp):
@@ -952,8 +950,8 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
         E = edges[: int(len(edges) / nebins + 1) * nebins : nebins]
 
         self.annotate(
-            f'$\\Delta t_\\mathrm{{count}} = {pint.Quantity(dt, "s"):#~.4L}$\n'
-            f'$\\Delta t_\\mathrm{{evaluate}} = {pint.Quantity(dt*nebins, "s"):#~.4L}$'
+            f'$\\Delta t_\\mathrm{{count}} = {pint.Quantity(dt, "s"):#~.4gL}$\n'
+            f'$\\Delta t_\\mathrm{{evaluate}} = {pint.Quantity(dt*nebins, "s"):#~.4gL}$'
         )
 
         # expression wrappers & display units
@@ -1126,13 +1124,13 @@ class TimeVariationScalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
         duration = np.max(times) - np.min(times)
 
         # annotate plot
-        # f'$\\langle\\dot{{N}}\\rangle = {pint.Quantity(ntotal/duration, "1/s"):~.4L}$\n'
+        # f'$\\langle\\dot{{N}}\\rangle = {pint.Quantity(ntotal/duration, "1/s"):#~.4gL}$\n'
         self.annotate(
             "$\\Delta t_\\mathrm{evaluate} = "
             + (
                 f"{self.counting_bins_per_evaluation:g}\\,\\Delta t_\\mathrm{{count}}$"
                 if self.counting_bins_per_evaluation
-                else f"{pint.Quantity(duration, 's'):#~.4L}$"
+                else f"{pint.Quantity(duration, 's'):#~.4gL}$"
             )
         )
 
