@@ -1,6 +1,5 @@
 
-# Welcome to Xplt's documentation!
-
+# Welcome to Xplt
 A plotting library for [Xsuite](https://github.com/xsuite) and simmilar accelerator physics codes.
 
 ```{toctree}
