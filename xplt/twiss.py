@@ -76,7 +76,7 @@ class TwissPlot(XManifoldPlot):
         Returns:
             changed artists
         """
-        s = self.factor_for("s")
+        s = self.prop("s").values(twiss, unit=self.display_unit_for("s"))
         changed = []
         for i, ppp in enumerate(self.on_y):
             if self.lineplot is not None and i == 0:
@@ -84,13 +84,13 @@ class TwissPlot(XManifoldPlot):
             for j, pp in enumerate(ppp):
                 a = self.axis(i, j)
                 for k, p in enumerate(pp):
-                    f = self.factor_for(p)
-                    self.artists[i][j][k].set_data((s * twiss["s"], f * twiss[p]))
+                    v = self.prop(p).values(twiss, unit=self.display_unit_for(p))
+                    self.artists[i][j][k].set_data((s, v))
                     changed.append(self.artists[i][j][k])
                 if autoscale:
                     a.relim()
                     a.autoscale()
-                    a.set(xlim=(s * min(twiss["s"]), s * max(twiss["s"])))
+                    a.set(xlim=(min(s), max(s)))
 
         if line:
             changed.append(self.lineplot.update(line, autoscale=autoscale))

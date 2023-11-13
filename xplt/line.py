@@ -128,7 +128,7 @@ class KnlPlot(XManifoldPlot):
                         values[knl][mask] += el.knl[n]
 
         # plot
-        s = self.factor_for("s")
+        s = self.S * self.factor_for("s")
         changed = []
         for i, ppp in enumerate(self.on_y):
             for j, pp in enumerate(ppp):
@@ -138,7 +138,7 @@ class KnlPlot(XManifoldPlot):
                     if self.filled:
                         art.get_paths()[0].vertices[1 : 1 + y.size, 1] = y
                     else:
-                        art.set_data((s * self.S, y))
+                        art.set_data((s, y))
                     changed.append(art)
 
                 if autoscale:
@@ -152,7 +152,7 @@ class KnlPlot(XManifoldPlot):
                     else:
                         ax.relim()
                     ax.autoscale()
-                    ax.set(xlim=(s * np.min(self.S), s * np.max(self.S)))
+                    ax.set(xlim=(np.min(s), np.max(s)))
 
         return changed
 
