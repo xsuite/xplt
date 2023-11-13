@@ -16,8 +16,8 @@ import matplotlib as mpl
 import numpy as np
 
 from .base import XPlot, XManifoldPlot
-from .units import Prop, PropToPlot
 from .util import defaults, get
+from .properties import Property, DataProperty
 
 
 def iter_elements(line):
@@ -171,11 +171,11 @@ class KnlPlot(XManifoldPlot):
 
         return changed
 
-    def _get_property(self, p):
+    def prop(self, p):
         if match := re.fullmatch(r"k(\d+)l", p):
             n = match.group(1)
-            return PropToPlot(key=p, symbol=f"$k_{n}l$", unit="rad" if n == "0" else f"m^-{n}")
-        return super()._get_property(p)
+            return Property(symbol=f"$k_{n}l$", unit="rad" if n == "0" else f"m^-{n}")
+        return super().prop(p)
 
     def label_for(self, *pp, unit=True, description=True):
         """
@@ -236,6 +236,16 @@ class FloorPlot(XPlot):
               `{"regex": {...}}`. For each matching element name, the options are used.
 
         """
+
+        kwargs["data_units"] = defaults(
+            kwargs.get("data_units"),
+            X=DataProperty("X", "m"),
+            Y=DataProperty("Y", "m"),
+            Z=DataProperty("Z", "m"),
+            theta=DataProperty("theta", "rad", "$\\Theta$"),
+            phi=DataProperty("phi", "rad", "$\\Phi$"),
+            psi=DataProperty("psi", "rad", "$\\Psi$"),
+        )
 
         super().__init__(**kwargs)
 
@@ -495,7 +505,7 @@ class FloorPlot(XPlot):
             unit = self.display_unit_for(self.projection[0])
             label = f"{scale:g} {unit}"
 
-        return super(FloorPlot, self).add_scale(
+        return super().add_scale(
             self.ax, scale, label=label, loc=loc, color=color, fontsize=fontsize
         )
 

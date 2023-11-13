@@ -19,7 +19,7 @@ import numpy as np
 import pint
 
 from .util import defaults, flattened
-from .units import PropToPlot, Prop
+from .properties import Property, find_property, DataProperty
 
 
 class ManifoldMultipleLocator(mpl.ticker.MaxNLocator):
@@ -186,7 +186,7 @@ class XPlot:
         self._properties = {}
         if data_units:
             for name, arg in data_units.items():
-                self._properties[name] = arg if isinstance(arg, Prop) else Prop(name, unit=arg)
+                self._properties[name] = DataProperty(name, arg) if isinstance(arg, str) else arg
         self._display_units = defaults(display_units, s="m", x="mm", y="mm", p="mrad")
 
         if annotation is None:
@@ -332,19 +332,7 @@ class XPlot:
         Returns:
             float: Factor to convert parameter into display unit
         """
-        quantity = pint.Quantity(self.data_unit_for(p))
-        return (quantity / pint.Quantity(self.display_unit_for(p))).to("").magnitude
-
-    def data_unit_for(self, p):
-        """Return data unit for parameter
-
-        Args:
-            p (str): Property name
-
-        Returns:
-            str: Data unit
-        """
-        return self._get_property(p).unit
+        return pint.Quantity(1, self.prop(p).unit).to(self.display_unit_for(p)).m
 
     def display_unit_for(self, p):
         """Return display unit for parameter
@@ -358,23 +346,27 @@ class XPlot:
         if p is None:
             return None
 
-        prop = self._get_property(p)
-        if prop.key in self._display_units:
-            return self._display_units[prop.key]
-        if len(prop.key) > 1 and prop.key[-1] in "xy":
-            if prop.key[:-1] in self._display_units:
-                return self._display_units[prop.key[:-1]]
+        if p in self._display_units:
+            return self._display_units[p]
 
-        return self.data_unit_for(p)
+        if len(p) > 1 and p[-1] in "xy":
+            if p[:-1] in self._display_units:
+                return self._display_units[p[:-1]]
 
-    def _get_property(self, key):
+        return self.prop(p).unit  # default to data unit
+
+    def prop(self, name):
         """Get property by key
         Args:
-            key (str): Key
+            name (str): Key
         Returns:
-            PropToPlot: Property
+            Property: The property
         """
-        return PropToPlot.get(key, self._properties)
+        if name in self._properties:
+            prop = self._properties[name]
+        else:
+            prop = find_property(name)
+        return prop.with_property_resolver(self.prop)
 
     def _legend_label_for(self, p):
         """
@@ -386,7 +378,39 @@ class XPlot:
         Returns:
             str: Legend label
         """
-        return self._get_property(p).label_for_legend()
+        return self.prop(p).description or self._symbol_for(p)
+
+    def _axis_label_for(self, p, description=True):
+        """Return axis label for a single property
+
+        The label is without unit, as the unit is added in `label_for` separately.
+
+        Args:
+            p (str): Property name
+            description (bool): Whether to include the description (if any)
+
+        Returns:
+            str: Axis label
+        """
+        label = self._symbol_for(p)
+        if description and (desc := self.prop(p).description):
+            label = desc + "   " + label
+        return label
+
+    def _symbol_for(self, p):
+        """Return symbol for a single property
+
+        This method can be overridden by subclasses to provide custom symbols,
+        such as an average over a quantity etc.
+
+        Args:
+            p (str): Property name
+
+        Returns:
+            str: Symbol
+        """
+        prop = self.prop(p)
+        return prop.symbol
 
     def label_for(self, *pp, unit=True, description=True):
         """
@@ -421,8 +445,7 @@ class XPlot:
         labels, combined = [], {}
 
         for p in pp:
-            prop = self._get_property(p)
-            label = prop.label_for_axes(description)
+            label = self._axis_label_for(p, description)
 
             if m := re.fullmatch("\\$(.+)_(.)\\$", label):
                 pre, suf = m.groups()
@@ -581,8 +604,8 @@ class XManifoldPlot(XPlot):
 
         A manifold plot consists of multiple subplots, axes and twin axes, all of which
         share the x-axis. The **manifold subplot specification string** ``on_y`` defines what
-        is plotted on the y-axes. It should specify a property for each trace, separated
-        by ``,`` for each subplot, ``-`` for twin axes and ``+`` for traces. For example, the
+        is plotted on the y-axes. It should specify a property for each trace, separated by
+        ``,`` for each subplot, by ``-`` for twin axes and by ``+`` for traces. For example, the
         string ``"a+b,c-d"`` specifies 2 subplots where traces a and b share the same
         y-axis on the first subplot and traces c and d have individual y-axis on the
         second subplot.
@@ -592,6 +615,8 @@ class XManifoldPlot(XPlot):
         Args:
             on_x (str | None): What to plot on the x-axis
             on_y (str or list): What to plot on the y-axis. See :meth:`~.base.XManifoldPlot.parse_nested_list_string`.
+                                May optionally contain a post-processing function call with the property as first argument
+                                such as `smooth(key)` or `smooth(key, n=10)`.
             on_y_separators (str): See :meth:`~.base.XManifoldPlot.parse_nested_list_string`
             on_y_subs (dict): See :meth:`~.base.XManifoldPlot.parse_nested_list_string`
             kwargs: Keyword arguments passed to :class:`~.base.XPlot`
@@ -602,7 +627,9 @@ class XManifoldPlot(XPlot):
             )
 
         self.on_x = on_x
-        self.on_y = self.parse_nested_list_string(on_y, on_y_separators, on_y_subs)
+        self.on_y, self.on_y_expression = self.parse_nested_list_string(
+            on_y, on_y_separators, on_y_subs, strip_off_methods=True
+        )
 
         super().__init__(
             nrows=len(self.on_y),
@@ -727,8 +754,13 @@ class XManifoldPlot(XPlot):
                 self._autoscale(axt, flattened(self.artists[s][i]), **kwargs)
 
     @staticmethod
-    def parse_nested_list_string(list_string, separators=",-+", subs={}):
+    def parse_nested_list_string(
+        list_string, separators=",-+", subs={}, *, strip_off_methods=False
+    ):
         """Parse a separated string or nested list or a mixture of both
+
+
+
 
         Args:
             list_string (str or list): The string or nested list or a mixture of both to parse.
@@ -736,13 +768,20 @@ class XManifoldPlot(XPlot):
                 determines the depth of the returned list.
             subs (dict): A dictionary of substitutions to apply to the elements during parsing.
                 May introduce additional separators of equal or deeper level.
+            strip_off_methods (bool): If true, each element can be a name `name` or an expression
+                                      in the form `method(name, ...)`. The methods are stripped off,
+                                      and returned separately.
 
         Returns:
-            nested list of elements in the string
+            nested list of names in the string,
+            nested list of expressions in the string (only if strip_off_methods is True)
 
         Example:
-            >>> XManifoldPlot.parse_nested_list_string("a+b, c-d,e(1,2)")
-            [[['a', 'b']], [['c'], ['d']], [['e(1,2)']]]
+            >>> XManifoldPlot.parse_nested_list_string("a+b, c-d,fun(e,2)")
+            [[['a', 'b']], [['c'], ['d']], [['fun(e,2)']]]
+            >>> XManifoldPlot.parse_nested_list_string("a+b, c-d,fun(e,2)", strip_off_methods=True)
+            ([[['a', 'b']], [['c'], ['d']], [['e']]],
+             [[[None, None]], [[None], [None]], [['fun(e,2)']]])
         """
 
         def savesplit(string, sep):
@@ -757,12 +796,24 @@ class XManifoldPlot(XPlot):
                 elements.extend(savesplit(element, separators[0]))
         else:
             elements = list(list_string)
+        expressions = [None] * len(elements)
         if len(separators) > 1:
             for i in range(len(elements)):
-                elements[i] = XManifoldPlot.parse_nested_list_string(
-                    elements[i], separators[1:], subs
+                result = XManifoldPlot.parse_nested_list_string(
+                    elements[i], separators[1:], subs, strip_off_methods=strip_off_methods
                 )
-        return elements
+                if strip_off_methods:
+                    elements[i], expressions[i] = result
+                else:
+                    elements[i] = result
+        elif strip_off_methods:
+            for i in range(len(elements)):
+                if isinstance(elements[i], str):
+                    if m := re.match(r".*\(([^(),\s]+)[^()]*\)", elements[i]):
+                        name, expression = m.groups()[0], m.string
+                        elements[i] = name
+                        expressions[i] = expression
+        return (elements, expressions) if strip_off_methods else elements
 
 
 ## Restrict star imports to local namespace

@@ -13,15 +13,16 @@ __date__ = "2022-12-07"
 import types
 
 import numpy as np
+import pint
 
 from .base import XManifoldPlot
-from .units import PropToPlot, Prop
-from .util import c0, get, val, defaults, normalized_coordinates
+from .properties import Property, DerivedProperty, find_property
+from .util import c0, get, val, defaults, normalized_coordinates, ieee_mod
 
 
 class ParticlePlotMixin:
     def _init_particle_mixin(
-        self, *, twiss=None, beta=None, frev=None, circumference=None, wrap_zeta=False, **kwargs
+        self, *, twiss=None, beta=None, frev=None, circumference=None, **kwargs
     ):
         r"""Mixin for plotting of particle data
 
@@ -45,8 +46,6 @@ class ParticlePlotMixin:
             beta (float | None): Relativistic beta of particles. Defaults to particles.beta0.
             frev (float | None): Revolution frequency of circular line for calculation of particle time.
             circumference (float | None): Path length of circular line if frev is not given.
-            wrap_zeta (bool | float | None): If set, wrap the zeta-coordinate plotted at the machine circumference.
-                Either pass the circumference directly or set this to True to use the circumference from twiss.
             kwargs: Keyword arguments for :class:`~.base.XPlot`
 
         Returns:
@@ -57,22 +56,26 @@ class ParticlePlotMixin:
         self._beta = val(beta)
         self._frev = val(frev)
         self._circumference = val(circumference)
-        self.wrap_zeta = wrap_zeta
+
+        # Particle specific properties
+        # fmt: off
+        self._derived_particle_properties = dict(
+            zeta_wrapped=DerivedProperty("$\\zeta$", "m", lambda zeta: ieee_mod(zeta, self.circumference)),
+            X=DerivedProperty("$X$", "m^(1/2)", lambda x, px, delta: normalized_coordinates(x, px, self.twiss, "x", delta)[0]),
+            Y=DerivedProperty("$Y$", "m^(1/2)", lambda y, py, delta: normalized_coordinates(y, py, self.twiss, "y", delta)[0]),
+            Px=DerivedProperty("$X'$", "m^(1/2)", lambda x, px, delta: normalized_coordinates(x, px, self.twiss, "x", delta)[1]),
+            Py=DerivedProperty("$Y'$", "m^(1/2)", lambda y, py, delta: normalized_coordinates(y, py, self.twiss, "y", delta)[1]),
+            Jx=DerivedProperty("$J_x$", "m", lambda X, Px: (X**2 + Px**2) / 2),
+            Jy=DerivedProperty("$J_y$", "m", lambda Y, Py: (Y**2 + Py**2) / 2),
+            Θx=DerivedProperty("$Θ_x$", "rad", lambda X, Px: -np.arctan2(Px, X)),
+            Θy=DerivedProperty("$Θ_y$", "rad", lambda Y, Py: -np.arctan2(Py, Y)),
+            t=DerivedProperty("$t$", "s", lambda _data, at_turn, zeta: self._particle_time(at_turn, zeta, _data))
+        )
+        # fmt: on
 
         # Update kwargs with particle specific settings
         kwargs["data_units"] = defaults(
-            kwargs.get("data_units"),
-            # fmt: off
-            X  = Prop("$X$",   unit=f"({Prop.get('x').unit})/({Prop.get('betx').unit})^(1/2)"),   # Normalized X
-            Y  = Prop("$Y$",   unit=f"({Prop.get('y').unit})/({Prop.get('bety').unit})^(1/2)"),   # Normalized Y
-            Px = Prop("$X'$",  unit=f"({Prop.get('px').unit})*({Prop.get('betx').unit})^(1/2)"),  # Normalized Px
-            Py = Prop("$Y'$",  unit=f"({Prop.get('py').unit})*({Prop.get('bety').unit})^(1/2)"),  # Normalized Py
-            Jx = Prop("$J_x$", unit=f"({Prop.get('x').unit})^2/({Prop.get('betx').unit})"),       # Action Jx
-            Jy = Prop("$J_y$", unit=f"({Prop.get('y').unit})^2/({Prop.get('bety').unit})"),       # Action Jy
-            Θx = Prop("$Θ_x$", unit=f"rad"),  # angle
-            Θy = Prop("$Θ_y$", unit=f"rad"),  # angle
-            q  = Prop("q",     unit=Prop.get('q0').unit),
-            # fmt: on
+            kwargs.get("data_units"), **self._derived_particle_properties
         )
         kwargs["display_units"] = defaults(
             kwargs.get("display_units"),
@@ -125,103 +128,46 @@ class ParticlePlotMixin:
         if beta is not None and self.circumference is not None:
             return beta * c0 / self.circumference
 
-    def _apply_mask(self, data, particles, mask=None):
-        """Apply mask to data
-
-        Args:
-            data (Any): The data to be masked
-            particles (Any): If mask is a callback, the particles object to be passed to it
-            mask (None | Any | callable): The mask. Can be None, a slice, a binary mask or a callback.
-                If a callback, it must have the signature ``(mask_1, get) -> mask_2`` where mask_1 is the
-                binary mask to be modified, mask_2 is the modified mask, and get is a method allowing the
-                callback to retriev particle properties in their respective data units.
-                Example:
-                    def mask_callback(mask, get):
-                        mask &= get("t") < 1e-3  # all particles with time < 1 ms
-                        return mask
-        """
-        if mask is None:
-            return data.flatten()
-        if callable(mask):
-            data = data.flatten()
-            mask = mask(
-                np.ones_like(data, dtype="bool"),
-                lambda key: self._get_masked(particles, key),
+    def _particle_time(self, turn, zeta, particles=None):
+        """Particle arrival time (t = at_turn / frev - zeta / beta / c0)"""
+        beta = self.beta(particles)
+        if beta is None:
+            raise ValueError(
+                "Particle arrival time can not be determined "
+                "because all of the following are unknown: "
+                "beta, (frev and circumference), twiss. "
+                "To resolve this error, pass either to the plot constructor "
+                "or specify particle.beta0."
             )
-        return data[mask].flatten()
 
-    def _get_masked(self, particles, key, mask=None):
-        """Get masked particle property"""
+        time = -zeta / beta / c0  # zeta>0 means early; zeta<0 means late
+        if np.any(turn != 0):
+            frev = self.frev(particles)
+            if frev is None:
+                raise ValueError(
+                    "Particle arrival time can not be determined while at_turn > 0 "
+                    "because all of the following are unknown: "
+                    "frev, twiss, (bata and circumference). "
+                    "To resolve this error, pass either to the plot constructor "
+                    "and/or specify particle.beta0."
+                )
+            time = time + turn / frev
 
-        try:
-            # try to get requested property from particle data
-            v = get(particles, key)
-            v = self._apply_mask(v, particles, mask)
+        return np.array(time)
 
-            if key == "zeta" and self.wrap_zeta:
-                # wrap values at machine circumference
-                w = self.circumference if self.wrap_zeta is True else self.wrap_zeta
-                v = np.mod(v + w / 2, w) - w / 2
-
-            return np.array(v)
-
-        except AttributeError:
-            # handle derived properties
-
-            if key in ("X", "Px", "Y", "Py"):
-                # normalized coordinates
-                if self.twiss is None:
-                    raise ValueError("Normalized coordinates requested but twiss is None")
-                xy = key.lower()[-1]
-                coords = [self._get_masked(particles, p, mask) for p in (xy, "p" + xy)]
-                delta = self._get_masked(particles, "delta", mask)
-                X, Px = normalized_coordinates(*coords, self.twiss, xy, delta=delta)
-                return X if key.lower() == xy else Px
-
-            if key in ("Jx", "Jy", "Θx", "Θy"):
-                # action angle coordinates
-                X = self._get_masked(particles, key[-1].upper(), mask)
-                Px = self._get_masked(particles, "P" + key[-1].lower(), mask)
-                if key in ("Jx", "Jy"):  # Action
-                    return (X**2 + Px**2) / 2
-                if key in ("Θx", "Θy"):  # Angle
-                    return -np.arctan2(Px, X)
-
-            if key == "t":
-                # particle arrival time (t = at_turn / frev - zeta / beta / c0)
-                beta = self.beta(particles)
-                if beta is None:
-                    raise ValueError(
-                        "Particle arrival time can not be determined "
-                        "because all of the following are unknown: "
-                        "beta, (frev and circumference), twiss. "
-                        "To resolve this error, pass either to the plot constructor "
-                        "or specify particle.beta0."
-                    )
-                turn = get(particles, "at_turn")
-                zeta = get(particles, "zeta")
-                # do not use _get_masked as wrap_zeta might mess it up!
-                turn = self._apply_mask(turn, particles, mask)
-                zeta = self._apply_mask(zeta, particles, mask)
-                time = -zeta / beta / c0  # zeta>0 means early; zeta<0 means late
-                if np.any(turn != 0):
-                    frev = self.frev(particles)
-                    if frev is None:
-                        raise ValueError(
-                            "Particle arrival time can not be determined while at_turn > 0 "
-                            "because all of the following are unknown: "
-                            "frev, twiss, (bata and circumference). "
-                            "To resolve this error, pass either to the plot constructor "
-                            "and/or specify particle.beta0."
-                        )
-                    time = time + turn / frev
-                return np.array(time)
-
-            if key == "q":
-                return get(particles, "q0") * self._get_masked(particles, "charge_ratio", mask)
-
-            # otherwise fail
-            raise
+    def get_property(self, name):
+        # Note: this method is not used by the library, but it's handy for standalone use
+        """Public method to get a particle property by key
+        Args:
+            name (str): Key
+        Returns:
+            Property: The property
+        """
+        if name in self._derived_particle_properties:
+            prop = self._derived_particle_properties[name]
+        else:
+            prop = find_property(name)
+        return prop.with_property_resolver(self.get_property)
 
 
 class ParticlesPlot(XManifoldPlot, ParticlePlotMixin):
@@ -293,18 +239,20 @@ class ParticlesPlot(XManifoldPlot, ParticlePlotMixin):
             List of artists that have been updated.
         """
 
-        xdata = self._get_masked(particles, self.on_x, mask)
-        order = np.argsort(
-            xdata if self.sort_by is None else self._get_masked(particles, self.sort_by, mask)
+        xdata = self.prop(self.on_x).values(
+            particles, mask, unit=self.display_unit_for(self.on_x)
         )
-        xdata = xdata[order] * self.factor_for(self.on_x)
+        order = np.argsort(
+            xdata if self.sort_by is None else self.prop(self.sort_by).values(particles, mask)
+        )
+        xdata = xdata[order]
 
         changed = []
         for i, ppp in enumerate(self.on_y):
             for j, pp in enumerate(ppp):
                 for k, p in enumerate(pp):
-                    values = self._get_masked(particles, p, mask)
-                    values = values[order] * self.factor_for(p)
+                    values = self.prop(p).values(particles, mask, unit=self.display_unit_for(p))
+                    values = values[order]
                     self.artists[i][j][k].set_data((xdata, values))
                     changed.append(self.artists[i][j][k])
 

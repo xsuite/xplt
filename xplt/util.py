@@ -9,6 +9,7 @@ __author__ = "Philipp Niedermayer"
 __contact__ = "eltos@outlook.de"
 __date__ = "2022-11-15"
 
+import math
 import types
 
 import numpy as np
@@ -32,6 +33,12 @@ def val(obj):
     if np.size(obj) == 1:
         return np.array(obj).item()
     return obj
+
+
+#
+def ieee_mod(values, m):
+    """Return the IEEE remainder (in range -x/2 .. x/2)"""
+    return np.mod(values + m / 2, m) - m / 2
 
 
 def get(obj, value, default=VOID):
@@ -125,6 +132,26 @@ def smooth(*data, n):
     return data[0] if len(data) == 1 else data
 
 
+def evaluate_expression_wrapper(expression, key, data):
+    """Evaluate the expression wrapper"""
+
+    methods = dict(smooth=smooth, average=average, offset=lambda x, o: x + o)
+
+    try:
+        return eval(expression, methods, {key: data})
+    except Exception as e:
+        import inspect, sys
+
+        print(f"Error evaluating exprssion `{expression}`", file=sys.stderr)
+        print(f"Reason: {e}", file=sys.stderr)
+        print(f"Supported methods:", file=sys.stderr)
+        for k, v in methods.items():
+            if k in ("self", "data") or k.startswith("_"):
+                continue
+            print(f"  {k}{inspect.signature(v)}", file=sys.stderr)
+        raise
+
+
 def normalized_coordinates(x, px, twiss, xy, delta=0):
     """Convert physical to normalized coordinates
 
@@ -138,6 +165,8 @@ def normalized_coordinates(x, px, twiss, xy, delta=0):
     Returns:
         Tuple of normalized coordinates (X, Px) in (m^(1/2), m^(1/2))
     """
+    if twiss is None:
+        raise ValueError("Cannot calculate normalized coordinates when twiss parameter is None")
     # substract (dispersive) closed orbit
     x = x - get(twiss, xy) - delta * get(twiss, "d" + xy)
     px = px - get(twiss, "p" + xy) - delta * get(twiss, "dp" + xy)

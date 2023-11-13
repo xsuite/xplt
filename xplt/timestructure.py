@@ -16,10 +16,10 @@ import numpy as np
 import pint
 import re
 
-from .util import defaults
+from .util import defaults, evaluate_expression_wrapper
 from .base import XManifoldPlot, TwinFunctionLocator, TransformedLocator
 from .particles import ParticlePlotMixin, ParticlesPlot
-from .units import Prop
+from .properties import Property, find_property
 
 
 def binned_timeseries(times, *, what=None, n=None, dt=None, t_range=None, moments=1):
@@ -166,11 +166,11 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
         kwargs = self._init_particle_mixin(**kwargs)
         kwargs["data_units"] = defaults(
             kwargs.get("data_units"),
-            count=Prop("$N$", unit="1", description="Particles per bin"),
-            cumulative=Prop("$N$", unit="1", description="Particles (cumulative)"),
-            rate=Prop("$\\dot{N}$", unit="1/s", description="Particle rate"),
-            charge=Prop("$Q$", unit=Prop.get("q0").unit, description="Charge per bin"),
-            current=Prop("$I$", unit=f"({Prop.get('q0').unit})/s", description="Current"),
+            count=Property("$N$", "1", description="Particles per bin"),
+            cumulative=Property("$N$", "1", description="Particles (cumulative)"),
+            rate=Property("$\\dot{N}$", "1/s", description="Particle rate"),
+            charge=Property("$Q$", find_property("q").unit, description="Charge per bin"),
+            current=Property("$I$", f"({find_property('q').unit})/s", description="Current"),
         )
         kwargs["display_units"] = defaults(
             kwargs.get("display_units"),
@@ -213,12 +213,12 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
     def _count_based(self, key):
         return key in ("count", "rate", "cumulative", "charge", "current")
 
-    def _get_property(self, p):
-        prop = super()._get_property(p)
-        if prop.key != "t" and self.moment is not None and not self._count_based(prop.key):
+    def _symbol_for(self, p):
+        symbol = super()._symbol_for(p)
+        if p != "t" and self.moment is not None and not self._count_based(p):
             # it is averaged
-            prop.symbol = f"$\\langle${prop.symbol}$\\rangle$"
-        return prop
+            symbol = f"$\\langle${symbol}$\\rangle$"
+        return symbol
 
     def update(self, particles, mask=None, autoscale=False):
         """Update plot with new data
@@ -233,8 +233,8 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
         """
 
         # extract times
-        t_prop = self._get_property(self.on_x)
-        times = self._get_masked(particles, t_prop.key, mask)
+        t_prop = self.prop(self.on_x)
+        times = t_prop.values(particles, mask, unit="s")
 
         # update plots
         changed = []
@@ -242,14 +242,13 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
             for j, pp in enumerate(ppp):
                 count_based = False
                 for k, p in enumerate(pp):
-                    prop = self._get_property(p)
-                    count_based = self._count_based(prop.key)
-                    if prop.key in ("current", "charge"):
-                        property = self._get_masked(particles, "q", mask)
+                    count_based = self._count_based(p)
+                    if p in ("current", "charge"):
+                        property = self.prop("q").values(particles, mask)
                     elif count_based:
                         property = None
                     else:
-                        property = self._get_masked(particles, prop.key, mask)
+                        property = self.prop(p).values(particles, mask)
 
                     t_min, dt, timeseries = binned_timeseries(
                         times,
@@ -273,19 +272,19 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
                             )
                         timeseries /= len(times)
 
-                    if prop.key in ("rate", "current"):
+                    if p in ("rate", "current"):
                         timeseries /= dt
 
-                    # expression wrappers
-                    edges = t_prop.evaluate_expression(edges)
-                    timeseries = prop.evaluate_expression(timeseries)
+                    # post-processing expression wrappers
+                    if wrap := self.on_y_expression[i][j][k]:
+                        timeseries = evaluate_expression_wrapper(wrap, p, timeseries)
 
                     # display units
-                    edges *= self.factor_for(t_prop.key)
-                    timeseries *= self.factor_for(prop.key)
+                    edges *= self.factor_for(self.on_x)
+                    timeseries *= self.factor_for(p)
 
                     # update plot
-                    if prop.key == "cumulative":
+                    if p == "cumulative":
                         # steps open after last bin
                         timeseries = np.concatenate(([0], np.cumsum(timeseries)))
                     elif count_based:
@@ -365,7 +364,8 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
         )
         kwargs["data_units"] = defaults(
             kwargs.get("data_units"),
-            count=Prop("N", unit="1", description="Particles per bin"),
+            count=Property("$N$", "1", description="Particles per bin"),
+            f=Property("$f$", "Hz", description="Frequency"),
         )
         super().__init__(
             on_x=None,  # handled manually
@@ -423,7 +423,7 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
         """
 
         # extract times and associated property
-        times = self._get_masked(particles, "t", mask)
+        times = self.prop("t").values(particles, mask, unit="s")
 
         # re-sample times into equally binned time series
         fmax = self.fmax(particles)
@@ -436,13 +436,13 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
         for i, ppp in enumerate(self.on_y):
             for j, pp in enumerate(ppp):
                 for k, p in enumerate(pp):
-                    prop = self._get_property(p)
-                    count_based = prop.key == "count"
+                    prop = self.prop(p)
+                    count_based = p == "count"
 
                     if count_based:
                         property = None
                     else:
-                        property = self._get_masked(particles, prop.key, mask)
+                        property = prop.values(particles, mask)
 
                     # compute binned timeseries
                     t_min, dt, timeseries = binned_timeseries(
@@ -456,10 +456,10 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
                     else:
                         freq *= self.factor_for("f")
                     mag = np.abs(np.fft.rfft(timeseries))[1:]
-                    if self._get_scaling(prop.key) == "amplitude":
+                    if self._get_scaling(p) == "amplitude":
                         # amplitude in units of p
                         mag *= 2 / len(timeseries) * self.factor_for(p)
-                    elif self._get_scaling(prop.key) == "pds":
+                    elif self._get_scaling(p) == "pds":
                         # power density spectrum in a.u.
                         mag = mag**2
 
@@ -467,8 +467,10 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
                     visible = freq <= fmax
                     freq, mag = freq[visible], mag[visible]
 
-                    # expression wrappers
-                    mag = prop.evaluate_expression(mag)
+                    # post-processing expression wrappers
+                    if wrap := self.on_y_expression[i][j][k]:
+                        mag = evaluate_expression_wrapper(wrap, p, mag)
+
                     # update plot
                     self.artists[i][j][k].set_data(freq, mag)
                     changed.append(self.artists[i][j][k])
@@ -491,20 +493,23 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
 
         return changed
 
-    def _get_property(self, p):
-        prop = super()._get_property(p)
+    def _symbol_for(self, p):
+        symbol = super()._symbol_for(p)
         if p not in "f":
             # it is the FFT of it
-            sym = prop.symbol.strip("$")
-            if self._get_scaling(prop.key) == "amplitude":
-                prop.symbol = f"$\\hat{{{sym}}}$"
-            elif self._get_scaling(prop.key) == "pds":
-                prop.symbol = f"$|\\mathrm{{FFT({sym})}}|^2$"
-                prop.unit = "a.u."  # arbitrary unit
+            symbol = symbol.strip("$")
+            if self._get_scaling(p) == "amplitude":
+                symbol = f"$\\hat{{{symbol}}}$"
+            elif self._get_scaling(p) == "pds":
+                symbol = f"$|\\mathrm{{FFT({symbol})}}|^2$"
             else:
-                prop.symbol = f"$|\\mathrm{{FFT({sym})}}|$"
-                prop.unit = "a.u."  # arbitrary unit
-        return prop
+                symbol = f"$|\\mathrm{{FFT({symbol})}}|$"
+        return symbol
+
+    def display_unit_for(self, p):
+        if p not in "f" and self._get_scaling(p) != "amplitude":
+            return "a.u."
+        return super().display_unit_for(p)
 
     def plot_harmonics(self, f, df=0, *, n=20, **plot_kwargs):
         """Add vertical lines or spans indicating the location of values or spans and their harmonics
@@ -571,8 +576,8 @@ class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin):
         kwargs = self._init_particle_mixin(**kwargs)
         kwargs["data_units"] = defaults(
             kwargs.get("data_units"),
-            dt=Prop("$\\Delta t$", unit="s", description="Delay between consecutive particles"),
-            count=Prop("$N$", unit="1", description="Particles per bin"),
+            dt=Property("$\\Delta t$", "s", description="Delay between consecutive particles"),
+            count=Property("$N$", "1", description="Particles per bin"),
         )
         super().__init__(
             on_x="dt",
@@ -623,7 +628,7 @@ class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin):
         """
 
         # extract times
-        times = self._get_masked(particles, "t", mask)
+        times = self.prop("t").values(particles, mask, unit="s")
         if self.time_range:
             times = times[(self.time_range[0] <= times) & (times < self.time_range[1])]
         delay = self.factor_for("t") * np.diff(sorted(times))
@@ -676,14 +681,14 @@ class MetricesMixin:
     """
 
     _metric_properties = dict(
-        cv=Prop("$c_v=\\sigma/\\mu$", unit="1", description="Coefficient of variation"),
-        duty=Prop(
+        cv=Property("$c_v=\\sigma/\\mu$", "1", description="Coefficient of variation"),
+        duty=Property(
             "$F=\\langle N \\rangle^2/\\langle N^2 \\rangle$",
-            unit="1",
+            "1",
             description="Spill duty factor",
         ),
-        maxmean=Prop(
-            "$M=\\hat{N}/\\langle N \\rangle$", unit="1", description="Max-to-mean ratio"
+        maxmean=Property(
+            "$M=\\hat{N}/\\langle N \\rangle$", "1", description="Max-to-mean ratio"
         ),
     )
 
@@ -730,12 +735,14 @@ class MetricesMixin:
 
         # cv axis
         axis_cv = getattr(ax_cv, f"{xy}axis")
-        ax_cv.set(**{f"{xy}label": MetricesMixin._metric_properties.get("cv").label_for_axes()})
+        prop_cv = MetricesMixin._metric_properties.get("cv")
+        ax_cv.set(**{f"{xy}label": f"{prop_cv.description or ''}   {prop_cv.symbol}".strip()})
 
         # duty axis
         axis_duty = getattr(ax_duty, f"{xy}axis")
+        prop_duty = MetricesMixin._metric_properties.get("duty")
         ax_duty.set(
-            **{f"{xy}label": MetricesMixin._metric_properties.get("duty").label_for_axes()}
+            **{f"{xy}label": f"{prop_duty.description or ''}   {prop_duty.symbol}".strip()}
         )
 
         # tick locators and formatters
@@ -929,8 +936,8 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
         """
 
         # extract times
-        t_prop = self._get_property(self.on_x)
-        times = self._get_masked(particles, t_prop.key, mask)
+        t_prop = self.prop(self.on_x)
+        times = t_prop.values(particles, mask, unit="s")
 
         # re-sample times into equally binned time series
         ncbins = self.counting_bins or int(
@@ -954,10 +961,9 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
             f'$\\Delta t_\\mathrm{{evaluate}} = {pint.Quantity(dt*nebins, "s"):#~.4gL}$'
         )
 
-        # expression wrappers & display units
+        # display units
         edges = np.append(E, E[-1])
-        edges = t_prop.evaluate_expression(edges)
-        edges *= self.factor_for(t_prop.key)
+        edges *= self.factor_for(self.on_x)
 
         # update plots
         changed = []
@@ -1043,7 +1049,7 @@ class TimeVariationScalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
         )
         kwargs["data_units"] = defaults(
             kwargs.get("data_units"),
-            tbin=Prop("$\\Delta t_\\mathrm{count}$", unit="s", description="Time resolution"),
+            tbin=Property("$\\Delta t_\\mathrm{count}$", "s", description="Time resolution"),
             **self._metric_properties,
         )
         super().__init__(
@@ -1117,7 +1123,7 @@ class TimeVariationScalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
         """
 
         # extract times
-        times = self._get_masked(particles, "t", mask)
+        times = self.prop("t").values(particles, mask, unit="s")
         if self.time_range:
             times = times[(self.time_range[0] <= times) & (times < self.time_range[1])]
         ntotal = times.size
@@ -1254,8 +1260,8 @@ class TimeBinMetricHelper(ParticlePlotMixin, MetricesMixin):
                 values is the array of counts per bin (or whatever `what` was set to).
         """
         # extract times
-        times = self._get_masked(particles, "t", mask)
-        data = None if what is None else self._get_masked(particles, what, mask)
+        times = self.get_property("t").values(particles, mask=mask, unit="s")
+        data = what and self.get_property(what).values(particles, mask=mask)
 
         # bin into counting bins
         t_min, dt_count, values = binned_timeseries(

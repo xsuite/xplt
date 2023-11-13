@@ -315,8 +315,8 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
         for i, ((a, b), c, ax) in enumerate(zip(self.kind, self.color, self.axflat)):
 
             # coordinates
-            x = self.factor_for(a) * self._get_masked(particles, a, masks[i])
-            y = self.factor_for(b) * self._get_masked(particles, b, masks[i])
+            x = self.prop(a).values(particles, masks[i], unit=self.display_unit_for(a))
+            y = self.prop(b).values(particles, masks[i], unit=self.display_unit_for(b))
 
             # statistics
             XY = np.array((x, y))
@@ -337,7 +337,7 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
                 scatter.set_visible(True)
                 scatter.set_offsets(pairwise[x, y])
                 if c is not None:
-                    v = self.factor_for(c) * self._get_masked(particles, c, masks[i])
+                    v = self.prop(c).values(particles, masks[i], unit=self.display_unit_for(c))
                     if autoscale:
                         # scatter.set_clim(np.min(v), np.max(v)) # sometimes leaves behind black dots (bug?)
                         # scatter.norm = mpl.colors.Normalize(np.min(v), np.max(v)) # works, but resets colorbar locator/formatter
@@ -454,12 +454,15 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
             "x-px": "Horizontal phase space",
             "y-py": "Vertical phase space",
             "zeta-delta": "Longitudinal phase space",
+            "zeta_wrapped-delta": "Longitudinal phase space",
             "X-Px": "Normalized horizontal phase space",
             "Y-Py": "Normalized vertical phase space",
             "x-y": "Transverse profile",
         }
-        # TODO: fallback to f"{self.label_for(a, unit=False)}-{self.label_for(b, unit=False)} phase space"
-        return titles.get(f"{a}-{b}", titles.get(f"{b}-{a}", f"{a}-{b} phase space"))
+        title = titles.get(f"{a}-{b}", titles.get(f"{b}-{a}"))
+        if title is None:
+            title = f"{self.label_for(a, unit=False)}-{self.label_for(b, unit=False)} phase space"
+        return title
 
     def axline(self, kind, val, *, subplots="all", also_on_normalized=False, delta=0, **kwargs):
         """Plot a vertical or horizontal line for a given coordinate
