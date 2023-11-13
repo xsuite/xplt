@@ -17,15 +17,7 @@ from .line import KnlPlot
 
 
 class TwissPlot(XManifoldPlot):
-    def __init__(
-        self,
-        twiss=None,
-        kind="bet-dx,x+y",
-        *,
-        line=None,
-        line_kwargs={},
-        **kwargs,
-    ):
+    def __init__(self, twiss=None, kind="bet-dx,x+y", *, line=None, line_kwargs={}, **kwargs):
         """
         A plot for twiss parameters and closed orbit
 
@@ -140,11 +132,7 @@ class TwissPlot(XManifoldPlot):
                 if val_to is None:  # only a line
                     a.axvline(val * self.factor_for("s"), **kwargs)
                 else:
-                    a.axvspan(
-                        val * self.factor_for("s"),
-                        val_to * self.factor_for("s"),
-                        **kwargs,
-                    )
+                    a.axvspan(val * self.factor_for("s"), val_to * self.factor_for("s"), **kwargs)
 
         else:
             # horizontal span or line

@@ -531,10 +531,7 @@ class XPlot:
                     args = np.array([vi - dvi / 2, vi + dvi / 2])
                 if inverse:
                     args = sorted(1 / args)
-                method(
-                    *args,
-                    **defaults(kwargs, alpha=1 - np.log(1 + (np.e - 1) * (i - 1) / n)),
-                )
+                method(*args, **defaults(kwargs, alpha=1 - np.log(1 + (np.e - 1) * (i - 1) / n)))
                 kwargs.pop("label", None)
 
     @staticmethod
@@ -590,15 +587,7 @@ class XPlot:
 
 
 class XManifoldPlot(XPlot):
-    def __init__(
-        self,
-        on_x,
-        on_y,
-        *,
-        on_y_separators=",-+",
-        on_y_subs={},
-        **kwargs,
-    ):
+    def __init__(self, on_x, on_y, *, on_y_separators=",-+", on_y_subs={}, **kwargs):
         """
         Base class for plotting manifold plots
 

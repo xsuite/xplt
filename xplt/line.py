@@ -46,14 +46,7 @@ def order(knl):
 
 class KnlPlot(XManifoldPlot):
     def __init__(
-        self,
-        line=None,
-        *,
-        knl=None,
-        filled=True,
-        resolution=1000,
-        line_length=None,
-        **kwargs,
+        self, line=None, *, knl=None, filled=True, resolution=1000, line_length=None, **kwargs
     ):
         """
         A plot for knl values along line
@@ -88,19 +81,11 @@ class KnlPlot(XManifoldPlot):
         self.S = np.linspace(0, line_length or line.get_length(), resolution)
         self.filled = filled
 
-        super().__init__(
-            on_x="s",
-            on_y=knl,
-            **kwargs,
-        )
+        super().__init__(on_x="s", on_y=knl, **kwargs)
 
         # create plot elements
         def create_artists(i, j, k, a, p):
-            kwargs = dict(
-                color=f"C{order(p)}",
-                alpha=0.5,
-                label=self.label_for(p, unit=True),
-            )
+            kwargs = dict(color=f"C{order(p)}", alpha=0.5, label=self.label_for(p, unit=True))
             if self.filled:
                 return a.fill_between(self.S, np.zeros_like(self.S), zorder=3, lw=0, **kwargs)
             else:
@@ -259,21 +244,14 @@ class FloorPlot(XPlot):
 
         # Create plot
         self.ax.set(
-            xlabel=self.label_for(self.projection[0]),
-            ylabel=self.label_for(self.projection[1]),
+            xlabel=self.label_for(self.projection[0]), ylabel=self.label_for(self.projection[1])
         )
         self.ax.axis("equal")
 
         # create plot elements
         (self.artist_beamline,) = self.ax.plot([], [], "k-")
         self.artist_startpoint = mpl.patches.FancyArrowPatch(
-            (0, 0),
-            (0, 0),
-            mutation_scale=20,
-            color="k",
-            arrowstyle="-|>",
-            zorder=5,
-            lw=0,
+            (0, 0), (0, 0), mutation_scale=20, color="k", arrowstyle="-|>", zorder=5, lw=0
         )
         self.ax.add_patch(self.artist_startpoint)
         self.artists_boxes = []
@@ -309,6 +287,7 @@ class FloorPlot(XPlot):
             if scale != self.factor_for(B):
                 # can't handle this, because angles are not preserved
                 raise ValueError(f"Display units for {A} and {B} must be equal!")
+
             X = get(survey, A) * scale
             Y = get(survey, B) * scale
             # ang: transform angles from data (A-B) to axis (X-Y) coordinate system
@@ -347,7 +326,6 @@ class FloorPlot(XPlot):
             helicity = 1
             legend_entries = []
             for i, (x, y, rt, name, arc) in enumerate(zip(X, Y, R, NAME, BEND)):
-
                 drift_length = get(survey, "drift_length", None)
                 if drift_length is not None and drift_length[i] > 0:
                     continue  # skip drift spaces

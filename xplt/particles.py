@@ -199,15 +199,10 @@ class ParticlesPlot(XManifoldPlot, ParticlePlotMixin):
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
         """
-        kwargs = self._init_particle_mixin(
-            **kwargs,
-        )
+        kwargs = self._init_particle_mixin(**kwargs)
         kwargs["display_units"] = defaults(kwargs.get("display_units"), bet="m", d="m")
         super().__init__(
-            on_x=as_function_of,
-            on_y=kind,
-            on_y_subs={"J": "Jx+Jy", "Θ": "Θx+Θy"},
-            **kwargs,
+            on_x=as_function_of, on_y=kind, on_y_subs={"J": "Jx+Jy", "Θ": "Θx+Θy"}, **kwargs
         )
 
         # parse kind string

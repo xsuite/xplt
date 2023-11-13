@@ -226,11 +226,7 @@ def virtual_sextupole(tracker_or_line, particle_ref=None, *, verbose=False):
             k2l.append(el.knl[2])
 
     # twiss at sextupoles
-    tw = tracker_or_line.twiss(
-        method="4d",
-        particle_ref=particle_ref,
-        at_elements=sextupoles,
-    )
+    tw = tracker_or_line.twiss(method="4d", particle_ref=particle_ref, at_elements=sextupoles)
     betx, mux = tw.betx, tw.mux
 
     # determine virtual sextupole

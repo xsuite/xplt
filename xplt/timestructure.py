@@ -172,14 +172,9 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
             charge=Property("$Q$", find_property("q").unit, description="Charge per bin"),
             current=Property("$I$", f"({find_property('q').unit})/s", description="Current"),
         )
-        kwargs["display_units"] = defaults(
-            kwargs.get("display_units"),
-            current="nA",
-        )
+        kwargs["display_units"] = defaults(kwargs.get("display_units"), current="nA")
         super().__init__(
-            on_x=f"offset(t,{time_offset})" if time_offset else "t",
-            on_y=kind,
-            **kwargs,
+            on_x=f"offset(t,{time_offset})" if time_offset else "t", on_y=kind, **kwargs
         )
 
         if bin_time is None and bin_count is None:
@@ -359,31 +354,20 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
         if log is None:
             log = not relative
 
-        kwargs = self._init_particle_mixin(
-            **kwargs,
-        )
+        kwargs = self._init_particle_mixin(**kwargs)
         kwargs["data_units"] = defaults(
             kwargs.get("data_units"),
             count=Property("$N$", "1", description="Particles per bin"),
             f=Property("$f$", "Hz", description="Frequency"),
         )
-        super().__init__(
-            on_x=None,  # handled manually
-            on_y=kind,
-            **kwargs,
-        )
+        super().__init__(on_x=None, on_y=kind, **kwargs)  # handled manually
 
         # Format plot axes
-        self.axis(-1).set(
-            xlabel="$f/f_{rev}$" if self.relative else self.label_for("f"),
-        )
+        self.axis(-1).set(xlabel="$f/f_{rev}$" if self.relative else self.label_for("f"))
         for a in self.axflat:
             a.set(ylim=(0, None))
             if log:
-                a.set(
-                    xscale="log",
-                    yscale="log",
-                )
+                a.set(xscale="log", yscale="log")
 
         # Create plot elements
         def create_artists(i, j, k, ax, p):
@@ -579,11 +563,7 @@ class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin):
             dt=Property("$\\Delta t$", "s", description="Delay between consecutive particles"),
             count=Property("$N$", "1", description="Particles per bin"),
         )
-        super().__init__(
-            on_x="dt",
-            on_y="count",
-            **kwargs,
-        )
+        super().__init__(on_x="dt", on_y="count", **kwargs)
 
         if bin_time is None and bin_count is None:
             bin_count = 100
@@ -873,17 +853,10 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
         """
-        kwargs = self._init_particle_mixin(
-            **kwargs,
-        )
-        kwargs["data_units"] = defaults(
-            kwargs.get("data_units"),
-            **self._metric_properties,
-        )
+        kwargs = self._init_particle_mixin(**kwargs)
+        kwargs["data_units"] = defaults(kwargs.get("data_units"), **self._metric_properties)
         super().__init__(
-            on_x=f"offset(t,{time_offset})" if time_offset else "t",
-            on_y=metric,
-            **kwargs,
+            on_x=f"offset(t,{time_offset})" if time_offset else "t", on_y=metric, **kwargs
         )
 
         if counting_dt is None and counting_bins is None:
@@ -970,7 +943,6 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
         for i, ppp in enumerate(self.on_y):
             for j, pp in enumerate(ppp):
                 for k, p in enumerate(pp):
-
                     # calculate metrics
                     F, F_poisson = self._calculate_metric(N, p, axis=1)
 
@@ -1044,19 +1016,13 @@ class TimeVariationScalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
 
 
         """
-        kwargs = self._init_particle_mixin(
-            **kwargs,
-        )
+        kwargs = self._init_particle_mixin(**kwargs)
         kwargs["data_units"] = defaults(
             kwargs.get("data_units"),
             tbin=Property("$\\Delta t_\\mathrm{count}$", "s", description="Time resolution"),
             **self._metric_properties,
         )
-        super().__init__(
-            on_x="tbin",
-            on_y=kind,
-            **kwargs,
-        )
+        super().__init__(on_x="tbin", on_y=kind, **kwargs)
 
         self.time_range = time_range
         self.counting_dt_min = counting_dt_min

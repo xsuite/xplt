@@ -164,16 +164,8 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
         nntwins = [0 for _ in self.kind]
         kwargs = defaults(kwargs, figsize=(4 * ncols, 4 * nrows))
 
-        kwargs = self._init_particle_mixin(
-            twiss=twiss,
-            **kwargs,
-        )
-        super().__init__(
-            nrows=nrows,
-            ncols=ncols,
-            nntwins=nntwins,
-            **kwargs,
-        )
+        kwargs = self._init_particle_mixin(twiss=twiss, **kwargs)
+        super().__init__(nrows=nrows, ncols=ncols, nntwins=nntwins, **kwargs)
 
         if len(self.axflat) < n:
             raise ValueError(f"Need {n} axes but got only {len(self.axflat)}")
@@ -189,7 +181,6 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
         self.artists_hamiltonian = [{} for _ in range(n)]
 
         for i, ((a, b), c, ax) in enumerate(zip(self.kind, self.color, self.axflat)):
-
             # we handle autoscaling manually
             ax.set_autoscale_on(False)
 
@@ -313,7 +304,6 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
         changed_artists = []
 
         for i, ((a, b), c, ax) in enumerate(zip(self.kind, self.color, self.axflat)):
-
             # coordinates
             x = self.prop(a).values(particles, masks[i], unit=self.display_unit_for(a))
             y = self.prop(b).values(particles, masks[i], unit=self.display_unit_for(b))
@@ -390,10 +380,7 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
                 if self.artists_std[i]:
                     w, h = 2 * np.sqrt(evals)
                     self.artists_std[i].set(
-                        center=XY0,
-                        width=w,
-                        height=h,
-                        angle=np.degrees(np.arctan2(*evecs[1])),
+                        center=XY0, width=w, height=h, angle=np.degrees(np.arctan2(*evecs[1]))
                     )
                     changed_artists.append(self.artists_std[i])
 
@@ -406,10 +393,7 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
                         e = np.percentile(np.sum(NN**2, axis=0), p) ** 0.5
                         w, h = 2 * e * np.sqrt(evals)
                         self.artists_percentiles[i][j].set(
-                            center=XY0,
-                            width=w,
-                            height=h,
-                            angle=np.degrees(np.arctan2(*evecs[1])),
+                            center=XY0, width=w, height=h, angle=np.degrees(np.arctan2(*evecs[1]))
                         )
                         changed_artists.append(self.artists_percentiles[i][j])
 
@@ -437,10 +421,7 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
                         counts, edges = np.histogram(v, bins=101, range=rng)
                         counts = counts / len(v)
 
-                        steps = (
-                            np.append(edges, edges[-1]),
-                            np.concatenate(([0], counts, [0])),
-                        )
+                        steps = (np.append(edges, edges[-1]), np.concatenate(([0], counts, [0])))
                         hist.set_data(steps if xy == "x" else steps[::-1])
                         changed_artists.append(hist)
 
@@ -603,10 +584,7 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
             # plot equipotential lines
             if equipotentials:
                 kwargs = defaults(
-                    equipotentials_kwargs,
-                    colors="lightgray",
-                    linewidths=1,
-                    alpha=0.5,
+                    equipotentials_kwargs, colors="lightgray", linewidths=1, alpha=0.5
                 )
 
                 # Hamiltonian normalized to value at separatrix
