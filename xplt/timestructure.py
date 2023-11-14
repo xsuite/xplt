@@ -240,6 +240,7 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
         for i, ppp in enumerate(self.on_y):
             for j, pp in enumerate(ppp):
                 count_based = False
+                edges = None
                 for k, p in enumerate(pp):
                     count_based = self._count_based(p)
                     if p in ("current", "charge"):
@@ -301,6 +302,8 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
                     a.autoscale()
                     if count_based:
                         a.set(ylim=(0, None))
+                    if self.time_range is not None and edges is not None:
+                        a.set(xlim=(min(edges), max(edges)))
 
         return changed
 
