@@ -19,7 +19,7 @@ import re
 from .util import defaults, evaluate_expression_wrapper
 from .base import XManifoldPlot, TwinFunctionLocator, TransformedLocator
 from .particles import ParticlePlotMixin, ParticlesPlot
-from .properties import Property, find_property
+from .properties import Property, DerivedProperty, find_property
 
 
 def binned_timeseries(times, *, what=None, n=None, dt=None, t_range=None, moments=1):
@@ -157,7 +157,7 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
 
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
             time_range (tuple): Time range of particles to consider. If None, all particles are considered.
-            time_offset (float): Time offset for x-axis, i.e. show values as `time_offset+t`.
+            time_offset (float): Time offset for x-axis is seconds, i.e. show values as `t-time_offset`.
             plot_kwargs (dict): Keyword arguments passed to the plot function.
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
@@ -171,11 +171,15 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
             rate=Property("$\\dot{N}$", "1/s", description="Particle rate"),
             charge=Property("$Q$", find_property("q").unit, description="Charge per bin"),
             current=Property("$I$", f"({find_property('q').unit})/s", description="Current"),
+            t_offset=DerivedProperty("$t-t_0$", "s", lambda t: t - time_offset),
         )
-        kwargs["display_units"] = defaults(kwargs.get("display_units"), current="nA")
-        super().__init__(
-            on_x=f"offset(t,{time_offset})" if time_offset else "t", on_y=kind, **kwargs
+        kwargs["display_units"] = defaults(
+            kwargs.get("display_units"),
+            current="nA",
+            t_offset=kwargs.get("display_units", {}).get("t"),
         )
+
+        super().__init__(on_x="t_offset" if time_offset else "t", on_y=kind, **kwargs)
 
         if bin_time is None and bin_count is None:
             bin_count = 100
@@ -187,7 +191,7 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
         self.time_range = time_range
 
         # Format plot axes
-        self.axis(-1).set(xlabel=self.label_for("t"), ylim=(0, None))
+        self.axis(-1).set(xlabel=self.label_for(self.on_x), ylim=(0, None))
         if self.relative:
             for a in self.axflat:
                 a.yaxis.set_major_formatter(mpl.ticker.PercentFormatter(1))
@@ -210,7 +214,7 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
 
     def _symbol_for(self, p):
         symbol = super()._symbol_for(p)
-        if p != "t" and self.moment is not None and not self._count_based(p):
+        if p != self.on_x and self.moment is not None and not self._count_based(p):
             # it is averaged
             symbol = f"$\\langle${symbol}$\\rangle$"
         return symbol
@@ -848,16 +852,21 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
             poisson (bool): If true, indicate poisson limit.
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
             time_range (tuple): Time range of particles to consider. If None, all particles are considered.
-            time_offset (float): Time offset for x-axis, i.e. show values as `time_offset+t`.
+            time_offset (float): Time offset for x-axis is seconds, i.e. show values as `t-time_offset`.
             plot_kwargs (dict): Keyword arguments passed to the plot function.
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
         """
         kwargs = self._init_particle_mixin(**kwargs)
-        kwargs["data_units"] = defaults(kwargs.get("data_units"), **self._metric_properties)
-        super().__init__(
-            on_x=f"offset(t,{time_offset})" if time_offset else "t", on_y=metric, **kwargs
+        kwargs["data_units"] = defaults(
+            kwargs.get("data_units"),
+            t_offset=DerivedProperty("$t-t_0$", "s", lambda t: t - time_offset),
+            **self._metric_properties,
         )
+        kwargs["display_units"] = defaults(
+            kwargs.get("display_units"), t_offset=kwargs.get("display_units", {}).get("t")
+        )
+        super().__init__(on_x="t_offset" if time_offset else "t", on_y=metric, **kwargs)
 
         if counting_dt is None and counting_bins is None:
             counting_bins = 100 * 100

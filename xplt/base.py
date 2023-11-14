@@ -464,12 +464,18 @@ class XPlot:
 
         # add unit
         if unit:
+            append = None
             if units[0] == "a.u.":  # arbitrary unit
-                label += f" / a.u."
+                append = " / a.u."
             else:
                 display_unit = pint.Unit(units[0])  # all have the same unit (see above)
                 if display_unit != pint.Unit("1"):
-                    label += f" / ${display_unit:~L}$"  # see "NIST Guide to the SI"
+                    append = f" / ${display_unit:~L}$"  # see "NIST Guide to the SI"
+            if append:
+                # heuristic: if labels contain expressions with + or - then add parentheses
+                if re.findall(r"[-+](?![^(]*\))(?![^{]*\})", label.split("   ")[-1]):
+                    label = f"({label})"
+                label += append
 
         return label
 
