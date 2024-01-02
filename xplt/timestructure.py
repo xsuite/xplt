@@ -365,6 +365,7 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
         kwargs["data_units"] = defaults(
             kwargs.get("data_units"),
             count=Property("$N$", "1", description="Particles per bin"),
+            rate=Property("$\\dot{N}$", "1/s", description="Particle rate"),
             f=Property("$f$", "Hz", description="Frequency"),
         )
         super().__init__(on_x=None, on_y=kind, **kwargs)  # handled manually
@@ -428,7 +429,7 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
             for j, pp in enumerate(ppp):
                 for k, p in enumerate(pp):
                     prop = self.prop(p)
-                    count_based = p == "count"
+                    count_based = p in ("count", "rate")
 
                     if count_based:
                         property = None
@@ -447,6 +448,8 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
                     else:
                         freq *= self.factor_for("f")
                     mag = np.abs(np.fft.rfft(timeseries))[1:]
+                    if p == "rate":
+                        mag /= dt
                     if self._get_scaling(p) == "amplitude":
                         # amplitude in units of p
                         mag *= 2 / len(timeseries) * self.factor_for(p)
