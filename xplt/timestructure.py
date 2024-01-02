@@ -1180,11 +1180,13 @@ class TimeVariationScalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
                     plot.set_data((DT, F[p]))
                     changed.append(plot)
                     if errorbar:
+                        join_legend_entry_with = errorbar._join_legend_entry_with
                         changed.append(errorbar)
                         errorbar.remove()
                         errorbar = ax.fill_between(
                             DT, F[p] - F_std[p], F[p] + F_std[p], **self._errkw
                         )
+                        errorbar._join_legend_entry_with = join_legend_entry_with
                         self.artists[i][j][k][1] = errorbar
                         changed.append(errorbar)
                     if pstep:
