@@ -50,7 +50,7 @@ class TwissPlot(XManifoldPlot):
         def create_artists(i, j, k, a, p):
             if line and i == 0:
                 return None  # skip line plot placeholder
-            return a.plot([], [], label=self._legend_label_for(p))[0]
+            return a.plot([], [], label=self._legend_label_for((i, j, k)))[0]
 
         self._create_artists(create_artists)
 

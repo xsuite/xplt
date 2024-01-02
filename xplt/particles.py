@@ -210,7 +210,9 @@ class ParticlesPlot(XManifoldPlot, ParticlePlotMixin):
 
         # create plot elements
         def create_artists(i, j, k, a, p):
-            kwargs = defaults(plot_kwargs, marker=".", ls="", label=self._legend_label_for(p))
+            kwargs = defaults(
+                plot_kwargs, marker=".", ls="", label=self._legend_label_for((i, j, k))
+            )
             return a.plot([], [], **kwargs)[0]
 
         self._create_artists(create_artists)

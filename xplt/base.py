@@ -709,6 +709,26 @@ class XManifoldPlot(XPlot):
                     ):
                         return self.artists[i][j][k]
 
+    def _legend_label_for(self, p):
+        """
+        Return legend label for a single property
+
+        Args:
+            p (str | tuple): Property name or tuple of (subplot, twin, trace) index
+
+        Returns:
+            str: Legend label
+        """
+        if isinstance(p, str):
+            return super()._legend_label_for(p)
+        else:
+            i, j, k = p
+            label = super()._legend_label_for(self.on_y[i][j][k])
+            if w := self.on_y_expression[i][j][k]:
+                w = re.split(r"\b", w)[1]
+                label += f" ({w})"
+            return label
+
     def legend(self, subplot="all", show=True, **kwargs):
         """Add, update or remove legend for a subplot
 

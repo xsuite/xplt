@@ -198,7 +198,7 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
 
         # Create plot elements
         def create_artists(i, j, k, ax, p):
-            kwargs = defaults(plot_kwargs, lw=1, label=self._legend_label_for(p))
+            kwargs = defaults(plot_kwargs, lw=1, label=self._legend_label_for((i, j, k)))
             if self._count_based(p):
                 kwargs = defaults(kwargs, drawstyle="steps-pre")
             return ax.plot([], [], **kwargs)[0]
@@ -379,7 +379,7 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
 
         # Create plot elements
         def create_artists(i, j, k, ax, p):
-            kwargs = defaults(plot_kwargs, lw=1, label=self._legend_label_for(p))
+            kwargs = defaults(plot_kwargs, lw=1, label=self._legend_label_for((i, j, k)))
             return ax.plot([], [], **kwargs)[0]
 
         self._create_artists(create_artists)
@@ -889,7 +889,7 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
 
         # Create plot elements
         def create_artists(i, j, k, ax, p):
-            kwargs = defaults(plot_kwargs, lw=1, label=self._legend_label_for(p))
+            kwargs = defaults(plot_kwargs, lw=1, label=self._legend_label_for((i, j, k)))
             step = ax.step([], [], **kwargs)[0]
             if poisson:
                 kwargs.update(
@@ -1053,7 +1053,7 @@ class TimeVariationScalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
 
         # Create plot elements
         def create_artists(i, j, k, ax, p):
-            kwargs = defaults(plot_kwargs, label=self._legend_label_for(p))
+            kwargs = defaults(plot_kwargs, label=self._legend_label_for((i, j, k)))
             plot = ax.plot([], [], **kwargs)[0]
             kwargs.update(color=plot.get_color())
             if std:
