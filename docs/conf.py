@@ -101,15 +101,14 @@ def linkcode_resolve(domain, info):
 
 # Example notebooks
 def np_example_notebooks_init(app, *args):
-    global np_example_notebooks
-    np_example_notebooks = shutil.copytree(
-        os.path.join(root, "examples"), os.path.join(app.srcdir, "examples")
+    shutil.copytree(
+        os.path.join(root, "examples"),
+        os.path.join(app.srcdir, "examples"),
     )
 
 
-def np_example_notebooks_clean(*args):
-    for file in np_example_notebooks:
-        os.remove(file)
+def np_example_notebooks_clean(app, *args):
+    shutil.rmtree(os.path.join(app.srcdir, "examples"))
 
 
 nb_execution_mode = "off"
