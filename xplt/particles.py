@@ -130,6 +130,15 @@ class ParticlePlotMixin:
 
     def _particle_time(self, turn, zeta, particles=None):
         """Particle arrival time (t = at_turn / frev - zeta / beta / c0)"""
+
+        # use time directly (if available)
+        if particles is not None:
+            try:
+                return get(particles, "t")
+            except AttributeError:
+                pass
+
+        # determine time from longitudinal coordinates
         beta = self.beta(particles)
         if beta is None:
             raise ValueError(
