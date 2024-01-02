@@ -65,7 +65,7 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
                      For normalized coordinates, use uppercase letters (e.g. 'X' for 'X-Px').
             plot (str): Defines the type of plot. Can be 'auto', 'scatter' or 'hist'. Default is 'auto' for which the plot type is chosen automatically based on the number of particles.
             scatter_kwargs (dict): Additional kwargs for scatter plot
-            hist_kwargs (dist): Additional kwargs for hexbin histogram plot
+            hist_kwargs (dist): Additional kwargs for 2D histogram plot (see :meth:`matplotlib.pyplot.hexbin`)
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
             masks (list[mask]): List of masks for each subplot.
             color (str | list[str]): Properties defining the color of points for the scatter plot(s). Implies plot='scatter'. Pass a list of properties to use different values for each subplot
@@ -216,7 +216,9 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
                     self.fig.colorbar(self.artists_scatter[i], **cbargs, ax=ax, location=cbar_loc)
 
             # hexbin histogram
-            self._hxkw = defaults(hist_kwargs, cmap=cmap, rasterized=True, animated=animated)
+            self._hxkw = defaults(
+                hist_kwargs, mincnt=1, cmap=cmap, rasterized=True, animated=animated
+            )
 
             # 2D mean indicator
             if mean[i]:
@@ -361,8 +363,8 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
             self.artists_hexbin[i] = []
             if plot == "hist":
                 # twice to mitigate https://stackoverflow.com/q/17354095
-                hexbin_bg = ax.hexbin(x, y, mincnt=1, **self._hxkw)
-                hexbin_fg = ax.hexbin(x, y, mincnt=1, edgecolors="none", **self._hxkw)
+                hexbin_bg = ax.hexbin(x, y, edgecolors="face", lw=0.1, **self._hxkw)
+                hexbin_fg = ax.hexbin(x, y, edgecolors="none", lw=0.0, **self._hxkw)
                 self.artists_hexbin[i] = [hexbin_bg, hexbin_fg]
                 changed_artists.extend(self.artists_hexbin[i])
 
