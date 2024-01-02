@@ -822,7 +822,7 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
     def __init__(
         self,
         particles=None,
-        metric="cv",
+        kind="cv",
         *,
         counting_dt=None,
         counting_bins=None,
@@ -850,7 +850,7 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
 
         Args:
             particles (Any): Particles data to plot.
-            metric (str | list): Metric to plot. See above for list of implemented metrics.
+            kind (str | list): Metric to plot. See above for list of implemented metrics.
             counting_dt (float): Time bin width for counting if counting_bins is None.
             counting_bins (int): Number of bins if counting_dt is None.
             evaluate_dt (float): Time bin width for metric evaluation if evaluate_bins is None.
@@ -872,7 +872,7 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
         kwargs["display_units"] = defaults(
             kwargs.get("display_units"), t_offset=kwargs.get("display_units", {}).get("t")
         )
-        super().__init__(on_x="t_offset" if time_offset else "t", on_y=metric, **kwargs)
+        super().__init__(on_x="t_offset" if time_offset else "t", on_y=kind, **kwargs)
 
         if counting_dt is None and counting_bins is None:
             counting_bins = 100 * 100
