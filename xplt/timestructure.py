@@ -1060,6 +1060,7 @@ class TimeVariationScalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
                 self._errkw = kwargs.copy()
                 self._errkw.update(zorder=1.8, alpha=0.3, ls="-", lw=0)
                 errorbar = ax.fill_between([], [], [], **self._errkw)
+                errorbar._join_legend_entry_with = plot
             else:
                 errorbar = None
             if poisson:
@@ -1073,11 +1074,7 @@ class TimeVariationScalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
 
         # legend with combined patch
         if std:
-            # merge plot and errorbar patches
-            for i, h in enumerate(self._legend_entries):
-                labels = [h[0].get_label()] + [_.get_label() for _ in h[2:]]
-                self._legend_entries[i] = [tuple(h[0:2])] + h[2:]
-                self.legend(i, show="auto", labels=labels)
+            self.legend()
 
         # set data
         if particles is not None:

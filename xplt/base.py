@@ -670,19 +670,14 @@ class XManifoldPlot(XPlot):
                 axis is the axis and the string p is the property to plot.
         """
         self.artists = []
-        self._legend_entries = []
         for i, ppp in enumerate(self.on_y):
             self.artists.append([])
-            self._legend_entries.append([])
             for j, pp in enumerate(ppp):
                 self.artists[i].append([])
                 a = self.axis(i, j)
                 for k, p in enumerate(pp):
                     artist = callback(i, j, k, a, p)
                     self.artists[i][j].append(artist)
-                    for art in flattened(artist):
-                        if art:
-                            self._legend_entries[i].append(art)
 
             self.legend(i, show="auto")
 
@@ -747,14 +742,26 @@ class XManifoldPlot(XPlot):
                 show = True  # always show legend if single subplot is specified
 
         for s in subplot:
-            # use topmost axes for legend
-            ax = self.axflat_twin[s][-1] if len(self.axflat_twin[s]) > 0 else self.axflat[s]
-            handles = self._legend_entries[s]
+            # aggregate handles and use topmost axes for legend
+            handles = []
+            for ax in [self.axflat[s], *self.axflat_twin[s]]:
+                handles.extend(ax.get_legend_handles_labels()[0])
             if not show or (show == "auto" and len(handles) <= 1):
                 if ax.get_legend():
                     ax.get_legend().remove()
             else:
-                ax.legend(handles=handles, **kwargs)
+                # join handles
+                handle_map = {
+                    h: [h] for h in handles if not hasattr(h, "_join_legend_entry_with")
+                }
+                for h in handles:
+                    if main_handle := getattr(h, "_join_legend_entry_with", None):
+                        handle_map[main_handle].append(h)
+                handles = [tuple(hs) for hs in handle_map.values()]
+                labels = [h.get_label() for h in handle_map]
+
+                # show legend
+                ax.legend(handles=handles, labels=labels, **kwargs)
 
     def autoscale(self, subplot="all", reset=False, freeze=True):
         """Autoscale the axes of a subplot
