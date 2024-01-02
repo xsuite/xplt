@@ -25,6 +25,7 @@ def register_matplotlib_options():
 
     # register named colors
     for i, color in enumerate(petroff_colors):
+        mpl.colors.get_named_colors_mapping().update({f"p{i}": color})
         mpl.colors.get_named_colors_mapping().update({f"pet{i}": color})
 
     # register named colormaps
