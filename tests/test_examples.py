@@ -31,6 +31,11 @@ def test_phasespace(tb):
     tb.execute()  # just confirm that the notebook runs
 
 
+@testbook(f"{dir}/properties.ipynb")
+def test_units(tb):
+    tb.execute()  # just confirm that the notebook runs
+
+
 @testbook(f"{dir}/timestructure.ipynb")
 def test_timestructure(tb):
     tb.execute()  # just confirm that the notebook runs
@@ -38,9 +43,4 @@ def test_timestructure(tb):
 
 @testbook(f"{dir}/twiss.ipynb")
 def test_twiss(tb):
-    tb.execute()  # just confirm that the notebook runs
-
-
-@testbook(f"{dir}/units.ipynb")
-def test_units(tb):
     tb.execute()  # just confirm that the notebook runs
