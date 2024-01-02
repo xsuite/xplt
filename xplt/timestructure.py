@@ -164,8 +164,8 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
         """
         self.moment = moment
         kwargs = self._init_particle_mixin(**kwargs)
-        kwargs["data_units"] = defaults(
-            kwargs.get("data_units"),
+        kwargs["_properties"] = defaults(
+            kwargs.get("_properties"),
             count=Property("$N$", "1", description="Particles per bin"),
             cumulative=Property("$N$", "1", description="Particles (cumulative)"),
             rate=Property("$\\dot{N}$", "1/s", description="Particle rate"),
@@ -362,8 +362,8 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
             log = not relative
 
         kwargs = self._init_particle_mixin(**kwargs)
-        kwargs["data_units"] = defaults(
-            kwargs.get("data_units"),
+        kwargs["_properties"] = defaults(
+            kwargs.get("_properties"),
             count=Property("$N$", "1", description="Particles per bin"),
             rate=Property("$\\dot{N}$", "1/s", description="Particle rate"),
             f=Property("$f$", "Hz", description="Frequency"),
@@ -568,8 +568,8 @@ class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin):
                 bin_time = dt_max / round(dt_max / bin_time)
 
         kwargs = self._init_particle_mixin(**kwargs)
-        kwargs["data_units"] = defaults(
-            kwargs.get("data_units"),
+        kwargs["_properties"] = defaults(
+            kwargs.get("_properties"),
             dt=Property("$\\Delta t$", "s", description="Delay between consecutive particles"),
             count=Property("$N$", "1", description="Particles per bin"),
         )
@@ -864,8 +864,8 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
 
         """
         kwargs = self._init_particle_mixin(**kwargs)
-        kwargs["data_units"] = defaults(
-            kwargs.get("data_units"),
+        kwargs["_properties"] = defaults(
+            kwargs.get("_properties"),
             t_offset=DerivedProperty("$t-t_0$", "s", lambda t: t - time_offset),
             **self._metric_properties,
         )
@@ -1032,8 +1032,8 @@ class TimeVariationScalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
 
         """
         kwargs = self._init_particle_mixin(**kwargs)
-        kwargs["data_units"] = defaults(
-            kwargs.get("data_units"),
+        kwargs["_properties"] = defaults(
+            kwargs.get("_properties"),
             tbin=Property("$\\Delta t_\\mathrm{count}$", "s", description="Time resolution"),
             **self._metric_properties,
         )

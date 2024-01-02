@@ -166,6 +166,7 @@ class XPlot:
         grid=True,
         nntwins=None,
         annotation=None,
+        _properties=None,
         **subplots_kwargs,
     ):
         """
@@ -183,10 +184,15 @@ class XPlot:
             subplots_kwargs: Keyword arguments passed to matplotlib.pyplot.subplots command when a new figure is created.
         """
 
-        self._properties = {}
+        self._default_properties = {}
+        if _properties:
+            self._default_properties.update(_properties)
+        self._user_properties = {}
         if data_units:
             for name, arg in data_units.items():
-                self._properties[name] = DataProperty(name, arg) if isinstance(arg, str) else arg
+                self._user_properties[name] = (
+                    DataProperty(name, arg) if isinstance(arg, str) else arg
+                )
         self._display_units = defaults(display_units, s="m", x="mm", y="mm", p="mrad")
 
         if annotation is None:
@@ -362,10 +368,11 @@ class XPlot:
         Returns:
             Property: The property
         """
-        if name in self._properties:
-            prop = self._properties[name]
-        else:
-            prop = find_property(name)
+        prop = find_property(
+            name,
+            extra_user_properties=self._user_properties,
+            extra_default_properties=self._default_properties,
+        )
         return prop.with_property_resolver(self.prop)
 
     def _legend_label_for(self, p):

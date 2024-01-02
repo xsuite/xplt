@@ -74,8 +74,8 @@ class ParticlePlotMixin:
         # fmt: on
 
         # Update kwargs with particle specific settings
-        kwargs["data_units"] = defaults(
-            kwargs.get("data_units"), **self._derived_particle_properties
+        kwargs["_properties"] = defaults(
+            kwargs.get("_properties"), **self._derived_particle_properties
         )
         kwargs["display_units"] = defaults(
             kwargs.get("display_units"),
@@ -163,10 +163,7 @@ class ParticlePlotMixin:
         Returns:
             Property: The property
         """
-        if name in self._derived_particle_properties:
-            prop = self._derived_particle_properties[name]
-        else:
-            prop = find_property(name)
+        prop = find_property(name, extra_default_properties=self._derived_particle_properties)
         return prop.with_property_resolver(self.get_property)
 
 

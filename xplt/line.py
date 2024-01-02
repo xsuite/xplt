@@ -222,8 +222,8 @@ class FloorPlot(XPlot):
 
         """
 
-        kwargs["data_units"] = defaults(
-            kwargs.get("data_units"),
+        kwargs["_properties"] = defaults(
+            kwargs.get("_properties"),
             X=DataProperty("X", "m"),
             Y=DataProperty("Y", "m"),
             Z=DataProperty("Z", "m"),

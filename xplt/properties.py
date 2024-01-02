@@ -200,11 +200,13 @@ _default_properties = {}
 _user_properties = {}
 
 
-def find_property(name):
+def find_property(name, *, extra_user_properties=None, extra_default_properties=None):
     """Find a Property by name
 
     Args:
         name (str): The name of the property.
+        extra_user_properties (dict | None): Additional user properties.
+        extra_default_properties (dict | None): Additional default properties.
 
     Returns:
         Property: Property information
@@ -212,8 +214,12 @@ def find_property(name):
     Raises:
         ValueError: If property is not known
     """
-    if name in _user_properties:
+    if extra_user_properties and name in extra_user_properties:
+        return extra_user_properties[name]
+    elif name in _user_properties:
         return _user_properties[name]
+    elif extra_default_properties and name in extra_default_properties:
+        return extra_default_properties[name]
     elif name in _default_properties:
         return _default_properties[name]
     else:
