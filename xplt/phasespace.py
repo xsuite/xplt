@@ -161,11 +161,10 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
             raise ValueError(
                 f"Layout with {ncols} columns and {nrows} rows conflicts with {n} plots!"
             )
-        nntwins = [0 for _ in self.kind]
         kwargs = defaults(kwargs, figsize=(4 * ncols, 4 * nrows))
 
         kwargs = self._init_particle_mixin(twiss=twiss, **kwargs)
-        super().__init__(nrows=nrows, ncols=ncols, nntwins=nntwins, **kwargs)
+        super().__init__(nrows=nrows, ncols=ncols, **kwargs)
 
         if len(self.axflat) < n:
             raise ValueError(f"Need {n} axes but got only {len(self.axflat)}")
