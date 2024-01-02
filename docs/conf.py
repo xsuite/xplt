@@ -4,7 +4,7 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 import importlib
 import inspect
-import os, sys, distutils.dir_util
+import os, sys, shutil
 from xplt import __version__
 
 
@@ -102,7 +102,7 @@ def linkcode_resolve(domain, info):
 # Example notebooks
 def np_example_notebooks_init(app, *args):
     global np_example_notebooks
-    np_example_notebooks = distutils.dir_util.copy_tree(
+    np_example_notebooks = shutil.copytree(
         os.path.join(root, "examples"), os.path.join(app.srcdir, "examples")
     )
 
