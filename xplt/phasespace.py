@@ -24,6 +24,8 @@ pairwise = np.c_
 
 
 class PhaseSpacePlot(XPlot, ParticlePlotMixin):
+    """A plot for phase space distributions"""
+
     def __init__(
         self,
         particles=None,
@@ -53,7 +55,6 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
         **kwargs,
     ):
         """
-        A plot for phase space distributions
 
         Args:
             particles (Any): A dictionary with particle information
@@ -64,8 +65,8 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
                      In addition, abbreviations for x-y-parameter pairs are supported (e.g. 'x' for 'x-px').
                      For normalized coordinates, use uppercase letters (e.g. 'X' for 'X-Px').
             plot (str): Defines the type of plot. Can be 'auto', 'scatter' or 'hist'. Default is 'auto' for which the plot type is chosen automatically based on the number of particles.
-            scatter_kwargs (dict): Additional kwargs for scatter plot
-            hist_kwargs (dist): Additional kwargs for 2D histogram plot (see :meth:`matplotlib.pyplot.hexbin`)
+            scatter_kwargs (dict): Additional kwargs for scatter plot, see :meth:`matplotlib.axes.Axes.scatter`.
+            hist_kwargs (dist): Additional kwargs for 2D histogram plot, see :meth:`matplotlib.axes.Axes.hexbin`.
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
             masks (list[mask]): List of masks for each subplot.
             color (str | list[str]): Properties defining the color of points for the scatter plot(s). Implies plot='scatter'. Pass a list of properties to use different values for each subplot
@@ -73,13 +74,13 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
             cbar_loc (str): Location of the colorbar, such as 'auto', 'right', 'inside upper right', etc.
                             Use None to disable colorbar.
             projections (bool | str | list): Add histogrammed projections onto axis. Can be True, False, "x", "y", "auto" or a list of these for each subplot
-            projections_kwargs (dict): Additional kwargs for histogram projection (step plot)
+            projections_kwargs (dict): Additional kwargs for histogram projection, see :meth:`matplotlib.axes.Axes.step`.
             mean (bool | list): Whether to indicate mean of distribution with a cross marker. Boolean or list of booleans for each subplot.
-            mean_kwargs (dict): Additional kwargs for mean cross
+            mean_kwargs (dict): Additional kwargs for marker, see :meth:`matplotlib.axes.Axes.plot`.
             std (bool | list): Whether to indicate standard deviation of distribution with an ellipse. Boolean or list of booleans for each subplot.
-            std_kwargs (dict): Additional kwargs for std ellipses.
+            std_kwargs (dict): Additional kwargs for std ellipses, see :class:`matplotlib.patches.Ellipse`.
             percentiles (list): List of percentiles (in percent) to indicate in the distribution with ellipses. Can also be a list of lists for each subplot.
-            percentile_kwargs (dict): Additional kwargs for percentile ellipses.
+            percentile_kwargs (dict): Additional kwargs for percentile ellipses, see :class:`matplotlib.patches.Ellipse`.
             ncols (int | None): Number of columns in subplot layout. If None, the layout is determined automatically.
             nrows (int | None): Number of columns in subplot layout. If None, the layout is determined automatically.
             titles (list[str]): List of titles for each subplot or 'auto' to automatically set titles based on plot kind.

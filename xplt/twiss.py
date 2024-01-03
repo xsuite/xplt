@@ -17,9 +17,10 @@ from .line import KnlPlot
 
 
 class TwissPlot(XManifoldPlot):
+    """A plot for twiss parameters and closed orbit"""
+
     def __init__(self, twiss=None, kind="bet-dx,x+y", *, line=None, line_kwargs={}, **kwargs):
         """
-        A plot for twiss parameters and closed orbit
 
         Args:
             twiss (Any): Dictionary with twiss information

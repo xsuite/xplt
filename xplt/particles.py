@@ -21,13 +21,18 @@ from .util import c0, get, val, defaults, normalized_coordinates, ieee_mod
 
 
 class ParticlePlotMixin:
+    """Mixin for plotting of particle data
+
+    .. automethod:: _init_particle_mixin
+    """
+
     def _init_particle_mixin(
         self, *, twiss=None, beta=None, frev=None, circumference=None, **kwargs
     ):
-        r"""Mixin for plotting of particle data
+        r"""Initializes the mixin by providing associated information
 
-        In addition to the inherent particle properties (like ``x``, ``y``, ``px``, ``py``, ``zeta``, ``delta``, ...)
-        the following derived properties are supported (but may require passing of twiss etc.):
+        For a given particle object with inherent properties like ``x``, ``y``, ``px``, ``py``, ``zeta``, ``delta``, etc.
+        this mixin allows determination of the following derived properties:
 
         - Normalized coordinates: ``X``, ``Y``, ``Px``, ``Py``
            |  :math:`X = x/\sqrt{\beta_x} = \sqrt{2J_x} \cos(\Theta_x)`
@@ -43,7 +48,7 @@ class ParticlePlotMixin:
 
         Args:
             twiss (dict | None): Twiss parameters (alfx, alfy, betx and bety) to use for conversion to normalized phase space coordinates.
-            beta (float | None): Relativistic beta of particles. Defaults to particles.beta0.
+            beta (float | None): Relativistic beta of particles. Defaults to `beta0` property of particles.
             frev (float | None): Revolution frequency of circular line for calculation of particle time.
             circumference (float | None): Path length of circular line if frev is not given.
             kwargs: Keyword arguments for :class:`~.base.XPlot`
@@ -90,6 +95,7 @@ class ParticlePlotMixin:
 
     @property
     def circumference(self):
+        """Circumference of circular accelerator"""
         if self._circumference is not None:
             return self._circumference
         if self.twiss is not None:
@@ -167,6 +173,7 @@ class ParticlePlotMixin:
     def get_property(self, name):
         # Note: this method is not used by the library, but it's handy for standalone use
         """Public method to get a particle property by key
+
         Args:
             name (str): Key
         Returns:
@@ -177,6 +184,8 @@ class ParticlePlotMixin:
 
 
 class ParticlesPlot(XManifoldPlot, ParticlePlotMixin):
+    """A plot of particle properties as function of another property"""
+
     def __init__(
         self,
         particles=None,
@@ -189,7 +198,6 @@ class ParticlesPlot(XManifoldPlot, ParticlePlotMixin):
         **kwargs,
     ):
         """
-        A plot of particle properties as function of another property.
 
         Args:
             particles (Any): Particles data to plot.

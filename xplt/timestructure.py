@@ -95,6 +95,8 @@ def binned_timeseries(times, *, what=None, n=None, dt=None, t_range=None, moment
 
 
 class TimePlot(ParticlesPlot):
+    """A plot of particle properties as function of time"""
+
     def __init__(self, particles=None, kind="x+y", **kwargs):
         """
         A thin wrapper around the ParticlesPlot plotting data as function of time.
@@ -116,6 +118,8 @@ class TimePlot(ParticlesPlot):
 
 
 class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
+    """A binned histogram plot of particles as function of times"""
+
     def __init__(
         self,
         particles=None,
@@ -132,7 +136,6 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
         **kwargs,
     ):
         """
-        A binned histogram plot of particles as function of times.
 
         The plot is based on the particle arrival time, which is:
             - For circular lines: at_turn / frev - zeta / beta / c0
@@ -309,6 +312,8 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
 
 
 class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
+    """A frequency plot based on particle arrival times"""
+
     def __init__(
         self,
         particles=None,
@@ -324,7 +329,6 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
         **kwargs,
     ):
         """
-        A frequency plot based on particle arrival times.
 
         The particle arrival time is:
             - For circular lines: at_turn / frev - zeta / beta / c0
@@ -521,6 +525,8 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
 
 
 class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin):
+    """A histogram plot of particle arrival intervals (i.e. delay between consecutive particles)"""
+
     def __init__(
         self,
         particles=None,
@@ -536,7 +542,6 @@ class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin):
         **kwargs,
     ):
         """
-        A histogram plot of particle arrival intervals (i.e. delay between consecutive particles).
 
         The plot is based on the particle arrival time, which is:
             - For circular lines: at_turn / frev - zeta / beta / c0
@@ -819,6 +824,8 @@ class MetricesMixin:
 
 
 class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
+    """Plot variability of particle time on microscopic scale as function of time on macroscopic scale"""
+
     def __init__(
         self,
         particles=None,
@@ -836,7 +843,6 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
         **kwargs,
     ):
         """
-        Plot variability of particle time on microscopic scale as function of time on macroscopic scale
 
         The particle arrival times are histogramed into counting bins, the width of which
         corresponds to the time resolution of a detector (``counting_dt``).
@@ -979,6 +985,8 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
 
 
 class TimeVariationScalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
+    """Plot variability of particle time as function of timescale"""
+
     def __init__(
         self,
         particles=None,
@@ -996,7 +1004,7 @@ class TimeVariationScalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
         ignore_insufficient_statistics=False,
         **kwargs,
     ):
-        """Plot variability of particle time as function of timescale
+        """
 
         The particle arrival times are histogramed into counting bins, the width of which
         corresponds to the time resolution of a detector (``counting_dt``).
@@ -1200,8 +1208,10 @@ class TimeVariationScalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
 
 
 class TimeBinMetricHelper(ParticlePlotMixin, MetricesMixin):
+    """Helper class for binning and evaluating metrices on timeseries data"""
+
     def __init__(self, *, twiss=None, beta=None, frev=None, circumference=None):
-        """Helper class for binning and evaluating metrices on timeseries data.
+        """
 
         Args:
             twiss (dict | None): Twiss parameters (alfx, alfy, betx and bety) to use for conversion to normalized phase space coordinates.

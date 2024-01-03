@@ -45,11 +45,12 @@ def order(knl):
 
 
 class KnlPlot(XManifoldPlot):
+    """A plot for knl values along line"""
+
     def __init__(
         self, line=None, *, knl=None, filled=True, resolution=1000, line_length=None, **kwargs
     ):
         """
-        A plot for knl values along line
 
         Args:
             line (xtrack.Line): Line of elements.
@@ -183,6 +184,8 @@ class KnlPlot(XManifoldPlot):
 
 
 class FloorPlot(XPlot):
+    """A floor plan of the line based on survey data"""
+
     def __init__(
         self,
         survey=None,
@@ -195,7 +198,6 @@ class FloorPlot(XPlot):
         **kwargs,
     ):
         """
-        A floor plan of the line based on survey data
 
         Args:
             survey (Any): Survey data.
