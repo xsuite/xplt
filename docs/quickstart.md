@@ -14,4 +14,4 @@ pip install xplt
 
 | Beam positions | Spill time structure | Spill quality |
 |:-:|:-:|:-:|
-| [![](gallery/bpm.png)](examples/timestructure.ipynb#binned-time-series) | [![](gallery/spill.png)](examples/timestructure) | [![](gallery/spillquality.png)](examples/timestructure.ipynb#count-variations) |
+| [![](gallery/bpm.png)](examples/timestructure.ipynb#binned-time-series) | [![](gallery/spill.png)](examples/timestructure) | [![](gallery/spillquality.png)](examples/timestructure.ipynb#spill-quality) |
