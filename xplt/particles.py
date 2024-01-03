@@ -34,6 +34,8 @@ class ParticlePlotMixin:
         For a given particle object with inherent properties like ``x``, ``y``, ``px``, ``py``, ``zeta``, ``delta``, etc.
         this mixin allows determination of the following derived properties:
 
+        - Wrapped longitudinal coordinate: ``zeta_wrapped``
+           |  This is the ``zeta`` coordinate wrapped to be in range (-circumference/2; circumference/2)
         - Normalized coordinates: ``X``, ``Y``, ``Px``, ``Py``
            |  :math:`X = x/\sqrt{\beta_x} = \sqrt{2J_x} \cos(\Theta_x)`
            |  :math:`P_x = (\alpha_x x + \beta_x p_x)/\sqrt{\beta_x} = -\sqrt{2J_x} \sin(\Theta_x)`
