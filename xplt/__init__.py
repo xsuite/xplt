@@ -5,7 +5,7 @@ __author__ = "Philipp Niedermayer"
 __contact__ = "eltos@outlook.de"
 
 
-__version__ = "0.5.0"
+__version__ = "0.6.0"
 
 # allow usage of xplt.mpl.* without importing matplotlib
 import matplotlib as mpl
