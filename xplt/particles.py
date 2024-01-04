@@ -185,6 +185,46 @@ class ParticlePlotMixin:
         return prop.with_property_resolver(self.get_property)
 
 
+class ParticleHistogramPlotMixin:
+    """Mixin for plotting of histogram particle data
+
+    .. automethod:: _init_particle_histogram_mixin
+    """
+
+    def _init_particle_histogram_mixin(self, **kwargs):
+        r"""Initializes the mixin by providing associated information
+
+        Args:
+            kwargs: Keyword arguments for :class:`~.base.XPlot`
+
+        Returns:
+            Updated keyword arguments for :class:`~.base.XPlot` constructor.
+
+        """
+
+        self._histogram_particle_properties = dict(
+            count=Property("$N$", "1", description="Particles per bin"),
+            cumulative=Property("$N$", "1", description="Particles (cumulative)"),
+            rate=Property("$\\dot{N}$", "1/s", description="Particle rate"),
+            charge=Property("$Q$", find_property("q").unit, description="Charge per bin"),
+            current=Property("$I$", f"({find_property('q').unit})/s", description="Current"),
+        )
+
+        # Update kwargs with particle specific settings
+        kwargs["_properties"] = defaults(
+            kwargs.get("_properties"), **self._histogram_particle_properties
+        )
+        kwargs["display_units"] = defaults(
+            kwargs.get("display_units"),
+            current="nA",
+        )
+
+        return kwargs
+
+    def _count_based(self, key):
+        return key in self._histogram_particle_properties
+
+
 class ParticlesPlot(XManifoldPlot, ParticlePlotMixin):
     """A plot of particle properties as function of another property"""
 

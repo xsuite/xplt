@@ -18,7 +18,7 @@ import re
 
 from .util import defaults, evaluate_expression_wrapper
 from .base import XManifoldPlot, TwinFunctionLocator, TransformedLocator
-from .particles import ParticlePlotMixin, ParticlesPlot
+from .particles import ParticlePlotMixin, ParticlesPlot, ParticleHistogramPlotMixin
 from .properties import Property, DerivedProperty, find_property
 
 
@@ -117,7 +117,7 @@ class TimePlot(ParticlesPlot):
         super().__init__(particles, kind, as_function_of="t", **kwargs)
 
 
-class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
+class TimeBinPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
     """A binned histogram plot of particles as function of times"""
 
     def __init__(
@@ -154,7 +154,7 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
             bin_time (float): Time bin width (in s) if bin_count is None.
             bin_count (int): Number of bins if bin_time is None.
             relative (bool): If True, plot relative numbers normalized to total count.
-                If what is a particle property, this has no effect.
+                If `kind` is a particle property, this has no effect.
             moment (int): The moment(s) to plot if kind is a particle property.
                 Allows to get the mean (1st moment, default), variance (difference between 2nd and 1st moment) etc.
 
@@ -167,18 +167,13 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
         """
         self.moment = moment
         kwargs = self._init_particle_mixin(**kwargs)
+        kwargs = self._init_particle_histogram_mixin(**kwargs)
         kwargs["_properties"] = defaults(
             kwargs.get("_properties"),
-            count=Property("$N$", "1", description="Particles per bin"),
-            cumulative=Property("$N$", "1", description="Particles (cumulative)"),
-            rate=Property("$\\dot{N}$", "1/s", description="Particle rate"),
-            charge=Property("$Q$", find_property("q").unit, description="Charge per bin"),
-            current=Property("$I$", f"({find_property('q').unit})/s", description="Current"),
             t_offset=DerivedProperty("$t-t_0$", "s", lambda t: t - time_offset),
         )
         kwargs["display_units"] = defaults(
             kwargs.get("display_units"),
-            current="nA",
             t_offset=kwargs.get("display_units", {}).get("t"),
         )
 
@@ -211,9 +206,6 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin):
         # set data
         if particles is not None:
             self.update(particles, mask=mask, autoscale=True)
-
-    def _count_based(self, key):
-        return key in ("count", "rate", "cumulative", "charge", "current")
 
     def _symbol_for(self, p):
         symbol = super()._symbol_for(p)
@@ -524,17 +516,19 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
             )
 
 
-class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin):
+class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
     """A histogram plot of particle arrival intervals (i.e. delay between consecutive particles)"""
 
     def __init__(
         self,
         particles=None,
+        kind="count",
         *,
         dt_max,
         bin_time=None,
         bin_count=None,
         exact_bin_time=True,
+        relative=False,
         log=True,
         mask=None,
         time_range=None,
@@ -551,13 +545,17 @@ class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin):
 
         Args:
             particles (Any): Particles data to plot.
+            kind (str | list): Defines the properties to plot, including 'count' (default), 'rate' or 'cumulative'.
+                This is a manifold subplot specification string like ``"count,cumulative"``, see :class:`~.base.XManifoldPlot` for details.
             dt_max (float): Maximum interval (in s) to plot.
             bin_time (float): Time bin width (in s) if bin_count is None.
             bin_count (int): Number of bins if bin_time is None.
             exact_bin_time (bool): What to do if bin_time is given but dt_max is not an exact multiple of it.
                 If True, dt_max is adjusted to be a multiple of bin_time.
                 If False, bin_time is adjusted instead.
-            log (bool): If True, plot on a log scale.
+            relative (bool): If True, plot relative numbers normalized to total count.
+                If `kind` is a particle property, this has no effect.
+            log (bool | str): To make the plot log scaled, can be any of (True, 'x', 'y', 'xy' or False).
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
             time_range (tuple): Time range of particles to consider. If None, all particles are considered.
             plot_kwargs (dict): Keyword arguments passed to the plot function.
@@ -573,33 +571,43 @@ class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin):
                 bin_time = dt_max / round(dt_max / bin_time)
 
         kwargs = self._init_particle_mixin(**kwargs)
+        kwargs = self._init_particle_histogram_mixin(**kwargs)
         kwargs["_properties"] = defaults(
             kwargs.get("_properties"),
             dt=Property("$\\Delta t$", "s", description="Delay between consecutive particles"),
-            count=Property("$N$", "1", description="Particles per bin"),
         )
-        super().__init__(on_x="dt", on_y="count", **kwargs)
+        super().__init__(on_x="dt", on_y=kind, **kwargs)
 
         if bin_time is None and bin_count is None:
             bin_count = 100
         self._bin_time = bin_time
         self._bin_count = bin_count
+        self.relative = relative
         self.time_range = time_range
         self.dt_max = dt_max
 
-        # create plot elements
+        # Create plot elements
         def create_artists(i, j, k, ax, p):
-            return ax.step([], [], **defaults(plot_kwargs, lw=1))[0]
+            kwargs = defaults(plot_kwargs, lw=1, label=self._legend_label_for((i, j, k)))
+            if self._count_based(p):
+                kwargs = defaults(kwargs, drawstyle="steps-pre")
+            else:
+                raise ValueError(f"Property `{p}` not supported")
+            return ax.plot([], [], **kwargs)[0]
 
         self._create_artists(create_artists)
 
         # Format plot axes
-        ax = self.axis(-1)
-        ax.set(xlim=(self.bin_time if log else 0, self.dt_max * self.factor_for("t")))
-        if log:
-            ax.set(xscale="log", yscale="log")
-        else:
-            ax.set(ylim=(0, None))
+        self.axis(-1).set(xlim=(self.bin_time if log else 0, self.dt_max * self.factor_for("t")))
+        for a in self.axflat:
+            if log in (True, "x", "xy"):
+                a.set(xscale="log")
+            if log in (True, "y", "xy"):
+                a.set(yscale="log")
+            else:
+                a.set(ylim=(0, None))
+            if self.relative:
+                a.yaxis.set_major_formatter(mpl.ticker.PercentFormatter(1))
 
         # set data
         if particles is not None:
@@ -628,27 +636,58 @@ class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin):
             times = times[(self.time_range[0] <= times) & (times < self.time_range[1])]
         delay = self.factor_for("t") * np.diff(sorted(times))
 
-        # calculate and plot histogram
-        counts, edges = np.histogram(
-            delay, bins=self.bin_count, range=(0, self.bin_count * self.bin_time)
-        )
-        steps = (np.append(edges, edges[-1]), np.concatenate(([0], counts, [0])))
-
         self.annotate(f"$\\Delta t_\\mathrm{{bin}} = {pint.Quantity(self.bin_time, 's'):#~.4gL}$")
 
+        # update plots
+        changed = []
         for i, ppp in enumerate(self.on_y):
             for j, pp in enumerate(ppp):
-                ax = self.axis(i, j)
+                edges = None
                 for k, p in enumerate(pp):
-                    if p != "count":
-                        raise ValueError(f"Invalid plot parameter {p}.")
-                    self.artists[i][j][k].set_data(steps)
+                    if p in ("current", "charge"):
+                        weights = self.prop("q").values(particles, mask)
+                    elif self._count_based(p):
+                        weights = None
+                    else:
+                        raise NotImplementedError()
+
+                    # calculate histogram
+                    counts, edges = np.histogram(
+                        delay,
+                        bins=self.bin_count,
+                        range=(0, self.bin_count * self.bin_time),
+                        weights=weights,
+                    )
+                    counts = counts.astype(np.float)
+                    if p in ("rate", "current"):
+                        counts /= self.bin_time
+                    if self.relative:
+                        counts /= len(delay)
+                    counts *= self.factor_for(p)
+
+                    # update plot
+                    if p == "cumulative":
+                        # steps open after last bin
+                        counts = np.concatenate(([0], np.cumsum(counts)))
+                    elif self._count_based(p):
+                        # steps go back to zero after last bin
+                        edges = np.append(edges, edges[-1])
+                        counts = np.concatenate(([0], counts, [0]))
+                    else:
+                        raise NotImplementedError()
+                    self.artists[i][j][k].set_data((edges, counts))
+                    changed.append(self.artists[i][j][k])
 
                 if autoscale:
+                    ax = self.axis(i, j)
                     ax.relim()
                     ax.autoscale()
                     if not ax.get_yscale() == "log":
                         ax.set(ylim=(0, None))
+                    if edges is not None:
+                        ax.set(xlim=(min(edges), max(edges)))
+
+        return changed
 
     def plot_harmonics(self, t, *, n=20, **plot_kwargs):
         """Add vertical lines or spans indicating the location of values or spans and their harmonics
