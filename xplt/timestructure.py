@@ -530,6 +530,7 @@ class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramPlotMi
         exact_bin_time=True,
         relative=False,
         log=True,
+        poisson=True,
         mask=None,
         time_range=None,
         plot_kwargs=None,
@@ -556,6 +557,7 @@ class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramPlotMi
             relative (bool): If True, plot relative numbers normalized to total count.
                 If `kind` is a particle property, this has no effect.
             log (bool | str): To make the plot log scaled, can be any of (True, 'x', 'y', 'xy' or False).
+            poisson (bool): If true, indicate ideal poisson distribution.
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
             time_range (tuple): Time range of particles to consider. If None, all particles are considered.
             plot_kwargs (dict): Keyword arguments passed to the plot function.
@@ -593,7 +595,20 @@ class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramPlotMi
                 kwargs = defaults(kwargs, drawstyle="steps-pre")
             else:
                 raise ValueError(f"Property `{p}` not supported")
-            return ax.plot([], [], **kwargs)[0]
+            plot = ax.plot([], [], **kwargs)[0]
+            if poisson:
+                kwargs.update(
+                    color=plot.get_color() or "gray",
+                    alpha=0.5,
+                    zorder=1.9,
+                    lw=1,
+                    ls=":",
+                    label="Poisson ideal",
+                )
+                pplot = ax.plot([], [], **kwargs)[0]
+            else:
+                pplot = None
+            return plot, pplot
 
         self._create_artists(create_artists)
 
@@ -666,6 +681,7 @@ class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramPlotMi
                     counts *= self.factor_for(p)
 
                     # update plot
+                    plot, pplot = self.artists[i][j][k]
                     if p == "cumulative":
                         # steps open after last bin
                         counts = np.concatenate(([0], np.cumsum(counts)))
@@ -675,8 +691,20 @@ class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramPlotMi
                         counts = np.concatenate(([0], counts, [0]))
                     else:
                         raise NotImplementedError()
-                    self.artists[i][j][k].set_data((edges, counts))
-                    changed.append(self.artists[i][j][k])
+                    plot.set_data((edges, counts))
+                    changed.append(plot)
+
+                    # poisson limit
+                    if pplot:
+                        rate = times.size / (np.max(times) - np.min(times))
+                        if p == "cumulative":
+                            limit = 1 - np.exp(-rate * edges)
+                            limit *= np.max(counts)
+                        else:
+                            limit = rate * np.exp(-rate * edges)
+                            limit *= np.sum(counts) * self.bin_time
+                        pplot.set_data((edges, limit))
+                        changed.append(pplot)
 
                 if autoscale:
                     ax = self.axis(i, j)
