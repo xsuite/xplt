@@ -713,7 +713,9 @@ class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramPlotMi
                     if not ax.get_yscale() == "log":
                         ax.set(ylim=(0, None))
                     if edges is not None:
-                        ax.set(xlim=(min(edges), max(edges)))
+                        e = edges[edges > 0] if ax.get_xscale() == "log" else edges
+                        if e.size > 1:
+                            ax.set(xlim=(min(e), max(e)))
 
         return changed
 
