@@ -530,7 +530,7 @@ class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramPlotMi
         exact_bin_time=True,
         relative=False,
         log=True,
-        poisson=True,
+        poisson=False,
         mask=None,
         time_range=None,
         plot_kwargs=None,
