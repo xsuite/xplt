@@ -235,7 +235,7 @@ class XPlot:
         else:
             self.annotation = None
 
-    def _autoscale(self, ax, artists=[], data=[], *, reset=False, freeze=True):
+    def _autoscale(self, ax, artists=[], data=[], *, reset=False, freeze=True, tight=None):
         """Autoscale axes to fit given artists
 
         Args:
@@ -245,7 +245,9 @@ class XPlot:
             reset (bool): Whether to ignore any data limits already registered.
             freeze (bool): Whether to keep the updated axes limits (True) or enable automatic
                 autoscaling on future draws (for all present and new artists).
+            tight (str | None): Enables tight scaling without margins for "x", "y", "both" or None.
         """
+        tight_x, tight_y = tight in ("x", "xy", "both"), tight in ("y", "xy", "both")
         limits = []
         data = data[:]  # make a copy so we can safely append
 
@@ -279,16 +281,15 @@ class XPlot:
             else:
                 ax.update_datalim(dataLim)  # takes previous datalim into account
 
-        # Autoscale
+        # Autoscale (on next and future draws)
+        ax.autoscale(tight=tight_x, axis="x")
+        ax.autoscale(tight=tight_y, axis="y")
+
         if freeze:
-            # autoscale once and freeze new limits
-            ax.set_autoscale_on(True)
+            # perform autoscale immediately and freeze limits
             ax.autoscale_view()
             ax.set(xlim=ax.get_xlim(), ylim=ax.get_ylim())
             ax.set_autoscale_on(False)
-        else:
-            # autoscale on next draw (and also on any future draws)
-            ax.autoscale()
 
     def annotate(self, text, **kwargs):
         if self.annotation is not None:
@@ -763,7 +764,7 @@ class XManifoldPlot(XPlot):
                 # show legend
                 ax.legend(handles=handles, labels=labels, **kwargs)
 
-    def autoscale(self, subplot="all", reset=False, freeze=True):
+    def autoscale(self, subplot="all", *, reset=False, freeze=True, tight=None):
         """Autoscale the axes of a subplot
 
         Args:
@@ -771,8 +772,9 @@ class XManifoldPlot(XPlot):
             reset (bool): Whether to ignore any data limits already registered.
             freeze (bool): Whether to keep the updated axes limits (True) or enable automatic
                 autoscaling on future draws (for all present and new artists).
+            tight (str | None): Enables tight scaling without margins for "x", "y", "both" or None.
         """
-        kwargs = dict(reset=reset, freeze=freeze)
+        kwargs = dict(reset=reset, freeze=freeze, tight=tight)
 
         if subplot == "all":
             subplot = range(len(self.axflat))

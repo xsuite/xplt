@@ -1278,7 +1278,8 @@ class TimeVariationScalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
                         changed.append(pstep)
 
                 if autoscale:
-                    self._autoscale(ax, self.artists[i][j])
+                    self._autoscale(ax, self.artists[i][j], tight="x")
+                    ax.set(ylim=(0, None))
 
         return changed
 
