@@ -342,7 +342,10 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
             fmax (float): Maximum frequency (in Hz) to plot.
             relative (bool): If True, plot relative frequencies (f/frev) instead of absolute frequencies (f).
             log (bool): If True, plot on a log scale.
-            scaling (str | dict): Scaling of the FFT. Can be 'amplitude' or 'pds' or a dict with a scaling per property.
+            scaling (str | dict): Scaling of the FFT. Can be 'amplitude', 'pds' or 'pdspp' or a dict with a scaling per property where
+                                  `amplitude` (default for non-count based properties) scales the FFT magnitude to the amplitude,
+                                  `pds` (power density spectrum, default for count based properties) scales the FFT magnitude to power,
+                                  `pdspp` (power density spectrum per particle) is simmilar to 'pds' but normalized to particle number.
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
             time_range (tuple): Time range of particles to consider. If None, all particles are considered.
             plot_kwargs (dict): Keyword arguments passed to the plot function.
@@ -360,7 +363,7 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
         kwargs = self._init_particle_mixin(**kwargs)
         kwargs["_properties"] = defaults(
             kwargs.get("_properties"),
-            count=Property("$N$", "1", description="Particles per bin"),
+            count=Property("$N$", "1", description="Particles"),
             rate=Property("$\\dot{N}$", "1/s", description="Particle rate"),
             f=Property("$f$", "Hz", description="Frequency"),
         )
@@ -449,9 +452,11 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
                     if self._get_scaling(p) == "amplitude":
                         # amplitude in units of p
                         mag *= 2 / len(timeseries) * self.factor_for(p)
-                    elif self._get_scaling(p) == "pds":
+                    elif self._get_scaling(p) in ("pds", "pdspp"):
                         # power density spectrum in a.u.
                         mag = mag**2
+                        if self._get_scaling(p) == "pdspp":
+                            mag /= len(times)  # per particle
 
                     # cut data above fmax which was only added to increase FFT performance
                     visible = freq <= fmax
@@ -492,6 +497,8 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
                 symbol = f"$\\hat{{{symbol}}}$"
             elif self._get_scaling(p) == "pds":
                 symbol = f"$|\\mathrm{{FFT({symbol})}}|^2$"
+            elif self._get_scaling(p) == "pdspp":
+                symbol = f"$|\\mathrm{{FFT({symbol})}}|^2/N_\\mathrm{{total}}$"
             else:
                 symbol = f"$|\\mathrm{{FFT({symbol})}}|$"
         return symbol
