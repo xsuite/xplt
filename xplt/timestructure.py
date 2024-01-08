@@ -161,7 +161,7 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
             time_range (tuple): Time range of particles to consider. If None, all particles are considered.
             time_offset (float): Time offset for x-axis is seconds, i.e. show values as `t-time_offset`.
-            plot_kwargs (dict): Keyword arguments passed to the plot function.
+            plot_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.plot`.
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
         """
@@ -350,7 +350,7 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
                                   `pdspp` (power density spectrum per particle) is simmilar to 'pds' but normalized to particle number.
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
             time_range (tuple): Time range of particles to consider. If None, all particles are considered.
-            plot_kwargs (dict): Keyword arguments passed to the plot function.
+            plot_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.plot`.
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
         """
@@ -545,6 +545,7 @@ class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramPlotMi
         mask=None,
         time_range=None,
         plot_kwargs=None,
+        poisson_kwargs=None,
         **kwargs,
     ):
         """
@@ -571,7 +572,9 @@ class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramPlotMi
             poisson (bool): If true, indicate ideal poisson distribution.
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
             time_range (tuple): Time range of particles to consider. If None, all particles are considered.
-            plot_kwargs (dict): Keyword arguments passed to the plot function.
+            plot_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.plot`.
+            poisson_kwargs (dict): Additional keyword arguments passed to the plot function for Poisson limit.
+                                   See :meth:`matplotlib.axes.Axes.plot` (only applicable if `poisson` is True).
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
 
@@ -611,12 +614,16 @@ class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramPlotMi
             plot = ax.plot([], [], **kwargs)[0]
             if poisson:
                 kwargs.update(
-                    color=plot.get_color() or "gray",
-                    alpha=0.5,
-                    zorder=1.9,
-                    lw=1,
-                    ls=":",
-                    label="Poisson ideal",
+                    defaults_for(
+                        "plot",
+                        poisson_kwargs,
+                        color=plot.get_color() or "gray",
+                        alpha=0.5,
+                        zorder=1.9,
+                        lw=1,
+                        ls=":",
+                        label="Poisson ideal",
+                    )
                 )
                 pplot = ax.plot([], [], **kwargs)[0]
             else:
