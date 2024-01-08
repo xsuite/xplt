@@ -16,7 +16,7 @@ import matplotlib as mpl
 import numpy as np
 
 from .base import XPlot, XManifoldPlot
-from .util import defaults, get
+from .util import defaults, get, defaults_for
 from .properties import Property, DataProperty
 
 
@@ -379,7 +379,8 @@ class FloorPlot(XPlot):
                         # bending elements as wedge
                         rho = length / arc
                         box = mpl.patches.Wedge(
-                            **defaults(
+                            **defaults_for(
+                                mpl.patches.Wedge,
                                 box_style,
                                 center=(
                                     x - helicity * rho * np.cos(rr) / np.cos(arc / 2),
@@ -399,7 +400,8 @@ class FloorPlot(XPlot):
                     else:
                         # other elements as rect
                         box = mpl.patches.Rectangle(
-                            **defaults(
+                            **defaults_for(
+                                mpl.patches.Rectangle,
                                 box_style,
                                 xy=(x - width / 2, y - length / 2),
                                 width=width,
@@ -427,7 +429,8 @@ class FloorPlot(XPlot):
                     label_style["text"] = label_style["text"].format(name=name, element=element)
 
                     label = self.ax.annotate(
-                        **defaults(
+                        **defaults_for(
+                            "text",
                             label_style,
                             xy=(x, y),
                             xytext=(x + 1.5 * width * np.cos(rr), y + 1.5 * width * np.sin(rr)),

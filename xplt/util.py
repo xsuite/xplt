@@ -14,6 +14,7 @@ import types
 
 import numpy as np
 import scipy.signal
+import matplotlib as mpl
 
 try:
     import pandas as pd
@@ -71,14 +72,40 @@ def get(obj, value, default=VOID):
     raise AttributeError(f"{obj} does not provide an attribute or index '{value}'")
 
 
-def defaults(kwargs, **default_kwargs):
-    """Return kwargs or default_kwargs"""
-    kwargs = kwargs or {}
-    if "c" in kwargs or "color" in kwargs:
-        # c and color are common aliases, remove both from default_style if either present
-        default_kwargs.pop("c", None)
-        default_kwargs.pop("color", None)
-    return dict(default_kwargs, **kwargs)
+def defaults(kwargs, /, **default_kwargs):
+    """Return keyword arguments with defaults
+
+    Returns a union of keyword arguments, where `kwargs` take preceedence over `default_kwargs`.
+
+    Args:
+        kwargs (dict): keyword arguments (overwrite defaults)
+        default_kwargs: default keyword arguments
+    """
+    return dict(default_kwargs, **(kwargs or {}))
+
+
+def defaults_for(alias_provider, kwargs, /, **default_kwargs):
+    """Return normalized keyword arguments with defaults
+
+    Returns a union of keyword arguments, where `kwargs` take preceedence over `default_kwargs`.
+    All keyword arguments are normalized beforehand via :meth:`matplotlib.cbook.normalize_kwargs`.
+
+    Args:
+        alias_provider (str | dict | class | artist): alias provider for :meth:`matplotlib.cbook.normalize_kwargs`
+        kwargs (dict): keyword arguments (overwrite defaults)
+        default_kwargs: default keyword arguments
+    """
+    if isinstance(alias_provider, str):
+        alias_provider = dict(
+            text=mpl.text.Text,
+            plot=mpl.lines.Line2D,
+            fill_between=mpl.patches.Polygon,
+            scatter=mpl.collections.Collection,
+            hexbin=mpl.collections.PolyCollection,
+        )[alias_provider]
+    kwargs = mpl.cbook.normalize_kwargs(kwargs, alias_provider)
+    default_kwargs = mpl.cbook.normalize_kwargs(default_kwargs, alias_provider)
+    return defaults(kwargs, **default_kwargs)
 
 
 def flattened(lists):

@@ -11,7 +11,7 @@ __date__ = "2022-11-08"
 
 import types
 
-from .util import defaults
+from .util import defaults, defaults_for
 from .base import XManifoldPlot
 from .line import KnlPlot
 
@@ -123,9 +123,11 @@ class TwissPlot(XManifoldPlot):
         """
 
         if val_to is None:  # only a line
-            kwargs = defaults(kwargs, color="k", zorder=1.9)
+            kwargs = defaults_for("plot", kwargs, color="k", zorder=1.9)
         else:  # a span
-            kwargs = defaults(kwargs, color="lightgray", zorder=1.9, lw=0, alpha=0.6)
+            kwargs = defaults_for(
+                "fill_between", kwargs, color="lightgray", zorder=1.9, lw=0, alpha=0.6
+            )
 
         if kind == "s":
             # vertical span or line on all axes

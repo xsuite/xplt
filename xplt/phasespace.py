@@ -18,7 +18,7 @@ from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
 from .base import XPlot, XManifoldPlot, AngleLocator, RadiansFormatter
 from .particles import ParticlePlotMixin
-from .util import get, defaults, normalized_coordinates, denormalized_coordinates
+from .util import get, defaults, normalized_coordinates, denormalized_coordinates, defaults_for
 
 pairwise = np.c_
 
@@ -188,7 +188,9 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
             ##############################
 
             # scatter plot
-            kwargs = defaults(scatter_kwargs, s=4, cmap=cmap, lw=0, animated=animated)
+            kwargs = defaults_for(
+                "scatter", scatter_kwargs, s=4, cmap=cmap, lw=0, animated=animated
+            )
             scatter_cmap = kwargs.pop("cmap")  # bypass UserWarning: ignored
             vmin, vmax = kwargs.pop("vmin", None), kwargs.pop("vmax", None)
             self.artists_scatter[i] = ax.scatter([], [], **kwargs)
@@ -217,35 +219,45 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
                     self.fig.colorbar(self.artists_scatter[i], **cbargs, ax=ax, location=cbar_loc)
 
             # hexbin histogram
-            self._hxkw = defaults(
-                hist_kwargs, mincnt=1, cmap=cmap, rasterized=True, animated=animated
+            self._hxkw = defaults_for(
+                "hexbin", hist_kwargs, mincnt=1, cmap=cmap, rasterized=True, animated=animated
             )
 
             # 2D mean indicator
             if mean[i]:
-                kwargs = defaults(mean_kwargs, color="k", marker="+", ms=8, zorder=100)
+                kwargs = defaults_for(
+                    "plot", mean_kwargs, color="k", marker="+", ms=8, zorder=100
+                )
                 (self.artists_mean[i],) = ax.plot([], [], **kwargs, animated=animated)
 
             # 2D std ellipses
             if std[i]:
-                kwargs = defaults(std_kwargs, color="k", lw=1, ls="-", zorder=100)
-                self.artists_std[i] = Ellipse(
-                    (0, 0), 0, 0, fill=False, **kwargs, animated=animated
+                kwargs = defaults_for(
+                    mpl.patches.Ellipse,
+                    std_kwargs,
+                    fill=False,
+                    color="k",
+                    lw=1,
+                    ls="-",
+                    zorder=100,
                 )
+                self.artists_std[i] = Ellipse((0, 0), 0, 0, **kwargs, animated=animated)
                 ax.add_artist(self.artists_std[i])
 
             # 2D percentile ellipses
             if percentiles[i]:
                 self.artists_percentiles[i] = []
                 for j, _ in enumerate(self.percentiles[i]):
-                    kwargs = defaults(
+                    kwargs = defaults_for(
+                        mpl.patches.Ellipse,
                         percentile_kwargs,
+                        fill=False,
                         color="k",
                         lw=1,
                         ls=(0, [5, 5] + [1, 5] * j),
                         zorder=100,
                     )
-                    artist = Ellipse((0, 0), 0, 0, fill=False, **kwargs, animated=animated)
+                    artist = Ellipse((0, 0), 0, 0, **kwargs, animated=animated)
                     ax.add_artist(artist)
                     self.artists_percentiles[i].append(artist)
 
@@ -269,7 +281,7 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
             ###########################
 
             if self.projections[i]:
-                kwargs = defaults(projections_kwargs, color="k", alpha=0.3, lw=1)
+                kwargs = defaults_for("plot", projections_kwargs, color="k", alpha=0.3, lw=1)
                 for xy, yx in zip("xy", "yx"):
                     if self.projections[i] != yx:
                         # Create twin xy axis and artists
@@ -460,7 +472,7 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
 
         """
 
-        kwargs = defaults(kwargs, color="k")
+        kwargs = defaults_for("plot", kwargs, color="k")
 
         for i, (ab, ax) in enumerate(zip(self.kind, self.axflat)):
             if subplots != "all" and i not in subplots:
@@ -570,7 +582,9 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
 
             # plot separatrix
             if separatrix:
-                kwarg = defaults(separatrix_kwargs, color="r", ls="--", label="Separatrix")
+                kwarg = defaults_for(
+                    "plot", separatrix_kwargs, color="r", ls="--", label="Separatrix"
+                )
 
                 t = extend
                 for X, Y in (  # triangle edges

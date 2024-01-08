@@ -16,7 +16,7 @@ import numpy as np
 import pint
 import re
 
-from .util import defaults, evaluate_expression_wrapper
+from .util import defaults, evaluate_expression_wrapper, defaults_for
 from .base import XManifoldPlot, TwinFunctionLocator, TransformedLocator
 from .particles import ParticlePlotMixin, ParticlesPlot, ParticleHistogramPlotMixin
 from .properties import Property, DerivedProperty, find_property
@@ -196,9 +196,11 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
 
         # Create plot elements
         def create_artists(i, j, k, ax, p):
-            kwargs = defaults(plot_kwargs, lw=1, label=self._legend_label_for((i, j, k)))
+            kwargs = defaults_for(
+                "plot", plot_kwargs, lw=1, label=self._legend_label_for((i, j, k))
+            )
             if self._count_based(p):
-                kwargs = defaults(kwargs, drawstyle="steps-pre")
+                kwargs = defaults_for("plot", kwargs, drawstyle="steps-pre")
             return ax.plot([], [], **kwargs)[0]
 
         self._create_artists(create_artists)
@@ -378,7 +380,9 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
 
         # Create plot elements
         def create_artists(i, j, k, ax, p):
-            kwargs = defaults(plot_kwargs, lw=1, label=self._legend_label_for((i, j, k)))
+            kwargs = defaults_for(
+                "plot", plot_kwargs, lw=1, label=self._legend_label_for((i, j, k))
+            )
             return ax.plot([], [], **kwargs)[0]
 
         self._create_artists(create_artists)
@@ -597,9 +601,11 @@ class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramPlotMi
 
         # Create plot elements
         def create_artists(i, j, k, ax, p):
-            kwargs = defaults(plot_kwargs, lw=1, label=self._legend_label_for((i, j, k)))
+            kwargs = defaults_for(
+                "plot", plot_kwargs, lw=1, label=self._legend_label_for((i, j, k))
+            )
             if self._count_based(p):
-                kwargs = defaults(kwargs, drawstyle="steps-pre")
+                kwargs = defaults_for("plot", kwargs, drawstyle="steps-pre")
             else:
                 raise ValueError(f"Property `{p}` not supported")
             plot = ax.plot([], [], **kwargs)[0]
@@ -916,6 +922,7 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
         time_range=None,
         time_offset=0,
         plot_kwargs=None,
+        poisson_kwargs=None,
         **kwargs,
     ):
         """
@@ -941,7 +948,9 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
             time_range (tuple): Time range of particles to consider. If None, all particles are considered.
             time_offset (float): Time offset for x-axis is seconds, i.e. show values as `t-time_offset`.
-            plot_kwargs (dict): Keyword arguments passed to the plot function.
+            plot_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.step`.
+            poisson_kwargs (dict): Additional keyword arguments passed to the plot function for Poisson limit.
+                                   See :meth:`matplotlib.axes.Axes.step` (only applicable if `poisson` is True).
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
         """
@@ -971,16 +980,22 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
 
         # Create plot elements
         def create_artists(i, j, k, ax, p):
-            kwargs = defaults(plot_kwargs, lw=1, label=self._legend_label_for((i, j, k)))
+            kwargs = defaults_for(
+                "plot", plot_kwargs, lw=1, label=self._legend_label_for((i, j, k))
+            )
             step = ax.step([], [], **kwargs)[0]
             if poisson:
                 kwargs.update(
-                    color=step.get_color() or "gray",
-                    alpha=0.5,
-                    zorder=1.9,
-                    lw=1,
-                    ls=":",
-                    label="Poisson limit",
+                    defaults_for(
+                        "plot",
+                        poisson_kwargs,
+                        color=step.get_color() or "gray",
+                        alpha=0.5,
+                        zorder=1.9,
+                        lw=1,
+                        ls=":",
+                        label="Poisson limit",
+                    )
                 )
                 pstep = ax.step([], [], **kwargs)[0]
             else:
@@ -1077,6 +1092,8 @@ class TimeVariationScalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
         time_range=None,
         log=True,
         plot_kwargs=None,
+        std_kwargs=None,
+        poisson_kwargs=None,
         ignore_insufficient_statistics=False,
         **kwargs,
     ):
@@ -1103,13 +1120,17 @@ class TimeVariationScalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
                 over each ``counting_bins_per_evaluation`` consecutive bins, and average and std of
                 all evaluations plotted. This suppresses fluctuations on larger timescales to affect
                 the metric of smaller timescales.
-            std (bool): Whether or not to plot standard deviation of variability.
+            std (bool): Whether or not to plot standard deviation of variability as errorbar.
                 Only relevant if counting_bins_per_evaluation is not None.
             poisson (bool): Whether or not to plot the Poisson limit.
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
             time_range (tuple): Time range of particles to consider. If None, all particles are considered.
             log (bool): Whether or not to plot the x-axis in log scale.
-            plot_kwargs (dict): Keyword arguments passed to the plot function.
+            plot_kwargs (dict): Keyword arguments passed to the plot function. See :meth:`matplotlib.axes.Axes.plot`.
+            std_kwargs (dict): Additional keyword arguments passed to the plot function for std errorbar.
+                               See :meth:`matplotlib.axes.Axes.fill_between` (only applicable if `std` is True).
+            poisson_kwargs (dict): Additional keyword arguments passed to the plot function for Poisson limit.
+                                   See :meth:`matplotlib.axes.Axes.plot` (only applicable if `poisson` is True).
             ignore_insufficient_statistics (bool): When set to True, the plot will include data with insufficient statistics.
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
@@ -1137,18 +1158,24 @@ class TimeVariationScalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
 
         # Create plot elements
         def create_artists(i, j, k, ax, p):
-            kwargs = defaults(plot_kwargs, label=self._legend_label_for((i, j, k)))
+            kwargs = defaults_for("plot", plot_kwargs, label=self._legend_label_for((i, j, k)))
             plot = ax.plot([], [], **kwargs)[0]
             kwargs.update(color=plot.get_color())
             if std:
                 self._errkw = kwargs.copy()
-                self._errkw.update(zorder=1.8, alpha=0.3, ls="-", lw=0)
+                self._errkw.update(
+                    defaults_for("fill_between", std_kwargs, zorder=1.8, alpha=0.3, ls="-", lw=0)
+                )
                 errorbar = ax.fill_between([], [], [], **self._errkw)
                 errorbar._join_legend_entry_with = plot
             else:
                 errorbar = None
             if poisson:
-                kwargs.update(zorder=1.9, ls=":", label="Poisson limit")
+                kwargs.update(
+                    defaults_for(
+                        "plot", poisson_kwargs, zorder=1.9, ls=":", label="Poisson limit"
+                    )
+                )
                 pstep = ax.plot([], [], **kwargs)[0]
             else:
                 pstep = None

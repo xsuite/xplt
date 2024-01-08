@@ -17,7 +17,7 @@ import pint
 
 from .base import XManifoldPlot
 from .properties import Property, DerivedProperty, find_property
-from .util import c0, get, val, defaults, normalized_coordinates, ieee_mod
+from .util import c0, get, val, defaults, normalized_coordinates, ieee_mod, defaults_for
 
 
 class ParticlePlotMixin:
@@ -269,8 +269,8 @@ class ParticlesPlot(XManifoldPlot, ParticlePlotMixin):
 
         # create plot elements
         def create_artists(i, j, k, a, p):
-            kwargs = defaults(
-                plot_kwargs, marker=".", ls="", label=self._legend_label_for((i, j, k))
+            kwargs = defaults_for(
+                "plot", plot_kwargs, marker=".", ls="", label=self._legend_label_for((i, j, k))
             )
             return a.plot([], [], **kwargs)[0]
 
