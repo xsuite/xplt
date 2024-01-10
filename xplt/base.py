@@ -269,8 +269,11 @@ class XPlot:
 
         # Add limits from raw data
         for x, y in data:
-            lim = mpl.transforms.Bbox.from_extents(x.min(), y.min(), x.max(), y.max())
-            limits.append(lim)
+            lim = mpl.transforms.Bbox.from_extents(
+                np.nanmin(x), np.nanmin(y), np.nanmax(x), np.nanmax(y)
+            )
+            if np.all(np.isfinite(lim.bounds)):
+                limits.append(lim)
 
         # Update axes limits
         if len(limits) > 0:
