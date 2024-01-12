@@ -194,6 +194,7 @@ class FloorPlot(XPlot):
         *,
         boxes=None,
         labels=False,
+        ignore=None,
         element_width=1,
         **kwargs,
     ):
@@ -211,6 +212,7 @@ class FloorPlot(XPlot):
                 Detailed options can be "text" (e.g. "Dipole {name}" where name will be
                 replaced with the element name) and all options suitable for an annotation,
                 such as "color", "alpha", etc.
+            ignore (None | str | list[str]): Optional patter or list of patterns to ignore elements with matching names.
             element_width (float): Width of element boxes.
             kwargs: See :class:`~.base.XPlot` for additional arguments
 
@@ -242,6 +244,7 @@ class FloorPlot(XPlot):
         self.projection = projection
         self.boxes = boxes
         self.labels = labels
+        self.ignore = [ignore] if isinstance(ignore, str) else ignore
         self.element_width = element_width
 
         # Create plot
@@ -331,6 +334,9 @@ class FloorPlot(XPlot):
                 drift_length = get(survey, "drift_length", None)
                 if drift_length is not None and drift_length[i] > 0:
                     continue  # skip drift spaces
+                if self.ignore is not None:
+                    if np.any([re.match(pattern, name) is not None for pattern in self.ignore]):
+                        continue  # skip ignored
 
                 helicity = np.sign(arc) or helicity
                 # rt = angle of tangential direction in data coords
