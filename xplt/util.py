@@ -75,10 +75,10 @@ def get(obj, value, default=VOID):
 def defaults(kwargs, /, **default_kwargs):
     """Return keyword arguments with defaults
 
-    Returns a union of keyword arguments, where `kwargs` take preceedence over `default_kwargs`.
+    Returns a union of keyword arguments, where `kwargs` take precedence over `default_kwargs`.
 
     Args:
-        kwargs (dict): keyword arguments (overwrite defaults)
+        kwargs (dict | None): keyword arguments (overwrite defaults)
         default_kwargs: default keyword arguments
     """
     return dict(default_kwargs, **(kwargs or {}))
@@ -87,12 +87,12 @@ def defaults(kwargs, /, **default_kwargs):
 def defaults_for(alias_provider, kwargs, /, **default_kwargs):
     """Return normalized keyword arguments with defaults
 
-    Returns a union of keyword arguments, where `kwargs` take preceedence over `default_kwargs`.
+    Returns a union of keyword arguments, where `kwargs` take precedence over `default_kwargs`.
     All keyword arguments are normalized beforehand via :meth:`matplotlib.cbook.normalize_kwargs`.
 
     Args:
         alias_provider (str | dict | class | artist): alias provider for :meth:`matplotlib.cbook.normalize_kwargs`
-        kwargs (dict): keyword arguments (overwrite defaults)
+        kwargs (dict | None): keyword arguments (overwrite defaults)
         default_kwargs: default keyword arguments
     """
     if isinstance(alias_provider, str):
@@ -227,7 +227,7 @@ def denormalized_coordinates(X, Px, twiss, xy, delta=0):
     return x, px
 
 
-def virtual_sextupole(tracker_or_line, particle_ref=None, *, verbose=False):
+def virtual_sextupole(line, particle_ref=None, *, verbose=False):
     """Determine virtual sextupole strength from twiss data
 
     The normalized strenght is defined as S = -1/2 * betx^(3/2) * k2l
@@ -235,7 +235,7 @@ def virtual_sextupole(tracker_or_line, particle_ref=None, *, verbose=False):
     The implementation considers only normal sextupole components.
 
     Args:
-        tracker_or_line (xtrack.Tracker | xtrack.Line): Line or tracker with line and twiss methods
+        line (xtrack.Line): Line with element_dict and twiss method
         particle_ref (xpart.Particles): Reference particle. Defaults to reference particle of tracker.
         verbose (bool): If True, print information on sextupoles
 
@@ -243,7 +243,8 @@ def virtual_sextupole(tracker_or_line, particle_ref=None, *, verbose=False):
         Tuple (S, mu) with normalized strength in m^(-1/2) and phase in rad/2pi
     """
 
-    line = tracker_or_line.line if hasattr(tracker_or_line, "line") else tracker_or_line
+    # for backwards compatibility for old xsuite versions
+    line = line.line if hasattr(line, "line") else line
 
     # find sextupoles
     sextupoles, k2l = [], []
@@ -253,7 +254,7 @@ def virtual_sextupole(tracker_or_line, particle_ref=None, *, verbose=False):
             k2l.append(el.knl[2])
 
     # twiss at sextupoles
-    tw = tracker_or_line.twiss(method="4d", particle_ref=particle_ref, at_elements=sextupoles)
+    tw = line.twiss(method="4d", particle_ref=particle_ref, at_elements=sextupoles)
     betx, mux = tw.betx, tw.mux
 
     # determine virtual sextupole
