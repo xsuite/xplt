@@ -16,13 +16,15 @@ import numpy as np
 import pint
 import re
 
-from .util import defaults, evaluate_expression_wrapper, defaults_for
+from .util import defaults, evaluate_expression_wrapper, defaults_for, get
 from .base import XManifoldPlot, TwinFunctionLocator, TransformedLocator
 from .particles import ParticlePlotMixin, ParticlesPlot, ParticleHistogramPlotMixin
 from .properties import Property, DerivedProperty, find_property, arb_unit
 
 
-def binned_timeseries(times, *, what=None, n=None, dt=None, t_range=None, moments=1):
+def binned_timeseries(
+    times, *, what=None, n=None, dt=None, t_range=None, moments=1, make_n_power_of_two=False
+):
     """Get binned timeseries with equally spaced time bins
 
     From the particle arrival times (non-equally distributed timestamps), a timeseries with equally
@@ -41,6 +43,8 @@ def binned_timeseries(times, *, what=None, n=None, dt=None, t_range=None, moment
         t_range (tuple[float] | None): Tuple of (min, max) time values to consider. If None, the range is determined from the data.
         what (np.ndarray | None): Array of associated data or None. Must have same shape as times. See above.
         moments (int | list[int | None] | None): The moment(s) to return for associated data if what is not None. See above.
+        make_n_power_of_two (bool): If true, ensure that the number of bins is a power of two by rounding up.
+                                    Useful to increase performance of calculating FFTs on the timeseries data.
 
     Returns:
         The timeseries as tuple (t_min, dt, values) where
@@ -54,10 +58,14 @@ def binned_timeseries(times, *, what=None, n=None, dt=None, t_range=None, moment
 
     if n is not None and dt is None:
         # number of bins requested, adjust bin width accordingly
+        if make_n_power_of_two:
+            n = 1 << (n - 1).bit_length()
         dt = (t_max - t_min) / n
     elif n is None and dt is not None:
         # bin width requested, adjust number of bins accordingly
         n = int(np.ceil((t_max - t_min) / dt))
+        if make_n_power_of_two:
+            n = 1 << (n - 1).bit_length()
     else:
         raise ValueError(f"Exactly one of n or dt must be specified, but got n={n} and dt={dt}")
 
@@ -305,7 +313,7 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
         return changed
 
 
-class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
+class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
     """A frequency plot based on particle arrival times"""
 
     def __init__(
@@ -318,6 +326,8 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
         log=None,
         scaling=None,
         mask=None,
+        timeseries=None,
+        timeseries_fs=None,
         time_range=None,
         plot_kwargs=None,
         **kwargs,
@@ -336,6 +346,8 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
 
         Useful to plot time structures of particles loss, such as spill structures.
 
+        Instead of particle timestamps, it is also possible to pass already binned timeseries data to the plot.
+
         Args:
             particles (Any): Particles data to plot.
             kind (str | list): Defines the properties to make the FFT over, including 'count' (default), or a particle property to average.
@@ -349,6 +361,10 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
                                   `pds` (power density spectrum, default for count based properties) scales the FFT magnitude to power,
                                   `pdspp` (power density spectrum per particle) is simmilar to 'pds' but normalized to particle number.
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
+            timeseries (dict[str, np.array]): Pre-binned timeseries data as alternative to timestamp-based particle data.
+                                              The dictionary must contain keys for each `kind` (e.g. `count`).
+                                              When specified, `timeseries_fs` must also be set, and `particles` and `mask` must be None.
+            timeseries_fs (float): The sampling frequency for the timeseries data.
             time_range (tuple): Time range of particles to consider. If None, all particles are considered.
             plot_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.plot`.
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
@@ -363,10 +379,9 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
             log = not relative
 
         kwargs = self._init_particle_mixin(**kwargs)
+        kwargs = self._init_particle_histogram_mixin(**kwargs)
         kwargs["_properties"] = defaults(
             kwargs.get("_properties"),
-            count=Property("$N$", "1", description="Particles"),
-            rate=Property("$\\dot{N}$", "1/s", description="Particle rate"),
             f=Property("$f$", "Hz", description="Frequency"),
         )
         super().__init__(on_x=None, on_y=kind, **kwargs)  # handled manually
@@ -388,8 +403,14 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
         self._create_artists(create_artists)
 
         # set data
-        if particles is not None:
-            self.update(particles, mask=mask, autoscale=True)
+        if particles is not None or timeseries is not None:
+            self.update(
+                particles,
+                mask=mask,
+                timeseries=timeseries,
+                timeseries_fs=timeseries_fs,
+                autoscale=True,
+            )
 
     def _get_scaling(self, key):
         if isinstance(self._scaling, str):
@@ -398,69 +419,125 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
             return self._scaling[key].lower()
         return "pds" if key == "count" else "amplitude"
 
-    def fmax(self, particles):
+    def fmax(self, particles=None, *, default=None):
+        """Return the maximum frequency this plot should show
+
+        Args:
+            particles (Any): Particle data for determination of revolution frequency
+            default (float | None): Default value to return if maximum frequency can not be determined
+
+        Returns:
+             float: maximum frequency
+
+        Raises:
+            ValueError: If maximum frequency can not be determined and no default was provided
+        """
         if self._fmax is not None:
             return self._fmax
         if self.relative:
             return self.frev(particles)
+        if default is not None:
+            return default
         raise ValueError("fmax must be specified when plotting absolut frequencies.")
 
-    def update(self, particles, mask=None, autoscale=False):
+    def update(
+        self, particles=None, mask=None, autoscale=False, *, timeseries=None, timeseries_fs=None
+    ):
         """Update plot with new data
 
         Args:
             particles (Any): Particles data to plot.
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
-            autoscale (bool): Whether or not to perform autoscaling on all axes.
+            autoscale (bool): Whether to perform autoscaling on all axes.
+            timeseries (dict[str, np.array]): Pre-binned timeseries data as alternative to timestamp-based particle data.
+                                              The dictionary must contain keys for each `kind` (e.g. `count`).
+                                              When specified, `timeseries_fs` must also be set, and `particles` and `mask` must be None.
+            timeseries_fs (float | dict[str, float]): The sampling frequency for the timeseries data, or a dictionary with
+                                                      sampling frequencies for each entry in `timeseries`.
 
         Returns:
             list: Changed artists
         """
 
-        # extract times and associated property
-        times = self.prop("t").values(particles, mask, unit="s")
+        if particles is not None:
+            if timeseries is not None or timeseries_fs is not None:
+                raise ValueError(
+                    "`timeseries` and `timeseries_fs` must be None when passing data via `particles`"
+                )
 
-        # re-sample times into equally binned time series
-        fmax = self.fmax(particles)
-        n = int(np.ceil((np.max(times) - np.min(times)) * fmax * 2))
-        # to improve FFT performance, round up to next power of 2
-        self.nbins = n = 1 << (n - 1).bit_length()
+            # extract times
+            times = self.prop("t").values(particles, mask, unit="s")
+            fmax = self.fmax(particles)
+            ppscale = len(times)
+
+            # compute binned timeseries
+            timeseries, timeseries_fs = {}, {}
+            for p in self.on_y_unique:
+                prop = self.prop(p)
+                property = None if self._count_based(p) else prop.values(particles, mask)
+                # to improve FFT performance, round up to next power of 2
+                _, dt, ts = binned_timeseries(
+                    times,
+                    what=property,
+                    dt=1 / (2 * fmax),
+                    t_range=self.time_range,
+                    make_n_power_of_two=True,
+                )
+                timeseries[p] = ts
+                timeseries_fs[p] = 1 / dt
+
+        elif timeseries is not None:
+            if particles is not None or mask is not None:
+                raise ValueError(
+                    "`particles` and `mask` must be None when passing data via `timeseries`"
+                )
+            if timeseries_fs is None:
+                raise ValueError("`timeseries_fs` is required when passing data via `timeseries`")
+
+            if not isinstance(timeseries_fs, dict):
+                timeseries_fs = {p: timeseries_fs for p in self.on_y_unique}
+
+            # binned timeseries provided by user, apply time range
+            fmax = np.nan
+            ppscale = np.sum(get(timeseries, "count", [1]))
+            for p in timeseries:
+                fs, ts = timeseries_fs[p], np.array(timeseries[p])
+                fmax = np.nanmax([fmax, self.fmax(default=fs)])
+                if self.time_range is not None:
+                    i_min, i_max = [None if t is None else int(t * fs) for t in self.time_range]
+                    timeseries[p] = ts[i_min:i_max]
+
+        else:
+            raise ValueError("Data was neither passed via `particles` nor `timeseries`")
 
         # update plots
         changed = []
         for i, ppp in enumerate(self.on_y):
             for j, pp in enumerate(ppp):
                 for k, p in enumerate(pp):
-                    prop = self.prop(p)
-                    count_based = p in ("count", "rate")
-
-                    if count_based:
-                        property = None
-                    else:
-                        property = prop.values(particles, mask)
-
-                    # compute binned timeseries
-                    t_min, dt, timeseries = binned_timeseries(
-                        times, what=property, n=n, t_range=self.time_range
-                    )
 
                     # calculate fft without DC component
-                    freq = np.fft.rfftfreq(n, d=dt)[1:]
+                    dt, ts = 1 / get(timeseries_fs, p), get(timeseries, p)
+                    freq = np.fft.rfftfreq(ts.size, d=dt)[1:]
+                    mag = np.abs(np.fft.rfft(ts))[1:]
+
+                    # scale frequency according to user preferences
                     if self.relative:
-                        freq /= self.frev(particles)
+                        freq *= 1 / self.frev(particles)
                     else:
                         freq *= self.factor_for("f")
-                    mag = np.abs(np.fft.rfft(timeseries))[1:]
+
+                    # scale magnitude according to user preference
                     if p == "rate":
                         mag /= dt
                     if self._get_scaling(p) == "amplitude":
                         # amplitude in units of p
-                        mag *= 2 / len(timeseries) * self.factor_for(p)
+                        mag *= 2 / len(ts) * self.factor_for(p)
                     elif self._get_scaling(p) in ("pds", "pdspp"):
                         # power density spectrum in arb. unit
                         mag = mag**2
                         if self._get_scaling(p) == "pdspp":
-                            mag /= len(times)  # per particle
+                            mag /= ppscale  # per particle
 
                     # cut data above fmax which was only added to increase FFT performance
                     visible = freq <= fmax
