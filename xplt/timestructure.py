@@ -19,7 +19,7 @@ import re
 from .util import defaults, evaluate_expression_wrapper, defaults_for
 from .base import XManifoldPlot, TwinFunctionLocator, TransformedLocator
 from .particles import ParticlePlotMixin, ParticlesPlot, ParticleHistogramPlotMixin
-from .properties import Property, DerivedProperty, find_property
+from .properties import Property, DerivedProperty, find_property, arb_unit
 
 
 def binned_timeseries(times, *, what=None, n=None, dt=None, t_range=None, moments=1):
@@ -457,7 +457,7 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
                         # amplitude in units of p
                         mag *= 2 / len(timeseries) * self.factor_for(p)
                     elif self._get_scaling(p) in ("pds", "pdspp"):
-                        # power density spectrum in a.u.
+                        # power density spectrum in arb. unit
                         mag = mag**2
                         if self._get_scaling(p) == "pdspp":
                             mag /= len(times)  # per particle
@@ -509,7 +509,7 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin):
 
     def display_unit_for(self, p):
         if p not in "f" and self._get_scaling(p) != "amplitude":
-            return "a.u."
+            return arb_unit
         return super().display_unit_for(p)
 
     def plot_harmonics(self, f, df=0, *, n=20, **plot_kwargs):

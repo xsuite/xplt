@@ -28,6 +28,9 @@ except ImportError:
 from .util import get
 
 
+arb_unit = "arb. unit"
+
+
 class Property:
     def __init__(self, symbol, unit, description=None):
         """Class holding generic property information

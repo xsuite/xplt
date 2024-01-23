@@ -19,7 +19,7 @@ import numpy as np
 import pint
 
 from .util import defaults, flattened
-from .properties import Property, find_property, DataProperty
+from .properties import Property, find_property, DataProperty, arb_unit
 
 
 class ManifoldMultipleLocator(mpl.ticker.MaxNLocator):
@@ -476,8 +476,8 @@ class XPlot:
         # add unit
         if unit:
             append = None
-            if units[0] == "a.u.":  # arbitrary unit
-                append = " / a.u."
+            if units[0] == arb_unit:  # arbitrary unit
+                append = " / " + arb_unit
             else:
                 display_unit = pint.Unit(units[0])  # all have the same unit (see above)
                 if display_unit != pint.Unit("1"):
