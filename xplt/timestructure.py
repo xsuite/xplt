@@ -589,19 +589,29 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
             return arb_unit
         return super().display_unit_for(p)
 
-    def plot_harmonics(self, f, df=0, *, n=20, **plot_kwargs):
+    def plot_harmonics(self, f, df=0, *, n=20, relative=False, **plot_kwargs):
         """Add vertical lines or spans indicating the location of values or spans and their harmonics
 
         Args:
-            f (float or list of float): Fundamental frequency or list of frequencies in Hz.
-            df (float or list of float, optional): Bandwidth or list of bandwidths centered around frequencies(s) in Hz.
+            f (float | list[float] | np.array): Fundamental frequency or list of frequencies.
+            df (float | list[float] | np.array, optional): Bandwidth or list of bandwidths centered around frequencies(s) in Hz.
             n (int): Number of harmonics to plot.
+            relative (bool): If true, then `f` and `df` are interpreted as relative frequencies (f/frev).
+                             Otherwise they are interpreted as absolute frequencies in Hz (default).
             plot_kwargs: Keyword arguments to be passed to plotting method
         """
+        s = 1
+        if relative and not self.relative:  # convert from relative to absolute
+            s = self.frev()
+        elif not relative and self.relative:  # convert from absolute to relative
+            s = 1 / self.frev()
+
+        if not self.relative:  # unit conversion
+            s *= self.factor_for("f")
+
+        f, df = s * np.array(f, ndmin=1), s * np.array(df, ndmin=1)
         for a in self.axflat:
-            super().plot_harmonics(
-                a, self.factor_for("f") * f, self.factor_for("f") * df, n=n, **plot_kwargs
-            )
+            super().plot_harmonics(a, f, df, n=n, **plot_kwargs)
 
 
 class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
