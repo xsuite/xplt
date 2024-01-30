@@ -14,92 +14,30 @@ import types
 import matplotlib as mpl
 import numpy as np
 import pint
-import re
 
-from .util import defaults, evaluate_expression_wrapper, defaults_for, get
+from .util import *
 from .base import XManifoldPlot, TwinFunctionLocator, TransformedLocator
 from .particles import ParticlePlotMixin, ParticlesPlot, ParticleHistogramPlotMixin
-from .properties import Property, DerivedProperty, find_property, arb_unit
+from .properties import Property, DerivedProperty, arb_unit
 
 
 def binned_timeseries(
     times, *, what=None, n=None, dt=None, t_range=None, moments=1, make_n_power_of_two=False
 ):
-    """Get binned timeseries with equally spaced time bins
-
-    From the particle arrival times (non-equally distributed timestamps), a timeseries with equally
-    spaced time bins is derived. The parameter ``what`` determines what is returned for the timeseries.
-    By default (what=None), the number of particles arriving within each time bin is returned.
-    Alternatively, a particle property can be passed as array, in which case that property is averaged
-    over all particles arriving within the respective bin (or 0 if no particles arrive within a time bin).
-    It is also possible to specify the moments to return, i.e. the power to which the property is raised
-    before averaging. This allows to determine mean (1st moment, default) and variance (difference between
-    2nd and 1st moment) etc. To disable averaging, pass None as the moment
-
-    Args:
-        times (np.ndarray): Array of particle arrival times.
-        n (int | None): Number of bins. Must not be used together with dt.
-        dt (float | None): Bin width in seconds. Must not be used together with n.
-        t_range (tuple[float] | None): Tuple of (min, max) time values to consider. If None, the range is determined from the data.
-        what (np.ndarray | None): Array of associated data or None. Must have same shape as times. See above.
-        moments (int | list[int | None] | None): The moment(s) to return for associated data if what is not None. See above.
-        make_n_power_of_two (bool): If true, ensure that the number of bins is a power of two by rounding up.
-                                    Useful to increase performance of calculating FFTs on the timeseries data.
-
-    Returns:
-        The timeseries as tuple (t_min, dt, values) where
-        t_min is the start time of the timeseries data,
-        dt is the time bin width and
-        values are the values of the timeseries as array of length n.
     """
 
-    t_min = np.min(times) if t_range is None or t_range[0] is None else t_range[0]
-    t_max = np.max(times) if t_range is None or t_range[1] is None else t_range[1]
-
-    if n is not None and dt is None:
-        # number of bins requested, adjust bin width accordingly
-        if make_n_power_of_two:
-            n = 1 << (n - 1).bit_length()
-        dt = (t_max - t_min) / n
-    elif n is None and dt is not None:
-        # bin width requested, adjust number of bins accordingly
-        n = int(np.ceil((t_max - t_min) / dt))
-        if make_n_power_of_two:
-            n = 1 << (n - 1).bit_length()
-    else:
-        raise ValueError(f"Exactly one of n or dt must be specified, but got n={n} and dt={dt}")
-
-    # Note: The code below was optimized to run much faster than an ordinary
-    # np.histogram, which quickly slows down for large datasets.
-    # If you intend to change something here, make sure to benchmark it!
-
-    # count timestamps in bins
-    bins = np.floor((times - t_min) / dt).astype(int)
-    # bins are i*dt <= t < (i+1)*dt where i = 0 .. n-1
-    mask = (bins >= 0) & (bins < n)  # igore times outside range
-    bins = bins[mask]
-    # count particles per time bin
-    counts = np.bincount(bins, minlength=n)[:n]
-
-    if what is None:
-        # Return particle counts
-        return t_min, dt, counts
-
-    else:
-        # Return 'what' averaged
-        result = [t_min, dt]
-        if isinstance(moments, int) or moments is None:
-            moments = [moments]
-        for m in moments:
-            v = np.zeros(n)
-            # sum up 'what' for all the particles in each bin
-            power = m if m is not None else 1
-            np.add.at(v, bins, what[mask] ** power)
-            if m is not None:
-                # divide by particle count to get mean (default to 0)
-                v[counts > 0] /= counts[counts > 0]
-            result.append(v)
-        return result
+    .. deprecated:: 0.7
+        Use :func:`xplt.util.binned_data` instead.
+    """
+    return binned_data(
+        times,
+        what=what,
+        n=n,
+        dv=dt,
+        v_range=t_range,
+        moments=moments,
+        make_n_power_of_two=make_n_power_of_two,
+    )
 
 
 class TimePlot(ParticlesPlot):
@@ -255,12 +193,12 @@ class TimeBinPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
                     else:
                         property = self.prop(p).values(particles, mask)
 
-                    t_min, dt, timeseries = binned_timeseries(
+                    t_min, dt, timeseries = binned_data(
                         times,
                         what=property,
                         n=self.bin_count,
-                        dt=self.bin_time,
-                        t_range=self.time_range,
+                        dv=self.bin_time,
+                        v_range=self.time_range,
                         moments=None if count_based else self.moment,
                     )
                     timeseries = timeseries.astype(np.float64)
@@ -476,11 +414,11 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
                 prop = self.prop(p)
                 property = None if self._count_based(p) else prop.values(particles, mask)
                 # to improve FFT performance, round up to next power of 2
-                _, dt, ts = binned_timeseries(
+                _, dt, ts = binned_data(
                     times,
                     what=property,
-                    dt=1 / (2 * fmax),
-                    t_range=self.time_range,
+                    dv=1 / (2 * fmax),
+                    v_range=self.time_range,
                     make_n_power_of_two=True,
                 )
                 timeseries[p] = ts
@@ -1128,7 +1066,7 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
             nebins = int(ncbins * self.evaluate_dt / (np.max(times) - np.min(times)))
 
         # bin into counting bins
-        t_min, dt, counts = binned_timeseries(times, n=ncbins, t_range=self.time_range)
+        t_min, dt, counts = binned_data(times, n=ncbins, v_range=self.time_range)
         edges = np.linspace(t_min, t_min + dt * ncbins, ncbins + 1)
 
         # make 2D array by subdividing into evaluation bins
@@ -1358,7 +1296,7 @@ class TimeVariationScalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
         F_std = {m: np.empty_like(DT) for m in self.on_y_unique}
         F_poisson = {m: np.empty_like(DT) for m in self.on_y_unique}
         for i, nbin in enumerate(ncbins_arr):
-            _, DT[i], N = binned_timeseries(times, n=nbin)
+            _, DT[i], N = binned_data(times, n=nbin)
 
             # calculate metric on sliding window
             stride = min(self.counting_bins_per_evaluation or N.size, N.size)
@@ -1452,8 +1390,8 @@ class TimeBinMetricHelper(ParticlePlotMixin, MetricesMixin):
         data = what and self.get_property(what).values(particles, mask=mask)
 
         # bin into counting bins
-        t_min, dt_count, values = binned_timeseries(
-            times, what=data, dt=dt, t_range=t_range, moments=moments
+        t_min, dt_count, values = binned_data(
+            times, what=data, dv=dt, v_range=t_range, moments=moments
         )
 
         return t_min, dt_count, values
