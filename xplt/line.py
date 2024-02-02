@@ -249,6 +249,9 @@ class FloorPlot(XPlot):
         self.ignore = [ignore] if isinstance(ignore, str) else ignore
         self.element_width = element_width
 
+        if isinstance(self.labels, (list, tuple, np.ndarray)):
+            self.labels = '|'.join(self.labels)
+
         # Create plot
         self.ax.set(
             xlabel=self.label_for(self.projection[0]), ylabel=self.label_for(self.projection[1])
@@ -396,9 +399,9 @@ class FloorPlot(XPlot):
                         rho = length / arc
 
                         if line[name].isthick:
+                            # Find the center of the arc
                             x_mid = 0.5 * (x + X[i + 1])
                             y_mid = 0.5 * (y + Y[i + 1])
-
                             dr = np.array([X[i + 1] - x, Y[i + 1] - y, 0])
                             dn = np.cross(dr, [0, 0, 1])
                             dn /= np.linalg.norm(dn)
@@ -408,8 +411,6 @@ class FloorPlot(XPlot):
                             p_center = np.array([x_mid, y_mid, 0]) - np.sign(arc) * dh * dn
                             x = p_center[0]
                             y = p_center[1]
-
-
 
                         # bending elements as wedge
                         box = mpl.patches.Wedge(
@@ -432,6 +433,10 @@ class FloorPlot(XPlot):
                         )
 
                     else:
+                        if line[name].isthick:
+                            x = 0.5 * (x + X[i + 1])
+                            y = 0.5 * (y + Y[i + 1])
+
                         # other elements as rect
                         box = mpl.patches.Rectangle(
                             **defaults_for(
