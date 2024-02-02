@@ -393,12 +393,25 @@ class FloorPlot(XPlot):
 
                     if length > 0 and arc:
 
+                        rho = length / arc
+
                         if line[name].isthick:
-                            x = 0.5 * (x + X[i + 1])
-                            y = 0.5 * (y + Y[i + 1])
+                            x_mid = 0.5 * (x + X[i + 1])
+                            y_mid = 0.5 * (y + Y[i + 1])
+
+                            dr = np.array([X[i + 1] - x, Y[i + 1] - y, 0])
+                            dn = np.cross(dr, [0, 0, 1])
+                            dn /= np.linalg.norm(dn)
+                            d = np.linalg.norm(dr)/2
+                            sin_theta = np.abs(d/rho)
+                            dh = d * sin_theta
+                            p_center = np.array([x_mid, y_mid, 0]) - np.sign(arc) * dh * dn
+                            x = p_center[0]
+                            y = p_center[1]
+
+
 
                         # bending elements as wedge
-                        rho = length / arc
                         box = mpl.patches.Wedge(
                             **defaults_for(
                                 mpl.patches.Wedge,
