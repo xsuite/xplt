@@ -250,7 +250,7 @@ class FloorPlot(XPlot):
         self.element_width = element_width
 
         if isinstance(self.labels, (list, tuple, np.ndarray)):
-            self.labels = '|'.join(self.labels)
+            self.labels = '|'.join(['^' + ll + '$' for ll in self.labels])
 
         # Create plot
         self.ax.set(
