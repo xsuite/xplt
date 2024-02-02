@@ -351,6 +351,13 @@ class FloorPlot(XPlot):
                 order = get(survey, "order", {i: order})[i]
                 length = get(element, "length", None)
                 length = get(survey, "length", {i: length})[i]
+
+                # Patch order for thick elements
+                if name != '_end_point':
+                    etype_name = line[name].__class__.__name__
+                    if etype_name in ORDER_NAMED_ELEMENTS:
+                        order = ORDER_NAMED_ELEMENTS[etype_name]
+
                 if length is not None:
                     length = length * scale
 
@@ -522,6 +529,13 @@ class FloorPlot(XPlot):
         elif config:
             return default
 
+
+ORDER_NAMED_ELEMENTS = {
+        'Bend': 0,
+        'Quadrupole': 1,
+        'Sextupole': 2,
+        'Octupole': 3,
+}
 
 ## Restrict star imports to local namespace
 __all__ = [
