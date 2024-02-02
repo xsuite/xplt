@@ -19,6 +19,8 @@ from .base import XPlot, XManifoldPlot
 from .util import defaults, get, defaults_for
 from .properties import Property, DataProperty
 
+import xtrack as xt
+
 
 def iter_elements(line):
     """Iterate over elements in line
@@ -309,6 +311,7 @@ class FloorPlot(XPlot):
             NAME = get(survey, "name")
             BEND = get(survey, "angle")
 
+
             # beam line
             ############
             self.artist_beamline.set_data(X, Y)
@@ -332,7 +335,7 @@ class FloorPlot(XPlot):
             legend_entries = []
             for i, (x, y, rt, name, arc) in enumerate(zip(X, Y, R, NAME, BEND)):
                 drift_length = get(survey, "drift_length", None)
-                if drift_length is not None and drift_length[i] > 0:
+                if drift_length is not None and drift_length[i] > 0 and isinstance(line[name], xt.Drift):
                     continue  # skip drift spaces
                 if self.ignore is not None:
                     if np.any([re.match(pattern, name) is not None for pattern in self.ignore]):
@@ -382,6 +385,11 @@ class FloorPlot(XPlot):
                         legend_entries.append(box_style.get("label"))
 
                     if length > 0 and arc:
+
+                        if line[name].isthick:
+                            x = 0.5 * (x + X[i + 1])
+                            y = 0.5 * (y + Y[i + 1])
+
                         # bending elements as wedge
                         rho = length / arc
                         box = mpl.patches.Wedge(
