@@ -24,7 +24,6 @@ Read the docs at https://eltos.github.io/xplt
 ```bash
 git clone git@github.com:eltos/xplt.git
 cd xplt
-git checkout develop
 pip install -e .
 pip install pre-commit
 pre-commit install
