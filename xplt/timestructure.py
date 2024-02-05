@@ -355,7 +355,7 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
             return self._scaling.lower()
         if isinstance(self._scaling, dict) and key in self._scaling:
             return self._scaling[key].lower()
-        return "pds" if key == "count" else "amplitude"
+        return "pds" if self._count_based(key) else "amplitude"
 
     def fmax(self, particles=None, *, default=None):
         """Return the maximum frequency this plot should show
@@ -484,6 +484,9 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
                     # post-processing expression wrappers
                     if wrap := self.on_y_expression[i][j][k]:
                         mag = evaluate_expression_wrapper(wrap, p, mag)
+
+                    if p == "cumulative":
+                        mag = np.cumsum(mag)
 
                     # update plot
                     self.artists[i][j][k].set_data(freq, mag)
