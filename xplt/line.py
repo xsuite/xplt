@@ -19,9 +19,6 @@ from .base import XPlot, XManifoldPlot
 from .util import defaults, get, defaults_for
 from .properties import Property, DataProperty
 
-import xtrack as xt
-
-
 def iter_elements(line):
     """Iterate over elements in line
 
@@ -337,11 +334,8 @@ class FloorPlot(XPlot):
             legend_entries = []
             for i, (x, y, rt, name, arc) in enumerate(zip(X, Y, R, NAME, BEND)):
                 drift_length = get(survey, "drift_length", None)
-                if (
-                    drift_length is not None
-                    and drift_length[i] > 0
-                    and isinstance(line[name], xt.Drift)
-                ):
+                if (drift_length is not None and drift_length[i] > 0
+                    and line[name].__class__.__name__ == 'Drift'):
                     continue  # skip drift spaces
                 if self.ignore is not None:
                     if np.any([re.match(pattern, name) is not None for pattern in self.ignore]):
