@@ -205,10 +205,10 @@ class FloorPlot(XPlot):
             projection (str): The projection to use: A pair of coordinates ('XZ', 'ZY' etc.)
             line (xtrack.Line): Line data with additional information about elements.
                 Use this to have colored boxes of correct size etc.
-            boxes (None | bool | str | dict): Config option for showing colored boxes for elements. See below.
+            boxes (None | bool | str | iterable | dict): Config option for showing colored boxes for elements. See below.
                 Detailed options can be "length" and all options suitable for a patch,
                 such as "color", "alpha", etc.
-            labels (None | bool | str | dict): Config option for showing labels for elements. See below.
+            labels (None | bool | str | iterable | dict): Config option for showing labels for elements. See below.
                 Detailed options can be "text" (e.g. "Dipole {name}" where name will be
                 replaced with the element name) and all options suitable for an annotation,
                 such as "color", "alpha", etc.
@@ -221,6 +221,7 @@ class FloorPlot(XPlot):
             - None: Use good defaults.
             - A bool: En-/disable option for all elements (except drifts).
             - A str (regex): Filter by element name.
+            - A list, tuple or numpy array: Filter by any of the given element names
             - A dict: Detailed options to apply for each element in the form of
               `{"regex": {...}}`. For each matching element name, the options are used.
 
@@ -247,6 +248,8 @@ class FloorPlot(XPlot):
         self.ignore = [ignore] if isinstance(ignore, str) else ignore
         self.element_width = element_width
 
+        if isinstance(self.boxes, (list, tuple, np.ndarray)):
+            self.boxes = "|".join(["^" + ll + "$" for ll in self.boxes])
         if isinstance(self.labels, (list, tuple, np.ndarray)):
             self.labels = "|".join(["^" + ll + "$" for ll in self.labels])
 
@@ -275,7 +278,7 @@ class FloorPlot(XPlot):
 
         Args:
             survey (Any): Survey data.
-            line (xtrack.Line): Line data.
+            line (None | xtrack.Line): Line data.
             autoscale (bool): Whether or not to perform autoscaling on all axes
 
         Returns:
@@ -335,11 +338,8 @@ class FloorPlot(XPlot):
             legend_entries = []
             for i, (x, y, rt, name, arc) in enumerate(zip(X, Y, R, NAME, BEND)):
                 drift_length = get(survey, "drift_length", None)
-                if (
-                    drift_length is not None
-                    and drift_length[i] > 0
-                    and line[name].__class__.__name__ == "Drift"
-                ):
+                is_thick = line is not None and name in line.element_dict and line[name].isthick
+                if drift_length is not None and drift_length[i] > 0 and not is_thick:
                     continue  # skip drift spaces
                 if self.ignore is not None:
                     if np.any([re.match(pattern, name) is not None for pattern in self.ignore]):
@@ -353,15 +353,11 @@ class FloorPlot(XPlot):
                 element = line.element_dict.get(name) if line is not None else None
                 order = get(element, "order", None)
                 order = get(survey, "order", {i: order})[i]
+                if line is not None and name in line.element_dict:
+                    order = ORDER_NAMED_ELEMENTS.get(line[name].__class__.__name__, order)
+
                 length = get(element, "length", None)
                 length = get(survey, "length", {i: length})[i]
-
-                # Patch order for thick elements
-                if name != "_end_point":
-                    etype_name = line[name].__class__.__name__
-                    if etype_name in ORDER_NAMED_ELEMENTS:
-                        order = ORDER_NAMED_ELEMENTS[etype_name]
-
                 if length is not None:
                     length = length * scale
 
@@ -395,25 +391,24 @@ class FloorPlot(XPlot):
                     else:
                         legend_entries.append(box_style.get("label"))
 
+                    # Handle thick elements
+                    if is_thick and i + 1 < len(X):
+                        # Find the center of the arc
+                        x_mid = 0.5 * (x + X[i + 1])
+                        y_mid = 0.5 * (y + Y[i + 1])
+                        dr = np.array([X[i + 1] - x, Y[i + 1] - y, 0])
+                        dn = np.cross(dr, [0, 0, 1])
+                        dn /= np.linalg.norm(dn)
+                        d = np.linalg.norm(dr) / 2
+                        sin_theta = np.abs(d * arc / length)
+                        dh = d * sin_theta
+                        p_center = np.array([x_mid, y_mid, 0]) - helicity * dh * dn
+                        x = p_center[0]
+                        y = p_center[1]
+
                     if length > 0 and arc:
-
-                        rho = length / arc
-
-                        if line[name].isthick:
-                            # Find the center of the arc
-                            x_mid = 0.5 * (x + X[i + 1])
-                            y_mid = 0.5 * (y + Y[i + 1])
-                            dr = np.array([X[i + 1] - x, Y[i + 1] - y, 0])
-                            dn = np.cross(dr, [0, 0, 1])
-                            dn /= np.linalg.norm(dn)
-                            d = np.linalg.norm(dr) / 2
-                            sin_theta = np.abs(d / rho)
-                            dh = d * sin_theta
-                            p_center = np.array([x_mid, y_mid, 0]) - np.sign(arc) * dh * dn
-                            x = p_center[0]
-                            y = p_center[1]
-
                         # bending elements as wedge
+                        rho = length / arc
                         box = mpl.patches.Wedge(
                             **defaults_for(
                                 mpl.patches.Wedge,
@@ -434,10 +429,6 @@ class FloorPlot(XPlot):
                         )
 
                     else:
-                        if line[name].isthick:
-                            x = 0.5 * (x + X[i + 1])
-                            y = 0.5 * (y + Y[i + 1])
-
                         # other elements as rect
                         box = mpl.patches.Rectangle(
                             **defaults_for(
@@ -549,6 +540,7 @@ class FloorPlot(XPlot):
             return default
 
 
+# Known class names from xtrack and their order
 ORDER_NAMED_ELEMENTS = {
     "Bend": 0,
     "Quadrupole": 1,
