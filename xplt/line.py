@@ -247,7 +247,7 @@ class FloorPlot(XPlot):
         self.element_width = element_width
 
         if isinstance(self.labels, (list, tuple, np.ndarray)):
-            self.labels = '|'.join(['^' + ll + '$' for ll in self.labels])
+            self.labels = "|".join(["^" + ll + "$" for ll in self.labels])
 
         # Create plot
         self.ax.set(
@@ -311,7 +311,6 @@ class FloorPlot(XPlot):
             NAME = get(survey, "name")
             BEND = get(survey, "angle")
 
-
             # beam line
             ############
             self.artist_beamline.set_data(X, Y)
@@ -354,7 +353,7 @@ class FloorPlot(XPlot):
                 length = get(survey, "length", {i: length})[i]
 
                 # Patch order for thick elements
-                if name != '_end_point':
+                if name != "_end_point":
                     etype_name = line[name].__class__.__name__
                     if etype_name in ORDER_NAMED_ELEMENTS:
                         order = ORDER_NAMED_ELEMENTS[etype_name]
@@ -403,8 +402,8 @@ class FloorPlot(XPlot):
                             dr = np.array([X[i + 1] - x, Y[i + 1] - y, 0])
                             dn = np.cross(dr, [0, 0, 1])
                             dn /= np.linalg.norm(dn)
-                            d = np.linalg.norm(dr)/2
-                            sin_theta = np.abs(d/rho)
+                            d = np.linalg.norm(dr) / 2
+                            sin_theta = np.abs(d / rho)
                             dh = d * sin_theta
                             p_center = np.array([x_mid, y_mid, 0]) - np.sign(arc) * dh * dn
                             x = p_center[0]
@@ -547,10 +546,10 @@ class FloorPlot(XPlot):
 
 
 ORDER_NAMED_ELEMENTS = {
-        'Bend': 0,
-        'Quadrupole': 1,
-        'Sextupole': 2,
-        'Octupole': 3,
+    "Bend": 0,
+    "Quadrupole": 1,
+    "Sextupole": 2,
+    "Octupole": 3,
 }
 
 ## Restrict star imports to local namespace

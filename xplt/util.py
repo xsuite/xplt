@@ -9,7 +9,7 @@ __author__ = "Philipp Niedermayer"
 __contact__ = "eltos@outlook.de"
 __date__ = "2022-11-15"
 
-import math
+
 import types
 
 import numpy as np
@@ -177,6 +177,88 @@ def evaluate_expression_wrapper(expression, key, data):
                 continue
             print(f"  {k}{inspect.signature(v)}", file=sys.stderr)
         raise
+
+
+def binned_data(
+    values, *, what=None, n=None, dv=None, v_range=None, moments=1, make_n_power_of_two=False
+):
+    """Get histogrammed data with equally spaced bins
+
+    From the non-equally distributed values, a histogram or timeseries with equally
+    spaced bins is derived. The parameter ``what`` determines what is returned for the timeseries.
+    By default (what=None), the number of particles for each bin is returned.
+    Alternatively, a particle property can be passed as array, in which case that property is averaged
+    over all particles of the respective bin (or 0 if no particles are within a bin).
+    It is also possible to specify the moments to return, i.e. the power to which the property is raised
+    before averaging. This allows to determine mean (1st moment, default) and variance (difference between
+    2nd and 1st moment) etc. To disable averaging, pass None as the moment
+
+    Args:
+        values (np.ndarray): Array of particle data, e.g. timestamps.
+        n (int | None): Number of bins. Must not be used together with `dv`.
+        dv (float | None): Bin width. Must not be used together with n.
+        v_range (tuple[float] | None): Tuple of (min, max) values to consider.
+                                       If None, the range is determined from the data.
+        what (np.ndarray | None): Array of associated data or None. Must have same shape as values. See above.
+        moments (int | list[int | None] | None): The moment(s) to return for associated data if what is not None. See above.
+        make_n_power_of_two (bool): If true, ensure that the number of bins is a power of two by rounding up.
+                                    Useful to increase performance of calculating FFTs on the timeseries data.
+
+    Returns:
+        The histogram or timeseries as tuple (v_min, dv, *counts_or_what) where
+        `v_min` is the start value of the histogram or timeseries data,
+        `dv` is the bin width and
+        `*counts_or_what` are the values of the histogram or timeseries as an array of length n
+            (if multiple moments are requested, an array is returned for each of them).
+    """
+
+    v_min = np.min(values) if v_range is None or v_range[0] is None else v_range[0]
+    v_max = np.max(values) if v_range is None or v_range[1] is None else v_range[1]
+
+    if n is not None and dv is None:
+        # number of bins requested, adjust bin width accordingly
+        if make_n_power_of_two:
+            n = 1 << (n - 1).bit_length()
+        dv = (v_max - v_min) / n
+    elif n is None and dv is not None:
+        # bin width requested, adjust number of bins accordingly
+        n = int(np.ceil((v_max - v_min) / dv))
+        if make_n_power_of_two:
+            n = 1 << (n - 1).bit_length()
+    else:
+        raise ValueError(f"Exactly one of n or dt must be specified, but got n={n} and dt={dv}")
+
+    # Note: The code below was optimized to run much faster than an ordinary
+    # np.histogram, which quickly slows down for large datasets.
+    # If you intend to change something here, make sure to benchmark it!
+
+    # count timestamps in bins
+    bins = np.floor((values - v_min) / dv).astype(int)
+    # bins are i*dt <= t < (i+1)*dt where i = 0 .. n-1
+    mask = (bins >= 0) & (bins < n)  # igore times outside range
+    bins = bins[mask]
+    # count particles per time bin
+    counts = np.bincount(bins, minlength=n)[:n]
+
+    if what is None:
+        # Return particle counts
+        return v_min, dv, counts
+
+    else:
+        # Return 'what' averaged
+        result = [v_min, dv]
+        if isinstance(moments, int) or moments is None:
+            moments = [moments]
+        for m in moments:
+            v = np.zeros(n)
+            # sum up 'what' for all the particles in each bin
+            power = m if m is not None else 1
+            np.add.at(v, bins, what[mask] ** power)
+            if m is not None:
+                # divide by particle count to get mean (default to 0)
+                v[counts > 0] /= counts[counts > 0]
+            result.append(v)
+        return result
 
 
 def normalized_coordinates(x, px, twiss, xy, delta=0):
