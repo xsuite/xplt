@@ -41,4 +41,5 @@ except:
 
 
 def apply_style():
+    """Apply xplt's matplotlib style sheet and update rcParams"""
     mpl.style.use("xplt.xplt")
