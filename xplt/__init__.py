@@ -38,3 +38,7 @@ try:
     hooks.register_pint_options()
 except:
     pass
+
+
+def apply_style():
+    mpl.style.use("xplt.xplt")

@@ -1,0 +1,5 @@
+figure.constrained_layout.use: True
+legend.fontsize: x-small
+legend.title_fontsize: small
+grid.color: "#DDD"
+axes.prop_cycle: cycler('color', ['pet0', 'pet1', 'pet2', 'pet3', 'pet4', 'pet5', 'pet6', 'pet7', 'pet8', 'pet9'])

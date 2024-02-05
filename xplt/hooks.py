@@ -40,18 +40,6 @@ def register_matplotlib_options():
         cmap_r.name = cmap.name + "_r"
         mpl.cm.register_cmap(cmap=cmap_r)
 
-    # # set rcParams
-    # mpl.rcParams.update(
-    #     {
-    #         "figure.constrained_layout.use": True,
-    #         "legend.fontsize": "x-small",
-    #         "legend.title_fontsize": "small",
-    #         "grid.color": "#DDD",
-    #         "axes.prop_cycle": mpl.cycler(color=petroff_colors),
-    #         # 'image.cmap': cmap_petroff_gradient,
-    #     }
-    # )
-
 
 def register_pint_options():
     """Register default options for pint"""

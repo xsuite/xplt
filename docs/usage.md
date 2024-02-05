@@ -22,6 +22,7 @@ Xsuite is not an explicit dependency, rather an API assumption on available attr
 
 ```python
 import xplt
+xplt.apply_style()  # use our matplotlib style sheet
 import numpy as np
 import pandas as pd
 
