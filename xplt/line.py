@@ -118,15 +118,15 @@ class KnlPlot(XManifoldPlot):
         orders = {p: order(p) for p in self.on_y_unique}
         Smax = line.get_length()
         for name, el, s0, s1 in iter_elements(line):
-            if hasattr(el, "knl"):
-                if 0 <= s0 <= Smax:
-                    mask = (self.S >= s0) & (self.S < s1)
-                else:
-                    # handle wrap around
-                    mask = (self.S >= s0 % Smax) | (self.S < s1 % Smax)
-                for knl, n in orders.items():
-                    if n <= el.order:
-                        values[knl][mask] += el.knl[n]
+            if 0 <= s0 <= Smax:
+                mask = (self.S >= s0) & (self.S < s1)
+            else:  # handle wrap around
+                mask = (self.S >= s0 % Smax) | (self.S < s1 % Smax)
+            for knl, n in orders.items():
+                if hasattr(el, f"k{n}") and hasattr(el, "length"):
+                    values[knl][mask] += getattr(el, f"k{n}") * el.length
+                elif hasattr(el, "knl") and n <= el.order:
+                    values[knl][mask] += el.knl[n]
 
         # plot
         s = self.S * self.factor_for("s")
