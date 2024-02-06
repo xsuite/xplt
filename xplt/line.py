@@ -201,10 +201,10 @@ class FloorPlot(XPlot):
         """
 
         Args:
-            survey (Any): Survey data.
-            projection (str): The projection to use: A pair of coordinates ('XZ', 'ZY' etc.)
-            line (xtrack.Line): Line data with additional information about elements.
+            survey (Any | None): Survey data from MAD-X or Xsuite.
+            line (xtrack.Line | None): Line data with additional information about elements.
                 Use this to have colored boxes of correct size etc.
+            projection (str): The projection to use: A pair of coordinates ('XZ', 'ZY' etc.)
             boxes (None | bool | str | iterable | dict): Config option for showing colored boxes for elements. See below.
                 Detailed options can be "length" and all options suitable for a patch,
                 such as "color", "alpha", etc.
@@ -269,6 +269,8 @@ class FloorPlot(XPlot):
         self.artists_labels = []
 
         # set data
+        if survey is None and line is not None:
+            survey = line.survey()
         if survey is not None:
             self.update(survey, line, autoscale=True)
 

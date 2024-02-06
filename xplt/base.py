@@ -240,8 +240,8 @@ class XPlot:
 
         Args:
             ax (matplotlib.axes.Axes): Axes to autoscale
-            artists (list): Artists to consider (if any)
-            data (list): Data points to consider (if any) in the form [(x1,y1), (x2,y2), ...]
+            artists (iterable): Artists to consider (if any)
+            data (iterable): Data points to consider (if any) in the form [(x1,y1), (x2,y2), ...]
             reset (bool): Whether to ignore any data limits already registered.
             freeze (bool): Whether to keep the updated axes limits (True) or enable automatic
                 autoscaling on future draws (for all present and new artists).

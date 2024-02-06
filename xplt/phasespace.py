@@ -578,8 +578,6 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
                 XY[1] *= self.factor_for(b)
                 return XY
 
-            lim = ax.dataLim
-
             # plot separatrix
             if separatrix:
                 kwarg = defaults_for(

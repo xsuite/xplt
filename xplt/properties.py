@@ -227,7 +227,7 @@ def find_property(name, *, extra_user_properties=None, extra_default_properties=
         return _default_properties[name]
     else:
         raise ValueError(
-            f"Property `{name}` is not known, please register it using xplt.register_property or  xplt.register_derived_property"
+            f"Property `{name}` is not known, please register it using `xplt.register_property` or `xplt.register_derived_property`."
         )
 
 
