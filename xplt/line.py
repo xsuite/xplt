@@ -44,6 +44,11 @@ def order(knl):
     return int(re.match(r"k(\d+)l", knl).group(1))
 
 
+def tanc(x):
+    """Tangens cardinalis, i.e. tan(x)/x with limit tanc(0)=1"""
+    return np.sinc(x) / np.cos(x)
+
+
 class KnlPlot(XManifoldPlot):
     """A plot for knl values along line"""
 
@@ -394,19 +399,11 @@ class FloorPlot(XPlot):
                         legend_entries.append(box_style.get("label"))
 
                     # Handle thick elements
-                    if is_thick and i + 1 < len(X):
-                        # Find the center of the arc
-                        x_mid = 0.5 * (x + X[i + 1])
-                        y_mid = 0.5 * (y + Y[i + 1])
-                        dr = np.array([X[i + 1] - x, Y[i + 1] - y, 0])
-                        dn = np.cross(dr, [0, 0, 1])
-                        dn /= np.linalg.norm(dn)
-                        d = np.linalg.norm(dr) / 2
-                        sin_theta = np.abs(d * arc / length)
-                        dh = d * sin_theta
-                        p_center = np.array([x_mid, y_mid, 0]) - helicity * dh * dn
-                        x = p_center[0]
-                        y = p_center[1]
+                    if is_thick:
+                        # Find the center of single kick for equivalent thin element
+                        d = length * tanc(arc / 2) / 2
+                        x += d * np.cos(ang(rt))
+                        y += d * np.sin(ang(rt))
 
                     if length > 0 and arc:
                         # bending elements as wedge
