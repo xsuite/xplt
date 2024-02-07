@@ -8,14 +8,16 @@ name = "xplt"
 description = "Plotting for Xsuite"
 readme = "README.md"
 keywords = ["python"]
-#license = {text = ""}
+license = {file = "LICENSE"}
 authors = [
   { name = "Philipp Niedermayer (github.com/eltos)", email = "eltos@outlook.de" },
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
-#    "License :: ",
+    "License :: OSI Approved :: Apache Software License",
     "Topic :: Scientific/Engineering :: Physics",
+    "Topic :: Scientific/Engineering :: Visualization",
+    "Framework :: Matplotlib",
     "Programming Language :: Python :: 3",
 ]
 
