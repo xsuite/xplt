@@ -19,13 +19,6 @@ Read the docs at https://eltos.github.io/xplt
 
 
 
-## Developer installation
+## Developers and Contributors
 
-```bash
-git clone git@github.com:eltos/xplt.git
-cd xplt
-pip install -e .
-pip install pre-commit
-pre-commit install
-git config core.autocrlf input
-```
+See the wiki page at https://github.com/eltos/xplt/wiki
