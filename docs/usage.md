@@ -18,7 +18,7 @@ examples/properties
 ```
 
 :::{tip}
-Xsuite is not an explicit dependency, rather an API assumption on available attributes, indices and units. You can use data from any source, and also custom attributes. See {doc}`examples/units` on how to specify units of custom attributes.
+Xsuite is not an explicit dependency, rather an API assumption on available attributes, indices and units. You can use data from any source, and also custom attributes. See {doc}`examples/properties` on how to specify units of custom attributes.
 
 ```python
 import xplt
