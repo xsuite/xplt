@@ -765,7 +765,8 @@ class XManifoldPlot(XPlot):
                 labels = [h.get_label() for h in handle_map]
 
                 # show legend
-                ax.legend(handles=handles, labels=labels, **kwargs)
+                if len(handles) > 0:
+                    ax.legend(handles=handles, labels=labels, **kwargs)
 
     def autoscale(self, subplot="all", *, reset=False, freeze=True, tight=None):
         """Autoscale the axes of a subplot
