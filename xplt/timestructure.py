@@ -721,7 +721,7 @@ class TimeIntervalPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramPlotMi
                         range=(0, self.bin_count * self.bin_time),
                         weights=weights,
                     )
-                    counts = counts.astype(np.float)
+                    counts = counts.astype(float)
                     if p in ("rate", "current"):
                         counts /= self.bin_time
                     if self.relative:
