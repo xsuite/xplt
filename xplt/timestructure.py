@@ -1308,9 +1308,9 @@ class TimeVariationScalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
             for metric in F.keys():
                 # calculate metrics
                 v, lim = self._calculate_metric(N, metric, axis=1)
-                F[metric][i] = np.mean(v)
-                F_std[metric][i] = np.std(v) or np.nan
-                F_poisson[metric][i] = np.mean(lim)
+                F[metric][i] = np.nanmean(v)
+                F_std[metric][i] = np.nanstd(v) or np.nan
+                F_poisson[metric][i] = np.nanmean(lim)
 
         DT = DT * self.factor_for(self.on_x)
 
