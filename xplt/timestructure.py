@@ -841,6 +841,10 @@ class MetricesMixin:
         """
         xy = "x" if orientation[0].lower() in "xh" else "y"
         ax_cv, ax_duty = (ax, at) if twin_is_duty else (at, ax)
+        if getattr(ax, f"get_{xy}scale")() != "linear":
+            raise NotImplementedError(
+                "Linked cv and duty axes are only supported for linear scaling!"
+            )
 
         cv2duty = lambda cv: factor_duty / (1 + (cv / factor_cv) ** 2)
         duty2cv = lambda du: factor_cv * (factor_duty / du - 1) ** 0.5
