@@ -1,0 +1,270 @@
+:py:mod:`xplt.properties`
+=========================
+
+.. py:module:: xplt.properties
+
+.. autoapi-nested-parse::
+
+   Methods to work with properties
+
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   xplt.properties.DataProperty
+   xplt.properties.DerivedProperty
+   xplt.properties.Property
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   xplt.properties.find_property
+   xplt.properties.register_data_property
+   xplt.properties.register_derived_property
+   xplt.properties.register_property
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   xplt.properties.P
+   xplt.properties.arb_unit
+   xplt.properties.pd
+
+
+.. py:class:: DataProperty(key, unit, symbol=None, description=None)
+
+   Bases: :py:obj:`Property`
+
+   
+   Class for property which can directly be accessed from data
+
+   :param key: The key used to access data (or None if you promise not to call .value)
+   :type key: str
+   :param unit: Physical unit of property data.
+   :type unit: str
+   :param symbol: Short physical symbol representing property, preferably latex (e.g. $x$).
+                  If None, defaults to the key.
+   :type symbol: str | None
+   :param description: Longer description of the property to display on legend and axes labels.
+   :type description: optional
+
+   .. py:method:: prop(name)
+
+      Find a property by name
+
+      This method is overwritten by plots which provide custom properties
+
+      :param name: The property name by which it is registered
+      :type name: str
+
+      :returns: Property
+
+
+   .. py:method:: values(data, mask=None, *, unit=None)
+
+      Get masked data for this property
+
+      :param data: The data object providing the values
+      :type data: any
+      :param mask: An optional mask to apply to the values.
+                   Can be None, a slice, a binary mask or a callback.
+                   If a callback, it must have the signature ``(mask_1, get) -> mask_2`` where mask_1 is the
+                   binary mask to be modified, mask_2 is the modified mask, and get is a method allowing the
+                   callback to retrieve particle properties in their respective data units.
+                   .. rubric:: Example
+
+                   def mask_callback(mask, get):
+                       mask &= get("t") < 1e-3  # all particles with time < 1 ms
+                       return mask
+      :type mask: None | Any | callable
+      :param unit: The unit to convert the data to, must be compatible with this property
+      :type unit: str
+
+
+   .. py:method:: with_property_resolver(resolver)
+
+      Create a new property with a custom property resolver
+
+      :param resolver: A function which takes a property name and returns a property
+      :type resolver: callable
+
+
+
+.. py:class:: DerivedProperty(symbol, unit, evaluate, description=None)
+
+   Bases: :py:obj:`Property`
+
+   
+   Class for property which is derived from other properties
+
+   :param symbol: Short physical symbol representing property, preferably latex (e.g. $x$).
+   :type symbol: str | None
+   :param unit: Physical unit of property data.
+   :type unit: str
+   :param evaluate: The function which determines the property values. Function parameters must
+                    be names of other properties, which will be provided to the function.
+   :type evaluate: Callable
+   :param description: Longer description of the property to display on legend and axes labels.
+   :type description: optional
+
+   .. py:method:: prop(name)
+
+      Find a property by name
+
+      This method is overwritten by plots which provide custom properties
+
+      :param name: The property name by which it is registered
+      :type name: str
+
+      :returns: Property
+
+
+   .. py:method:: values(data, mask=None, *, unit=None)
+
+      Get masked data for this property
+
+      :param \*: See :py:func:`Property.values`
+
+
+   .. py:method:: with_property_resolver(resolver)
+
+      Create a new property with a custom property resolver
+
+      :param resolver: A function which takes a property name and returns a property
+      :type resolver: callable
+
+
+
+.. py:class:: Property(symbol, unit, description=None)
+
+   
+   Class holding generic property information
+
+   :param symbol: Short physical symbol representing property, preferably latex (e.g. $x$).
+   :type symbol: str
+   :param unit: Physical unit of property data.
+   :type unit: str
+   :param description: Longer description of the property to display on legend and axes labels.
+   :type description: str | None
+
+   .. py:method:: prop(name)
+
+      Find a property by name
+
+      This method is overwritten by plots which provide custom properties
+
+      :param name: The property name by which it is registered
+      :type name: str
+
+      :returns: Property
+
+
+   .. py:method:: values(data, mask=None, *, unit=None)
+      :abstractmethod:
+
+      Get masked data for this property
+
+      :param data: The data object providing the values
+      :type data: any
+      :param mask: An optional mask to apply to the values
+      :type mask: any
+      :param unit: The unit to convert the data to, must be compatible with this property
+      :type unit: str
+
+
+   .. py:method:: with_property_resolver(resolver)
+
+      Create a new property with a custom property resolver
+
+      :param resolver: A function which takes a property name and returns a property
+      :type resolver: callable
+
+
+
+.. py:function:: find_property(name, *, extra_user_properties=None, extra_default_properties=None)
+
+   Find a Property by name
+
+   :param name: The name of the property.
+   :type name: str
+   :param extra_user_properties: Additional user properties.
+   :type extra_user_properties: dict | None
+   :param extra_default_properties: Additional default properties.
+   :type extra_default_properties: dict | None
+
+   :returns: Property information
+   :rtype: Property
+
+   :raises ValueError: If property is not known
+
+
+.. py:function:: register_data_property(name, data_unit, symbol=None, description=None)
+
+   Register a user defined data property
+
+   :param name: Property name as used in `kind` string
+   :type name: str
+   :param data_unit: Unit of data values associated with this property
+   :type data_unit: str
+   :param symbol: Symbol to display in plots, e.g. $a_1$
+   :type symbol: str, optional
+   :param description: Description
+   :type description: str, optional
+
+
+.. py:function:: register_derived_property(name, function, unit=None, symbol=None, description=None)
+
+   Register a user defined derived property
+
+   :param name: Property name as used in `kind` string
+   :type name: str
+   :param function: Function to evaluate the property from other properties
+   :type function: Callable
+   :param unit: Unit of data values associated with this property.
+                If none, the unit is determined from the function return value.
+   :type unit: str | None
+   :param symbol: Symbol to display in plots, e.g. $a_1$
+   :type symbol: str, optional
+   :param description: Description
+   :type description: str, optional
+
+
+.. py:function:: register_property(name, property)
+
+   Register a user defined property
+
+   :param name: Property name as used in `kind` string
+   :type name: str
+   :param property: The property
+   :type property: Property
+
+
+.. py:data:: P
+   
+
+   
+
+.. py:data:: arb_unit
+   :annotation: = arb. unit
+
+   
+
+.. py:data:: pd
+   
+
+   
+

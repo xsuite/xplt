@@ -1,0 +1,1960 @@
+:py:mod:`xplt.timestructure`
+============================
+
+.. py:module:: xplt.timestructure
+
+.. autoapi-nested-parse::
+
+   Methods for plotting particle arrival times
+
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   xplt.timestructure.MetricesMixin
+   xplt.timestructure.TimeBinMetricHelper
+   xplt.timestructure.TimeBinPlot
+   xplt.timestructure.TimeFFTPlot
+   xplt.timestructure.TimeIntervalPlot
+   xplt.timestructure.TimePlot
+   xplt.timestructure.TimeVariationPlot
+   xplt.timestructure.TimeVariationScalePlot
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   xplt.timestructure.binned_timeseries
+
+
+
+.. py:class:: MetricesMixin
+
+   Mixin to evaluate particle fluctuation metrices for spill quality analysis
+
+   The following metrics are implemented:
+       cv: Coefficient of variation
+           cv = std(N)/mean(N)
+       duty: Spill duty factor
+           F = mean(N)**2 / mean(N**2)
+       maxmean: Maximum to mean ratio
+           M = max(N) / mean(N)
+
+
+
+.. py:class:: TimeBinMetricHelper(*, twiss=None, beta=None, frev=None, circumference=None)
+
+   Bases: :py:obj:`xplt.particles.ParticlePlotMixin`, :py:obj:`MetricesMixin`
+
+   Helper class for binning and evaluating metrices on timeseries data
+
+   :param twiss: Twiss parameters (alfx, alfy, betx and bety) to use for conversion to normalized phase space coordinates.
+   :type twiss: dict | None
+   :param beta: Relativistic beta of particles. Defaults to particles.beta0.
+   :type beta: float | None
+   :param frev: Revolution frequency of circular line for calculation of particle time.
+   :type frev: float | None
+   :param circumference: Path length of circular line if frev is not given.
+   :type circumference: float | None
+
+   .. py:property:: circumference
+
+      Circumference of circular accelerator
+
+   .. py:method:: beta(particles=None)
+
+      Get reference relativistic beta as float
+
+
+   .. py:method:: binned_timeseries(particles, dt=None, *, mask=None, t_range=None, what=None, moments=1)
+
+      Get binned timeseries with equally spaced time bins
+
+      :param particles: Particles data to plot.
+      :type particles: Any
+      :param dt: Bin width in seconds.
+      :type dt: float | None
+      :param mask: The mask. Can be None, a slice, a binary mask or a callback.
+                   If a callback, it must have the signature ``(mask_1, get) -> mask_2`` where mask_1 is the
+                   binary mask to be modified, mask_2 is the modified mask, and get is a method allowing the
+                   callback to retriev particle properties in their respective data units.
+                   .. rubric:: Example
+
+                   def mask_callback(mask, get):
+                       mask &= get("t") < 1e-3  # all particles with time < 1 ms
+                       return mask
+      :type mask: None | Any | callable
+      :param t_range: Tuple of (min, max) time values to consider. If None, the range is determined from the data.
+      :type t_range: tuple[float] | None
+      :param what: Property to return per bin. Defaults to None, i.e. return counts per bins.
+      :type what: str | None
+      :param moments: The moment(s) to return if what is not None.
+                      Allows to get the mean (1st moment, default), variance (difference between 2nd and 1st moment) etc.
+      :type moments: int | list[int]
+
+      :returns:
+
+                Tuple of (t_min, dt_count, values) where
+                    t_min is the time of the first bin,
+                    dt_count is the bin width and
+                    values is the array of counts per bin (or whatever `what` was set to).
+      :rtype: tuple[np.array]
+
+
+   .. py:method:: calculate_metric(counts, metric, nbins)
+
+      Calculate metric on timeseries
+
+      :param counts: 1D timeseries of counts per bin.
+      :type counts: np.array
+      :param metric: Metric to calculate. See :class:`MetricesMixin` for available metrics.
+      :type metric: str
+      :param nbins: Number of subsequent bins to evaluate metric over.
+      :type nbins: int
+
+      :returns: Tuple of (value, limit) arrays for each evaluation of the metric.
+      :rtype: tuple[np.array]
+
+
+   .. py:method:: frev(particles=None)
+
+      Get reference revolution frequency
+
+
+   .. py:method:: get_property(name)
+
+      Public method to get a particle property by key
+
+      :param name: Key
+      :type name: str
+
+      :returns: The property
+      :rtype: Property
+
+
+
+.. py:class:: TimeBinPlot(particles=None, kind='count', *, bin_time=None, bin_count=None, relative=False, moment=1, mask=None, time_range=None, time_offset=0, plot_kwargs=None, **kwargs)
+
+   Bases: :py:obj:`xplt.base.XManifoldPlot`, :py:obj:`xplt.particles.ParticlePlotMixin`, :py:obj:`xplt.particles.ParticleHistogramPlotMixin`
+
+   A binned histogram plot of particles as function of times
+
+   The plot is based on the particle arrival time, which is:
+       - For circular lines: at_turn / frev - zeta / beta / c0
+       - For linear lines: zeta / beta / c0
+
+   The main purpose is to plot particle counts, but kind also accepts particle properties
+   in which case the property is averaged over all particles falling into the bin.
+
+   Useful to plot time structures of particles loss, such as spill structures.
+
+   :param particles: Particles data to plot.
+   :type particles: Any
+   :param kind: Defines the properties to plot, including 'count' (default), 'rate', 'cumulative', or a particle property to average.
+                This is a manifold subplot specification string like ``"count-cumulative"``, see :class:`~.base.XManifoldPlot` for details.
+                In addition, abbreviations for x-y-parameter pairs are supported (e.g. ``P`` for ``Px+Py``).
+   :type kind: str | list
+   :param bin_time: Time bin width (in s) if bin_count is None.
+   :type bin_time: float
+   :param bin_count: Number of bins if bin_time is None.
+   :type bin_count: int
+   :param relative: If True, plot relative numbers normalized to total count.
+                    If `kind` is a particle property, this has no effect.
+   :type relative: bool
+   :param moment: The moment(s) to plot if kind is a particle property.
+                  Allows to get the mean (1st moment, default), variance (difference between 2nd and 1st moment) etc.
+   :type moment: int
+   :param mask: An index mask to select particles to plot. If None, all particles are plotted.
+   :type mask: Any
+   :param time_range: Time range of particles to consider. If None, all particles are considered.
+   :type time_range: tuple
+   :param time_offset: Time offset for x-axis is seconds, i.e. show values as `t-time_offset`.
+   :type time_offset: float
+   :param plot_kwargs: Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.plot`.
+   :type plot_kwargs: dict
+   :param kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
+
+   .. py:property:: axflat
+
+      Return a flat list of all primary axes
+
+   .. py:property:: circumference
+
+      Circumference of circular accelerator
+
+   .. py:property:: on_y_unique
+
+
+   .. py:method:: add_scale(ax, scale, label=None, *, vertical=False, width=0.01, padding=0.1, loc='auto', color='k', fontsize='x-small')
+      :staticmethod:
+
+      Add a scale patch (a yardstick or ruler)
+
+      :param ax: The axis to add it to.
+      :type ax: matplotlib.axes.Axes
+      :param scale: The size of the scale in data units.
+      :type scale: float
+      :param label: A label for the scale.
+      :type label: str, optional
+      :param vertical: If true, make a vertical one (default is a horizontal one).
+      :type vertical: bool
+      :param width: The line width of the scale in axis units.
+      :type width: float
+      :param padding: The padding between the scale and the axis.
+      :type padding: float
+      :param loc: The location of the scale. Can be any of the usual matplotlib locations, e.g. 'auto', 'upper left', 'upper center', 'upper right', 'center left', 'center', 'center right', 'lower left', 'lower center, 'lower right'.
+      :type loc: str
+      :param color: Color for the patch.
+      :type color: str
+      :param fontsize: Font size of the label.
+      :type fontsize: str
+
+      :returns: The artist added (an AnchoredOffsetbox).
+
+
+   .. py:method:: annotate(text, **kwargs)
+
+
+   .. py:method:: artist(name=None, subplot=None, twin=None, trace=None)
+
+      Return the artist either by name, or by subplot, twin axes and trace index
+
+      :param name: Name of the property the artist is plotting
+      :type name: str, optional
+      :param subplot: Flat subplot index
+      :type subplot: int, optional
+      :param twin: Twin axis index
+      :type twin: int, optional
+      :param trace: Trace index
+      :type trace: int, optional
+
+      :returns: First artist that matches the given criteria
+      :rtype: matplotlib.artist.Artist
+
+
+   .. py:method:: autoscale(subplot='all', *, reset=False, freeze=True, tight=None)
+
+      Autoscale the axes of a subplot
+
+      :param subplot: Subplot axis index, indices or "all"
+      :type subplot: int | iterable | str
+      :param reset: Whether to ignore any data limits already registered.
+      :type reset: bool
+      :param freeze: Whether to keep the updated axes limits (True) or enable automatic
+                     autoscaling on future draws (for all present and new artists).
+      :type freeze: bool
+      :param tight: Enables tight scaling without margins for "x", "y", "both" or None.
+      :type tight: str | None
+
+
+   .. py:method:: axis(subplot=0, twin=0)
+
+      Return the axis for a given flat subplot index and twin index
+
+      :param subplot: Flat subplot index
+      :type subplot: int, optional
+      :param twin: Twin index
+      :type twin: int, optional
+
+      :returns: Axis for the given subplot and twin index
+      :rtype: matplotlib.axes.Axes
+
+
+   .. py:method:: beta(particles=None)
+
+      Get reference relativistic beta as float
+
+
+   .. py:method:: display_unit_for(p)
+
+      Return display unit for parameter
+
+      :param p: Property name
+      :type p: str
+
+      :returns: Display unit
+      :rtype: str
+
+
+   .. py:method:: factor_for(p)
+
+      Return factor to convert parameter into display unit
+
+      :param p: Property name
+      :type p: str
+
+      :returns: Factor to convert parameter into display unit
+      :rtype: float
+
+
+   .. py:method:: frev(particles=None)
+
+      Get reference revolution frequency
+
+
+   .. py:method:: get_property(name)
+
+      Public method to get a particle property by key
+
+      :param name: Key
+      :type name: str
+
+      :returns: The property
+      :rtype: Property
+
+
+   .. py:method:: label_for(*pp, unit=True, description=True)
+
+      Return axis label for list of properties, joining where possible
+
+      :param pp: Property names
+      :param unit: Whether to include unit
+      :type unit: bool
+      :param description: Whether to include description
+      :type description: bool
+
+      :returns: Axis label
+      :rtype: str
+
+
+   .. py:method:: legend(subplot='all', show=True, **kwargs)
+
+      Add, update or remove legend for a subplot
+
+      :param subplot: Subplot axis index or indices
+      :type subplot: Union[int, iterable, "all"]
+      :param show: If True, show the legend. If "auto", show
+                   legend for subplots with more than one trace, or if subplot is specified explicitly.
+      :type show: Union[bool, "auto"]
+      :param kwargs: Keyword arguments passed to :meth:`matplotlib.axes.Axes.legend`
+
+
+   .. py:method:: parse_nested_list_string(list_string, separators=',-+', subs={}, *, strip_off_methods=False)
+      :staticmethod:
+
+      Parse a separated string or nested list or a mixture of both
+
+
+
+
+      :param list_string: The string or nested list or a mixture of both to parse.
+      :type list_string: str or list
+      :param separators: The characters that separate the elements. The number of characters
+                         determines the depth of the returned list.
+      :type separators: str
+      :param subs: A dictionary of substitutions to apply to the elements during parsing.
+                   May introduce additional separators of equal or deeper level.
+      :type subs: dict
+      :param strip_off_methods: If true, each element can be a name `name` or an expression
+                                in the form `method(name, ...)`. The methods are stripped off,
+                                and returned separately.
+      :type strip_off_methods: bool
+
+      :returns: nested list of names in the string,
+                nested list of expressions in the string (only if strip_off_methods is True)
+
+      .. rubric:: Example
+
+      >>> XManifoldPlot.parse_nested_list_string("a+b, c-d,fun(e,2)")
+      [[['a', 'b']], [['c'], ['d']], [['fun(e,2)']]]
+      >>> XManifoldPlot.parse_nested_list_string("a+b, c-d,fun(e,2)", strip_off_methods=True)
+      ([[['a', 'b']], [['c'], ['d']], [['e']]],
+       [[[None, None]], [[None], [None]], [['fun(e,2)']]])
+
+
+   .. py:method:: plot_harmonics(ax, v, dv=0, *, n=20, scale_width=True, vertical=True, inverse=False, **plot_kwargs)
+      :staticmethod:
+
+      Add vertical lines or spans indicating the location of values or spans and their harmonics
+
+      Indicates the bands at the h-th harmonics for h = 1, 2, ..., n
+      - h * (v ± dv/2)      if scale_width and not inverse (default)
+      - h * v ± dv/2        if not scale_width and not inverse
+      - h / (v ± dv/2)      if inverse and scale_width
+      - 1 / ( v/h ± dv/2 )  if inverse and not scale_width
+
+      :param ax: Axes to plot onto.
+      :type ax: matplotlib.axes.Axes
+      :param v: Value or list of values.
+      :type v: float or list of float
+      :param dv: Width or list of widths centered around value(s).
+      :type dv: float or list of float, optional
+      :param n: Number of harmonics to plot.
+      :type n: int
+      :param scale_width: Whether to scale the width for higher harmonics or keep it constant.
+      :type scale_width: bool, optional
+      :param vertical: Plot vertical lines if true, horizontal otherweise.
+      :type vertical: bool
+      :param inverse: If true, plot harmonics of n/(v±dv) instead of n*(v±dv). Useful to plot frequency harmonics in time domain and vice-versa.
+      :type inverse: bool
+      :param plot_kwargs: Keyword arguments to be passed to plotting method
+
+
+   .. py:method:: prop(name)
+
+      Get property by key
+      :param name: Key
+      :type name: str
+
+      :returns: The property
+      :rtype: Property
+
+
+   .. py:method:: save(fname, **kwargs)
+
+      Save the figure
+
+      :param fname: Filename
+      :type fname: str
+      :param kwargs: Keyword arguments passed to :meth:`matplotlib.figure.Figure.savefig`
+
+
+   .. py:method:: title(title, **kwargs)
+
+      Set figure title
+
+      :param title: Title
+      :type title: str
+      :param kwargs: Keyword arguments passed to :meth:`matplotlib.figure.Figure.suptitle`
+
+
+   .. py:method:: update(particles, mask=None, autoscale=False)
+
+      Update plot with new data
+
+      :param particles: Particles data to plot.
+      :type particles: Any
+      :param mask: An index mask to select particles to plot. If None, all particles are plotted.
+      :type mask: Any
+      :param autoscale: Whether or not to perform autoscaling on all axes.
+      :type autoscale: bool
+
+      :returns: Changed artists
+      :rtype: list
+
+
+
+.. py:class:: TimeFFTPlot(particles=None, kind='count', *, fmax=None, relative=False, log=None, scaling=None, mask=None, timeseries=None, timeseries_fs=None, time_range=None, plot_kwargs=None, **kwargs)
+
+   Bases: :py:obj:`xplt.base.XManifoldPlot`, :py:obj:`xplt.particles.ParticlePlotMixin`, :py:obj:`xplt.particles.ParticleHistogramPlotMixin`
+
+   A frequency plot based on particle arrival times
+
+   The particle arrival time is:
+       - For circular lines: at_turn / frev - zeta / beta / c0
+       - For linear lines: zeta / beta / c0
+
+   From the particle arrival times (non-equally distributed timestamps), a timeseries with equally
+   spaced time bins is derived. The time bin size is determined based on fmax and performance considerations.
+   By default, the binned property is the number of particles arriving within the bin time (what='count').
+   Alternatively, a particle property may be specified (e.g. what='x'), in which case that property is
+   averaged over all particles arriving in the respective bin. The FFT is then computed over the timeseries.
+
+   Useful to plot time structures of particles loss, such as spill structures.
+
+   Instead of particle timestamps, it is also possible to pass already binned timeseries data to the plot.
+
+   :param particles: Particles data to plot.
+   :type particles: Any
+   :param kind: Defines the properties to make the FFT over, including 'count' (default), or a particle property to average.
+                This is a manifold subplot specification string like ``"count-cumulative"``, see :class:`~.base.XManifoldPlot` for details.
+                In addition, abbreviations for x-y-parameter pairs are supported (e.g. ``P`` for ``Px+Py``).
+   :type kind: str | list
+   :param fmax: Maximum frequency (in Hz) to plot.
+   :type fmax: float
+   :param relative: If True, plot relative frequencies (f/frev) instead of absolute frequencies (f).
+   :type relative: bool
+   :param log: If True, plot on a log scale.
+   :type log: bool
+   :param scaling: Scaling of the FFT. Can be 'amplitude', 'pds' or 'pdspp' or a dict with a scaling per property where
+                   `amplitude` (default for non-count based properties) scales the FFT magnitude to the amplitude,
+                   `pds` (power density spectrum, default for count based properties) scales the FFT magnitude to power,
+                   `pdspp` (power density spectrum per particle) is simmilar to 'pds' but normalized to particle number.
+   :type scaling: str | dict
+   :param mask: An index mask to select particles to plot. If None, all particles are plotted.
+   :type mask: Any
+   :param timeseries: Pre-binned timeseries data as alternative to timestamp-based particle data.
+                      The dictionary must contain keys for each `kind` (e.g. `count`).
+                      When specified, `timeseries_fs` must also be set, and `particles` and `mask` must be None.
+   :type timeseries: dict[str, np.array]
+   :param timeseries_fs: The sampling frequency for the timeseries data.
+   :type timeseries_fs: float
+   :param time_range: Time range of particles to consider. If None, all particles are considered.
+   :type time_range: tuple
+   :param plot_kwargs: Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.plot`.
+   :type plot_kwargs: dict
+   :param kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
+
+   .. py:property:: axflat
+
+      Return a flat list of all primary axes
+
+   .. py:property:: circumference
+
+      Circumference of circular accelerator
+
+   .. py:property:: on_y_unique
+
+
+   .. py:method:: add_scale(ax, scale, label=None, *, vertical=False, width=0.01, padding=0.1, loc='auto', color='k', fontsize='x-small')
+      :staticmethod:
+
+      Add a scale patch (a yardstick or ruler)
+
+      :param ax: The axis to add it to.
+      :type ax: matplotlib.axes.Axes
+      :param scale: The size of the scale in data units.
+      :type scale: float
+      :param label: A label for the scale.
+      :type label: str, optional
+      :param vertical: If true, make a vertical one (default is a horizontal one).
+      :type vertical: bool
+      :param width: The line width of the scale in axis units.
+      :type width: float
+      :param padding: The padding between the scale and the axis.
+      :type padding: float
+      :param loc: The location of the scale. Can be any of the usual matplotlib locations, e.g. 'auto', 'upper left', 'upper center', 'upper right', 'center left', 'center', 'center right', 'lower left', 'lower center, 'lower right'.
+      :type loc: str
+      :param color: Color for the patch.
+      :type color: str
+      :param fontsize: Font size of the label.
+      :type fontsize: str
+
+      :returns: The artist added (an AnchoredOffsetbox).
+
+
+   .. py:method:: annotate(text, **kwargs)
+
+
+   .. py:method:: artist(name=None, subplot=None, twin=None, trace=None)
+
+      Return the artist either by name, or by subplot, twin axes and trace index
+
+      :param name: Name of the property the artist is plotting
+      :type name: str, optional
+      :param subplot: Flat subplot index
+      :type subplot: int, optional
+      :param twin: Twin axis index
+      :type twin: int, optional
+      :param trace: Trace index
+      :type trace: int, optional
+
+      :returns: First artist that matches the given criteria
+      :rtype: matplotlib.artist.Artist
+
+
+   .. py:method:: autoscale(subplot='all', *, reset=False, freeze=True, tight=None)
+
+      Autoscale the axes of a subplot
+
+      :param subplot: Subplot axis index, indices or "all"
+      :type subplot: int | iterable | str
+      :param reset: Whether to ignore any data limits already registered.
+      :type reset: bool
+      :param freeze: Whether to keep the updated axes limits (True) or enable automatic
+                     autoscaling on future draws (for all present and new artists).
+      :type freeze: bool
+      :param tight: Enables tight scaling without margins for "x", "y", "both" or None.
+      :type tight: str | None
+
+
+   .. py:method:: axis(subplot=0, twin=0)
+
+      Return the axis for a given flat subplot index and twin index
+
+      :param subplot: Flat subplot index
+      :type subplot: int, optional
+      :param twin: Twin index
+      :type twin: int, optional
+
+      :returns: Axis for the given subplot and twin index
+      :rtype: matplotlib.axes.Axes
+
+
+   .. py:method:: beta(particles=None)
+
+      Get reference relativistic beta as float
+
+
+   .. py:method:: display_unit_for(p)
+
+      Return display unit for parameter
+
+      :param p: Property name
+      :type p: str
+
+      :returns: Display unit
+      :rtype: str
+
+
+   .. py:method:: factor_for(p)
+
+      Return factor to convert parameter into display unit
+
+      :param p: Property name
+      :type p: str
+
+      :returns: Factor to convert parameter into display unit
+      :rtype: float
+
+
+   .. py:method:: fmax(particles=None, *, default=None)
+
+      Return the maximum frequency this plot should show
+
+      :param particles: Particle data for determination of revolution frequency
+      :type particles: Any
+      :param default: Default value to return if maximum frequency can not be determined
+      :type default: float | None
+
+      :returns: maximum frequency
+      :rtype: float
+
+      :raises ValueError: If maximum frequency can not be determined and no default was provided
+
+
+   .. py:method:: frev(particles=None)
+
+      Get reference revolution frequency
+
+
+   .. py:method:: get_property(name)
+
+      Public method to get a particle property by key
+
+      :param name: Key
+      :type name: str
+
+      :returns: The property
+      :rtype: Property
+
+
+   .. py:method:: label_for(*pp, unit=True, description=True)
+
+      Return axis label for list of properties, joining where possible
+
+      :param pp: Property names
+      :param unit: Whether to include unit
+      :type unit: bool
+      :param description: Whether to include description
+      :type description: bool
+
+      :returns: Axis label
+      :rtype: str
+
+
+   .. py:method:: legend(subplot='all', show=True, **kwargs)
+
+      Add, update or remove legend for a subplot
+
+      :param subplot: Subplot axis index or indices
+      :type subplot: Union[int, iterable, "all"]
+      :param show: If True, show the legend. If "auto", show
+                   legend for subplots with more than one trace, or if subplot is specified explicitly.
+      :type show: Union[bool, "auto"]
+      :param kwargs: Keyword arguments passed to :meth:`matplotlib.axes.Axes.legend`
+
+
+   .. py:method:: parse_nested_list_string(list_string, separators=',-+', subs={}, *, strip_off_methods=False)
+      :staticmethod:
+
+      Parse a separated string or nested list or a mixture of both
+
+
+
+
+      :param list_string: The string or nested list or a mixture of both to parse.
+      :type list_string: str or list
+      :param separators: The characters that separate the elements. The number of characters
+                         determines the depth of the returned list.
+      :type separators: str
+      :param subs: A dictionary of substitutions to apply to the elements during parsing.
+                   May introduce additional separators of equal or deeper level.
+      :type subs: dict
+      :param strip_off_methods: If true, each element can be a name `name` or an expression
+                                in the form `method(name, ...)`. The methods are stripped off,
+                                and returned separately.
+      :type strip_off_methods: bool
+
+      :returns: nested list of names in the string,
+                nested list of expressions in the string (only if strip_off_methods is True)
+
+      .. rubric:: Example
+
+      >>> XManifoldPlot.parse_nested_list_string("a+b, c-d,fun(e,2)")
+      [[['a', 'b']], [['c'], ['d']], [['fun(e,2)']]]
+      >>> XManifoldPlot.parse_nested_list_string("a+b, c-d,fun(e,2)", strip_off_methods=True)
+      ([[['a', 'b']], [['c'], ['d']], [['e']]],
+       [[[None, None]], [[None], [None]], [['fun(e,2)']]])
+
+
+   .. py:method:: plot_harmonics(f, df=0, *, n=20, relative=False, **plot_kwargs)
+
+      Add vertical lines or spans indicating the location of values or spans and their harmonics
+
+      :param f: Fundamental frequency or list of frequencies.
+      :type f: float | list[float] | np.array
+      :param df: Bandwidth or list of bandwidths centered around frequencies(s) in Hz.
+      :type df: float | list[float] | np.array, optional
+      :param n: Number of harmonics to plot.
+      :type n: int
+      :param relative: If true, then `f` and `df` are interpreted as relative frequencies (f/frev).
+                       Otherwise they are interpreted as absolute frequencies in Hz (default).
+      :type relative: bool
+      :param plot_kwargs: Keyword arguments to be passed to plotting method
+
+
+   .. py:method:: prop(name)
+
+      Get property by key
+      :param name: Key
+      :type name: str
+
+      :returns: The property
+      :rtype: Property
+
+
+   .. py:method:: save(fname, **kwargs)
+
+      Save the figure
+
+      :param fname: Filename
+      :type fname: str
+      :param kwargs: Keyword arguments passed to :meth:`matplotlib.figure.Figure.savefig`
+
+
+   .. py:method:: title(title, **kwargs)
+
+      Set figure title
+
+      :param title: Title
+      :type title: str
+      :param kwargs: Keyword arguments passed to :meth:`matplotlib.figure.Figure.suptitle`
+
+
+   .. py:method:: update(particles=None, mask=None, autoscale=False, *, timeseries=None, timeseries_fs=None)
+
+      Update plot with new data
+
+      :param particles: Particles data to plot.
+      :type particles: Any
+      :param mask: An index mask to select particles to plot. If None, all particles are plotted.
+      :type mask: Any
+      :param autoscale: Whether to perform autoscaling on all axes.
+      :type autoscale: bool
+      :param timeseries: Pre-binned timeseries data as alternative to timestamp-based particle data.
+                         The dictionary must contain keys for each `kind` (e.g. `count`).
+                         When specified, `timeseries_fs` must also be set, and `particles` and `mask` must be None.
+      :type timeseries: dict[str, np.array]
+      :param timeseries_fs: The sampling frequency for the timeseries data, or a dictionary with
+                            sampling frequencies for each entry in `timeseries`.
+      :type timeseries_fs: float | dict[str, float]
+
+      :returns: Changed artists
+      :rtype: list
+
+
+
+.. py:class:: TimeIntervalPlot(particles=None, kind='count', *, dt_max, bin_time=None, bin_count=None, exact_bin_time=True, relative=False, log=True, poisson=False, mask=None, time_range=None, plot_kwargs=None, poisson_kwargs=None, **kwargs)
+
+   Bases: :py:obj:`xplt.base.XManifoldPlot`, :py:obj:`xplt.particles.ParticlePlotMixin`, :py:obj:`xplt.particles.ParticleHistogramPlotMixin`
+
+   A histogram plot of particle arrival intervals (i.e. delay between consecutive particles)
+
+   The plot is based on the particle arrival time, which is:
+       - For circular lines: at_turn / frev - zeta / beta / c0
+       - For linear lines: zeta / beta / c0
+
+   Useful to plot time structures of particles loss, such as spill structures.
+
+   :param particles: Particles data to plot.
+   :type particles: Any
+   :param kind: Defines the properties to plot, including 'count' (default), 'rate' or 'cumulative'.
+                This is a manifold subplot specification string like ``"count,cumulative"``, see :class:`~.base.XManifoldPlot` for details.
+   :type kind: str | list
+   :param dt_max: Maximum interval (in s) to plot.
+   :type dt_max: float
+   :param bin_time: Time bin width (in s) if bin_count is None.
+   :type bin_time: float
+   :param bin_count: Number of bins if bin_time is None.
+   :type bin_count: int
+   :param exact_bin_time: What to do if bin_time is given but dt_max is not an exact multiple of it.
+                          If True, dt_max is adjusted to be a multiple of bin_time.
+                          If False, bin_time is adjusted instead.
+   :type exact_bin_time: bool
+   :param relative: If True, plot relative numbers normalized to total count.
+                    If `kind` is a particle property, this has no effect.
+   :type relative: bool
+   :param log: To make the plot log scaled, can be any of (True, 'x', 'y', 'xy' or False).
+   :type log: bool | str
+   :param poisson: If true, indicate ideal poisson distribution.
+   :type poisson: bool
+   :param mask: An index mask to select particles to plot. If None, all particles are plotted.
+   :type mask: Any
+   :param time_range: Time range of particles to consider. If None, all particles are considered.
+   :type time_range: tuple
+   :param plot_kwargs: Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.plot`.
+   :type plot_kwargs: dict
+   :param poisson_kwargs: Additional keyword arguments passed to the plot function for Poisson limit.
+                          See :meth:`matplotlib.axes.Axes.plot` (only applicable if `poisson` is True).
+   :type poisson_kwargs: dict
+   :param kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
+
+   .. py:property:: axflat
+
+      Return a flat list of all primary axes
+
+   .. py:property:: bin_count
+
+
+   .. py:property:: bin_time
+
+
+   .. py:property:: circumference
+
+      Circumference of circular accelerator
+
+   .. py:property:: on_y_unique
+
+
+   .. py:method:: add_scale(ax, scale, label=None, *, vertical=False, width=0.01, padding=0.1, loc='auto', color='k', fontsize='x-small')
+      :staticmethod:
+
+      Add a scale patch (a yardstick or ruler)
+
+      :param ax: The axis to add it to.
+      :type ax: matplotlib.axes.Axes
+      :param scale: The size of the scale in data units.
+      :type scale: float
+      :param label: A label for the scale.
+      :type label: str, optional
+      :param vertical: If true, make a vertical one (default is a horizontal one).
+      :type vertical: bool
+      :param width: The line width of the scale in axis units.
+      :type width: float
+      :param padding: The padding between the scale and the axis.
+      :type padding: float
+      :param loc: The location of the scale. Can be any of the usual matplotlib locations, e.g. 'auto', 'upper left', 'upper center', 'upper right', 'center left', 'center', 'center right', 'lower left', 'lower center, 'lower right'.
+      :type loc: str
+      :param color: Color for the patch.
+      :type color: str
+      :param fontsize: Font size of the label.
+      :type fontsize: str
+
+      :returns: The artist added (an AnchoredOffsetbox).
+
+
+   .. py:method:: annotate(text, **kwargs)
+
+
+   .. py:method:: artist(name=None, subplot=None, twin=None, trace=None)
+
+      Return the artist either by name, or by subplot, twin axes and trace index
+
+      :param name: Name of the property the artist is plotting
+      :type name: str, optional
+      :param subplot: Flat subplot index
+      :type subplot: int, optional
+      :param twin: Twin axis index
+      :type twin: int, optional
+      :param trace: Trace index
+      :type trace: int, optional
+
+      :returns: First artist that matches the given criteria
+      :rtype: matplotlib.artist.Artist
+
+
+   .. py:method:: autoscale(subplot='all', *, reset=False, freeze=True, tight=None)
+
+      Autoscale the axes of a subplot
+
+      :param subplot: Subplot axis index, indices or "all"
+      :type subplot: int | iterable | str
+      :param reset: Whether to ignore any data limits already registered.
+      :type reset: bool
+      :param freeze: Whether to keep the updated axes limits (True) or enable automatic
+                     autoscaling on future draws (for all present and new artists).
+      :type freeze: bool
+      :param tight: Enables tight scaling without margins for "x", "y", "both" or None.
+      :type tight: str | None
+
+
+   .. py:method:: axis(subplot=0, twin=0)
+
+      Return the axis for a given flat subplot index and twin index
+
+      :param subplot: Flat subplot index
+      :type subplot: int, optional
+      :param twin: Twin index
+      :type twin: int, optional
+
+      :returns: Axis for the given subplot and twin index
+      :rtype: matplotlib.axes.Axes
+
+
+   .. py:method:: beta(particles=None)
+
+      Get reference relativistic beta as float
+
+
+   .. py:method:: display_unit_for(p)
+
+      Return display unit for parameter
+
+      :param p: Property name
+      :type p: str
+
+      :returns: Display unit
+      :rtype: str
+
+
+   .. py:method:: factor_for(p)
+
+      Return factor to convert parameter into display unit
+
+      :param p: Property name
+      :type p: str
+
+      :returns: Factor to convert parameter into display unit
+      :rtype: float
+
+
+   .. py:method:: frev(particles=None)
+
+      Get reference revolution frequency
+
+
+   .. py:method:: get_property(name)
+
+      Public method to get a particle property by key
+
+      :param name: Key
+      :type name: str
+
+      :returns: The property
+      :rtype: Property
+
+
+   .. py:method:: label_for(*pp, unit=True, description=True)
+
+      Return axis label for list of properties, joining where possible
+
+      :param pp: Property names
+      :param unit: Whether to include unit
+      :type unit: bool
+      :param description: Whether to include description
+      :type description: bool
+
+      :returns: Axis label
+      :rtype: str
+
+
+   .. py:method:: legend(subplot='all', show=True, **kwargs)
+
+      Add, update or remove legend for a subplot
+
+      :param subplot: Subplot axis index or indices
+      :type subplot: Union[int, iterable, "all"]
+      :param show: If True, show the legend. If "auto", show
+                   legend for subplots with more than one trace, or if subplot is specified explicitly.
+      :type show: Union[bool, "auto"]
+      :param kwargs: Keyword arguments passed to :meth:`matplotlib.axes.Axes.legend`
+
+
+   .. py:method:: parse_nested_list_string(list_string, separators=',-+', subs={}, *, strip_off_methods=False)
+      :staticmethod:
+
+      Parse a separated string or nested list or a mixture of both
+
+
+
+
+      :param list_string: The string or nested list or a mixture of both to parse.
+      :type list_string: str or list
+      :param separators: The characters that separate the elements. The number of characters
+                         determines the depth of the returned list.
+      :type separators: str
+      :param subs: A dictionary of substitutions to apply to the elements during parsing.
+                   May introduce additional separators of equal or deeper level.
+      :type subs: dict
+      :param strip_off_methods: If true, each element can be a name `name` or an expression
+                                in the form `method(name, ...)`. The methods are stripped off,
+                                and returned separately.
+      :type strip_off_methods: bool
+
+      :returns: nested list of names in the string,
+                nested list of expressions in the string (only if strip_off_methods is True)
+
+      .. rubric:: Example
+
+      >>> XManifoldPlot.parse_nested_list_string("a+b, c-d,fun(e,2)")
+      [[['a', 'b']], [['c'], ['d']], [['fun(e,2)']]]
+      >>> XManifoldPlot.parse_nested_list_string("a+b, c-d,fun(e,2)", strip_off_methods=True)
+      ([[['a', 'b']], [['c'], ['d']], [['e']]],
+       [[[None, None]], [[None], [None]], [['fun(e,2)']]])
+
+
+   .. py:method:: plot_harmonics(t, *, n=20, **plot_kwargs)
+
+      Add vertical lines or spans indicating the location of values or spans and their harmonics
+
+      :param t: Period in s.
+      :type t: float or list of float
+      :param n: Number of harmonics to plot.
+      :type n: int
+      :param plot_kwargs: Keyword arguments to be passed to plotting method
+
+
+   .. py:method:: prop(name)
+
+      Get property by key
+      :param name: Key
+      :type name: str
+
+      :returns: The property
+      :rtype: Property
+
+
+   .. py:method:: save(fname, **kwargs)
+
+      Save the figure
+
+      :param fname: Filename
+      :type fname: str
+      :param kwargs: Keyword arguments passed to :meth:`matplotlib.figure.Figure.savefig`
+
+
+   .. py:method:: title(title, **kwargs)
+
+      Set figure title
+
+      :param title: Title
+      :type title: str
+      :param kwargs: Keyword arguments passed to :meth:`matplotlib.figure.Figure.suptitle`
+
+
+   .. py:method:: update(particles, mask=None, autoscale=False)
+
+      Update plot with new data
+
+      :param particles: Particles data to plot.
+      :type particles: Any
+      :param mask: An index mask to select particles to plot. If None, all particles are plotted.
+      :type mask: Any
+      :param autoscale: Whether or not to perform autoscaling on all axes.
+      :type autoscale: bool
+
+
+
+.. py:class:: TimePlot(particles=None, kind='x+y', **kwargs)
+
+   Bases: :py:obj:`xplt.particles.ParticlesPlot`
+
+   A plot of particle properties as function of time
+
+   A thin wrapper around the ParticlesPlot plotting data as function of time.
+   For more information refer to the documentation of the :class:`~xplt.particles.ParticlesPlot` class.
+
+   The plot is based on the particle arrival time, which is:
+       - For circular lines: at_turn / frev - zeta / beta / c0
+       - For linear lines: zeta / beta / c0
+
+   :param particles: Particles data to plot.
+   :type particles: Any
+   :param kind: Defines the properties to plot.
+                This is a manifold subplot specification string like ``"x+y"``, see :class:`~.base.XManifoldPlot` for details.
+                In addition, abbreviations for x-y-parameter pairs are supported (e.g. ``P`` for ``Px+Py``).
+   :type kind: str | list
+   :param kwargs: See :class:`~xplt.particles.ParticlesPlot` for more options.
+
+   .. py:property:: axflat
+
+      Return a flat list of all primary axes
+
+   .. py:property:: circumference
+
+      Circumference of circular accelerator
+
+   .. py:property:: on_y_unique
+
+
+   .. py:method:: add_scale(ax, scale, label=None, *, vertical=False, width=0.01, padding=0.1, loc='auto', color='k', fontsize='x-small')
+      :staticmethod:
+
+      Add a scale patch (a yardstick or ruler)
+
+      :param ax: The axis to add it to.
+      :type ax: matplotlib.axes.Axes
+      :param scale: The size of the scale in data units.
+      :type scale: float
+      :param label: A label for the scale.
+      :type label: str, optional
+      :param vertical: If true, make a vertical one (default is a horizontal one).
+      :type vertical: bool
+      :param width: The line width of the scale in axis units.
+      :type width: float
+      :param padding: The padding between the scale and the axis.
+      :type padding: float
+      :param loc: The location of the scale. Can be any of the usual matplotlib locations, e.g. 'auto', 'upper left', 'upper center', 'upper right', 'center left', 'center', 'center right', 'lower left', 'lower center, 'lower right'.
+      :type loc: str
+      :param color: Color for the patch.
+      :type color: str
+      :param fontsize: Font size of the label.
+      :type fontsize: str
+
+      :returns: The artist added (an AnchoredOffsetbox).
+
+
+   .. py:method:: annotate(text, **kwargs)
+
+
+   .. py:method:: artist(name=None, subplot=None, twin=None, trace=None)
+
+      Return the artist either by name, or by subplot, twin axes and trace index
+
+      :param name: Name of the property the artist is plotting
+      :type name: str, optional
+      :param subplot: Flat subplot index
+      :type subplot: int, optional
+      :param twin: Twin axis index
+      :type twin: int, optional
+      :param trace: Trace index
+      :type trace: int, optional
+
+      :returns: First artist that matches the given criteria
+      :rtype: matplotlib.artist.Artist
+
+
+   .. py:method:: autoscale(subplot='all', *, reset=False, freeze=True, tight=None)
+
+      Autoscale the axes of a subplot
+
+      :param subplot: Subplot axis index, indices or "all"
+      :type subplot: int | iterable | str
+      :param reset: Whether to ignore any data limits already registered.
+      :type reset: bool
+      :param freeze: Whether to keep the updated axes limits (True) or enable automatic
+                     autoscaling on future draws (for all present and new artists).
+      :type freeze: bool
+      :param tight: Enables tight scaling without margins for "x", "y", "both" or None.
+      :type tight: str | None
+
+
+   .. py:method:: axis(subplot=0, twin=0)
+
+      Return the axis for a given flat subplot index and twin index
+
+      :param subplot: Flat subplot index
+      :type subplot: int, optional
+      :param twin: Twin index
+      :type twin: int, optional
+
+      :returns: Axis for the given subplot and twin index
+      :rtype: matplotlib.axes.Axes
+
+
+   .. py:method:: beta(particles=None)
+
+      Get reference relativistic beta as float
+
+
+   .. py:method:: display_unit_for(p)
+
+      Return display unit for parameter
+
+      :param p: Property name
+      :type p: str
+
+      :returns: Display unit
+      :rtype: str
+
+
+   .. py:method:: factor_for(p)
+
+      Return factor to convert parameter into display unit
+
+      :param p: Property name
+      :type p: str
+
+      :returns: Factor to convert parameter into display unit
+      :rtype: float
+
+
+   .. py:method:: frev(particles=None)
+
+      Get reference revolution frequency
+
+
+   .. py:method:: get_property(name)
+
+      Public method to get a particle property by key
+
+      :param name: Key
+      :type name: str
+
+      :returns: The property
+      :rtype: Property
+
+
+   .. py:method:: label_for(*pp, unit=True, description=True)
+
+      Return axis label for list of properties, joining where possible
+
+      :param pp: Property names
+      :param unit: Whether to include unit
+      :type unit: bool
+      :param description: Whether to include description
+      :type description: bool
+
+      :returns: Axis label
+      :rtype: str
+
+
+   .. py:method:: legend(subplot='all', show=True, **kwargs)
+
+      Add, update or remove legend for a subplot
+
+      :param subplot: Subplot axis index or indices
+      :type subplot: Union[int, iterable, "all"]
+      :param show: If True, show the legend. If "auto", show
+                   legend for subplots with more than one trace, or if subplot is specified explicitly.
+      :type show: Union[bool, "auto"]
+      :param kwargs: Keyword arguments passed to :meth:`matplotlib.axes.Axes.legend`
+
+
+   .. py:method:: parse_nested_list_string(list_string, separators=',-+', subs={}, *, strip_off_methods=False)
+      :staticmethod:
+
+      Parse a separated string or nested list or a mixture of both
+
+
+
+
+      :param list_string: The string or nested list or a mixture of both to parse.
+      :type list_string: str or list
+      :param separators: The characters that separate the elements. The number of characters
+                         determines the depth of the returned list.
+      :type separators: str
+      :param subs: A dictionary of substitutions to apply to the elements during parsing.
+                   May introduce additional separators of equal or deeper level.
+      :type subs: dict
+      :param strip_off_methods: If true, each element can be a name `name` or an expression
+                                in the form `method(name, ...)`. The methods are stripped off,
+                                and returned separately.
+      :type strip_off_methods: bool
+
+      :returns: nested list of names in the string,
+                nested list of expressions in the string (only if strip_off_methods is True)
+
+      .. rubric:: Example
+
+      >>> XManifoldPlot.parse_nested_list_string("a+b, c-d,fun(e,2)")
+      [[['a', 'b']], [['c'], ['d']], [['fun(e,2)']]]
+      >>> XManifoldPlot.parse_nested_list_string("a+b, c-d,fun(e,2)", strip_off_methods=True)
+      ([[['a', 'b']], [['c'], ['d']], [['e']]],
+       [[[None, None]], [[None], [None]], [['fun(e,2)']]])
+
+
+   .. py:method:: plot_harmonics(ax, v, dv=0, *, n=20, scale_width=True, vertical=True, inverse=False, **plot_kwargs)
+      :staticmethod:
+
+      Add vertical lines or spans indicating the location of values or spans and their harmonics
+
+      Indicates the bands at the h-th harmonics for h = 1, 2, ..., n
+      - h * (v ± dv/2)      if scale_width and not inverse (default)
+      - h * v ± dv/2        if not scale_width and not inverse
+      - h / (v ± dv/2)      if inverse and scale_width
+      - 1 / ( v/h ± dv/2 )  if inverse and not scale_width
+
+      :param ax: Axes to plot onto.
+      :type ax: matplotlib.axes.Axes
+      :param v: Value or list of values.
+      :type v: float or list of float
+      :param dv: Width or list of widths centered around value(s).
+      :type dv: float or list of float, optional
+      :param n: Number of harmonics to plot.
+      :type n: int
+      :param scale_width: Whether to scale the width for higher harmonics or keep it constant.
+      :type scale_width: bool, optional
+      :param vertical: Plot vertical lines if true, horizontal otherweise.
+      :type vertical: bool
+      :param inverse: If true, plot harmonics of n/(v±dv) instead of n*(v±dv). Useful to plot frequency harmonics in time domain and vice-versa.
+      :type inverse: bool
+      :param plot_kwargs: Keyword arguments to be passed to plotting method
+
+
+   .. py:method:: prop(name)
+
+      Get property by key
+      :param name: Key
+      :type name: str
+
+      :returns: The property
+      :rtype: Property
+
+
+   .. py:method:: save(fname, **kwargs)
+
+      Save the figure
+
+      :param fname: Filename
+      :type fname: str
+      :param kwargs: Keyword arguments passed to :meth:`matplotlib.figure.Figure.savefig`
+
+
+   .. py:method:: title(title, **kwargs)
+
+      Set figure title
+
+      :param title: Title
+      :type title: str
+      :param kwargs: Keyword arguments passed to :meth:`matplotlib.figure.Figure.suptitle`
+
+
+   .. py:method:: update(particles, mask=None, autoscale=False)
+
+      Update plot with new data
+
+      :param particles: Particles data to plot.
+      :type particles: Any
+      :param mask: An index mask to select particles to plot. If None, all particles are plotted.
+      :type mask: Any
+      :param autoscale: Whether or not to perform autoscaling on all axes.
+      :type autoscale: bool
+
+      :returns: List of artists that have been updated.
+
+
+
+.. py:class:: TimeVariationPlot(particles=None, kind='cv', *, counting_dt=None, counting_bins=None, evaluate_dt=None, evaluate_bins=None, poisson=True, mask=None, time_range=None, time_offset=0, plot_kwargs=None, poisson_kwargs=None, **kwargs)
+
+   Bases: :py:obj:`xplt.base.XManifoldPlot`, :py:obj:`xplt.particles.ParticlePlotMixin`, :py:obj:`MetricesMixin`
+
+   Plot variability of particle time on microscopic scale as function of time on macroscopic scale
+
+   The particle arrival times are histogramed into counting bins, the width of which
+   corresponds to the time resolution of a detector (``counting_dt``).
+   The plot estimates fluctuations in these particle counts by applying a metric
+   over an evaluation window (``evaluation_dt``).
+
+   See :class:`~.timestructure.MetricesMixin` for a list of implemented metrics.
+
+   If the particle data corresponds to particles lost at the extraction septum,
+   the plot yields the spill quality as function of extraction time.
+
+   :param particles: Particles data to plot.
+   :type particles: Any
+   :param kind: Metric to plot. See above for list of implemented metrics.
+   :type kind: str | list
+   :param counting_dt: Time bin width for counting if counting_bins is None.
+   :type counting_dt: float
+   :param counting_bins: Number of bins if counting_dt is None.
+   :type counting_bins: int
+   :param evaluate_dt: Time bin width for metric evaluation if evaluate_bins is None.
+   :type evaluate_dt: float
+   :param evaluate_bins: Number of bins if evaluate_dt is None.
+   :type evaluate_bins: int
+   :param poisson: If true, indicate poisson limit.
+   :type poisson: bool
+   :param mask: An index mask to select particles to plot. If None, all particles are plotted.
+   :type mask: Any
+   :param time_range: Time range of particles to consider. If None, all particles are considered.
+   :type time_range: tuple
+   :param time_offset: Time offset for x-axis is seconds, i.e. show values as `t-time_offset`.
+   :type time_offset: float
+   :param plot_kwargs: Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.step`.
+   :type plot_kwargs: dict
+   :param poisson_kwargs: Additional keyword arguments passed to the plot function for Poisson limit.
+                          See :meth:`matplotlib.axes.Axes.step` (only applicable if `poisson` is True).
+   :type poisson_kwargs: dict
+   :param kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
+
+   .. py:property:: axflat
+
+      Return a flat list of all primary axes
+
+   .. py:property:: circumference
+
+      Circumference of circular accelerator
+
+   .. py:property:: on_y_unique
+
+
+   .. py:method:: add_scale(ax, scale, label=None, *, vertical=False, width=0.01, padding=0.1, loc='auto', color='k', fontsize='x-small')
+      :staticmethod:
+
+      Add a scale patch (a yardstick or ruler)
+
+      :param ax: The axis to add it to.
+      :type ax: matplotlib.axes.Axes
+      :param scale: The size of the scale in data units.
+      :type scale: float
+      :param label: A label for the scale.
+      :type label: str, optional
+      :param vertical: If true, make a vertical one (default is a horizontal one).
+      :type vertical: bool
+      :param width: The line width of the scale in axis units.
+      :type width: float
+      :param padding: The padding between the scale and the axis.
+      :type padding: float
+      :param loc: The location of the scale. Can be any of the usual matplotlib locations, e.g. 'auto', 'upper left', 'upper center', 'upper right', 'center left', 'center', 'center right', 'lower left', 'lower center, 'lower right'.
+      :type loc: str
+      :param color: Color for the patch.
+      :type color: str
+      :param fontsize: Font size of the label.
+      :type fontsize: str
+
+      :returns: The artist added (an AnchoredOffsetbox).
+
+
+   .. py:method:: annotate(text, **kwargs)
+
+
+   .. py:method:: artist(name=None, subplot=None, twin=None, trace=None)
+
+      Return the artist either by name, or by subplot, twin axes and trace index
+
+      :param name: Name of the property the artist is plotting
+      :type name: str, optional
+      :param subplot: Flat subplot index
+      :type subplot: int, optional
+      :param twin: Twin axis index
+      :type twin: int, optional
+      :param trace: Trace index
+      :type trace: int, optional
+
+      :returns: First artist that matches the given criteria
+      :rtype: matplotlib.artist.Artist
+
+
+   .. py:method:: autoscale(subplot='all', *, reset=False, freeze=True, tight=None)
+
+      Autoscale the axes of a subplot
+
+      :param subplot: Subplot axis index, indices or "all"
+      :type subplot: int | iterable | str
+      :param reset: Whether to ignore any data limits already registered.
+      :type reset: bool
+      :param freeze: Whether to keep the updated axes limits (True) or enable automatic
+                     autoscaling on future draws (for all present and new artists).
+      :type freeze: bool
+      :param tight: Enables tight scaling without margins for "x", "y", "both" or None.
+      :type tight: str | None
+
+
+   .. py:method:: axis(subplot=0, twin=0)
+
+      Return the axis for a given flat subplot index and twin index
+
+      :param subplot: Flat subplot index
+      :type subplot: int, optional
+      :param twin: Twin index
+      :type twin: int, optional
+
+      :returns: Axis for the given subplot and twin index
+      :rtype: matplotlib.axes.Axes
+
+
+   .. py:method:: beta(particles=None)
+
+      Get reference relativistic beta as float
+
+
+   .. py:method:: display_unit_for(p)
+
+      Return display unit for parameter
+
+      :param p: Property name
+      :type p: str
+
+      :returns: Display unit
+      :rtype: str
+
+
+   .. py:method:: factor_for(p)
+
+      Return factor to convert parameter into display unit
+
+      :param p: Property name
+      :type p: str
+
+      :returns: Factor to convert parameter into display unit
+      :rtype: float
+
+
+   .. py:method:: frev(particles=None)
+
+      Get reference revolution frequency
+
+
+   .. py:method:: get_property(name)
+
+      Public method to get a particle property by key
+
+      :param name: Key
+      :type name: str
+
+      :returns: The property
+      :rtype: Property
+
+
+   .. py:method:: label_for(*pp, unit=True, description=True)
+
+      Return axis label for list of properties, joining where possible
+
+      :param pp: Property names
+      :param unit: Whether to include unit
+      :type unit: bool
+      :param description: Whether to include description
+      :type description: bool
+
+      :returns: Axis label
+      :rtype: str
+
+
+   .. py:method:: legend(subplot='all', show=True, **kwargs)
+
+      Add, update or remove legend for a subplot
+
+      :param subplot: Subplot axis index or indices
+      :type subplot: Union[int, iterable, "all"]
+      :param show: If True, show the legend. If "auto", show
+                   legend for subplots with more than one trace, or if subplot is specified explicitly.
+      :type show: Union[bool, "auto"]
+      :param kwargs: Keyword arguments passed to :meth:`matplotlib.axes.Axes.legend`
+
+
+   .. py:method:: parse_nested_list_string(list_string, separators=',-+', subs={}, *, strip_off_methods=False)
+      :staticmethod:
+
+      Parse a separated string or nested list or a mixture of both
+
+
+
+
+      :param list_string: The string or nested list or a mixture of both to parse.
+      :type list_string: str or list
+      :param separators: The characters that separate the elements. The number of characters
+                         determines the depth of the returned list.
+      :type separators: str
+      :param subs: A dictionary of substitutions to apply to the elements during parsing.
+                   May introduce additional separators of equal or deeper level.
+      :type subs: dict
+      :param strip_off_methods: If true, each element can be a name `name` or an expression
+                                in the form `method(name, ...)`. The methods are stripped off,
+                                and returned separately.
+      :type strip_off_methods: bool
+
+      :returns: nested list of names in the string,
+                nested list of expressions in the string (only if strip_off_methods is True)
+
+      .. rubric:: Example
+
+      >>> XManifoldPlot.parse_nested_list_string("a+b, c-d,fun(e,2)")
+      [[['a', 'b']], [['c'], ['d']], [['fun(e,2)']]]
+      >>> XManifoldPlot.parse_nested_list_string("a+b, c-d,fun(e,2)", strip_off_methods=True)
+      ([[['a', 'b']], [['c'], ['d']], [['e']]],
+       [[[None, None]], [[None], [None]], [['fun(e,2)']]])
+
+
+   .. py:method:: plot_harmonics(ax, v, dv=0, *, n=20, scale_width=True, vertical=True, inverse=False, **plot_kwargs)
+      :staticmethod:
+
+      Add vertical lines or spans indicating the location of values or spans and their harmonics
+
+      Indicates the bands at the h-th harmonics for h = 1, 2, ..., n
+      - h * (v ± dv/2)      if scale_width and not inverse (default)
+      - h * v ± dv/2        if not scale_width and not inverse
+      - h / (v ± dv/2)      if inverse and scale_width
+      - 1 / ( v/h ± dv/2 )  if inverse and not scale_width
+
+      :param ax: Axes to plot onto.
+      :type ax: matplotlib.axes.Axes
+      :param v: Value or list of values.
+      :type v: float or list of float
+      :param dv: Width or list of widths centered around value(s).
+      :type dv: float or list of float, optional
+      :param n: Number of harmonics to plot.
+      :type n: int
+      :param scale_width: Whether to scale the width for higher harmonics or keep it constant.
+      :type scale_width: bool, optional
+      :param vertical: Plot vertical lines if true, horizontal otherweise.
+      :type vertical: bool
+      :param inverse: If true, plot harmonics of n/(v±dv) instead of n*(v±dv). Useful to plot frequency harmonics in time domain and vice-versa.
+      :type inverse: bool
+      :param plot_kwargs: Keyword arguments to be passed to plotting method
+
+
+   .. py:method:: prop(name)
+
+      Get property by key
+      :param name: Key
+      :type name: str
+
+      :returns: The property
+      :rtype: Property
+
+
+   .. py:method:: save(fname, **kwargs)
+
+      Save the figure
+
+      :param fname: Filename
+      :type fname: str
+      :param kwargs: Keyword arguments passed to :meth:`matplotlib.figure.Figure.savefig`
+
+
+   .. py:method:: title(title, **kwargs)
+
+      Set figure title
+
+      :param title: Title
+      :type title: str
+      :param kwargs: Keyword arguments passed to :meth:`matplotlib.figure.Figure.suptitle`
+
+
+   .. py:method:: update(particles, mask=None, autoscale=False)
+
+      Update plot with new data
+
+      :param particles: Particles data to plot.
+      :type particles: Any
+      :param mask: An index mask to select particles to plot. If None, all particles are plotted.
+      :type mask: Any
+      :param autoscale: Whether or not to perform autoscaling on all axes.
+      :type autoscale: bool
+
+      :returns: Changed artists
+
+
+
+.. py:class:: TimeVariationScalePlot(particles=None, kind='cv', *, counting_dt_min=None, counting_dt_max=None, counting_bins_per_evaluation=50, std=True, poisson=True, mask=None, time_range=None, log=True, plot_kwargs=None, std_kwargs=None, poisson_kwargs=None, ignore_insufficient_statistics=False, **kwargs)
+
+   Bases: :py:obj:`xplt.base.XManifoldPlot`, :py:obj:`xplt.particles.ParticlePlotMixin`, :py:obj:`MetricesMixin`
+
+   Plot variability of particle time as function of timescale
+
+   The particle arrival times are histogramed into counting bins, the width of which
+   corresponds to the time resolution of a detector (``counting_dt``).
+   The plot estimates fluctuations in these particle counts by applying a metric
+   over an evaluation window (``counting_bins_per_evaluation*counting_dt``).
+
+   See :class:`~.timestructure.MetricesMixin` for a list of implemented metrics.
+
+   If the particle data corresponds to particles lost at the extraction septum,
+   the plot yields the spill quality on different timescales.
+
+
+   :param particles: Particles data to plot.
+   :type particles: Any
+   :param kind: Metric to plot. See above for list of implemented metrics.
+   :type kind: str | list
+   :param counting_dt_min: Minimum time bin width for counting.
+   :type counting_dt_min: float
+   :param counting_dt_max: Maximum time bin width for counting.
+   :type counting_dt_max: float
+   :param counting_bins_per_evaluation: Number of counting bins used to evaluate metric over.
+                                        Use None to evaluate metric once over all bins. Otherwise, the metric is evaluated
+                                        over each ``counting_bins_per_evaluation`` consecutive bins, and average and std of
+                                        all evaluations plotted. This suppresses fluctuations on larger timescales to affect
+                                        the metric of smaller timescales.
+   :type counting_bins_per_evaluation: int
+   :param std: Whether or not to plot standard deviation of variability as errorbar.
+               Only relevant if counting_bins_per_evaluation is not None.
+   :type std: bool
+   :param poisson: Whether or not to plot the Poisson limit.
+   :type poisson: bool
+   :param mask: An index mask to select particles to plot. If None, all particles are plotted.
+   :type mask: Any
+   :param time_range: Time range of particles to consider. If None, all particles are considered.
+   :type time_range: tuple
+   :param log: Whether or not to plot the x-axis in log scale.
+   :type log: bool
+   :param plot_kwargs: Keyword arguments passed to the plot function. See :meth:`matplotlib.axes.Axes.plot`.
+   :type plot_kwargs: dict
+   :param std_kwargs: Additional keyword arguments passed to the plot function for std errorbar.
+                      See :meth:`matplotlib.axes.Axes.fill_between` (only applicable if `std` is True).
+   :type std_kwargs: dict
+   :param poisson_kwargs: Additional keyword arguments passed to the plot function for Poisson limit.
+                          See :meth:`matplotlib.axes.Axes.plot` (only applicable if `poisson` is True).
+   :type poisson_kwargs: dict
+   :param ignore_insufficient_statistics: When set to True, the plot will include data with insufficient statistics.
+   :type ignore_insufficient_statistics: bool
+   :param kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
+
+   .. py:property:: axflat
+
+      Return a flat list of all primary axes
+
+   .. py:property:: circumference
+
+      Circumference of circular accelerator
+
+   .. py:property:: on_y_unique
+
+
+   .. py:method:: add_scale(ax, scale, label=None, *, vertical=False, width=0.01, padding=0.1, loc='auto', color='k', fontsize='x-small')
+      :staticmethod:
+
+      Add a scale patch (a yardstick or ruler)
+
+      :param ax: The axis to add it to.
+      :type ax: matplotlib.axes.Axes
+      :param scale: The size of the scale in data units.
+      :type scale: float
+      :param label: A label for the scale.
+      :type label: str, optional
+      :param vertical: If true, make a vertical one (default is a horizontal one).
+      :type vertical: bool
+      :param width: The line width of the scale in axis units.
+      :type width: float
+      :param padding: The padding between the scale and the axis.
+      :type padding: float
+      :param loc: The location of the scale. Can be any of the usual matplotlib locations, e.g. 'auto', 'upper left', 'upper center', 'upper right', 'center left', 'center', 'center right', 'lower left', 'lower center, 'lower right'.
+      :type loc: str
+      :param color: Color for the patch.
+      :type color: str
+      :param fontsize: Font size of the label.
+      :type fontsize: str
+
+      :returns: The artist added (an AnchoredOffsetbox).
+
+
+   .. py:method:: annotate(text, **kwargs)
+
+
+   .. py:method:: artist(name=None, subplot=None, twin=None, trace=None)
+
+      Return the artist either by name, or by subplot, twin axes and trace index
+
+      :param name: Name of the property the artist is plotting
+      :type name: str, optional
+      :param subplot: Flat subplot index
+      :type subplot: int, optional
+      :param twin: Twin axis index
+      :type twin: int, optional
+      :param trace: Trace index
+      :type trace: int, optional
+
+      :returns: First artist that matches the given criteria
+      :rtype: matplotlib.artist.Artist
+
+
+   .. py:method:: autoscale(subplot='all', *, reset=False, freeze=True, tight=None)
+
+      Autoscale the axes of a subplot
+
+      :param subplot: Subplot axis index, indices or "all"
+      :type subplot: int | iterable | str
+      :param reset: Whether to ignore any data limits already registered.
+      :type reset: bool
+      :param freeze: Whether to keep the updated axes limits (True) or enable automatic
+                     autoscaling on future draws (for all present and new artists).
+      :type freeze: bool
+      :param tight: Enables tight scaling without margins for "x", "y", "both" or None.
+      :type tight: str | None
+
+
+   .. py:method:: axis(subplot=0, twin=0)
+
+      Return the axis for a given flat subplot index and twin index
+
+      :param subplot: Flat subplot index
+      :type subplot: int, optional
+      :param twin: Twin index
+      :type twin: int, optional
+
+      :returns: Axis for the given subplot and twin index
+      :rtype: matplotlib.axes.Axes
+
+
+   .. py:method:: beta(particles=None)
+
+      Get reference relativistic beta as float
+
+
+   .. py:method:: display_unit_for(p)
+
+      Return display unit for parameter
+
+      :param p: Property name
+      :type p: str
+
+      :returns: Display unit
+      :rtype: str
+
+
+   .. py:method:: factor_for(p)
+
+      Return factor to convert parameter into display unit
+
+      :param p: Property name
+      :type p: str
+
+      :returns: Factor to convert parameter into display unit
+      :rtype: float
+
+
+   .. py:method:: frev(particles=None)
+
+      Get reference revolution frequency
+
+
+   .. py:method:: get_property(name)
+
+      Public method to get a particle property by key
+
+      :param name: Key
+      :type name: str
+
+      :returns: The property
+      :rtype: Property
+
+
+   .. py:method:: label_for(*pp, unit=True, description=True)
+
+      Return axis label for list of properties, joining where possible
+
+      :param pp: Property names
+      :param unit: Whether to include unit
+      :type unit: bool
+      :param description: Whether to include description
+      :type description: bool
+
+      :returns: Axis label
+      :rtype: str
+
+
+   .. py:method:: legend(subplot='all', show=True, **kwargs)
+
+      Add, update or remove legend for a subplot
+
+      :param subplot: Subplot axis index or indices
+      :type subplot: Union[int, iterable, "all"]
+      :param show: If True, show the legend. If "auto", show
+                   legend for subplots with more than one trace, or if subplot is specified explicitly.
+      :type show: Union[bool, "auto"]
+      :param kwargs: Keyword arguments passed to :meth:`matplotlib.axes.Axes.legend`
+
+
+   .. py:method:: parse_nested_list_string(list_string, separators=',-+', subs={}, *, strip_off_methods=False)
+      :staticmethod:
+
+      Parse a separated string or nested list or a mixture of both
+
+
+
+
+      :param list_string: The string or nested list or a mixture of both to parse.
+      :type list_string: str or list
+      :param separators: The characters that separate the elements. The number of characters
+                         determines the depth of the returned list.
+      :type separators: str
+      :param subs: A dictionary of substitutions to apply to the elements during parsing.
+                   May introduce additional separators of equal or deeper level.
+      :type subs: dict
+      :param strip_off_methods: If true, each element can be a name `name` or an expression
+                                in the form `method(name, ...)`. The methods are stripped off,
+                                and returned separately.
+      :type strip_off_methods: bool
+
+      :returns: nested list of names in the string,
+                nested list of expressions in the string (only if strip_off_methods is True)
+
+      .. rubric:: Example
+
+      >>> XManifoldPlot.parse_nested_list_string("a+b, c-d,fun(e,2)")
+      [[['a', 'b']], [['c'], ['d']], [['fun(e,2)']]]
+      >>> XManifoldPlot.parse_nested_list_string("a+b, c-d,fun(e,2)", strip_off_methods=True)
+      ([[['a', 'b']], [['c'], ['d']], [['e']]],
+       [[[None, None]], [[None], [None]], [['fun(e,2)']]])
+
+
+   .. py:method:: plot_harmonics(ax, v, dv=0, *, n=20, scale_width=True, vertical=True, inverse=False, **plot_kwargs)
+      :staticmethod:
+
+      Add vertical lines or spans indicating the location of values or spans and their harmonics
+
+      Indicates the bands at the h-th harmonics for h = 1, 2, ..., n
+      - h * (v ± dv/2)      if scale_width and not inverse (default)
+      - h * v ± dv/2        if not scale_width and not inverse
+      - h / (v ± dv/2)      if inverse and scale_width
+      - 1 / ( v/h ± dv/2 )  if inverse and not scale_width
+
+      :param ax: Axes to plot onto.
+      :type ax: matplotlib.axes.Axes
+      :param v: Value or list of values.
+      :type v: float or list of float
+      :param dv: Width or list of widths centered around value(s).
+      :type dv: float or list of float, optional
+      :param n: Number of harmonics to plot.
+      :type n: int
+      :param scale_width: Whether to scale the width for higher harmonics or keep it constant.
+      :type scale_width: bool, optional
+      :param vertical: Plot vertical lines if true, horizontal otherweise.
+      :type vertical: bool
+      :param inverse: If true, plot harmonics of n/(v±dv) instead of n*(v±dv). Useful to plot frequency harmonics in time domain and vice-versa.
+      :type inverse: bool
+      :param plot_kwargs: Keyword arguments to be passed to plotting method
+
+
+   .. py:method:: prop(name)
+
+      Get property by key
+      :param name: Key
+      :type name: str
+
+      :returns: The property
+      :rtype: Property
+
+
+   .. py:method:: save(fname, **kwargs)
+
+      Save the figure
+
+      :param fname: Filename
+      :type fname: str
+      :param kwargs: Keyword arguments passed to :meth:`matplotlib.figure.Figure.savefig`
+
+
+   .. py:method:: title(title, **kwargs)
+
+      Set figure title
+
+      :param title: Title
+      :type title: str
+      :param kwargs: Keyword arguments passed to :meth:`matplotlib.figure.Figure.suptitle`
+
+
+   .. py:method:: update(particles, mask=None, autoscale=False, *, ignore_insufficient_statistics=False)
+
+      Update plot with new data
+
+      :param particles: Particles data to plot.
+      :type particles: Any
+      :param mask: An index mask to select particles to plot. If None, all particles are plotted.
+      :type mask: Any
+      :param autoscale: Whether or not to perform autoscaling on all axes.
+      :type autoscale: bool
+      :param ignore_insufficient_statistics: When set to True, the plot will include data with insufficient statistics.
+      :type ignore_insufficient_statistics: bool
+
+      :returns: Changed artists
+
+
+
+.. py:function:: binned_timeseries(times, *, what=None, n=None, dt=None, t_range=None, moments=1, make_n_power_of_two=False)
+
+   .. deprecated:: 0.7
+       Use :func:`xplt.util.binned_data` instead.
+
+

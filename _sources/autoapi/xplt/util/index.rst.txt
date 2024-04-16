@@ -1,0 +1,339 @@
+:py:mod:`xplt.util`
+===================
+
+.. py:module:: xplt.util
+
+.. autoapi-nested-parse::
+
+   Utility methods for accelerator physics
+
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   xplt.util.AttrDict
+
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   xplt.util.average
+   xplt.util.binned_data
+   xplt.util.defaults
+   xplt.util.defaults_for
+   xplt.util.denormalized_coordinates
+   xplt.util.evaluate_expression_wrapper
+   xplt.util.flattened
+   xplt.util.get
+   xplt.util.hamiltonian_kobayashi
+   xplt.util.ieee_mod
+   xplt.util.normalized_coordinates
+   xplt.util.smooth
+   xplt.util.val
+   xplt.util.virtual_sextupole
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   xplt.util.VOID
+   xplt.util.c0
+   xplt.util.pd
+
+
+.. py:class:: AttrDict(*args, **kwargs)
+
+   Bases: :py:obj:`dict`
+
+   Dict which allows accessing values via key attributes
+
+   Initialize self.  See help(type(self)) for accurate signature.
+
+   .. py:method:: clear()
+
+      D.clear() -> None.  Remove all items from D.
+
+
+   .. py:method:: copy()
+
+      D.copy() -> a shallow copy of D
+
+
+   .. py:method:: get()
+
+      Return the value for key if key is in the dictionary, else default.
+
+
+   .. py:method:: items()
+
+      D.items() -> a set-like object providing a view on D's items
+
+
+   .. py:method:: keys()
+
+      D.keys() -> a set-like object providing a view on D's keys
+
+
+   .. py:method:: pop()
+
+      D.pop(k[,d]) -> v, remove specified key and return the corresponding value.
+
+      If the key is not found, return the default if given; otherwise,
+      raise a KeyError.
+
+
+   .. py:method:: popitem()
+
+      Remove and return a (key, value) pair as a 2-tuple.
+
+      Pairs are returned in LIFO (last-in, first-out) order.
+      Raises KeyError if the dict is empty.
+
+
+   .. py:method:: setdefault()
+
+      Insert key with a value of default if key is not in the dictionary.
+
+      Return the value for key if key is in the dictionary, else default.
+
+
+   .. py:method:: update()
+
+      D.update([E, ]**F) -> None.  Update D from dict/iterable E and F.
+      If E is present and has a .keys() method, then does:  for k in E: D[k] = E[k]
+      If E is present and lacks a .keys() method, then does:  for k, v in E: D[k] = v
+      In either case, this is followed by: for k in F:  D[k] = F[k]
+
+
+   .. py:method:: values()
+
+      D.values() -> an object providing a view on D's values
+
+
+
+.. py:function:: average(*data, n=100, function=np.mean)
+
+   Average the data
+
+   Applies the function to n subsequent points of the data (along last axis) to yield one point in the output
+
+   :param data: the data to average over
+   :type data: np.ndarray
+   :param n: number of subsequent datapoints of intput to average into one point in the output. If the input size is not a multiple of n, the data will be clipped.
+   :type n: int
+   :param function: averaging function to apply to last axis of input data. Defaults to np.mean
+   :type function: callable, optional
+
+   :returns: averaged data
+
+
+.. py:function:: binned_data(values, *, what=None, n=None, dv=None, v_range=None, moments=1, make_n_power_of_two=False)
+
+   Get histogrammed data with equally spaced bins
+
+   From the non-equally distributed values, a histogram or timeseries with equally
+   spaced bins is derived. The parameter ``what`` determines what is returned for the timeseries.
+   By default (what=None), the number of particles for each bin is returned.
+   Alternatively, a particle property can be passed as array, in which case that property is averaged
+   over all particles of the respective bin (or 0 if no particles are within a bin).
+   It is also possible to specify the moments to return, i.e. the power to which the property is raised
+   before averaging. This allows to determine mean (1st moment, default) and variance (difference between
+   2nd and 1st moment) etc. To disable averaging, pass None as the moment
+
+   :param values: Array of particle data, e.g. timestamps.
+   :type values: np.ndarray
+   :param n: Number of bins. Must not be used together with `dv`.
+   :type n: int | None
+   :param dv: Bin width. Must not be used together with n.
+   :type dv: float | None
+   :param v_range: Tuple of (min, max) values to consider.
+                   If None, the range is determined from the data.
+   :type v_range: tuple[float] | None
+   :param what: Array of associated data or None. Must have same shape as values. See above.
+   :type what: np.ndarray | None
+   :param moments: The moment(s) to return for associated data if what is not None. See above.
+   :type moments: int | list[int | None] | None
+   :param make_n_power_of_two: If true, ensure that the number of bins is a power of two by rounding up.
+                               Useful to increase performance of calculating FFTs on the timeseries data.
+   :type make_n_power_of_two: bool
+
+   :returns: The histogram or timeseries as tuple (v_min, dv, *counts_or_what) where
+             `v_min` is the start value of the histogram or timeseries data,
+             `dv` is the bin width and
+             `*counts_or_what` are the values of the histogram or timeseries as an array of length n
+                 (if multiple moments are requested, an array is returned for each of them).
+
+
+.. py:function:: defaults(kwargs, /, **default_kwargs)
+
+   Return keyword arguments with defaults
+
+   Returns a union of keyword arguments, where `kwargs` take precedence over `default_kwargs`.
+
+   :param kwargs: keyword arguments (overwrite defaults)
+   :type kwargs: dict | None
+   :param default_kwargs: default keyword arguments
+
+
+.. py:function:: defaults_for(alias_provider, kwargs, /, **default_kwargs)
+
+   Return normalized keyword arguments with defaults
+
+   Returns a union of keyword arguments, where `kwargs` take precedence over `default_kwargs`.
+   All keyword arguments are normalized beforehand via :meth:`matplotlib.cbook.normalize_kwargs`.
+
+   :param alias_provider: alias provider for :meth:`matplotlib.cbook.normalize_kwargs`
+   :type alias_provider: str | dict | class | artist
+   :param kwargs: keyword arguments (overwrite defaults)
+   :type kwargs: dict | None
+   :param default_kwargs: default keyword arguments
+
+
+.. py:function:: denormalized_coordinates(X, Px, twiss, xy, delta=0)
+
+   Convert normalized to physical coordinates
+
+   :param X: Normalized X-coordinate in m^(1/2)
+   :type X: float
+   :param Px: Normalized Px-coordinate in m^(1/2)
+   :type Px: float
+   :param twiss: Object or dict with local twiss information in m and rad
+   :type twiss: Any
+   :param xy: Plane. Either "x" or "y".
+   :type xy: str
+   :param delta: Momentum deviation to account for dispersive orbit.
+   :type delta: float
+
+   :returns: Tuple of physical coordinates (x, px) in (m, rad)
+
+
+.. py:function:: evaluate_expression_wrapper(expression, key, data)
+
+   Evaluate the expression wrapper
+
+
+.. py:function:: flattened(lists)
+
+   Flatten a list of nested lists recursively
+
+
+.. py:function:: get(obj, value, default=VOID)
+
+   Get value from object
+
+   Tries to get the value using attributes and indices,
+   and handles special objects like pandas data frames.
+
+   :param obj: Object to get data from
+   :type obj: Any
+   :param value: Name of attribute, index, column etc. to get
+   :type value: str
+   :param default: Default value to return. By default an exception is raised
+   :type default: Any
+
+   :returns: Value of the object
+   :rtype: Any
+
+   :raises AttributeError: if object does not provide the value and no default was specified
+
+
+.. py:function:: hamiltonian_kobayashi(X, Px, S, mu, twiss, xy='x', delta=0, *, normalized=False)
+
+   Calculate the kobayashi hamiltonian
+
+   :param X: Normalized X-coordinate in m^(1/2)
+   :type X: float
+   :param Px: Normalized Px-coordinate in m^(1/2)
+   :type Px: float
+   :param S: Normalized sextupole strength in m^(-1/2)
+   :type S: float
+   :param mu: Sextupole phase in rad/2pi
+   :type mu: float
+   :param twiss: Object or dict with local twiss information in m and rad
+   :type twiss: Any
+   :param xy: Plane. Either "x" or "y".
+   :type xy: str
+   :param delta: Momentum deviation to account for dispersive orbit.
+   :type delta: float
+   :param normalized: If true, return value of hamiltonian divided by value at separatrix.
+   :type normalized: bool
+
+   :returns: Value of the hamiltonian (normalized if specified)
+
+
+.. py:function:: ieee_mod(values, m)
+
+   Return the IEEE remainder (in range -x/2 .. x/2)
+
+
+.. py:function:: normalized_coordinates(x, px, twiss, xy, delta=0)
+
+   Convert physical to normalized coordinates
+
+   :param x: Physical x-coordinate in m
+   :type x: float
+   :param px: Physical px-coordinate in rad
+   :type px: float
+   :param twiss: Object or dict with twiss information in m and rad
+   :type twiss: Any
+   :param xy: Plane. Either "x" or "y".
+   :type xy: str
+   :param delta: Momentum deviation to account for dispersive orbit.
+   :type delta: float
+
+   :returns: Tuple of normalized coordinates (X, Px) in (m^(1/2), m^(1/2))
+
+
+.. py:function:: smooth(*data, n)
+
+
+.. py:function:: val(obj)
+
+   Return the value if this is an array of size 1, object otherwise
+
+
+.. py:function:: virtual_sextupole(line, particle_ref=None, *, verbose=False)
+
+   Determine virtual sextupole strength from twiss data
+
+   The normalized strenght is defined as S = -1/2 * betx^(3/2) * k2l
+
+   The implementation considers only normal sextupole components.
+
+   :param line: Line with element_dict and twiss method
+   :type line: xtrack.Line
+   :param particle_ref: Reference particle. Defaults to reference particle of tracker.
+   :type particle_ref: xpart.Particles
+   :param verbose: If True, print information on sextupoles
+   :type verbose: bool
+
+   :returns: Tuple (S, mu) with normalized strength in m^(-1/2) and phase in rad/2pi
+
+
+.. py:data:: VOID
+   
+
+   
+
+.. py:data:: c0
+   :annotation: = 299792458
+
+   
+
+.. py:data:: pd
+   
+
+   
+

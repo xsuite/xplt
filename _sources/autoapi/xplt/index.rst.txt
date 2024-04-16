@@ -1,0 +1,42 @@
+:py:mod:`xplt`
+==============
+
+.. py:module:: xplt
+
+
+Submodules
+----------
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+
+   base/index.rst
+   colors/index.rst
+   hooks/index.rst
+   line/index.rst
+   particles/index.rst
+   phasespace/index.rst
+   properties/index.rst
+   timestructure/index.rst
+   twiss/index.rst
+   util/index.rst
+
+
+Package Contents
+----------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   xplt.apply_style
+
+
+
+.. py:function:: apply_style()
+
+   Apply xplt's matplotlib style sheet and update rcParams
+
+

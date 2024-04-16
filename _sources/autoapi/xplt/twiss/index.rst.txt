@@ -1,0 +1,304 @@
+:py:mod:`xplt.twiss`
+====================
+
+.. py:module:: xplt.twiss
+
+.. autoapi-nested-parse::
+
+   Methods for plotting twiss
+
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   xplt.twiss.TwissPlot
+
+
+
+
+.. py:class:: TwissPlot(twiss=None, kind='bet-dx,x+y', *, line=None, line_kwargs={}, **kwargs)
+
+   Bases: :py:obj:`xplt.base.XManifoldPlot`
+
+   A plot for twiss parameters and closed orbit
+
+   :param twiss: Dictionary with twiss information
+   :type twiss: Any
+   :param kind: Defines the properties to plot.
+                This is a manifold subplot specification string like ``"bet-dx,x+y"``, see :class:`~.base.XManifoldPlot` for details.
+                In addition, abbreviations for x-y-parameter pairs are supported (e.g. 'bet' for 'betx+bety').
+   :type kind: str | list
+   :param line: Line of elements. If given, adds a line plot to the top.
+   :type line: xtrack.Line
+   :param line_kwargs: Keyword arguments passed to line plot.
+   :type line_kwargs: dict
+   :param kwargs: See :class:`~.base.XPlot` for additional arguments
+
+   .. py:property:: axflat
+
+      Return a flat list of all primary axes
+
+   .. py:property:: on_y_unique
+
+
+   .. py:method:: add_scale(ax, scale, label=None, *, vertical=False, width=0.01, padding=0.1, loc='auto', color='k', fontsize='x-small')
+      :staticmethod:
+
+      Add a scale patch (a yardstick or ruler)
+
+      :param ax: The axis to add it to.
+      :type ax: matplotlib.axes.Axes
+      :param scale: The size of the scale in data units.
+      :type scale: float
+      :param label: A label for the scale.
+      :type label: str, optional
+      :param vertical: If true, make a vertical one (default is a horizontal one).
+      :type vertical: bool
+      :param width: The line width of the scale in axis units.
+      :type width: float
+      :param padding: The padding between the scale and the axis.
+      :type padding: float
+      :param loc: The location of the scale. Can be any of the usual matplotlib locations, e.g. 'auto', 'upper left', 'upper center', 'upper right', 'center left', 'center', 'center right', 'lower left', 'lower center, 'lower right'.
+      :type loc: str
+      :param color: Color for the patch.
+      :type color: str
+      :param fontsize: Font size of the label.
+      :type fontsize: str
+
+      :returns: The artist added (an AnchoredOffsetbox).
+
+
+   .. py:method:: annotate(text, **kwargs)
+
+
+   .. py:method:: artist(name=None, subplot=None, twin=None, trace=None)
+
+      Return the artist either by name, or by subplot, twin axes and trace index
+
+      :param name: Name of the property the artist is plotting
+      :type name: str, optional
+      :param subplot: Flat subplot index
+      :type subplot: int, optional
+      :param twin: Twin axis index
+      :type twin: int, optional
+      :param trace: Trace index
+      :type trace: int, optional
+
+      :returns: First artist that matches the given criteria
+      :rtype: matplotlib.artist.Artist
+
+
+   .. py:method:: autoscale(subplot='all', *, reset=False, freeze=True, tight=None)
+
+      Autoscale the axes of a subplot
+
+      :param subplot: Subplot axis index, indices or "all"
+      :type subplot: int | iterable | str
+      :param reset: Whether to ignore any data limits already registered.
+      :type reset: bool
+      :param freeze: Whether to keep the updated axes limits (True) or enable automatic
+                     autoscaling on future draws (for all present and new artists).
+      :type freeze: bool
+      :param tight: Enables tight scaling without margins for "x", "y", "both" or None.
+      :type tight: str | None
+
+
+   .. py:method:: axis(subplot=0, twin=0)
+
+      Return the axis for a given flat subplot index and twin index
+
+      :param subplot: Flat subplot index
+      :type subplot: int, optional
+      :param twin: Twin index
+      :type twin: int, optional
+
+      :returns: Axis for the given subplot and twin index
+      :rtype: matplotlib.axes.Axes
+
+
+   .. py:method:: axline(kind, val, subplots='all', **kwargs)
+
+      Plot a vertical or horizontal line for a given coordinate
+
+      :param kind: property at which to place the line (e.g. "s", "x", "betx", etc.)
+      :type kind: str
+      :param val: Value of property
+      :type val: float
+      :param subplots: Subplots to plot line onto. Defaults to all with matching coordinates.
+      :type subplots: list of int
+      :param kwargs: Arguments for axvline or axhline
+
+
+   .. py:method:: axspan(kind, val, val_to=None, subplots='all', **kwargs)
+
+      Plot a vertical or horizontal span (or line) for a given coordinate
+
+      :param kind: property at which to place the line (e.g. "s", "x", "betx", etc.).
+      :type kind: str
+      :param val: Value of property.
+      :type val: float
+      :param val_to: Second value of property to plot a span. If this is None, plot a line instead of a span.
+      :type val_to: float, optional
+      :param subplots: Subplots to plot line onto. Defaults to all with matching coordinates.
+      :type subplots: list of int
+      :param kwargs: Arguments for axvspan or axhspan (or axvline or axhline if val_to is None)
+
+
+   .. py:method:: display_unit_for(p)
+
+      Return display unit for parameter
+
+      :param p: Property name
+      :type p: str
+
+      :returns: Display unit
+      :rtype: str
+
+
+   .. py:method:: factor_for(p)
+
+      Return factor to convert parameter into display unit
+
+      :param p: Property name
+      :type p: str
+
+      :returns: Factor to convert parameter into display unit
+      :rtype: float
+
+
+   .. py:method:: label_for(*pp, unit=True, description=True)
+
+      Return axis label for list of properties, joining where possible
+
+      :param pp: Property names
+      :param unit: Whether to include unit
+      :type unit: bool
+      :param description: Whether to include description
+      :type description: bool
+
+      :returns: Axis label
+      :rtype: str
+
+
+   .. py:method:: legend(subplot='all', show=True, **kwargs)
+
+      Add, update or remove legend for a subplot
+
+      :param subplot: Subplot axis index or indices
+      :type subplot: Union[int, iterable, "all"]
+      :param show: If True, show the legend. If "auto", show
+                   legend for subplots with more than one trace, or if subplot is specified explicitly.
+      :type show: Union[bool, "auto"]
+      :param kwargs: Keyword arguments passed to :meth:`matplotlib.axes.Axes.legend`
+
+
+   .. py:method:: parse_nested_list_string(list_string, separators=',-+', subs={}, *, strip_off_methods=False)
+      :staticmethod:
+
+      Parse a separated string or nested list or a mixture of both
+
+
+
+
+      :param list_string: The string or nested list or a mixture of both to parse.
+      :type list_string: str or list
+      :param separators: The characters that separate the elements. The number of characters
+                         determines the depth of the returned list.
+      :type separators: str
+      :param subs: A dictionary of substitutions to apply to the elements during parsing.
+                   May introduce additional separators of equal or deeper level.
+      :type subs: dict
+      :param strip_off_methods: If true, each element can be a name `name` or an expression
+                                in the form `method(name, ...)`. The methods are stripped off,
+                                and returned separately.
+      :type strip_off_methods: bool
+
+      :returns: nested list of names in the string,
+                nested list of expressions in the string (only if strip_off_methods is True)
+
+      .. rubric:: Example
+
+      >>> XManifoldPlot.parse_nested_list_string("a+b, c-d,fun(e,2)")
+      [[['a', 'b']], [['c'], ['d']], [['fun(e,2)']]]
+      >>> XManifoldPlot.parse_nested_list_string("a+b, c-d,fun(e,2)", strip_off_methods=True)
+      ([[['a', 'b']], [['c'], ['d']], [['e']]],
+       [[[None, None]], [[None], [None]], [['fun(e,2)']]])
+
+
+   .. py:method:: plot_harmonics(ax, v, dv=0, *, n=20, scale_width=True, vertical=True, inverse=False, **plot_kwargs)
+      :staticmethod:
+
+      Add vertical lines or spans indicating the location of values or spans and their harmonics
+
+      Indicates the bands at the h-th harmonics for h = 1, 2, ..., n
+      - h * (v ± dv/2)      if scale_width and not inverse (default)
+      - h * v ± dv/2        if not scale_width and not inverse
+      - h / (v ± dv/2)      if inverse and scale_width
+      - 1 / ( v/h ± dv/2 )  if inverse and not scale_width
+
+      :param ax: Axes to plot onto.
+      :type ax: matplotlib.axes.Axes
+      :param v: Value or list of values.
+      :type v: float or list of float
+      :param dv: Width or list of widths centered around value(s).
+      :type dv: float or list of float, optional
+      :param n: Number of harmonics to plot.
+      :type n: int
+      :param scale_width: Whether to scale the width for higher harmonics or keep it constant.
+      :type scale_width: bool, optional
+      :param vertical: Plot vertical lines if true, horizontal otherweise.
+      :type vertical: bool
+      :param inverse: If true, plot harmonics of n/(v±dv) instead of n*(v±dv). Useful to plot frequency harmonics in time domain and vice-versa.
+      :type inverse: bool
+      :param plot_kwargs: Keyword arguments to be passed to plotting method
+
+
+   .. py:method:: prop(name)
+
+      Get property by key
+      :param name: Key
+      :type name: str
+
+      :returns: The property
+      :rtype: Property
+
+
+   .. py:method:: save(fname, **kwargs)
+
+      Save the figure
+
+      :param fname: Filename
+      :type fname: str
+      :param kwargs: Keyword arguments passed to :meth:`matplotlib.figure.Figure.savefig`
+
+
+   .. py:method:: title(title, **kwargs)
+
+      Set figure title
+
+      :param title: Title
+      :type title: str
+      :param kwargs: Keyword arguments passed to :meth:`matplotlib.figure.Figure.suptitle`
+
+
+   .. py:method:: update(twiss, *, autoscale=False, line=None)
+
+      Update the twiss data this plot shows
+
+      :param twiss: Dictionary with twiss information
+      :type twiss: Any
+      :param autoscale: Whether or not to perform autoscaling on all axes.
+      :type autoscale: bool
+      :param line: Line of elements.
+      :type line: xtack.Line
+
+      :returns: changed artists
+
+
+

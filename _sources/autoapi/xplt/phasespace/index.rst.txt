@@ -1,0 +1,326 @@
+:py:mod:`xplt.phasespace`
+=========================
+
+.. py:module:: xplt.phasespace
+
+.. autoapi-nested-parse::
+
+   Methods for plotting phase space distributions
+
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   xplt.phasespace.PhaseSpacePlot
+
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   xplt.phasespace.pairwise
+
+
+.. py:class:: PhaseSpacePlot(particles=None, kind=None, plot='auto', *, scatter_kwargs=None, hist_kwargs=None, mask=None, masks=None, color=None, cmap='magma_r' or 'Blues', cbar_loc='auto', projections='auto', projections_kwargs=None, mean=False, mean_kwargs=None, std=False, std_kwargs=None, percentiles=None, percentile_kwargs=None, nrows=None, ncols=None, titles='auto', animated=False, twiss=None, **kwargs)
+
+   Bases: :py:obj:`xplt.base.XPlot`, :py:obj:`xplt.particles.ParticlePlotMixin`
+
+   A plot for phase space distributions
+
+   :param particles: A dictionary with particle information
+   :type particles: Any
+   :param kind: Defines the properties to plot.
+                This can be a nested list or a separated string or a mixture of lists and strings where
+                the first list level (or separator ``,``) determines the subplots,
+                and the second list level (or separator ``-``) determines coordinate pairs.
+                In addition, abbreviations for x-y-parameter pairs are supported (e.g. 'x' for 'x-px').
+                For normalized coordinates, use uppercase letters (e.g. 'X' for 'X-Px').
+   :type kind: str | list
+   :param plot: Defines the type of plot. Can be 'auto', 'scatter' or 'hist'. Default is 'auto' for which the plot type is chosen automatically based on the number of particles.
+   :type plot: str
+   :param scatter_kwargs: Additional kwargs for scatter plot, see :meth:`matplotlib.axes.Axes.scatter`.
+   :type scatter_kwargs: dict
+   :param hist_kwargs: Additional kwargs for 2D histogram plot, see :meth:`matplotlib.axes.Axes.hexbin`.
+   :type hist_kwargs: dist
+   :param mask: An index mask to select particles to plot. If None, all particles are plotted.
+   :type mask: Any
+   :param masks: List of masks for each subplot.
+   :type masks: list[mask]
+   :param color: Properties defining the color of points for the scatter plot(s). Implies plot='scatter'. Pass a list of properties to use different values for each subplot
+   :type color: str | list[str]
+   :param cmap: Colormap to use for the hist plot.
+   :type cmap: str
+   :param cbar_loc: Location of the colorbar, such as 'auto', 'right', 'inside upper right', etc.
+                    Use None to disable colorbar.
+   :type cbar_loc: str
+   :param projections: Add histogrammed projections onto axis. Can be True, False, "x", "y", "auto" or a list of these for each subplot
+   :type projections: bool | str | list
+   :param projections_kwargs: Additional kwargs for histogram projection, see :meth:`matplotlib.axes.Axes.step`.
+   :type projections_kwargs: dict
+   :param mean: Whether to indicate mean of distribution with a cross marker. Boolean or list of booleans for each subplot.
+   :type mean: bool | list
+   :param mean_kwargs: Additional kwargs for marker, see :meth:`matplotlib.axes.Axes.plot`.
+   :type mean_kwargs: dict
+   :param std: Whether to indicate standard deviation of distribution with an ellipse. Boolean or list of booleans for each subplot.
+   :type std: bool | list
+   :param std_kwargs: Additional kwargs for std ellipses, see :class:`matplotlib.patches.Ellipse`.
+   :type std_kwargs: dict
+   :param percentiles: List of percentiles (in percent) to indicate in the distribution with ellipses. Can also be a list of lists for each subplot.
+   :type percentiles: list
+   :param percentile_kwargs: Additional kwargs for percentile ellipses, see :class:`matplotlib.patches.Ellipse`.
+   :type percentile_kwargs: dict
+   :param ncols: Number of columns in subplot layout. If None, the layout is determined automatically.
+   :type ncols: int | None
+   :param nrows: Number of columns in subplot layout. If None, the layout is determined automatically.
+   :type nrows: int | None
+   :param titles: List of titles for each subplot or 'auto' to automatically set titles based on plot kind.
+   :type titles: list[str]
+   :param animated: If True, improve plotting performance for creating an animation.
+   :type animated: bool
+   :param twiss: Twiss parameters (alfx, alfy, betx and bety) to use for conversion to normalized phase space coordinates.
+   :type twiss: dict | None
+   :param kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
+
+   .. py:property:: axflat
+
+      Return a flat list of all primary axes
+
+   .. py:property:: circumference
+
+      Circumference of circular accelerator
+
+   .. py:method:: add_scale(ax, scale, label=None, *, vertical=False, width=0.01, padding=0.1, loc='auto', color='k', fontsize='x-small')
+      :staticmethod:
+
+      Add a scale patch (a yardstick or ruler)
+
+      :param ax: The axis to add it to.
+      :type ax: matplotlib.axes.Axes
+      :param scale: The size of the scale in data units.
+      :type scale: float
+      :param label: A label for the scale.
+      :type label: str, optional
+      :param vertical: If true, make a vertical one (default is a horizontal one).
+      :type vertical: bool
+      :param width: The line width of the scale in axis units.
+      :type width: float
+      :param padding: The padding between the scale and the axis.
+      :type padding: float
+      :param loc: The location of the scale. Can be any of the usual matplotlib locations, e.g. 'auto', 'upper left', 'upper center', 'upper right', 'center left', 'center', 'center right', 'lower left', 'lower center, 'lower right'.
+      :type loc: str
+      :param color: Color for the patch.
+      :type color: str
+      :param fontsize: Font size of the label.
+      :type fontsize: str
+
+      :returns: The artist added (an AnchoredOffsetbox).
+
+
+   .. py:method:: annotate(text, **kwargs)
+
+
+   .. py:method:: axis(subplot=0, twin=0)
+
+      Return the axis for a given flat subplot index and twin index
+
+      :param subplot: Flat subplot index
+      :type subplot: int, optional
+      :param twin: Twin index
+      :type twin: int, optional
+
+      :returns: Axis for the given subplot and twin index
+      :rtype: matplotlib.axes.Axes
+
+
+   .. py:method:: axline(kind, val, *, subplots='all', also_on_normalized=False, delta=0, **kwargs)
+
+      Plot a vertical or horizontal line for a given coordinate
+
+      :param kind: Phase space coordinate
+      :type kind: str
+      :param val: Value of phase space coordinate
+      :type val: float
+      :param subplots: Subplots to plot line onto. Defaults to all with matching coordinates.
+      :type subplots: list of int
+      :param also_on_normalized: If true, also plot line for related (de-)normalized phase space coordinates.
+      :type also_on_normalized: bool, optional
+      :param delta: The momentrum error used to convert to (de-)normalized  phase space coordinates.
+      :type delta: float, optional
+      :param kwargs: Arguments for axvline or axhline
+
+
+   .. py:method:: beta(particles=None)
+
+      Get reference relativistic beta as float
+
+
+   .. py:method:: display_unit_for(p)
+
+      Return display unit for parameter
+
+      :param p: Property name
+      :type p: str
+
+      :returns: Display unit
+      :rtype: str
+
+
+   .. py:method:: factor_for(p)
+
+      Return factor to convert parameter into display unit
+
+      :param p: Property name
+      :type p: str
+
+      :returns: Factor to convert parameter into display unit
+      :rtype: float
+
+
+   .. py:method:: frev(particles=None)
+
+      Get reference revolution frequency
+
+
+   .. py:method:: get_property(name)
+
+      Public method to get a particle property by key
+
+      :param name: Key
+      :type name: str
+
+      :returns: The property
+      :rtype: Property
+
+
+   .. py:method:: label_for(*pp, unit=True, description=True)
+
+      Return axis label for list of properties, joining where possible
+
+      :param pp: Property names
+      :param unit: Whether to include unit
+      :type unit: bool
+      :param description: Whether to include description
+      :type description: bool
+
+      :returns: Axis label
+      :rtype: str
+
+
+   .. py:method:: plot_hamiltonian_kobayashi(subplots, S, mu, *, delta=0, extend=1, autoscale=1.1, separatrix=True, separatrix_kwargs=None, equipotentials=True, equipotentials_kwargs=None)
+
+      Plot separatrix and equipotential lines of kobayashi hamiltonian
+
+      :param subplots: Index of subplot(s)
+      :type subplots: int or list of int
+      :param S: Virtual sextupole strength in m^(-1/2)
+      :type S: float
+      :param mu: Virtual sextupole phase in rad/2pi
+      :type mu: float
+      :param delta: Momentum offset.
+      :type delta: float, optional
+      :param extend: Extend of separatrix and equipotential lines. If > 1 they are drawn beyond the the stable region.
+      :type extend: float, optional
+      :param autoscale: Whether to autoscale axis or not (bool), or the extend to consider for autoscaling
+      :type autoscale: bool or float, optional
+      :param separatrix: Plot separatrix. Defaults to True.
+      :type separatrix: bool, optional
+      :param separatrix_kwargs: Keyword arguments for separatrix line plot.
+      :type separatrix_kwargs: dict, optional
+      :param equipotentials: Plot equipotential lines. Defaults to True.
+      :type equipotentials: bool, optional
+      :param equipotentials_kwargs: Keyword arguments for equipotential line contour plot.
+      :type equipotentials_kwargs: dict, optional
+
+
+   .. py:method:: plot_harmonics(ax, v, dv=0, *, n=20, scale_width=True, vertical=True, inverse=False, **plot_kwargs)
+      :staticmethod:
+
+      Add vertical lines or spans indicating the location of values or spans and their harmonics
+
+      Indicates the bands at the h-th harmonics for h = 1, 2, ..., n
+      - h * (v ± dv/2)      if scale_width and not inverse (default)
+      - h * v ± dv/2        if not scale_width and not inverse
+      - h / (v ± dv/2)      if inverse and scale_width
+      - 1 / ( v/h ± dv/2 )  if inverse and not scale_width
+
+      :param ax: Axes to plot onto.
+      :type ax: matplotlib.axes.Axes
+      :param v: Value or list of values.
+      :type v: float or list of float
+      :param dv: Width or list of widths centered around value(s).
+      :type dv: float or list of float, optional
+      :param n: Number of harmonics to plot.
+      :type n: int
+      :param scale_width: Whether to scale the width for higher harmonics or keep it constant.
+      :type scale_width: bool, optional
+      :param vertical: Plot vertical lines if true, horizontal otherweise.
+      :type vertical: bool
+      :param inverse: If true, plot harmonics of n/(v±dv) instead of n*(v±dv). Useful to plot frequency harmonics in time domain and vice-versa.
+      :type inverse: bool
+      :param plot_kwargs: Keyword arguments to be passed to plotting method
+
+
+   .. py:method:: prop(name)
+
+      Get property by key
+      :param name: Key
+      :type name: str
+
+      :returns: The property
+      :rtype: Property
+
+
+   .. py:method:: save(fname, **kwargs)
+
+      Save the figure
+
+      :param fname: Filename
+      :type fname: str
+      :param kwargs: Keyword arguments passed to :meth:`matplotlib.figure.Figure.savefig`
+
+
+   .. py:method:: title(title, **kwargs)
+
+      Set figure title
+
+      :param title: Title
+      :type title: str
+      :param kwargs: Keyword arguments passed to :meth:`matplotlib.figure.Figure.suptitle`
+
+
+   .. py:method:: title_for(a, b)
+
+      Plot title for a given pair (a,b) of properties
+
+
+   .. py:method:: update(particles, *, mask=None, masks=None, autoscale=False)
+
+      Update the data this plot shows
+
+      :param particles: A dictionary with particle information
+      :type particles: Any
+      :param mask: An index mask to select particles to plot. If None, all particles are plotted.
+      :type mask: Any
+      :param masks: List of masks for each subplot.
+      :type masks: list
+      :param autoscale: Whether or not to perform autoscaling on all axes.
+      :type autoscale: bool
+
+      :returns: List of changed artists.
+
+
+
+.. py:data:: pairwise
+   
+
+   
+

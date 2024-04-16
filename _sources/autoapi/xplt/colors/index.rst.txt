@@ -1,0 +1,73 @@
+:py:mod:`xplt.colors`
+=====================
+
+.. py:module:: xplt.colors
+
+.. autoapi-nested-parse::
+
+   Color definitions
+
+   Colors from https://arxiv.org/abs/2107.02270
+
+
+
+Module Contents
+---------------
+
+
+Functions
+~~~~~~~~~
+
+.. autoapisummary::
+
+   xplt.colors.make_unicoloured_cmap
+
+
+
+Attributes
+~~~~~~~~~~
+
+.. autoapisummary::
+
+   xplt.colors.cmap_petroff
+   xplt.colors.cmap_petroff_bipolar
+   xplt.colors.cmap_petroff_cyclic
+   xplt.colors.cmap_petroff_gradient
+   xplt.colors.petroff_colors
+
+
+.. py:function:: make_unicoloured_cmap(color)
+
+   Make a linear colormap of a given color from transparent to black
+
+   :param color: Color as hex string or RGB tuple
+   :type color: Union[str, tuple]
+
+   :returns: Colormap
+
+
+.. py:data:: cmap_petroff
+   
+
+   
+
+.. py:data:: cmap_petroff_bipolar
+   
+
+   
+
+.. py:data:: cmap_petroff_cyclic
+   
+
+   
+
+.. py:data:: cmap_petroff_gradient
+   
+
+   
+
+.. py:data:: petroff_colors
+   :annotation: = ['#3f90da', '#ffa90e', '#bd1f01', '#94a4a2', '#832db6', '#a96b59', '#e76300', '#b9ac70',...
+
+   
+

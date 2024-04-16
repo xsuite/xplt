@@ -1,0 +1,909 @@
+:py:mod:`xplt.base`
+===================
+
+.. py:module:: xplt.base
+
+.. autoapi-nested-parse::
+
+   Base methods for plotting
+
+
+
+Module Contents
+---------------
+
+Classes
+~~~~~~~
+
+.. autoapisummary::
+
+   xplt.base.AngleLocator
+   xplt.base.ManifoldMultipleLocator
+   xplt.base.RadiansFormatter
+   xplt.base.TransformedLocator
+   xplt.base.TwinFunctionLocator
+   xplt.base.XManifoldPlot
+   xplt.base.XPlot
+
+
+
+
+.. py:class:: AngleLocator(minor=False, deg=True)
+
+   Bases: :py:obj:`ManifoldMultipleLocator`
+
+   Find nice tick locations with no more than *nbins* + 1 being within the
+   view limits. Locations beyond the limits are added to support autoscaling.
+
+   A tick locator for angles
+
+   :param minor: If true, return a minor locator. By default a major locator is returned.
+   :type minor: bool
+   :param deg: If true, locate angles is degree. If false, in radians.
+   :type deg: bool
+
+   .. py:attribute:: MAXTICKS
+      :annotation: = 1000
+
+      
+
+   .. py:attribute:: axis
+      
+
+      
+
+   .. py:attribute:: default_params
+      
+
+      
+
+   .. py:method:: create_dummy_axis(**kwargs)
+
+
+   .. py:method:: nonsingular(v0, v1)
+
+      Adjust a range as needed to avoid singularities.
+
+      This method gets called during autoscaling, with ``(v0, v1)`` set to
+      the data limits on the axes if the axes contains any data, or
+      ``(-inf, +inf)`` if not.
+
+      - If ``v0 == v1`` (possibly up to some floating point slop), this
+        method returns an expanded interval around this value.
+      - If ``(v0, v1) == (-inf, +inf)``, this method returns appropriate
+        default view limits.
+      - Otherwise, ``(v0, v1)`` is returned without modification.
+
+
+   .. py:method:: raise_if_exceeds(locs)
+
+      Log at WARNING level if *locs* is longer than `Locator.MAXTICKS`.
+
+      This is intended to be called immediately before returning *locs* from
+      ``__call__`` to inform users in case their Locator returns a huge
+      number of ticks, causing Matplotlib to run out of memory.
+
+      The "strange" name of this method dates back to when it would raise an
+      exception instead of emitting a log.
+
+
+   .. py:method:: set_axis(axis)
+
+
+   .. py:method:: set_params(**kwargs)
+
+      Set parameters for this locator.
+
+      :param nbins: see `.MaxNLocator`
+      :type nbins: int or 'auto', optional
+      :param steps: see `.MaxNLocator`
+      :type steps: array-like, optional
+      :param integer: see `.MaxNLocator`
+      :type integer: bool, optional
+      :param symmetric: see `.MaxNLocator`
+      :type symmetric: bool, optional
+      :param prune: see `.MaxNLocator`
+      :type prune: {'lower', 'upper', 'both', None}, optional
+      :param min_n_ticks: see `.MaxNLocator`
+      :type min_n_ticks: int, optional
+
+
+   .. py:method:: tick_values(vmin, vmax)
+
+      Return the values of the located ticks given **vmin** and **vmax**.
+
+      .. note::
+          To get tick locations with the vmin and vmax values defined
+          automatically for the associated ``axis`` simply call
+          the Locator instance::
+
+              >>> print(type(loc))
+              <type 'Locator'>
+              >>> print(loc())
+              [1, 2, 3, 4]
+
+
+
+   .. py:method:: view_limits(dmin, dmax)
+
+      Select a scale for the range from vmin to vmax.
+
+      Subclasses should override this method to change locator behaviour.
+
+
+
+.. py:class:: ManifoldMultipleLocator(fixed_multiples, n=5, minor_n=None)
+
+   Bases: :py:obj:`matplotlib.ticker.MaxNLocator`
+
+   Find nice tick locations with no more than *nbins* + 1 being within the
+   view limits. Locations beyond the limits are added to support autoscaling.
+
+   A multiple locator that chooses its base from a set of multiples to yield about n ticks
+
+   For ranges smaller than the smallest fixed_multiple, the default MaxNLocator is used
+   For ranges larger than the largest fixed_multiple, a multiple of the later is used
+
+   :param fixed_multiples: multiples to choose from
+   :type fixed_multiples: list of float
+   :param n: number of ticks to produce (best effort)
+   :type n: int
+   :param minor_n: If given, produce that many minor ticks in between each major tick. Length must match the length of fixed_multiples
+   :type minor_n: list of float
+
+   .. py:attribute:: MAXTICKS
+      :annotation: = 1000
+
+      
+
+   .. py:attribute:: axis
+      
+
+      
+
+   .. py:attribute:: default_params
+      
+
+      
+
+   .. py:method:: create_dummy_axis(**kwargs)
+
+
+   .. py:method:: nonsingular(v0, v1)
+
+      Adjust a range as needed to avoid singularities.
+
+      This method gets called during autoscaling, with ``(v0, v1)`` set to
+      the data limits on the axes if the axes contains any data, or
+      ``(-inf, +inf)`` if not.
+
+      - If ``v0 == v1`` (possibly up to some floating point slop), this
+        method returns an expanded interval around this value.
+      - If ``(v0, v1) == (-inf, +inf)``, this method returns appropriate
+        default view limits.
+      - Otherwise, ``(v0, v1)`` is returned without modification.
+
+
+   .. py:method:: raise_if_exceeds(locs)
+
+      Log at WARNING level if *locs* is longer than `Locator.MAXTICKS`.
+
+      This is intended to be called immediately before returning *locs* from
+      ``__call__`` to inform users in case their Locator returns a huge
+      number of ticks, causing Matplotlib to run out of memory.
+
+      The "strange" name of this method dates back to when it would raise an
+      exception instead of emitting a log.
+
+
+   .. py:method:: set_axis(axis)
+
+
+   .. py:method:: set_params(**kwargs)
+
+      Set parameters for this locator.
+
+      :param nbins: see `.MaxNLocator`
+      :type nbins: int or 'auto', optional
+      :param steps: see `.MaxNLocator`
+      :type steps: array-like, optional
+      :param integer: see `.MaxNLocator`
+      :type integer: bool, optional
+      :param symmetric: see `.MaxNLocator`
+      :type symmetric: bool, optional
+      :param prune: see `.MaxNLocator`
+      :type prune: {'lower', 'upper', 'both', None}, optional
+      :param min_n_ticks: see `.MaxNLocator`
+      :type min_n_ticks: int, optional
+
+
+   .. py:method:: tick_values(vmin, vmax)
+
+      Return the values of the located ticks given **vmin** and **vmax**.
+
+      .. note::
+          To get tick locations with the vmin and vmax values defined
+          automatically for the associated ``axis`` simply call
+          the Locator instance::
+
+              >>> print(type(loc))
+              <type 'Locator'>
+              >>> print(loc())
+              [1, 2, 3, 4]
+
+
+
+   .. py:method:: view_limits(dmin, dmax)
+
+      Select a scale for the range from vmin to vmax.
+
+      Subclasses should override this method to change locator behaviour.
+
+
+
+.. py:class:: RadiansFormatter
+
+   Bases: :py:obj:`matplotlib.ticker.Formatter`
+
+   A tick formatter to format angles in radians as fractions or multiples of pi
+
+   .. py:attribute:: axis
+      
+
+      
+
+   .. py:attribute:: locs
+      :annotation: = []
+
+      
+
+   .. py:method:: create_dummy_axis(**kwargs)
+
+
+   .. py:method:: fix_minus(s)
+      :staticmethod:
+
+      Some classes may want to replace a hyphen for minus with the proper
+      Unicode symbol (U+2212) for typographical correctness.  This is a
+      helper method to perform such a replacement when it is enabled via
+      :rc:`axes.unicode_minus`.
+
+
+   .. py:method:: format_data(value)
+
+      Return the full string representation of the value with the
+      position unspecified.
+
+
+   .. py:method:: format_data_short(value)
+
+      Return a short string version of the tick value.
+
+      Defaults to the position-independent long value.
+
+
+   .. py:method:: format_ticks(values)
+
+      Return the tick labels for all the ticks at once.
+
+
+   .. py:method:: get_offset()
+
+
+   .. py:method:: set_axis(axis)
+
+
+   .. py:method:: set_locs(locs)
+
+      Set the locations of the ticks.
+
+      This method is called before computing the tick labels because some
+      formatters need to know all tick locations to do so.
+
+
+
+.. py:class:: TransformedLocator(locator, transform=lambda x: x, inverse=lambda x: x, vmin=-np.inf, vmax=np.inf)
+
+   Bases: :py:obj:`matplotlib.ticker.Locator`
+
+   Determine the tick locations;
+
+   Note that the same locator should not be used across multiple
+   `~matplotlib.axis.Axis` because the locator stores references to the Axis
+   data and view limits.
+
+   A transformed locator with non-linear functional wrappers and limits
+
+   Clips ticks to limits and then transforms the values before calling the dependent locator.
+
+   :param locator: The dependent locator to use for actual tick locating
+   :type locator: mpl.ticker.Locator
+   :param transform: Function to transform tick values of this locator to the values of the dependent locator
+   :type transform: callable
+   :param inverse: Inverse of transform
+   :type inverse: callable
+   :param vmin: Optional lower limit for ticks in this locator
+   :type vmin: float
+   :param vmax: Optional upper limit for ticks in this locator
+   :type vmax: float
+
+   .. py:attribute:: MAXTICKS
+      :annotation: = 1000
+
+      
+
+   .. py:attribute:: axis
+      
+
+      
+
+   .. py:method:: create_dummy_axis(**kwargs)
+
+
+   .. py:method:: nonsingular(v0, v1)
+
+      Adjust a range as needed to avoid singularities.
+
+      This method gets called during autoscaling, with ``(v0, v1)`` set to
+      the data limits on the axes if the axes contains any data, or
+      ``(-inf, +inf)`` if not.
+
+      - If ``v0 == v1`` (possibly up to some floating point slop), this
+        method returns an expanded interval around this value.
+      - If ``(v0, v1) == (-inf, +inf)``, this method returns appropriate
+        default view limits.
+      - Otherwise, ``(v0, v1)`` is returned without modification.
+
+
+   .. py:method:: raise_if_exceeds(locs)
+
+      Log at WARNING level if *locs* is longer than `Locator.MAXTICKS`.
+
+      This is intended to be called immediately before returning *locs* from
+      ``__call__`` to inform users in case their Locator returns a huge
+      number of ticks, causing Matplotlib to run out of memory.
+
+      The "strange" name of this method dates back to when it would raise an
+      exception instead of emitting a log.
+
+
+   .. py:method:: set_axis(axis)
+
+
+   .. py:method:: set_params(**kwargs)
+
+      Do nothing, and raise a warning. Any locator class not supporting the
+      set_params() function will call this.
+
+
+   .. py:method:: tick_values(vmin, vmax)
+
+      Return the values of the located ticks given **vmin** and **vmax**.
+
+      .. note::
+          To get tick locations with the vmin and vmax values defined
+          automatically for the associated ``axis`` simply call
+          the Locator instance::
+
+              >>> print(type(loc))
+              <type 'Locator'>
+              >>> print(loc())
+              [1, 2, 3, 4]
+
+
+
+   .. py:method:: view_limits(vmin, vmax)
+
+      Select a scale for the range from vmin to vmax.
+
+      Subclasses should override this method to change locator behaviour.
+
+
+
+.. py:class:: TwinFunctionLocator(twin_locator, function_twin_to_this, function_this_to_twin, granularity=1)
+
+   Bases: :py:obj:`matplotlib.ticker.Locator`
+
+   Determine the tick locations;
+
+   Note that the same locator should not be used across multiple
+   `~matplotlib.axis.Axis` because the locator stores references to the Axis
+   data and view limits.
+
+   A locator for twin axes with non-linear functional dependence
+
+   Finds nice tick locations close to the twin, but uses a custom function to place ticks at integer multiples of granularity.
+   This is useful for twin axes which share the same limits, but are formatted with values based on different functions.
+
+   :param twin_locator: The other locator to align tick locations with
+   :type twin_locator: mpl.ticker.Locator
+   :param function_twin_to_this: Function to calculate tick values of this axis given the tick values of the other axis.
+   :type function_twin_to_this: callable
+   :param function_this_to_twin: Function to calculate tick values of the other axis given the tick values of this axis.
+   :type function_this_to_twin: callable
+   :param granularity: Base at multiples of which to locate ticks.
+   :type granularity: float
+
+   .. py:attribute:: MAXTICKS
+      :annotation: = 1000
+
+      
+
+   .. py:attribute:: axis
+      
+
+      
+
+   .. py:method:: create_dummy_axis(**kwargs)
+
+
+   .. py:method:: nonsingular(v0, v1)
+
+      Adjust a range as needed to avoid singularities.
+
+      This method gets called during autoscaling, with ``(v0, v1)`` set to
+      the data limits on the axes if the axes contains any data, or
+      ``(-inf, +inf)`` if not.
+
+      - If ``v0 == v1`` (possibly up to some floating point slop), this
+        method returns an expanded interval around this value.
+      - If ``(v0, v1) == (-inf, +inf)``, this method returns appropriate
+        default view limits.
+      - Otherwise, ``(v0, v1)`` is returned without modification.
+
+
+   .. py:method:: raise_if_exceeds(locs)
+
+      Log at WARNING level if *locs* is longer than `Locator.MAXTICKS`.
+
+      This is intended to be called immediately before returning *locs* from
+      ``__call__`` to inform users in case their Locator returns a huge
+      number of ticks, causing Matplotlib to run out of memory.
+
+      The "strange" name of this method dates back to when it would raise an
+      exception instead of emitting a log.
+
+
+   .. py:method:: set_axis(axis)
+
+
+   .. py:method:: set_params(**kwargs)
+
+      Do nothing, and raise a warning. Any locator class not supporting the
+      set_params() function will call this.
+
+
+   .. py:method:: tick_values(vmin, vmax)
+
+      Return the values of the located ticks given **vmin** and **vmax**.
+
+      .. note::
+          To get tick locations with the vmin and vmax values defined
+          automatically for the associated ``axis`` simply call
+          the Locator instance::
+
+              >>> print(type(loc))
+              <type 'Locator'>
+              >>> print(loc())
+              [1, 2, 3, 4]
+
+
+
+   .. py:method:: view_limits(vmin, vmax)
+
+      Select a scale for the range from vmin to vmax.
+
+      Subclasses should override this method to change locator behaviour.
+
+
+
+.. py:class:: XManifoldPlot(on_x, on_y, *, on_y_separators=',-+', on_y_subs={}, **kwargs)
+
+   Bases: :py:obj:`XPlot`
+
+   
+   Base class for plotting manifold plots
+
+   A manifold plot consists of multiple subplots, axes and twin axes, all of which
+   share the x-axis. The **manifold subplot specification string** ``on_y`` defines what
+   is plotted on the y-axes. It should specify a property for each trace, separated by
+   ``,`` for each subplot, by ``-`` for twin axes and by ``+`` for traces. For example, the
+   string ``"a+b,c-d"`` specifies 2 subplots where traces a and b share the same
+   y-axis on the first subplot and traces c and d have individual y-axis on the
+   second subplot.
+
+   When deriving from this class, you should call :meth:`~.base.XManifoldPlot._create_artists` during init
+
+   :param on_x: What to plot on the x-axis
+   :type on_x: str | None
+   :param on_y: What to plot on the y-axis. See :meth:`~.base.XManifoldPlot.parse_nested_list_string`.
+                May optionally contain a post-processing function call with the property as first argument
+                such as `smooth(key)` or `smooth(key, n=10)`.
+   :type on_y: str or list
+   :param on_y_separators: See :meth:`~.base.XManifoldPlot.parse_nested_list_string`
+   :type on_y_separators: str
+   :param on_y_subs: See :meth:`~.base.XManifoldPlot.parse_nested_list_string`
+   :type on_y_subs: dict
+   :param kwargs: Keyword arguments passed to :class:`~.base.XPlot`
+
+   .. py:property:: axflat
+
+      Return a flat list of all primary axes
+
+   .. py:property:: on_y_unique
+
+
+   .. py:method:: add_scale(ax, scale, label=None, *, vertical=False, width=0.01, padding=0.1, loc='auto', color='k', fontsize='x-small')
+      :staticmethod:
+
+      Add a scale patch (a yardstick or ruler)
+
+      :param ax: The axis to add it to.
+      :type ax: matplotlib.axes.Axes
+      :param scale: The size of the scale in data units.
+      :type scale: float
+      :param label: A label for the scale.
+      :type label: str, optional
+      :param vertical: If true, make a vertical one (default is a horizontal one).
+      :type vertical: bool
+      :param width: The line width of the scale in axis units.
+      :type width: float
+      :param padding: The padding between the scale and the axis.
+      :type padding: float
+      :param loc: The location of the scale. Can be any of the usual matplotlib locations, e.g. 'auto', 'upper left', 'upper center', 'upper right', 'center left', 'center', 'center right', 'lower left', 'lower center, 'lower right'.
+      :type loc: str
+      :param color: Color for the patch.
+      :type color: str
+      :param fontsize: Font size of the label.
+      :type fontsize: str
+
+      :returns: The artist added (an AnchoredOffsetbox).
+
+
+   .. py:method:: annotate(text, **kwargs)
+
+
+   .. py:method:: artist(name=None, subplot=None, twin=None, trace=None)
+
+      Return the artist either by name, or by subplot, twin axes and trace index
+
+      :param name: Name of the property the artist is plotting
+      :type name: str, optional
+      :param subplot: Flat subplot index
+      :type subplot: int, optional
+      :param twin: Twin axis index
+      :type twin: int, optional
+      :param trace: Trace index
+      :type trace: int, optional
+
+      :returns: First artist that matches the given criteria
+      :rtype: matplotlib.artist.Artist
+
+
+   .. py:method:: autoscale(subplot='all', *, reset=False, freeze=True, tight=None)
+
+      Autoscale the axes of a subplot
+
+      :param subplot: Subplot axis index, indices or "all"
+      :type subplot: int | iterable | str
+      :param reset: Whether to ignore any data limits already registered.
+      :type reset: bool
+      :param freeze: Whether to keep the updated axes limits (True) or enable automatic
+                     autoscaling on future draws (for all present and new artists).
+      :type freeze: bool
+      :param tight: Enables tight scaling without margins for "x", "y", "both" or None.
+      :type tight: str | None
+
+
+   .. py:method:: axis(subplot=0, twin=0)
+
+      Return the axis for a given flat subplot index and twin index
+
+      :param subplot: Flat subplot index
+      :type subplot: int, optional
+      :param twin: Twin index
+      :type twin: int, optional
+
+      :returns: Axis for the given subplot and twin index
+      :rtype: matplotlib.axes.Axes
+
+
+   .. py:method:: display_unit_for(p)
+
+      Return display unit for parameter
+
+      :param p: Property name
+      :type p: str
+
+      :returns: Display unit
+      :rtype: str
+
+
+   .. py:method:: factor_for(p)
+
+      Return factor to convert parameter into display unit
+
+      :param p: Property name
+      :type p: str
+
+      :returns: Factor to convert parameter into display unit
+      :rtype: float
+
+
+   .. py:method:: label_for(*pp, unit=True, description=True)
+
+      Return axis label for list of properties, joining where possible
+
+      :param pp: Property names
+      :param unit: Whether to include unit
+      :type unit: bool
+      :param description: Whether to include description
+      :type description: bool
+
+      :returns: Axis label
+      :rtype: str
+
+
+   .. py:method:: legend(subplot='all', show=True, **kwargs)
+
+      Add, update or remove legend for a subplot
+
+      :param subplot: Subplot axis index or indices
+      :type subplot: Union[int, iterable, "all"]
+      :param show: If True, show the legend. If "auto", show
+                   legend for subplots with more than one trace, or if subplot is specified explicitly.
+      :type show: Union[bool, "auto"]
+      :param kwargs: Keyword arguments passed to :meth:`matplotlib.axes.Axes.legend`
+
+
+   .. py:method:: parse_nested_list_string(list_string, separators=',-+', subs={}, *, strip_off_methods=False)
+      :staticmethod:
+
+      Parse a separated string or nested list or a mixture of both
+
+
+
+
+      :param list_string: The string or nested list or a mixture of both to parse.
+      :type list_string: str or list
+      :param separators: The characters that separate the elements. The number of characters
+                         determines the depth of the returned list.
+      :type separators: str
+      :param subs: A dictionary of substitutions to apply to the elements during parsing.
+                   May introduce additional separators of equal or deeper level.
+      :type subs: dict
+      :param strip_off_methods: If true, each element can be a name `name` or an expression
+                                in the form `method(name, ...)`. The methods are stripped off,
+                                and returned separately.
+      :type strip_off_methods: bool
+
+      :returns: nested list of names in the string,
+                nested list of expressions in the string (only if strip_off_methods is True)
+
+      .. rubric:: Example
+
+      >>> XManifoldPlot.parse_nested_list_string("a+b, c-d,fun(e,2)")
+      [[['a', 'b']], [['c'], ['d']], [['fun(e,2)']]]
+      >>> XManifoldPlot.parse_nested_list_string("a+b, c-d,fun(e,2)", strip_off_methods=True)
+      ([[['a', 'b']], [['c'], ['d']], [['e']]],
+       [[[None, None]], [[None], [None]], [['fun(e,2)']]])
+
+
+   .. py:method:: plot_harmonics(ax, v, dv=0, *, n=20, scale_width=True, vertical=True, inverse=False, **plot_kwargs)
+      :staticmethod:
+
+      Add vertical lines or spans indicating the location of values or spans and their harmonics
+
+      Indicates the bands at the h-th harmonics for h = 1, 2, ..., n
+      - h * (v ± dv/2)      if scale_width and not inverse (default)
+      - h * v ± dv/2        if not scale_width and not inverse
+      - h / (v ± dv/2)      if inverse and scale_width
+      - 1 / ( v/h ± dv/2 )  if inverse and not scale_width
+
+      :param ax: Axes to plot onto.
+      :type ax: matplotlib.axes.Axes
+      :param v: Value or list of values.
+      :type v: float or list of float
+      :param dv: Width or list of widths centered around value(s).
+      :type dv: float or list of float, optional
+      :param n: Number of harmonics to plot.
+      :type n: int
+      :param scale_width: Whether to scale the width for higher harmonics or keep it constant.
+      :type scale_width: bool, optional
+      :param vertical: Plot vertical lines if true, horizontal otherweise.
+      :type vertical: bool
+      :param inverse: If true, plot harmonics of n/(v±dv) instead of n*(v±dv). Useful to plot frequency harmonics in time domain and vice-versa.
+      :type inverse: bool
+      :param plot_kwargs: Keyword arguments to be passed to plotting method
+
+
+   .. py:method:: prop(name)
+
+      Get property by key
+      :param name: Key
+      :type name: str
+
+      :returns: The property
+      :rtype: Property
+
+
+   .. py:method:: save(fname, **kwargs)
+
+      Save the figure
+
+      :param fname: Filename
+      :type fname: str
+      :param kwargs: Keyword arguments passed to :meth:`matplotlib.figure.Figure.savefig`
+
+
+   .. py:method:: title(title, **kwargs)
+
+      Set figure title
+
+      :param title: Title
+      :type title: str
+      :param kwargs: Keyword arguments passed to :meth:`matplotlib.figure.Figure.suptitle`
+
+
+
+.. py:class:: XPlot(*, data_units=None, display_units=None, ax=None, grid=True, nntwins=None, annotation=None, _properties=None, **subplots_kwargs)
+
+   
+   Base class for plotting
+
+   Initialize the subplots, axes and twin axes
+
+   :param data_units: Units of the data. If None, the units are determined from default and user property settings.
+   :type data_units: dict, optional
+   :param display_units: Units to display the data in. If None, the units are determined from the data.
+   :type display_units: dict, optional
+   :param ax: Axes to plot onto. If None, a new figure is created.
+   :type ax: matplotlib.axes.Axes, optional
+   :param grid: If True, show grid lines on all axes.
+   :type grid: bool
+   :param nntwins: List defining how many twin axes to create for each subplot.
+   :type nntwins: list
+   :param annotation: Whether to add an annotation or not. If None (default) add it unless `ax` is passed.
+   :type annotation: bool | None
+   :param subplots_kwargs: Keyword arguments passed to matplotlib.pyplot.subplots command when a new figure is created.
+
+   .. py:property:: axflat
+
+      Return a flat list of all primary axes
+
+   .. py:method:: add_scale(ax, scale, label=None, *, vertical=False, width=0.01, padding=0.1, loc='auto', color='k', fontsize='x-small')
+      :staticmethod:
+
+      Add a scale patch (a yardstick or ruler)
+
+      :param ax: The axis to add it to.
+      :type ax: matplotlib.axes.Axes
+      :param scale: The size of the scale in data units.
+      :type scale: float
+      :param label: A label for the scale.
+      :type label: str, optional
+      :param vertical: If true, make a vertical one (default is a horizontal one).
+      :type vertical: bool
+      :param width: The line width of the scale in axis units.
+      :type width: float
+      :param padding: The padding between the scale and the axis.
+      :type padding: float
+      :param loc: The location of the scale. Can be any of the usual matplotlib locations, e.g. 'auto', 'upper left', 'upper center', 'upper right', 'center left', 'center', 'center right', 'lower left', 'lower center, 'lower right'.
+      :type loc: str
+      :param color: Color for the patch.
+      :type color: str
+      :param fontsize: Font size of the label.
+      :type fontsize: str
+
+      :returns: The artist added (an AnchoredOffsetbox).
+
+
+   .. py:method:: annotate(text, **kwargs)
+
+
+   .. py:method:: axis(subplot=0, twin=0)
+
+      Return the axis for a given flat subplot index and twin index
+
+      :param subplot: Flat subplot index
+      :type subplot: int, optional
+      :param twin: Twin index
+      :type twin: int, optional
+
+      :returns: Axis for the given subplot and twin index
+      :rtype: matplotlib.axes.Axes
+
+
+   .. py:method:: display_unit_for(p)
+
+      Return display unit for parameter
+
+      :param p: Property name
+      :type p: str
+
+      :returns: Display unit
+      :rtype: str
+
+
+   .. py:method:: factor_for(p)
+
+      Return factor to convert parameter into display unit
+
+      :param p: Property name
+      :type p: str
+
+      :returns: Factor to convert parameter into display unit
+      :rtype: float
+
+
+   .. py:method:: label_for(*pp, unit=True, description=True)
+
+      Return axis label for list of properties, joining where possible
+
+      :param pp: Property names
+      :param unit: Whether to include unit
+      :type unit: bool
+      :param description: Whether to include description
+      :type description: bool
+
+      :returns: Axis label
+      :rtype: str
+
+
+   .. py:method:: plot_harmonics(ax, v, dv=0, *, n=20, scale_width=True, vertical=True, inverse=False, **plot_kwargs)
+      :staticmethod:
+
+      Add vertical lines or spans indicating the location of values or spans and their harmonics
+
+      Indicates the bands at the h-th harmonics for h = 1, 2, ..., n
+      - h * (v ± dv/2)      if scale_width and not inverse (default)
+      - h * v ± dv/2        if not scale_width and not inverse
+      - h / (v ± dv/2)      if inverse and scale_width
+      - 1 / ( v/h ± dv/2 )  if inverse and not scale_width
+
+      :param ax: Axes to plot onto.
+      :type ax: matplotlib.axes.Axes
+      :param v: Value or list of values.
+      :type v: float or list of float
+      :param dv: Width or list of widths centered around value(s).
+      :type dv: float or list of float, optional
+      :param n: Number of harmonics to plot.
+      :type n: int
+      :param scale_width: Whether to scale the width for higher harmonics or keep it constant.
+      :type scale_width: bool, optional
+      :param vertical: Plot vertical lines if true, horizontal otherweise.
+      :type vertical: bool
+      :param inverse: If true, plot harmonics of n/(v±dv) instead of n*(v±dv). Useful to plot frequency harmonics in time domain and vice-versa.
+      :type inverse: bool
+      :param plot_kwargs: Keyword arguments to be passed to plotting method
+
+
+   .. py:method:: prop(name)
+
+      Get property by key
+      :param name: Key
+      :type name: str
+
+      :returns: The property
+      :rtype: Property
+
+
+   .. py:method:: save(fname, **kwargs)
+
+      Save the figure
+
+      :param fname: Filename
+      :type fname: str
+      :param kwargs: Keyword arguments passed to :meth:`matplotlib.figure.Figure.savefig`
+
+
+   .. py:method:: title(title, **kwargs)
+
+      Set figure title
+
+      :param title: Title
+      :type title: str
+      :param kwargs: Keyword arguments passed to :meth:`matplotlib.figure.Figure.suptitle`
+
+
+
