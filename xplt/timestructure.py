@@ -13,6 +13,7 @@ import types
 
 import matplotlib as mpl
 import numpy as np
+import scipy.signal
 import pint
 
 from .util import *
@@ -263,6 +264,7 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
         relative=False,
         log=None,
         scaling=None,
+        smoothing=None,
         mask=None,
         timeseries=None,
         timeseries_fs=None,
@@ -293,11 +295,12 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
                 In addition, abbreviations for x-y-parameter pairs are supported (e.g. ``P`` for ``Px+Py``).
             fmax (float): Maximum frequency (in Hz) to plot.
             relative (bool): If True, plot relative frequencies (f/frev) instead of absolute frequencies (f).
-            log (bool): If True, plot on a log scale.
-            scaling (str | dict): Scaling of the FFT. Can be 'amplitude', 'pds' or 'pdspp' or a dict with a scaling per property where
+            log (bool | str): False, 'x', 'y' or True to plot none, the x-axis, y-axis or both on a log scale respectively.
+            scaling (str | dict): Scaling of the FFT. Can be 'amplitude', 'power' or 'pdspp' or a dict with a scaling per property where
                                   `amplitude` (default for non-count based properties) scales the FFT magnitude to the amplitude,
-                                  `pds` (power density spectrum, default for count based properties) scales the FFT magnitude to power,
+                                  `power` (power density spectrum, default for count based properties) scales the FFT magnitude to power,
                                   `pdspp` (power density spectrum per particle) is simmilar to 'pds' but normalized to particle number.
+            smoothing (int | None): If not None, uses Welch's method to compute a smoothened FFT with `2**smoothing` segments.
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
             timeseries (dict[str, np.array]): Pre-binned timeseries data as alternative to timestamp-based particle data.
                                               The dictionary must contain keys for each `kind` (e.g. `count`).
@@ -315,6 +318,7 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
         self._scaling = scaling
         if log is None:
             log = not relative
+        self.smoothing = smoothing
 
         kwargs = self._init_particle_mixin(**kwargs)
         kwargs = self._init_particle_histogram_mixin(**kwargs)
@@ -328,8 +332,7 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
         self.axis(-1).set(xlabel="$f/f_{rev}$" if self.relative else self.label_for("f"))
         for a in self.axflat:
             a.set(ylim=(0, None))
-            if log:
-                a.set(xscale="log", yscale="log")
+            a.set(**{f"{xy}scale": "log" for xy in "xy" if log in (True, xy)})
 
         # Create plot elements
         def create_artists(i, j, k, ax, p):
@@ -355,7 +358,7 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
             return self._scaling.lower()
         if isinstance(self._scaling, dict) and key in self._scaling:
             return self._scaling[key].lower()
-        return "pds" if self._count_based(key) else "amplitude"
+        return "power" if self._count_based(key) else "amplitude"
 
     def fmax(self, particles=None, *, default=None):
         """Return the maximum frequency this plot should show
@@ -454,10 +457,23 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
             for j, pp in enumerate(ppp):
                 for k, p in enumerate(pp):
 
-                    # calculate fft without DC component
+                    # calculate FFT
                     dt, ts = 1 / get(timeseries_fs, p), get(timeseries, p)
-                    freq = np.fft.rfftfreq(ts.size, d=dt)[1:]
-                    mag = np.abs(np.fft.rfft(ts))[1:]
+                    if self.smoothing is None:
+                        freq = np.fft.rfftfreq(ts.size, d=dt)
+                        mag = np.abs(np.fft.rfft(ts, norm="forward"))
+                        mag[
+                            1:
+                        ] *= 2  # one-sided spectrum contains only half the amplitude (except DC)
+                    else:
+                        # Welch's method for smoothing
+                        freq, mag2 = scipy.signal.welch(
+                            ts,
+                            fs=1 / dt,
+                            nperseg=ts.size // 2**self.smoothing,
+                            scaling="spectrum",
+                        )
+                        mag = np.sqrt(2 * mag2)  # one-sided spectrum contains only half the power
 
                     # scale frequency according to user preferences
                     if self.relative:
@@ -470,12 +486,14 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
                         mag /= dt
                     if self._get_scaling(p) == "amplitude":
                         # amplitude in units of p
-                        mag *= 2 / len(ts) * self.factor_for(p)
-                    elif self._get_scaling(p) in ("pds", "pdspp"):
+                        mag *= self.factor_for(p)
+                    elif self._get_scaling(p) in ("power", "pds", "pdspp"):
                         # power density spectrum in arb. unit
                         mag = mag**2
                         if self._get_scaling(p) == "pdspp":
                             mag /= ppscale  # per particle
+                    else:
+                        raise ValueError(f'Unknown scaling "{self._get_scaling(p)}"')
 
                     # cut data above fmax which was only added to increase FFT performance
                     visible = freq <= fmax
@@ -497,7 +515,7 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
                     a.relim()
                     a.autoscale()
                     log = a.get_xscale() == "log"
-                    xlim = np.array((10.0, fmax) if log else (0.0, fmax))
+                    xlim = np.array((10.0 if log else 0.0, fmax))
                     if self.relative:
                         xlim /= self.frev(particles)
                     else:
@@ -517,7 +535,7 @@ class TimeFFTPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
             symbol = symbol.strip("$")
             if self._get_scaling(p) == "amplitude":
                 symbol = f"$\\hat{{{symbol}}}$"
-            elif self._get_scaling(p) == "pds":
+            elif self._get_scaling(p) in ("power", "pds"):
                 symbol = f"$|\\mathrm{{FFT({symbol})}}|^2$"
             elif self._get_scaling(p) == "pdspp":
                 symbol = f"$|\\mathrm{{FFT({symbol})}}|^2/N_\\mathrm{{total}}$"
