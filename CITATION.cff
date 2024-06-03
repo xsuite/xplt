@@ -6,8 +6,8 @@ authors:
   family-names: Niedermayer
   orcid: "https://orcid.org/0000-0002-4722-6619"
 type: software
-url: "https://eltos.github.io/xplt"
-repository-code: "https://github.com/eltos/xplt"
+url: "https://xsuite.github.io/xplt"
+repository-code: "https://github.com/xsuite/xplt"
 abstract: >-
   A plotting library for Xsuite and simmilar accelerator physics codes.
 keywords:
