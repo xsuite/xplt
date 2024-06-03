@@ -383,7 +383,7 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
 
             # 2D mean indicator (cross)
             if self.artists_mean[i]:
-                self.artists_mean[i].set_data(XY0)
+                self.artists_mean[i].set_data(XY0.reshape([2,1]))
                 changed_artists.append(self.artists_mean[i])
 
             # 2D size indicator (ellipses)
