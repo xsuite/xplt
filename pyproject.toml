@@ -32,8 +32,8 @@ dynamic = ["version"]
 
 [project.urls]
 homepage = "https://github.com/eltos/xplt"
-documentation = "https://eltos.github.io/xplt"
-repository = "https://github.com/eltos/xplt"
+documentation = "https://xsuite.github.io/xplt"
+repository = "https://github.com/xsuite/xplt"
 
 [project.optional-dependencies]
 all = ["pandas"]
