@@ -75,6 +75,7 @@ intersphinx_mapping = {
     "xsuite": ("https://xsuite.readthedocs.io/en/latest/", None),
 }
 
+
 # Linkcode
 # > in API reference, add links to source code on GitHub
 def linkcode_resolve(domain, info):
