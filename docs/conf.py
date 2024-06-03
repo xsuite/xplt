@@ -12,9 +12,9 @@ from xplt import __version__
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = "Xplt"
-copyright = "2022, Philipp Niedermayer (github.com/eltos)"
+copyright = "2022-2024, Philipp Niedermayer (github.com/eltos)"
 author = "Philipp Niedermayer (github.com/eltos)"
-github_username = "eltos"
+github_username = "xsuite"
 github_repository = "xplt"
 version = __version__
 release = version
@@ -94,7 +94,7 @@ def linkcode_resolve(domain, info):
         else:
             path = (root + sourcefile.split(root)[-1]).replace(os.path.sep, "/")
             filename = f"{path}#L{line}-L{line + len(sourcecode) - 1}"
-            return f"https://github.com/eltos/xplt/blob/v{version}/{filename}"
+            return f"https://github.com/xsuite/xplt/blob/v{version}/{filename}"
     except:
         return None
 
@@ -127,7 +127,7 @@ html_show_sourcelink = False
 html_static_path = ["_static"]
 html_theme_options = {
     "show_nav_level": 2,
-    "github_url": "https://github.com/eltos/xplt",
+    "github_url": "https://github.com/xsuite/xplt",
     "icon_links": [
         {
             "name": "PyPI",
