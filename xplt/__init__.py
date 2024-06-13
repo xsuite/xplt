@@ -19,13 +19,16 @@ from .timestructure import (
     TimeBinPlot,
     TimeFFTPlot,
     TimeIntervalPlot,
-    TimeVariationPlot,
-    TimeVariationScalePlot,
+    SpillQualityPlot,
+    SpillQualityTimescalePlot,
     TimeBinMetricHelper,
 )
 from .twiss import TwissPlot
 from .util import average, normalized_coordinates, denormalized_coordinates
 
+# Deprecated, for backwards compatibility
+TimeVariationPlot = SpillQualityPlot
+TimeVariationScalePlot = SpillQualityTimescalePlot
 
 from . import hooks
 

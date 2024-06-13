@@ -962,7 +962,7 @@ class MetricesMixin:
                     at.set(ylabel=self.label_for("duty" if twin_is_duty else "cv"))
 
 
-class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
+class SpillQualityPlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
     """Plot variability of particle time on microscopic scale as function of time on macroscopic scale"""
 
     def __init__(
@@ -1132,7 +1132,7 @@ class TimeVariationPlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
         return changed
 
 
-class TimeVariationScalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
+class SpillQualityTimescalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin):
     """Plot variability of particle time as function of timescale"""
 
     def __init__(
