@@ -35,10 +35,10 @@ def register_matplotlib_options():
         cmap_petroff_bipolar,
         cmap_petroff_cyclic,
     ):
-        mpl.cm.register_cmap(cmap=cmap)
+        mpl.colormaps.register(cmap=cmap)
         cmap_r = cmap.reversed()
         cmap_r.name = cmap.name + "_r"
-        mpl.cm.register_cmap(cmap=cmap_r)
+        mpl.colormaps.register(cmap=cmap_r)
 
 
 def register_pint_options():
