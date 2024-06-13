@@ -1146,6 +1146,8 @@ class SpillQualityTimescalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin)
         std=True,
         poisson=True,
         mask=None,
+        timeseries=None,
+        timeseries_fs=None,
         time_range=None,
         log=True,
         plot_kwargs=None,
@@ -1181,6 +1183,11 @@ class SpillQualityTimescalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin)
                 Only relevant if counting_bins_per_evaluation is not None.
             poisson (bool): Whether or not to plot the Poisson limit.
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
+            timeseries (np.array): Pre-binned timeseries data with particle counts
+                                   as alternative to timestamp-based particle data.
+                                   When specified, `timeseries_fs` must also be set,
+                                   and `particles` and `mask` must be None.
+            timeseries_fs (float): The sampling frequency for the timeseries data.
             time_range (tuple): Time range of particles to consider. If None, all particles are considered.
             log (bool): Whether or not to plot the x-axis in log scale.
             plot_kwargs (dict): Keyword arguments passed to the plot function. See :meth:`matplotlib.axes.Axes.plot`.
@@ -1245,35 +1252,166 @@ class SpillQualityTimescalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin)
             self.legend()
 
         # set data
-        if particles is not None:
+        if particles is not None or timeseries is not None:
             self.update(
-                particles,
+                particles=particles,
                 mask=mask,
                 autoscale=True,
+                timeseries=timeseries,
+                timeseries_fs=timeseries_fs,
                 ignore_insufficient_statistics=ignore_insufficient_statistics,
             )
 
     def update(
-        self, particles, mask=None, autoscale=False, *, ignore_insufficient_statistics=False
+        self,
+        particles=None,
+        mask=None,
+        autoscale=False,
+        *,
+        timeseries=None,
+        timeseries_fs=None,
+        ignore_insufficient_statistics=False,
     ):
         """Update plot with new data
 
         Args:
             particles (Any): Particles data to plot.
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
-            autoscale (bool): Whether or not to perform autoscaling on all axes.
+            autoscale (bool): Whether to perform autoscaling on all axes.
+            timeseries (np.array): Pre-binned timeseries data with particle counts
+                                   as alternative to timestamp-based particle data.
+                                   When specified, `timeseries_fs` must also be set,
+                                   and `particles` and `mask` must be None.
+            timeseries_fs (float): The sampling frequency for the timeseries data.
             ignore_insufficient_statistics (bool): When set to True, the plot will include data with insufficient statistics.
 
         Returns:
             Changed artists
         """
 
-        # extract times
-        times = self.prop("t").values(particles, mask, unit="s")
-        if self.time_range:
-            times = times[(self.time_range[0] <= times) & (times < self.time_range[1])]
-        ntotal = times.size
-        duration = np.max(times) - np.min(times)
+        counting_dt_min = self.counting_dt_min
+        counting_dt_max = self.counting_dt_max
+
+        def check_insufficient_statistics():
+            if counting_dt_min > counting_dt_max or counting_dt_max > duration or ntotal < 1e4:
+                print(
+                    f"Warning: Data length ({duration:g} s), counting_dt_min ({counting_dt_min:g} s), "
+                    f"counting_dt_max ({counting_dt_max:g} s) and/or count ({ntotal:g}) insufficient. "
+                )
+                if not ignore_insufficient_statistics:
+                    print(f"Nothing plotted.")
+                    return True
+
+        # Particle timestamp based data
+        ################################
+        if particles is not None:
+            if timeseries is not None or timeseries_fs is not None:
+                raise ValueError(
+                    "`timeseries` and `timeseries_fs` must be None when passing data via `particles`"
+                )
+
+            # extract times in range
+            times = self.prop("t").values(particles, mask, unit="s")
+            if self.time_range:
+                if self.time_range[0] is not None:
+                    times = times[times >= self.time_range[0]]
+                if self.time_range[1] is not None:
+                    times = times[times < self.time_range[1]]
+            ntotal = times.size
+            duration = np.max(times) - np.min(times)
+
+            # determine timescales
+            if counting_dt_min is None:
+                counting_dt_min = (
+                    50 * duration / ntotal
+                )  # at least 50 particles per bin (on average)
+            if counting_dt_max is None:
+                counting_dt_max = duration / 50  # at least 50 bins to calculate metric
+            if check_insufficient_statistics():
+                return
+
+            # determine bins
+            bins_min = int(duration / counting_dt_max + 1)
+            bins_max = int(duration / counting_dt_min + 1)
+            if self.log:
+                ncbins = 1 / np.geomspace(1 / bins_min, 1 / bins_max, 100)
+            else:
+                ncbins = 1 / np.linspace(1 / bins_min, 1 / bins_max, 100)
+            ncbins = np.unique(ncbins.astype(int))
+
+            # bin data
+            DT = np.empty(ncbins.size)
+            Ns = np.empty_like(DT, dtype=object)
+            for i, nbin in enumerate(ncbins):
+                _, DT[i], Ns[i] = binned_data(times, n=nbin)
+
+        # Timeseries based data
+        ########################
+        elif timeseries is not None:
+            if particles is not None or mask is not None:
+                raise ValueError(
+                    "`particles` and `mask` must be None when passing data via `timeseries`"
+                )
+            if timeseries_fs is None:
+                raise ValueError("`timeseries_fs` is required when passing data via `timeseries`")
+
+            # apply time range
+            if self.time_range:
+                i_min, i_max = [
+                    None if t is None else int(t * timeseries_fs) for t in self.time_range
+                ]
+                timeseries = timeseries[i_min:i_max]
+            duration = timeseries.size / timeseries_fs
+            ntotal = np.sum(timeseries)
+
+            # determine timescales
+            if counting_dt_min is None or counting_dt_min < 1 / timeseries_fs:
+                counting_dt_min = 1 / timeseries_fs  # at least resolution of data
+            if counting_dt_max is None:
+                counting_dt_max = duration / 50  # at least 50 bins to calculate metric
+            if check_insufficient_statistics():
+                return
+
+            # determine bins
+            rebin_min = int(round(counting_dt_min * timeseries_fs))
+            rebin_max = int(round(counting_dt_max * timeseries_fs))
+            if self.log:
+                rebins = np.unique(np.geomspace(rebin_min, rebin_max, 100, dtype=int))
+            else:
+                rebins = np.unique(np.linspace(rebin_min, rebin_max, 100, dtype=int))
+
+            # re-bin data
+            DT = np.empty(rebins.size)
+            Ns = np.empty_like(DT, dtype=object)
+            for i, rebin in enumerate(rebins):
+                DT[i] = rebin / timeseries_fs
+                size = rebin * int(timeseries.size / rebin)
+                Ns[i] = np.reshape(timeseries[:size], (-1, rebin)).mean(axis=1)
+
+        else:
+            raise ValueError("Data was neither passed via `particles` nor `timeseries`")
+
+        # Metric calculation
+        #####################
+        F = {m: np.empty_like(DT) for m in self.on_y_unique}
+        F_std = {m: np.empty_like(DT) for m in self.on_y_unique}
+        F_poisson = {m: np.empty_like(DT) for m in self.on_y_unique}
+
+        for i, N in enumerate(Ns):
+            # reshape into evaluation bins using a sliding window
+            stride = min(self.counting_bins_per_evaluation or N.size, N.size)
+            NN = np.lib.stride_tricks.sliding_window_view(N, stride)
+            if NN.shape[0] > 10000:  # not more than this many windows
+                NN = NN[:: NN.shape[0] // 10000, :]
+
+            for metric in F.keys():
+                # calculate metrics
+                v, lim = self._calculate_metric(NN, metric, axis=1)
+                F[metric][i] = np.nanmean(v)
+                F_std[metric][i] = np.nanstd(v) or np.nan
+                F_poisson[metric][i] = np.nanmean(lim)
+
+        DT = DT * self.factor_for(self.on_x)
 
         # annotate plot
         # f'$\\langle\\dot{{N}}\\rangle = {pint.Quantity(ntotal/duration, "1/s"):#~.4gL}$\n'
@@ -1285,56 +1423,6 @@ class SpillQualityTimescalePlot(XManifoldPlot, ParticlePlotMixin, MetricesMixin)
                 else f"{pint.Quantity(duration, 's'):#~.4gL}$"
             )
         )
-
-        # determine timescales
-        if self.counting_dt_min is None:
-            ncbins_max = int(ntotal / 50)  # at least 50 particles per bin (on average)
-        else:
-            ncbins_max = int(duration / self.counting_dt_min + 1)
-
-        if self.counting_dt_max is None:
-            ncbins_min = 50  # at least 50 bins to calculate metric
-        else:
-            ncbins_min = int(duration / self.counting_dt_max + 1)
-
-        if ncbins_min > ncbins_max or ntotal < 1e4:
-            print(
-                f"Warning: Data length ({duration:g} s), counting_dt_min ({duration/ncbins_max:g} s), "
-                f"counting_dt_max ({duration/ncbins_min:g} s) and/or count ({ntotal:g}) insufficient. "
-            )
-            if not ignore_insufficient_statistics:
-                print(f"Nothing plotted.")
-                return
-
-        if self.log:
-            ncbins_arr = np.unique(
-                (1 / np.geomspace(1 / ncbins_min, 1 / ncbins_max, 100)).astype(int)
-            )
-        else:
-            ncbins_arr = np.unique(
-                (1 / np.linspace(1 / ncbins_min, 1 / ncbins_max, 100)).astype(int)
-            )
-
-        # compute metrices
-        DT = np.empty(ncbins_arr.size)
-        F = {m: np.empty_like(DT) for m in self.on_y_unique}
-        F_std = {m: np.empty_like(DT) for m in self.on_y_unique}
-        F_poisson = {m: np.empty_like(DT) for m in self.on_y_unique}
-        for i, nbin in enumerate(ncbins_arr):
-            _, DT[i], N = binned_data(times, n=nbin)
-
-            # calculate metric on sliding window
-            stride = min(self.counting_bins_per_evaluation or N.size, N.size)
-            N = np.lib.stride_tricks.sliding_window_view(N, stride)
-
-            for metric in F.keys():
-                # calculate metrics
-                v, lim = self._calculate_metric(N, metric, axis=1)
-                F[metric][i] = np.nanmean(v)
-                F_std[metric][i] = np.nanstd(v) or np.nan
-                F_poisson[metric][i] = np.nanmean(lim)
-
-        DT = DT * self.factor_for(self.on_x)
 
         # update plots
         changed = []
