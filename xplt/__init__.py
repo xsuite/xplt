@@ -27,8 +27,23 @@ from .twiss import TwissPlot
 from .util import average, normalized_coordinates, denormalized_coordinates
 
 # Deprecated, for backwards compatibility
-TimeVariationPlot = SpillQualityPlot
-TimeVariationScalePlot = SpillQualityTimescalePlot
+class TimeVariationPlot(SpillQualityPlot):
+    """
+    .. deprecated:: 0.8
+        Use :class:`xplt.SpillQualityPlot` instead.
+    """
+
+    pass
+
+
+class TimeVariationScalePlot(SpillQualityTimescalePlot):
+    """
+    .. deprecated:: 0.8
+        Use :class:`xplt.SpillQualityTimescalePlot` instead.
+    """
+
+    pass
+
 
 from . import hooks
 
