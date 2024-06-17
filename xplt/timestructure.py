@@ -1286,7 +1286,7 @@ class SpillQualityTimescalePlot(_TimeBasePlot, ParticlePlotMixin, MetricesMixin)
             if std:
                 self._errkw = kwargs.copy()
                 self._errkw.update(
-                    defaults_for("fill_between", std_kwargs, zorder=1.8, alpha=0.3, ls="-", lw=0)
+                    defaults_for("fill_between", std_kwargs, zorder=1.8, alpha=0.1, ls="-", lw=0)
                 )
                 errorbar = ax.fill_between([], [], [], **self._errkw)
                 errorbar._join_legend_entry_with = plot
