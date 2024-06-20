@@ -849,8 +849,8 @@ class XManifoldPlot(XPlot):
                     "text",
                     annotation_kwargs,
                     fontsize="xx-small",
-                    c=color,
-                    alpha=line.get_alpha(),
+                    c=color,  # RGBA tuple
+                    alpha=1,  # overwrites color[3]
                     zorder=line.get_zorder(),
                 )
                 a.text(
