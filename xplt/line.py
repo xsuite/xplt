@@ -52,9 +52,7 @@ def tanc(x):
 class KnlPlot(XManifoldPlot):
     """A plot for knl values along line"""
 
-    def __init__(
-        self, line=None, *, knl=None, filled=True, resolution=1000, line_length=None, **kwargs
-    ):
+    def __init__(self, line=None, *, knl=None, filled=True, resolution="auto", **kwargs):
         """
 
         Args:
@@ -64,8 +62,8 @@ class KnlPlot(XManifoldPlot):
                 see :class:`~.base.XManifoldPlot` for details.
                 If None, automatically determine from line.
             filled (bool): If True, make a filled plot instead of a line plot.
-            resolution (int): Number of points to use for plot.
-            line_length (float, optional): Length of line (only required if line is None).
+            resolution (int | string): Number of points to use for plotting. Use "auto" for
+                                       a point at the start/end of each element.
             kwargs: See :class:`~.base.XPlot` for additional arguments
 
         Known issues:
@@ -82,9 +80,7 @@ class KnlPlot(XManifoldPlot):
             knl = range(knl + 1)
         if not isinstance(knl, str):
             knl = [[[f"k{n}l" for n in knl]]]
-        if line is None and line_length is None:
-            raise ValueError("Either line or line_length parameter must not be None")
-        self.S = np.linspace(0, line_length or line.get_length(), resolution)
+        self.resolution = resolution
         self.filled = filled
 
         super().__init__(on_x="s", on_y=knl, **kwargs)
@@ -93,14 +89,17 @@ class KnlPlot(XManifoldPlot):
         def create_artists(i, j, k, a, p):
             kwargs = dict(color=f"C{order(p)}", alpha=0.5, label=self.label_for(p, unit=True))
             if self.filled:
-                return a.fill_between(self.S, np.zeros_like(self.S), zorder=3, lw=0, **kwargs)
+                kwargs.update(zorder=3, lw=0)
+                artist = a.fill_between([], [], **kwargs)
+                artist._constructor_kwargs = kwargs
+                return artist
             else:
                 return a.plot([], [], **kwargs)[0]
 
         self._create_artists(create_artists)
 
         for a in self.axflat:
-            a.plot(self.S, np.zeros_like(self.S), "k-", lw=1, zorder=4)
+            a.axhline(0, c="k", lw=1, zorder=4)
         self.legend(show="auto", ncol=5)
 
         # set data
@@ -113,42 +112,56 @@ class KnlPlot(XManifoldPlot):
 
         Args:
             line (xtrack.Line): Line of elements.
-            autoscale (bool): Whether or not to perform autoscaling on all axes
+            autoscale (bool): Whether to perform autoscaling on all axes
 
         Returns:
             changed artists
         """
         # compute knl as function of s
-        values = {p: np.zeros(self.S.size) for p in self.on_y_unique}
-        orders = {p: order(p) for p in self.on_y_unique}
         Smax = line.get_length()
+        if self.resolution == "auto":
+            S = set()
+            for name, el, s0, s1 in iter_elements(line):
+                S.update({s0, s1})
+            S = np.array(sorted(list(S)))
+        else:
+            S = np.linspace(0, Smax, self.resolution)
+        values = {p: np.zeros_like(S) for p in self.on_y_unique}
         for name, el, s0, s1 in iter_elements(line):
             if 0 <= s0 <= Smax:
-                mask = (self.S >= s0) & (self.S < s1)
+                mask = (S >= s0) & (S < s1)
             else:  # handle wrap around
-                mask = (self.S >= s0 % Smax) | (self.S < s1 % Smax)
-            for knl, n in orders.items():
+                mask = (S >= s0 % Smax) | (S < s1 % Smax)
+            for knl in self.on_y_unique:
+                n = order(knl)
                 if hasattr(el, f"k{n}") and hasattr(el, "length"):
                     values[knl][mask] += getattr(el, f"k{n}") * el.length
                 elif hasattr(el, "knl") and n <= el.order:
                     values[knl][mask] += el.knl[n]
+        if self.resolution == "auto":
+            S = np.repeat(S, 2)[1:]
+            values = {p: np.repeat(v, 2)[:-1] for p, v in values.items()}
 
         # plot
-        s = self.S * self.factor_for("s")
+        s = S * self.factor_for("s")
         changed = []
         for i, ppp in enumerate(self.on_y):
             for j, pp in enumerate(ppp):
+                ax = self.axis(i, j)
                 for k, p in enumerate(pp):
                     art = self.artists[i][j][k]
                     y = self.factor_for(p) * values[p]
                     if self.filled:
-                        art.get_paths()[0].vertices[1 : 1 + y.size, 1] = y
+                        kwargs = art._constructor_kwargs
+                        changed.append(art)
+                        art.remove()
+                        self.artists[i][j][k] = art = ax.fill_between(S, 0, y, **kwargs)
+                        art._constructor_kwargs = kwargs
                     else:
                         art.set_data((s, y))
                     changed.append(art)
 
                 if autoscale:
-                    ax = self.axis(i, j)
                     if self.filled:  # At present, relim does not support collection instances.
                         ax.update_datalim(
                             mpl.transforms.Bbox.union(
