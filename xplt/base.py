@@ -18,7 +18,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pint
 
-from .util import defaults, flattened
+from .util import defaults, flattened, defaults_for
 from .properties import Property, find_property, DataProperty, arb_unit
 
 
@@ -787,6 +787,64 @@ class XManifoldPlot(XPlot):
             self._autoscale(self.axflat[s], flattened(self.artists[s][0]), **kwargs)
             for i, axt in enumerate(self.axflat_twin[s]):
                 self._autoscale(axt, flattened(self.artists[s][i]), **kwargs)
+
+    def axline(self, kind, val, subplots="all", **kwargs):
+        """Plot a vertical or horizontal line for a given coordinate
+
+        Args:
+            kind (str): property at which to place the line (e.g. "s", "x", "betx", etc.)
+            val (float): Value of property
+            subplots (list of int): Subplots to plot line onto. Defaults to all with matching coordinates.
+            kwargs: Arguments for axvline or axhline
+
+        """
+        self.axspan(kind, val, None, subplots=subplots, **kwargs)
+
+    def axspan(self, kind, val, val_to=None, subplots="all", **kwargs):
+        """Plot a vertical or horizontal span (or line) for a given coordinate
+
+        Args:
+            kind (str): property at which to place the line (e.g. "s", "x", "betx", etc.).
+            val (float): Value of property.
+            val_to (float, optional): Second value of property to plot a span. If this is None, plot a line instead of a span.
+            subplots (list of int): Subplots to plot line onto. Defaults to all with matching coordinates.
+            kwargs: Arguments for axvspan or axhspan (or axvline or axhline if val_to is None)
+
+        """
+
+        if val_to is None:  # only a line
+            kwargs = defaults_for("plot", kwargs, color="k", lw=1, zorder=1.9)
+        else:  # a span
+            kwargs = defaults_for(
+                "fill_between", kwargs, color="lightgray", zorder=1.9, lw=0, alpha=0.6
+            )
+
+        val = val * self.factor_for(kind)
+        if val_to is not None:
+            val_to = val_to * self.factor_for(kind)
+
+        if kind == self.on_x:
+            # vertical span or line on all axes
+            for a in self.axflat:
+                if val_to is None:  # only a line
+                    a.axvline(val, **kwargs)
+                else:
+                    a.axvspan(val, val_to, **kwargs)
+
+        else:
+            # horizontal span or line
+            for i, p_subplot in enumerate(self.on_y):
+                if subplots != "all" and i not in subplots:
+                    continue
+
+                for j, p_axis in enumerate(p_subplot):
+                    a = self.axis(i, j)
+                    for k, p in enumerate(p_axis):
+                        if p == kind:  # axis found
+                            if val_to is None:  # only a line
+                                a.axhline(val, **kwargs)
+                            else:
+                                a.axhspan(val, val_to, **kwargs)
 
     @staticmethod
     def parse_nested_list_string(
