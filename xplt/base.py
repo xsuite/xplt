@@ -800,14 +800,28 @@ class XManifoldPlot(XPlot):
         """
         self.axspan(kind, val, None, subplots=subplots, **kwargs)
 
-    def axspan(self, kind, val, val_to=None, subplots="all", **kwargs):
+    def axspan(
+        self,
+        kind,
+        val,
+        val_to=None,
+        subplots="all",
+        annotation=None,
+        annotation_loc="lower",
+        annotation_kwargs=None,
+        **kwargs,
+    ):
         """Plot a vertical or horizontal span (or line) for a given coordinate
 
         Args:
             kind (str): property at which to place the line (e.g. "s", "x", "betx", etc.).
             val (float): Value of property.
-            val_to (float, optional): Second value of property to plot a span. If this is None, plot a line instead of a span.
+            val_to (float | None): Second value of property to plot a span. If this is None, plot a line instead of a span.
             subplots (list of int): Subplots to plot line onto. Defaults to all with matching coordinates.
+            annotation (string | None): Optional text annotation for the line or span. Use this to place
+                                        text on the axes. To put text in the legend, use `label=...`.
+            annotation_loc (string): Location of annotation. Possible values: "lower", "upper".
+            annotation_kwargs (dict | None): Arguments for :meth:`matplotlib.axes.Axes.text`.
             kwargs: Arguments for axvspan or axhspan (or axvline or axhline if val_to is None)
 
         """
@@ -823,28 +837,52 @@ class XManifoldPlot(XPlot):
         if val_to is not None:
             val_to = val_to * self.factor_for(kind)
 
-        if kind == self.on_x:
-            # vertical span or line on all axes
-            for a in self.axflat:
-                if val_to is None:  # only a line
-                    a.axvline(val, **kwargs)
+        def plot_line_with_annotation(hor=True, with_annotation=True):
+            if val_to is None:
+                line = (a.axhline if hor else a.axvline)(val, **kwargs)
+                color = line.get_color()
+            else:
+                line = (a.axhspan if hor else a.axvspan)(val, val_to, **kwargs)
+                color = line.get_facecolor()
+            if annotation and with_annotation:
+                text_kwargs = defaults_for(
+                    "text",
+                    annotation_kwargs,
+                    fontsize="xx-small",
+                    c=color,
+                    alpha=line.get_alpha(),
+                    zorder=line.get_zorder(),
+                )
+                a.text(
+                    *(val, 0 if annotation_loc == "lower" else 1)[:: -1 if hor else 1],
+                    " " + annotation + " ",
+                    transform=mpl.transforms.blended_transform_factory(
+                        *(a.transData, a.transAxes)[:: -1 if hor else 1]
+                    ),
+                    ha="left" if hor and annotation_loc == "lower" else "right",
+                    va="bottom" if hor or annotation_loc == "lower" else "top",
+                    rotation=0 if hor else 90,
+                    **text_kwargs,
+                )
+
+        annotated = False
+        for i, ppp in enumerate(self.on_y):
+            if subplots != "all" and i not in subplots:
+                continue
+
+            for j, pp in enumerate(ppp):
+                a = self.axis(i, j)
+                if kind == self.on_x:
+                    # vertical line or span
+                    plot_line_with_annotation(hor=False, with_annotation=not annotated)
+                    annotated = True
+                    break  # skip twin axes
+
                 else:
-                    a.axvspan(val, val_to, **kwargs)
-
-        else:
-            # horizontal span or line
-            for i, p_subplot in enumerate(self.on_y):
-                if subplots != "all" and i not in subplots:
-                    continue
-
-                for j, p_axis in enumerate(p_subplot):
-                    a = self.axis(i, j)
-                    for k, p in enumerate(p_axis):
+                    # horizontal line or span
+                    for k, p in enumerate(pp):
                         if p == kind:  # axis found
-                            if val_to is None:  # only a line
-                                a.axhline(val, **kwargs)
-                            else:
-                                a.axhspan(val, val_to, **kwargs)
+                            plot_line_with_annotation(hor=True)
 
     @staticmethod
     def parse_nested_list_string(
