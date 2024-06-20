@@ -39,6 +39,31 @@ def iter_elements(line):
         yield name, el, s0, s1
 
 
+def element_strength(element, n):
+    """Get knl strength of element"""
+    if hasattr(element, f"k{n}") and hasattr(element, "length"):
+        return getattr(element, f"k{n}") * element.length
+    elif hasattr(element, "knl") and n <= element.order:
+        return element.knl[n]
+    return 0
+
+
+def element_order(element):
+    """Get effective order of element (ignoring zero strength)"""
+    if hasattr(element, "knl"):
+        return max(np.argwhere(element.knl != 0), -1)
+    if hasattr(element, "length") and element.length > 0:
+        n, order = 0, -1
+        while hasattr(element, f"k{n}"):
+            if getattr(element, f"k{n}") != 0:
+                order = n
+            n += 1
+            if n > 100:
+                raise RuntimeError("Heuristic element order determination failed")
+        return order
+    return -1
+
+
 def order(knl):
     """Get order of knl string as int"""
     return int(re.match(r"k(\d+)l", knl).group(1))
@@ -75,7 +100,7 @@ class KnlPlot(XManifoldPlot):
         if knl is None:
             if line is None:
                 raise ValueError("Either line or knl parameter must not be None")
-            knl = range(max([e.order for e in line.elements if hasattr(e, "order")]) + 1)
+            knl = int(max([element_order(e) for e in line.elements]))
         if isinstance(knl, int):
             knl = range(knl + 1)
         if not isinstance(knl, str):
@@ -134,10 +159,7 @@ class KnlPlot(XManifoldPlot):
                 mask = (S >= s0 % Smax) | (S < s1 % Smax)
             for knl in self.on_y_unique:
                 n = order(knl)
-                if hasattr(el, f"k{n}") and hasattr(el, "length"):
-                    values[knl][mask] += getattr(el, f"k{n}") * el.length
-                elif hasattr(el, "knl") and n <= el.order:
-                    values[knl][mask] += el.knl[n]
+                values[knl][mask] += element_strength(el, n)
         if self.resolution == "auto":
             S = np.repeat(S, 2)[1:]
             values = {p: np.repeat(v, 2)[:-1] for p, v in values.items()}
