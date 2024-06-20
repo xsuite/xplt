@@ -103,7 +103,7 @@ def defaults_for(alias_provider, kwargs, /, **default_kwargs):
             scatter=mpl.collections.Collection,
             hexbin=mpl.collections.PolyCollection,
         )[alias_provider]
-    if alias_provider == mpl.patches.Polygon and "c" in kwargs:
+    if alias_provider == mpl.patches.Polygon and kwargs is not None and "c" in kwargs:
         kwargs["color"] = kwargs.pop("c")
     kwargs = mpl.cbook.normalize_kwargs(kwargs, alias_provider)
     default_kwargs = mpl.cbook.normalize_kwargs(default_kwargs, alias_provider)
