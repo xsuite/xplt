@@ -349,10 +349,10 @@ class TimeFFTPlot(_TimeBasePlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
                                   `pdspp` (power density spectrum per particle) is simmilar to 'pds' but normalized to particle number.
             smoothing (int | None): If not None, uses Welch's method to compute a smoothened FFT with `2**smoothing` segments.
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
-            timeseries (dict[str, np.array]): Pre-binned timeseries data as alternative to timestamp-based particle data.
+            timeseries (np.array | dict[str, np.array]): Pre-binned timeseries data as alternative to timestamp-based particle data.
                                               The dictionary must contain keys for each `kind` (e.g. `count`).
                                               When specified, `timeseries_fs` must also be set, and `particles` and `mask` must be None.
-            timeseries_fs (float): The sampling frequency for the timeseries data.
+            timeseries_fs (float | dict[str, float]): The sampling frequency for the timeseries data.
             time_range (tuple): Time range of particles to consider. If None, all particles are considered.
             plot_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.plot`.
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
@@ -477,6 +477,10 @@ class TimeFFTPlot(_TimeBasePlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
         # Timeseries based data
         ########################
         else:
+            if not isinstance(timeseries, dict):
+                if len(self.on_y_unique) != 1:
+                    raise ValueError("timeseries must be a dict of the form {kind: array}")
+                timeseries = {self.on_y_unique[0]: timeseries}
             if not isinstance(timeseries_fs, dict):
                 timeseries_fs = {p: timeseries_fs for p in self.on_y_unique}
 
