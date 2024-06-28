@@ -489,7 +489,7 @@ class TimeFFTPlot(_TimeBasePlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
             ppscale = np.sum(get(timeseries, "count", [1]))
             timeseries, timeseries_orig = {}, timeseries
             for p in timeseries_orig:
-                fmax = np.nanmax([fmax, self.fmax(default=timeseries_fs[p])])
+                fmax = np.nanmax([fmax, self.fmax(default=timeseries_fs[p] / 2)])
                 timeseries[p] = self._get_timeseries_in_range(
                     timeseries_orig[p], timeseries_fs[p]
                 )
