@@ -15,6 +15,7 @@ from .colors import *
 from .line import KnlPlot, FloorPlot
 from .phasespace import PhaseSpacePlot
 from .timestructure import (
+    Timeseries,
     TimePlot,
     TimeBinPlot,
     TimeFFTPlot,
