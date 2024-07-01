@@ -315,6 +315,26 @@ class XPlot:
         """
         return self.axflat_twin[subplot][twin - 1] if twin else self.axflat[subplot]
 
+    def axes(self, subplots="all", twins="all"):
+        """Return the axes for the given flat subplot and twin indices
+
+        Args:
+            subplots (int | list[int] | str): Flat subplot indices or "all"
+            twins (int | list[int] | str): Twin indices or "all"
+
+        Yields:
+            matplotlib.axes.Axes: Iterator over the selected axes where
+        """
+        subplots = [subplots] if isinstance(subplots, int) else subplots
+        twins = [twins] if isinstance(twins, int) else twins
+        for s in range(len(self.axflat)):
+            if subplots != "all" and s not in subplots:
+                continue
+            for t in range(len(self.axflat_twin[s]) + 1):
+                if twins != "all" and t not in twins:
+                    continue
+                yield self.axflat_twin[s][t - 1] if t else self.axflat[s]
+
     def save(self, fname, **kwargs):
         """Save the figure
 
@@ -748,7 +768,7 @@ class XManifoldPlot(XPlot):
         for s in subplot:
             # aggregate handles and use topmost axes for legend
             handles = []
-            for ax in [self.axflat[s], *self.axflat_twin[s]]:
+            for ax in self.axes(s):
                 handles.extend(ax.get_legend_handles_labels()[0])
             if not show or (show == "auto" and len(handles) <= 1):
                 if ax.get_legend():

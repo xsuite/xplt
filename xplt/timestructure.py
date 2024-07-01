@@ -257,7 +257,7 @@ class TimeBinPlot(_TimeBasePlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
         # Format plot axes
         self.axis(-1).set(xlabel=self.label_for(self.on_x), ylim=(0, None))
         if self.relative:
-            for a in self.axflat:
+            for a in self.axes():
                 a.yaxis.set_major_formatter(mpl.ticker.PercentFormatter(1))
 
         # Create plot elements
