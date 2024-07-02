@@ -101,7 +101,7 @@ class ParticlePlotMixin:
         if self._circumference is not None:
             return self._circumference
         if self.twiss is not None:
-            return self.twiss.circumference
+            return get(self.twiss, "circumference")
 
     def beta(self, particles=None):
         """Get reference relativistic beta as float"""
@@ -111,7 +111,7 @@ class ParticlePlotMixin:
             if self._frev is not None:
                 return self._frev * self.circumference / c0
             if self.twiss is not None:
-                return self.circumference / self.twiss.T_rev0 / c0
+                return self.circumference / get(self.twiss, "T_rev0") / c0
         if particles is not None:
             try:
                 beta = get(particles, "beta0")
@@ -131,7 +131,7 @@ class ParticlePlotMixin:
         if self._frev is not None:
             return self._frev
         if self.twiss is not None:
-            return 1 / self.twiss.T_rev0
+            return 1 / get(self.twiss, "T_rev0")
         beta = self.beta(particles)
         if beta is not None and self.circumference is not None:
             return beta * c0 / self.circumference
