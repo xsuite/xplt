@@ -550,7 +550,7 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
             # twiss parameters at plot location
             if self.twiss is None:
                 raise ValueError("No twiss parameters provided during plot creation")
-            elif len(self.twiss["betx"]) != 1:
+            elif not np.isscalar(self.twiss["betx"]) and len(self.twiss["betx"]) != 1:
                 raise ValueError(
                     f"Twiss table has {len(self.twiss)} entries, expected exactly 1. "
                     "Did you forget to specify at_elements with a single element during twiss?"
