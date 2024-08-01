@@ -1,0 +1,420 @@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.17.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>Twiss — Xplt 0.8.0 documentation</title>
+<script>
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+<!-- Loaded before other Sphinx assets -->
+<link href="../_static/styles/theme.css?digest=1e1de1a1873e13ef5536" rel="stylesheet"/>
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=1e1de1a1873e13ef5536" rel="stylesheet"/>
+<link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css" rel="stylesheet"/>
+<link as="font" crossorigin="" href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="" href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="" href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" rel="preload" type="font/woff2"/>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css">
+<link href="../_static/graphviz.css" rel="stylesheet" type="text/css">
+<link href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" rel="stylesheet" type="text/css">
+<link href="../_static/sphinx-codeautolink.css" rel="stylesheet" type="text/css">
+<!-- Pre-loaded scripts that we'll load fully later -->
+<link as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1e1de1a1873e13ef5536" rel="preload"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/doctools.js"></script>
+<script>DOCUMENTATION_OPTIONS.pagename = 'examples/twiss';</script>
+<link href="../genindex.html" rel="index" title="Index">
+<link href="../search.html" rel="search" title="Search">
+<link href="phasespace.html" rel="next" title="Phasespace">
+<link href="line.html" rel="prev" title="Beamline"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="None" name="docsearch:language"/>
+</link></link></link></link></link></link></link></head>
+<body data-default-mode="" data-offset="180" data-spy="scroll" data-target="#bd-toc-nav">
+<input class="sidebar-toggle" id="__primary" name="__primary" type="checkbox"/>
+<label class="overlay overlay-primary" for="__primary"></label>
+<input class="sidebar-toggle" id="__secondary" name="__secondary" type="checkbox"/>
+<label class="overlay overlay-secondary" for="__secondary"></label>
+<div class="search-button__wrapper">
+<div class="search-button__overlay"></div>
+<div class="search-button__search-container">
+<form action="../search.html" class="bd-search d-flex align-items-center" method="get">
+<i class="fa-solid fa-magnifying-glass"></i>
+<input aria-label="Search the docs ..." autocapitalize="off" autocomplete="off" autocorrect="off" class="form-control" id="search-input" name="q" placeholder="Search the docs ..." spellcheck="false" type="search"/>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+</div>
+</div>
+<nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+<label class="sidebar-toggle primary-toggle" for="__primary">
+<span class="fa-solid fa-bars"></span>
+</label>
+<div id="navbar-start">
+<a class="navbar-brand logo" href="../index.html">
+<p class="title logo__title">Xplt 0.8.0 documentation</p>
+</a>
+</div>
+<div class="col-lg-9 navbar-header-items">
+<div class="mr-auto" id="navbar-center">
+<div class="navbar-center-item">
+<nav class="navbar-nav">
+<p aria-label="Site Navigation" aria-level="1" class="sidebar-header-items__title" role="heading">
+        Site Navigation
+    </p>
+<ul class="navbar-nav" id="navbar-main-elements">
+<li class="nav-item">
+<a class="nav-link" href="../quickstart.html">
+                        Quickstart
+                    </a>
+</li>
+<li class="nav-item current active">
+<a class="nav-link" href="../usage.html">
+                        User guide
+                    </a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="../api.html">
+                        API documentation
+                    </a>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+<div id="navbar-end">
+<div class="navbar-end-item navbar-end__search-button-container">
+<button class="btn btn-sm navbar-btn search-button search-button__button" data-toggle="tooltip" title="Search">
+<i class="fa-solid fa-magnifying-glass"></i>
+</button>
+</div>
+<div class="navbar-end-item">
+<span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" data-toggle="tooltip" title="light/dark">
+<a class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></a>
+<a class="theme-switch" data-mode="dark"><i class="fa-regular fa-moon"></i></a>
+<a class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></a>
+</span>
+</div>
+<div class="navbar-end-item">
+<ul aria-label="Icon Links" class="navbar-nav" id="navbar-icon-links">
+<li class="nav-item">
+<a class="nav-link" data-toggle="tooltip" href="https://github.com/xsuite/xplt" rel="noopener" target="_blank" title="GitHub"><span><i class="fa-brands fa-square-github"></i></span>
+<label class="sr-only">GitHub</label></a>
+</li>
+<li class="nav-item">
+<a class="nav-link" data-toggle="tooltip" href="https://pypi.org/project/xplt" rel="noopener" target="_blank" title="PyPI"><span><i class="fa-solid fa-cube"></i></span>
+<label class="sr-only">PyPI</label></a>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="search-button-container--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" data-toggle="tooltip" title="Search">
+<i class="fa-solid fa-magnifying-glass"></i>
+</button>
+</div>
+<label class="sidebar-toggle secondary-toggle" for="__secondary">
+<span class="fa-solid fa-outdent"></span>
+</label>
+</div>
+</nav>
+<div class="bd-container">
+<div class="bd-container__inner bd-page-width">
+<div class="bd-sidebar-primary bd-sidebar">
+<div class="sidebar-header-items sidebar-primary__section">
+<div class="sidebar-header-items__center">
+<div class="navbar-center-item">
+<nav class="navbar-nav">
+<p aria-label="Site Navigation" aria-level="1" class="sidebar-header-items__title" role="heading">
+        Site Navigation
+    </p>
+<ul class="navbar-nav" id="navbar-main-elements">
+<li class="nav-item">
+<a class="nav-link" href="../quickstart.html">
+                        Quickstart
+                    </a>
+</li>
+<li class="nav-item current active">
+<a class="nav-link" href="../usage.html">
+                        User guide
+                    </a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="../api.html">
+                        API documentation
+                    </a>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+<div class="sidebar-header-items__end">
+<div class="navbar-end-item">
+<span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" data-toggle="tooltip" title="light/dark">
+<a class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></a>
+<a class="theme-switch" data-mode="dark"><i class="fa-regular fa-moon"></i></a>
+<a class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></a>
+</span>
+</div>
+<div class="navbar-end-item">
+<ul aria-label="Icon Links" class="navbar-nav" id="navbar-icon-links">
+<li class="nav-item">
+<a class="nav-link" data-toggle="tooltip" href="https://github.com/xsuite/xplt" rel="noopener" target="_blank" title="GitHub"><span><i class="fa-brands fa-square-github"></i></span>
+<label class="sr-only">GitHub</label></a>
+</li>
+<li class="nav-item">
+<a class="nav-link" data-toggle="tooltip" href="https://pypi.org/project/xplt" rel="noopener" target="_blank" title="PyPI"><span><i class="fa-solid fa-cube"></i></span>
+<label class="sr-only">PyPI</label></a>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sidebar-start-items sidebar-primary__section">
+<div class="sidebar-start-items__item"><nav aria-label="Section navigation" class="bd-links" id="bd-docs-nav">
+<p aria-level="1" class="bd-links__title" role="heading">
+    Section Navigation
+  </p>
+<div class="bd-toc-item navbar-nav">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="line.html">Beamline</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Twiss</a></li>
+<li class="toctree-l1"><a class="reference internal" href="phasespace.html">Phasespace</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hamiltonians.html">Hamiltonians</a></li>
+<li class="toctree-l1"><a class="reference internal" href="timestructure.html">Timestructure (spill, schottky)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="colors.html">Colors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="properties.html">Properties, Units and Labels</a></li>
+</ul>
+</div>
+</nav>
+</div>
+</div>
+<div class="sidebar-end-items sidebar-primary__section">
+<div class="sidebar-end-items__item">
+</div>
+</div>
+</div>
+<main class="bd-main">
+<div class="bd-content">
+<div class="bd-article-container">
+<div class="bd-header-article">
+</div>
+<article class="bd-article" role="main">
+<section id="twiss">
+<h1>Twiss<a class="headerlink" href="#twiss" title="Permalink to this headline">#</a></h1>
+<p>This is an example of plotting lines and twiss results.
+First, create a simple line and a tracker:</p>
+<div class="cell tag_hide-cell tag_remove-output docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show imports</span>
+<span class="expanded">Hide code cell content</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">load_ext</span> autoreload
+<span class="o">%</span><span class="k">autoreload</span> 2
+
+<span class="kn">import</span> <span class="nn">xtrack</span> <span class="k">as</span> <span class="nn">xt</span>
+<span class="kn">import</span> <span class="nn">xpart</span> <span class="k">as</span> <span class="nn">xp</span>
+<span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/index.html#module-xplt" title="xplt"><span class="nn">xplt</span></a>
+<span class="kn">import</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/index.html#module-numpy" title="numpy"><span class="nn">numpy</span></a> <span class="k">as</span> <span class="nn">np</span>
+
+<a class="sphinx-codeautolink-a" href="../autoapi/xplt/index.html#xplt.apply_style" title="xplt.apply_style"><span class="n">xplt</span><span class="o">.</span><span class="n">apply_style</span></a><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell tag_remove-output tag_hide-cell docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show line generation code</span>
+<span class="expanded">Hide code cell content</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## Generate a simple 6-fold symmetric FODO lattice</span>
+
+<span class="n">n</span> <span class="o">=</span> <span class="mi">6</span>  <span class="c1"># number of sections</span>
+<span class="n">elements</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"QF"</span><span class="p">:</span> <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.Multipole" title="xtrack.Multipole"><span class="n">xt</span><span class="o">.</span><span class="n">Multipole</span></a><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">knl</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">+</span><span class="mf">0.63</span><span class="p">]),</span>
+    <span class="s2">"QD"</span><span class="p">:</span> <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.Multipole" title="xtrack.Multipole"><span class="n">xt</span><span class="o">.</span><span class="n">Multipole</span></a><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">knl</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.48</span><span class="p">]),</span>
+    <span class="s2">"MU"</span><span class="p">:</span> <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.Multipole" title="xtrack.Multipole"><span class="n">xt</span><span class="o">.</span><span class="n">Multipole</span></a><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">knl</span><span class="o">=</span><span class="p">[</span><a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/constants.html#numpy.pi" title="numpy.pi"><span class="n">np</span><span class="o">.</span><span class="n">pi</span></a> <span class="o">/</span> <span class="n">n</span><span class="p">],</span> <span class="n">hxl</span><span class="o">=</span><span class="p">[</span><a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/constants.html#numpy.pi" title="numpy.pi"><span class="n">np</span><span class="o">.</span><span class="n">pi</span></a> <span class="o">/</span> <span class="n">n</span><span class="p">]),</span>
+<span class="p">}</span>
+<span class="n">parts</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"a"</span><span class="p">:</span> <span class="p">[</span><span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mf">0.7</span><span class="p">,</span> <span class="s2">"QF"</span><span class="p">),</span> <span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mf">1.4</span><span class="p">,</span> <span class="s2">"MU"</span><span class="p">),</span> <span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mf">2.1</span><span class="p">,</span> <span class="s2">"QD"</span><span class="p">),</span> <span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mf">2.8</span><span class="p">,</span> <span class="s2">"MU"</span><span class="p">)],</span>
+    <span class="s2">"b"</span><span class="p">:</span> <span class="p">[</span><span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mf">2.2</span><span class="p">,</span> <span class="s2">"MU"</span><span class="p">),</span> <span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mf">2.9</span><span class="p">,</span> <span class="s2">"QD"</span><span class="p">),</span> <span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mf">3.6</span><span class="p">,</span> <span class="s2">"MU"</span><span class="p">),</span> <span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mf">4.3</span><span class="p">,</span> <span class="s2">"QF"</span><span class="p">)],</span>
+<span class="p">}</span>
+<span class="n">nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mf">5.0</span> <span class="o">*</span> <span class="n">i</span><span class="p">,</span> <span class="s2">"a"</span> <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">2</span> <span class="k">else</span> <span class="s2">"b"</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">"S</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)]</span>
+
+<span class="c1"># sextupoles</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="n">sx</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.Multipole" title="xtrack.Multipole"><span class="n">xt</span><span class="o">.</span><span class="n">Multipole</span></a><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">knl</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span> <span class="o">*</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/generated/numpy.sin.html#numpy.sin" title="numpy.sin"><span class="n">np</span><span class="o">.</span><span class="n">sin</span></a><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/constants.html#numpy.pi" title="numpy.pi"><span class="n">np</span><span class="o">.</span><span class="n">pi</span></a> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">/</span> <span class="n">n</span><span class="p">))])</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">sx</span><span class="p">,</span> <span class="n">from_</span><span class="o">=</span><span class="sa">f</span><span class="s2">"S</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">"S</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">SX"</span><span class="p">))</span>
+
+<span class="n">line</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.Line.from_sequence" title="xtrack.Line.from_sequence"><span class="n">xt</span><span class="o">.</span><span class="n">Line</span><span class="o">.</span><span class="n">from_sequence</span></a><span class="p">(</span>
+    <span class="n">nodes</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mf">5.0</span> <span class="o">*</span> <span class="n">n</span><span class="p">,</span> <span class="n">sequences</span><span class="o">=</span><span class="n">parts</span><span class="p">,</span> <span class="n">elements</span><span class="o">=</span><span class="n">elements</span><span class="p">,</span> <span class="n">auto_reorder</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+<span class="n">line</span><span class="o">.</span><span class="n">particle_ref</span> <span class="o">=</span> <span class="n">xp</span><span class="o">.</span><span class="n">Particles</span><span class="p">()</span>
+<span class="n">line</span><span class="o">.</span><span class="n">build_tracker</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<p>Then determine it’s twiss parameters. We use the <code class="docutils literal notranslate"><span class="pre">at_s</span></code> parameter to get the result as function of s rather than at each element only.</p>
+<div class="cell tag_remove-output docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tw</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">twiss</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">"4d"</span><span class="p">,</span> <span class="n">at_s</span><span class="o">=</span><a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/generated/numpy.linspace.html#numpy.linspace" title="numpy.linspace"><span class="n">np</span><span class="o">.</span><span class="n">linspace</span></a><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">line</span><span class="o">.</span><span class="n">get_length</span><span class="p">(),</span> <span class="mi">500</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="default-twiss-plot">
+<h2>Default twiss plot<a class="headerlink" href="#default-twiss-plot" title="Permalink to this headline">#</a></h2>
+<p>Create a default <a class="reference internal" href="../autoapi/xplt/twiss/index.html#xplt.twiss.TwissPlot" title="xplt.twiss.TwissPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">TwissPlot</span></code></a>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/twiss/index.html#xplt.twiss.TwissPlot" title="xplt.twiss.TwissPlot"><span class="n">plot</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/twiss/index.html#xplt.twiss.TwissPlot" title="xplt.twiss.TwissPlot"><span class="n">xplt</span><span class="o">.</span><span class="n">TwissPlot</span></a><span class="p">(</span><span class="n">tw</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="n">line</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/fdf9caf84f8e24d3c091b283f792c466cb5cfe4d897e612bf96e06e7416d8217.png" src="../_images/fdf9caf84f8e24d3c091b283f792c466cb5cfe4d897e612bf96e06e7416d8217.png"/>
+</div>
+</div>
+</section>
+<section id="customisation">
+<h2>Customisation<a class="headerlink" href="#customisation" title="Permalink to this headline">#</a></h2>
+<p>Use the parameter <code class="docutils literal notranslate"><span class="pre">kind</span></code> to specify what is plotted. See <a class="reference internal" href="../autoapi/xplt/twiss/index.html#xplt.twiss.TwissPlot" title="xplt.twiss.TwissPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">TwissPlot</span></code></a> for details.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">", "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">tw</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">a</span><span class="p">:</span> <span class="n">a</span><span class="o">.</span><span class="n">lower</span><span class="p">())))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>alfx, alfy, beta0, betx, betx1, betx2, bety, bety1, bety2, betz0, c_minus, c_r1_avg, c_r2_avg, circumference, delta, dmux, dmuy, dpx, dpy, dqx, dqy, dx, dx_zeta, dy, dy_zeta, dzeta, gamma0, gamx, gamy, line_config, method, momentum_compaction_factor, mux, muy, muzeta, name, nux, nuy, nuzeta, only_markers, orientation, p0c, particle_on_co, ptau, px, py, qs, qx, qy, R_matrix, radiation_method, reference_frame, s, slip_factor, steps_r_matrix, T_rev0, values_at, W_matrix, x, y, zeta
+</pre></div>
+</div>
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Use prefix notation as shorthand to plot both x- and y-properties, e.g. <code class="docutils literal notranslate"><span class="pre">bet</span></code> for <code class="docutils literal notranslate"><span class="pre">betx+bety</span></code></p>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/twiss/index.html#xplt.twiss.TwissPlot" title="xplt.twiss.TwissPlot"><span class="n">plot</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/twiss/index.html#xplt.twiss.TwissPlot" title="xplt.twiss.TwissPlot"><span class="n">xplt</span><span class="o">.</span><span class="n">TwissPlot</span></a><span class="p">(</span><span class="n">tw</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">kind</span><span class="o">=</span><span class="s2">"bet,mux+muy,dx"</span><span class="p">,</span> <span class="n">display_units</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">d</span><span class="o">=</span><span class="s2">"dm"</span><span class="p">))</span>
+
+<span class="c1"># show legends</span>
+<a class="sphinx-codeautolink-a" href="../autoapi/xplt/twiss/index.html#xplt.twiss.TwissPlot.legend" title="xplt.twiss.TwissPlot.legend"><span class="n">plot</span><span class="o">.</span><span class="n">legend</span></a><span class="p">()</span>
+
+<span class="c1"># add some annotations</span>
+<a class="sphinx-codeautolink-a" href="../autoapi/xplt/twiss/index.html#xplt.twiss.TwissPlot.axline" title="xplt.twiss.TwissPlot.axline"><span class="n">plot</span><span class="o">.</span><span class="n">axline</span></a><span class="p">(</span><span class="s2">"s"</span><span class="p">,</span> <span class="n">line</span><span class="o">.</span><span class="n">get_s_position</span><span class="p">(</span><span class="s2">"S6QF"</span><span class="p">),</span> <span class="n">annotation</span><span class="o">=</span><span class="s2">"My marker"</span><span class="p">,</span> <span class="n">annotation_loc</span><span class="o">=</span><span class="s2">"upper"</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="../autoapi/xplt/twiss/index.html#xplt.twiss.TwissPlot.axspan" title="xplt.twiss.TwissPlot.axspan"><span class="n">plot</span><span class="o">.</span><span class="n">axspan</span></a><span class="p">(</span><span class="s2">"s"</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">11</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"Section"</span><span class="p">)</span>
+
+<span class="c1"># adjust some axes</span>
+<a class="sphinx-codeautolink-a" href="../autoapi/xplt/twiss/index.html#xplt.twiss.TwissPlot.axis" title="xplt.twiss.TwissPlot.axis"><span class="n">plot</span><span class="o">.</span><span class="n">axis</span></a><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">"Twiss plot example"</span><span class="p">,</span> <span class="n">ylim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">14</span><span class="p">))</span>
+
+<span class="c1"># adjust line layout</span>
+<a class="sphinx-codeautolink-a" href="../autoapi/xplt/twiss/index.html#xplt.twiss.TwissPlot.artist" title="xplt.twiss.TwissPlot.artist"><span class="n">plot</span><span class="o">.</span><span class="n">artist</span></a><span class="p">(</span><span class="s2">"mux"</span><span class="p">)</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">ls</span><span class="o">=</span><span class="s2">"--"</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="../autoapi/xplt/twiss/index.html#xplt.twiss.TwissPlot.artist" title="xplt.twiss.TwissPlot.artist"><span class="n">plot</span><span class="o">.</span><span class="n">artist</span></a><span class="p">(</span><span class="n">subplot</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">c</span><span class="o">=</span><span class="s2">"pet2"</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="../autoapi/xplt/twiss/index.html#xplt.twiss.TwissPlot.legend" title="xplt.twiss.TwissPlot.legend"><span class="n">plot</span><span class="o">.</span><span class="n">legend</span></a><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s2">"lower center"</span><span class="p">)</span>  <span class="c1"># reflect update in legend</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/bb8078ebd2c8b0cc149bdc6e5583ef7c04dfb5fea76937559e3e0d90b31dd54a.png" src="../_images/bb8078ebd2c8b0cc149bdc6e5583ef7c04dfb5fea76937559e3e0d90b31dd54a.png"/>
+</div>
+</div>
+<hr class="docutils"/>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../autoapi/xplt/twiss/index.html#module-xplt.twiss" title="xplt.twiss"><code class="xref py py-class docutils literal notranslate"><span class="pre">xplt.twiss</span></code></a></p></li>
+</ul>
+</div>
+</section>
+</section>
+</article>
+<footer class="bd-footer-article">
+<!-- Previous / next buttons -->
+<div class="prev-next-area">
+<a class="left-prev" href="line.html" id="prev-link" title="previous page">
+<i class="fa-solid fa-angle-left"></i>
+<div class="prev-next-info">
+<p class="prev-next-subtitle">previous</p>
+<p class="prev-next-title">Beamline</p>
+</div>
+</a>
+<a class="right-next" href="phasespace.html" id="next-link" title="next page">
+<div class="prev-next-info">
+<p class="prev-next-subtitle">next</p>
+<p class="prev-next-title">Phasespace</p>
+</div>
+<i class="fa-solid fa-angle-right"></i>
+</a>
+</div>
+</footer>
+</div>
+<div class="bd-sidebar-secondary bd-toc">
+<div class="toc-item">
+<div class="tocsection onthispage">
+<i class="fa-solid fa-list"></i> On this page
+</div>
+<nav class="page-toc" id="bd-toc-nav">
+<ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry">
+<a class="reference internal nav-link" href="#default-twiss-plot">
+   Default twiss plot
+  </a>
+</li>
+<li class="toc-h2 nav-item toc-entry">
+<a class="reference internal nav-link" href="#customisation">
+   Customisation
+  </a>
+</li>
+</ul>
+</nav>
+</div>
+<div class="toc-item">
+<div id="searchbox"></div>
+</div>
+<div class="toc-item">
+</div>
+<div class="toc-item">
+</div>
+</div>
+</div>
+<footer class="bd-footer-content">
+<div class="bd-footer-content__inner">
+</div>
+</footer>
+</main>
+</div>
+</div>
+<!-- Scripts loaded after <body> so the DOM is not blocked -->
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=1e1de1a1873e13ef5536"></script>
+<footer class="bd-footer"><div class="bd-footer__inner container">
+<div class="footer-item">
+<p class="copyright">
+
+    © Copyright 2022-2024, Philipp Niedermayer (github.com/eltos).<br/>
+</p>
+</div>
+<div class="footer-item">
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br/>
+</p>
+</div>
+</div>
+</footer>
+</body>
+</html>

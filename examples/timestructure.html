@@ -1,0 +1,735 @@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.17.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>Timestructure (spill, schottky) — Xplt 0.8.0 documentation</title>
+<script>
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+<!-- Loaded before other Sphinx assets -->
+<link href="../_static/styles/theme.css?digest=1e1de1a1873e13ef5536" rel="stylesheet"/>
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=1e1de1a1873e13ef5536" rel="stylesheet"/>
+<link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css" rel="stylesheet"/>
+<link as="font" crossorigin="" href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="" href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="" href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" rel="preload" type="font/woff2"/>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css">
+<link href="../_static/graphviz.css" rel="stylesheet" type="text/css">
+<link href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" rel="stylesheet" type="text/css">
+<link href="../_static/sphinx-codeautolink.css" rel="stylesheet" type="text/css">
+<!-- Pre-loaded scripts that we'll load fully later -->
+<link as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1e1de1a1873e13ef5536" rel="preload"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/doctools.js"></script>
+<script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script>DOCUMENTATION_OPTIONS.pagename = 'examples/timestructure';</script>
+<link href="../genindex.html" rel="index" title="Index">
+<link href="../search.html" rel="search" title="Search">
+<link href="animations.html" rel="next" title="Animations">
+<link href="hamiltonians.html" rel="prev" title="Hamiltonians"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="None" name="docsearch:language"/>
+</link></link></link></link></link></link></link></head>
+<body data-default-mode="" data-offset="180" data-spy="scroll" data-target="#bd-toc-nav">
+<input class="sidebar-toggle" id="__primary" name="__primary" type="checkbox"/>
+<label class="overlay overlay-primary" for="__primary"></label>
+<input class="sidebar-toggle" id="__secondary" name="__secondary" type="checkbox"/>
+<label class="overlay overlay-secondary" for="__secondary"></label>
+<div class="search-button__wrapper">
+<div class="search-button__overlay"></div>
+<div class="search-button__search-container">
+<form action="../search.html" class="bd-search d-flex align-items-center" method="get">
+<i class="fa-solid fa-magnifying-glass"></i>
+<input aria-label="Search the docs ..." autocapitalize="off" autocomplete="off" autocorrect="off" class="form-control" id="search-input" name="q" placeholder="Search the docs ..." spellcheck="false" type="search"/>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+</div>
+</div>
+<nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+<label class="sidebar-toggle primary-toggle" for="__primary">
+<span class="fa-solid fa-bars"></span>
+</label>
+<div id="navbar-start">
+<a class="navbar-brand logo" href="../index.html">
+<p class="title logo__title">Xplt 0.8.0 documentation</p>
+</a>
+</div>
+<div class="col-lg-9 navbar-header-items">
+<div class="mr-auto" id="navbar-center">
+<div class="navbar-center-item">
+<nav class="navbar-nav">
+<p aria-label="Site Navigation" aria-level="1" class="sidebar-header-items__title" role="heading">
+        Site Navigation
+    </p>
+<ul class="navbar-nav" id="navbar-main-elements">
+<li class="nav-item">
+<a class="nav-link" href="../quickstart.html">
+                        Quickstart
+                    </a>
+</li>
+<li class="nav-item current active">
+<a class="nav-link" href="../usage.html">
+                        User guide
+                    </a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="../api.html">
+                        API documentation
+                    </a>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+<div id="navbar-end">
+<div class="navbar-end-item navbar-end__search-button-container">
+<button class="btn btn-sm navbar-btn search-button search-button__button" data-toggle="tooltip" title="Search">
+<i class="fa-solid fa-magnifying-glass"></i>
+</button>
+</div>
+<div class="navbar-end-item">
+<span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" data-toggle="tooltip" title="light/dark">
+<a class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></a>
+<a class="theme-switch" data-mode="dark"><i class="fa-regular fa-moon"></i></a>
+<a class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></a>
+</span>
+</div>
+<div class="navbar-end-item">
+<ul aria-label="Icon Links" class="navbar-nav" id="navbar-icon-links">
+<li class="nav-item">
+<a class="nav-link" data-toggle="tooltip" href="https://github.com/xsuite/xplt" rel="noopener" target="_blank" title="GitHub"><span><i class="fa-brands fa-square-github"></i></span>
+<label class="sr-only">GitHub</label></a>
+</li>
+<li class="nav-item">
+<a class="nav-link" data-toggle="tooltip" href="https://pypi.org/project/xplt" rel="noopener" target="_blank" title="PyPI"><span><i class="fa-solid fa-cube"></i></span>
+<label class="sr-only">PyPI</label></a>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="search-button-container--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" data-toggle="tooltip" title="Search">
+<i class="fa-solid fa-magnifying-glass"></i>
+</button>
+</div>
+<label class="sidebar-toggle secondary-toggle" for="__secondary">
+<span class="fa-solid fa-outdent"></span>
+</label>
+</div>
+</nav>
+<div class="bd-container">
+<div class="bd-container__inner bd-page-width">
+<div class="bd-sidebar-primary bd-sidebar">
+<div class="sidebar-header-items sidebar-primary__section">
+<div class="sidebar-header-items__center">
+<div class="navbar-center-item">
+<nav class="navbar-nav">
+<p aria-label="Site Navigation" aria-level="1" class="sidebar-header-items__title" role="heading">
+        Site Navigation
+    </p>
+<ul class="navbar-nav" id="navbar-main-elements">
+<li class="nav-item">
+<a class="nav-link" href="../quickstart.html">
+                        Quickstart
+                    </a>
+</li>
+<li class="nav-item current active">
+<a class="nav-link" href="../usage.html">
+                        User guide
+                    </a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="../api.html">
+                        API documentation
+                    </a>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+<div class="sidebar-header-items__end">
+<div class="navbar-end-item">
+<span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" data-toggle="tooltip" title="light/dark">
+<a class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></a>
+<a class="theme-switch" data-mode="dark"><i class="fa-regular fa-moon"></i></a>
+<a class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></a>
+</span>
+</div>
+<div class="navbar-end-item">
+<ul aria-label="Icon Links" class="navbar-nav" id="navbar-icon-links">
+<li class="nav-item">
+<a class="nav-link" data-toggle="tooltip" href="https://github.com/xsuite/xplt" rel="noopener" target="_blank" title="GitHub"><span><i class="fa-brands fa-square-github"></i></span>
+<label class="sr-only">GitHub</label></a>
+</li>
+<li class="nav-item">
+<a class="nav-link" data-toggle="tooltip" href="https://pypi.org/project/xplt" rel="noopener" target="_blank" title="PyPI"><span><i class="fa-solid fa-cube"></i></span>
+<label class="sr-only">PyPI</label></a>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sidebar-start-items sidebar-primary__section">
+<div class="sidebar-start-items__item"><nav aria-label="Section navigation" class="bd-links" id="bd-docs-nav">
+<p aria-level="1" class="bd-links__title" role="heading">
+    Section Navigation
+  </p>
+<div class="bd-toc-item navbar-nav">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="line.html">Beamline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="twiss.html">Twiss</a></li>
+<li class="toctree-l1"><a class="reference internal" href="phasespace.html">Phasespace</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hamiltonians.html">Hamiltonians</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Timestructure (spill, schottky)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="colors.html">Colors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="properties.html">Properties, Units and Labels</a></li>
+</ul>
+</div>
+</nav>
+</div>
+</div>
+<div class="sidebar-end-items sidebar-primary__section">
+<div class="sidebar-end-items__item">
+</div>
+</div>
+</div>
+<main class="bd-main">
+<div class="bd-content">
+<div class="bd-article-container">
+<div class="bd-header-article">
+</div>
+<article class="bd-article" role="main">
+<section id="timestructure-spill-schottky">
+<h1>Timestructure (spill, schottky)<a class="headerlink" href="#timestructure-spill-schottky" title="Permalink to this headline">#</a></h1>
+<p>For some applications it is important to consider the particle arrival time, taking the longitudinal coordinate <code class="docutils literal notranslate"><span class="pre">zeta</span></code> into account.
+This includes non-circular lines, characterisation of extracted particle spills or long-term studies of coasting beams.
+The particle arrival time is:</p>
+<div class="amsmath math notranslate nohighlight">
+\[\begin{equation*}
+t = \frac{\mathrm{at_turn}}{f_\mathrm{rev}} - \frac{\mathrm{zeta}}{\beta_0 c_0}
+\end{equation*}\]</div>
+<p>where the first term is only relevant for circular lines.</p>
+<p>The plots in this guide are all based on the particle arrival time.</p>
+<div class="cell tag_hide-cell tag_remove-output docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show imports</span>
+<span class="expanded">Hide code cell content</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">load_ext</span> autoreload
+<span class="o">%</span><span class="k">autoreload</span> 2
+
+<span class="kn">import</span> <span class="nn">xtrack</span> <span class="k">as</span> <span class="nn">xt</span>
+<span class="kn">import</span> <span class="nn">xpart</span> <span class="k">as</span> <span class="nn">xp</span>
+<span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/index.html#module-xplt" title="xplt"><span class="nn">xplt</span></a>
+<span class="kn">import</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/index.html#module-numpy" title="numpy"><span class="nn">numpy</span></a> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <a class="sphinx-codeautolink-a" href="https://matplotlib.org/stable/index.html#module-matplotlib" title="matplotlib"><span class="nn">matplotlib</span></a> <span class="k">as</span> <span class="nn">mpl</span>
+<span class="kn">from</span> <a class="sphinx-codeautolink-a" href="https://matplotlib.org/stable/index.html#module-matplotlib" title="matplotlib"><span class="nn">matplotlib</span></a> <span class="kn">import</span> <a class="sphinx-codeautolink-a" href="https://matplotlib.org/stable/api/pyplot_summary.html#module-matplotlib.pyplot" title="matplotlib.pyplot"><span class="n">pyplot</span></a> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">from</span> <a class="sphinx-codeautolink-a" href="https://matplotlib.org/stable/api/animation_api.html#module-matplotlib.animation" title="matplotlib.animation"><span class="nn">matplotlib.animation</span></a> <span class="kn">import</span> <a class="sphinx-codeautolink-a" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.animation.FuncAnimation.html#matplotlib.animation.FuncAnimation" title="matplotlib.animation.FuncAnimation"><span class="n">FuncAnimation</span></a>
+<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">HTML</span>
+
+<a class="sphinx-codeautolink-a" href="../autoapi/xplt/index.html#xplt.apply_style" title="xplt.apply_style"><span class="n">xplt</span><span class="o">.</span><span class="n">apply_style</span></a><span class="p">()</span>
+
+<a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.seed.html#numpy.random.seed" title="numpy.random.seed"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span></a><span class="p">(</span><span class="mi">43543557</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell tag_remove-output tag_hide-cell docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show line generation code</span>
+<span class="expanded">Hide code cell content</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## Generate a simple 6-fold symmetric FODO lattice</span>
+
+<span class="n">n</span> <span class="o">=</span> <span class="mi">6</span>  <span class="c1"># number of sections</span>
+<span class="n">elements</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"QF"</span><span class="p">:</span> <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.Multipole" title="xtrack.Multipole"><span class="n">xt</span><span class="o">.</span><span class="n">Multipole</span></a><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">knl</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">+</span><span class="mf">0.63</span><span class="p">]),</span>
+    <span class="s2">"QD"</span><span class="p">:</span> <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.Multipole" title="xtrack.Multipole"><span class="n">xt</span><span class="o">.</span><span class="n">Multipole</span></a><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">knl</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.48</span><span class="p">]),</span>
+    <span class="s2">"MU"</span><span class="p">:</span> <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.Multipole" title="xtrack.Multipole"><span class="n">xt</span><span class="o">.</span><span class="n">Multipole</span></a><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">knl</span><span class="o">=</span><span class="p">[</span><a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/constants.html#numpy.pi" title="numpy.pi"><span class="n">np</span><span class="o">.</span><span class="n">pi</span></a> <span class="o">/</span> <span class="n">n</span><span class="p">],</span> <span class="n">hxl</span><span class="o">=</span><span class="p">[</span><a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/constants.html#numpy.pi" title="numpy.pi"><span class="n">np</span><span class="o">.</span><span class="n">pi</span></a> <span class="o">/</span> <span class="n">n</span><span class="p">]),</span>
+<span class="p">}</span>
+<span class="n">parts</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"a"</span><span class="p">:</span> <span class="p">[</span><span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mf">0.7</span><span class="p">,</span> <span class="s2">"QF"</span><span class="p">),</span> <span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mf">1.4</span><span class="p">,</span> <span class="s2">"MU"</span><span class="p">),</span> <span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mf">2.1</span><span class="p">,</span> <span class="s2">"QD"</span><span class="p">),</span> <span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mf">2.8</span><span class="p">,</span> <span class="s2">"MU"</span><span class="p">)],</span>
+    <span class="s2">"b"</span><span class="p">:</span> <span class="p">[</span><span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mf">2.2</span><span class="p">,</span> <span class="s2">"MU"</span><span class="p">),</span> <span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mf">2.9</span><span class="p">,</span> <span class="s2">"QD"</span><span class="p">),</span> <span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mf">3.6</span><span class="p">,</span> <span class="s2">"MU"</span><span class="p">),</span> <span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mf">4.3</span><span class="p">,</span> <span class="s2">"QF"</span><span class="p">)],</span>
+<span class="p">}</span>
+<span class="n">nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mf">5.0</span> <span class="o">*</span> <span class="n">i</span><span class="p">,</span> <span class="s2">"a"</span> <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">2</span> <span class="k">else</span> <span class="s2">"b"</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">"S</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)]</span>
+
+<span class="c1"># sextupoles</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="n">sx</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.Multipole" title="xtrack.Multipole"><span class="n">xt</span><span class="o">.</span><span class="n">Multipole</span></a><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">knl</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span> <span class="o">*</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/generated/numpy.sin.html#numpy.sin" title="numpy.sin"><span class="n">np</span><span class="o">.</span><span class="n">sin</span></a><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/constants.html#numpy.pi" title="numpy.pi"><span class="n">np</span><span class="o">.</span><span class="n">pi</span></a> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">/</span> <span class="n">n</span><span class="p">))])</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">sx</span><span class="p">,</span> <span class="n">from_</span><span class="o">=</span><span class="sa">f</span><span class="s2">"S</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">"S</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">SX"</span><span class="p">))</span>
+
+<span class="c1"># aperture</span>
+<span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.LimitRect" title="xtrack.LimitRect"><span class="n">xt</span><span class="o">.</span><span class="n">LimitRect</span></a><span class="p">(</span><span class="n">min_x</span><span class="o">=-</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">max_x</span><span class="o">=</span><span class="mf">0.01</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">"APERTURE"</span><span class="p">))</span>
+
+<span class="n">line</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.Line.from_sequence" title="xtrack.Line.from_sequence"><span class="n">xt</span><span class="o">.</span><span class="n">Line</span><span class="o">.</span><span class="n">from_sequence</span></a><span class="p">(</span>
+    <span class="n">nodes</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mf">5.0</span> <span class="o">*</span> <span class="n">n</span><span class="p">,</span> <span class="n">sequences</span><span class="o">=</span><span class="n">parts</span><span class="p">,</span> <span class="n">elements</span><span class="o">=</span><span class="n">elements</span><span class="p">,</span> <span class="n">auto_reorder</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+<span class="n">line</span><span class="o">.</span><span class="n">particle_ref</span> <span class="o">=</span> <span class="n">xp</span><span class="o">.</span><span class="n">Particles</span><span class="p">()</span>
+<span class="n">line</span><span class="o">.</span><span class="n">build_tracker</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell tag_hide-cell tag_remove-output docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show particle generation code</span>
+<span class="expanded">Hide code cell content</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## Generate particles</span>
+<span class="n">nparticles</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">1e4</span><span class="p">)</span>
+
+<span class="c1"># Transverse distribution (gaussian)</span>
+<span class="n">norm_emitt_x</span> <span class="o">=</span> <span class="mf">3e-6</span>  <span class="c1"># normalized 1-sigma emittance in m*rad (=beta*gamma*emitt_x)</span>
+<span class="n">norm_emitt_y</span> <span class="o">=</span> <span class="mf">4e-6</span>  <span class="c1"># normalized 1-sigma emittance in m*rad (=beta*gamma*emitt_y)</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">px</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xpart.generate_2D_gaussian" title="xpart.generate_2D_gaussian"><span class="n">xp</span><span class="o">.</span><span class="n">generate_2D_gaussian</span></a><span class="p">(</span><span class="n">nparticles</span><span class="p">)</span>
+<span class="n">y</span><span class="p">,</span> <span class="n">py</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xpart.generate_2D_gaussian" title="xpart.generate_2D_gaussian"><span class="n">xp</span><span class="o">.</span><span class="n">generate_2D_gaussian</span></a><span class="p">(</span><span class="n">nparticles</span><span class="p">)</span>
+
+<span class="c1"># Longitudinal distribution (coasting beam)</span>
+<span class="n">rel_momentum_spread</span> <span class="o">=</span> <span class="mf">1e-4</span>  <span class="c1"># relative momentum spread ( P/p0 - 1 )</span>
+<span class="n">zeta</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">get_length</span><span class="p">()</span> <span class="o">*</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.uniform.html#numpy.random.uniform" title="numpy.random.uniform"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span></a><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">nparticles</span><span class="p">)</span>
+<span class="n">delta</span> <span class="o">=</span> <span class="n">rel_momentum_spread</span> <span class="o">*</span> <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xpart.generate_2D_gaussian" title="xpart.generate_2D_gaussian"><span class="n">xp</span><span class="o">.</span><span class="n">generate_2D_gaussian</span></a><span class="p">(</span><span class="n">nparticles</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="n">particles</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">build_particles</span><span class="p">(</span>
+    <span class="n">x_norm</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
+    <span class="n">px_norm</span><span class="o">=</span><span class="n">px</span><span class="p">,</span>
+    <span class="n">nemitt_x</span><span class="o">=</span><span class="n">norm_emitt_x</span><span class="p">,</span>
+    <span class="n">y_norm</span><span class="o">=</span><span class="n">y</span><span class="p">,</span>
+    <span class="n">py_norm</span><span class="o">=</span><span class="n">py</span><span class="p">,</span>
+    <span class="n">nemitt_y</span><span class="o">=</span><span class="n">norm_emitt_y</span><span class="p">,</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">"4d"</span><span class="p">,</span>  <span class="c1"># for twiss (default is 6d, won't work without a cavity)</span>
+    <span class="n">zeta</span><span class="o">=</span><span class="n">zeta</span><span class="p">,</span>
+    <span class="n">delta</span><span class="o">=</span><span class="n">delta</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell tag_hide-cell tag_remove-output docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show tracking code</span>
+<span class="expanded">Hide code cell content</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## Twiss</span>
+<span class="n">tw</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">twiss</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">"4d"</span><span class="p">)</span>
+
+<span class="c1">## Track</span>
+<span class="n">line</span><span class="o">.</span><span class="n">track</span><span class="p">(</span><span class="n">particles</span><span class="p">,</span> <span class="n">num_turns</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">turn_by_turn_monitor</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<section id="scatter-over-time">
+<h2>Scatter over time<a class="headerlink" href="#scatter-over-time" title="Permalink to this headline">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">TimePlot</span></code> allows to plot any particle property as function of time. Here we plot <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> when the particles are lost.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/timestructure/index.html#xplt.timestructure.TimePlot" title="xplt.timestructure.TimePlot"><span class="n">plot</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/timestructure/index.html#xplt.timestructure.TimePlot" title="xplt.timestructure.TimePlot"><span class="n">xplt</span><span class="o">.</span><span class="n">TimePlot</span></a><span class="p">(</span><span class="n">particles</span><span class="p">,</span> <span class="s2">"x+y"</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">particles</span><span class="o">.</span><span class="n">state</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">twiss</span><span class="o">=</span><span class="n">tw</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/c4674019132f2f03ee7a45a01b1448aa07f056f0a3f878648c94e4b1e782878c.png" src="../_images/c4674019132f2f03ee7a45a01b1448aa07f056f0a3f878648c94e4b1e782878c.png"/>
+</div>
+</div>
+</section>
+<section id="binned-time-series">
+<h2>Binned time series<a class="headerlink" href="#binned-time-series" title="Permalink to this headline">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">TimeBinPlot</span></code> allows to plot particle counts or averaged properties as time series with a given resolution.<br/>
+Thereby all particles arriving within the interval defined by the time resolution are counted or averaged over.<br/>
+The time resolution can be given with the <code class="docutils literal notranslate"><span class="pre">bin_time</span></code> keyword argument.</p>
+<section id="spill-intensity">
+<h3>Spill intensity<a class="headerlink" href="#spill-intensity" title="Permalink to this headline">#</a></h3>
+<p>Plot number of lost particles as function of time of slow extraction</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/timestructure/index.html#xplt.timestructure.TimeBinPlot" title="xplt.timestructure.TimeBinPlot"><span class="n">plot</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/timestructure/index.html#xplt.timestructure.TimeBinPlot" title="xplt.timestructure.TimeBinPlot"><span class="n">xplt</span><span class="o">.</span><span class="n">TimeBinPlot</span></a><span class="p">(</span>
+    <span class="n">particles</span><span class="p">,</span>
+    <span class="s2">"rate+smooth(rate,n=10),count-cumulative"</span><span class="p">,</span>  <span class="c1"># rate of, count and cumulative particle count per bin</span>
+    <span class="n">mask</span><span class="o">=</span><span class="n">particles</span><span class="o">.</span><span class="n">state</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">,</span>  <span class="c1"># lost particles</span>
+    <span class="n">twiss</span><span class="o">=</span><span class="n">tw</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/1da53d1b5ac60cdc434b496a23b5cf271a9c86b65bac0118dfc0a3cec9c7dba8.png" src="../_images/1da53d1b5ac60cdc434b496a23b5cf271a9c86b65bac0118dfc0a3cec9c7dba8.png"/>
+</div>
+</div>
+</section>
+<section id="transverse-beam-position-bpm">
+<h3>Transverse beam position (BPM)<a class="headerlink" href="#transverse-beam-position-bpm" title="Permalink to this headline">#</a></h3>
+<p>Plot average y-position as function of time</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/timestructure/index.html#xplt.timestructure.TimeBinPlot" title="xplt.timestructure.TimeBinPlot"><span class="n">plot</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/timestructure/index.html#xplt.timestructure.TimeBinPlot" title="xplt.timestructure.TimeBinPlot"><span class="n">xplt</span><span class="o">.</span><span class="n">TimeBinPlot</span></a><span class="p">(</span>
+    <span class="n">line</span><span class="o">.</span><span class="n">record_last_track</span><span class="p">,</span>
+    <span class="s2">"y"</span><span class="p">,</span>  <span class="c1"># y-position</span>
+    <span class="c1"># moment=1,  # the average (this is the default anyways)</span>
+    <span class="n">twiss</span><span class="o">=</span><span class="n">tw</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/f0bce311b28698ff42f3e89f713df31e2cedf64671cb18d9278029d51052017b.png" src="../_images/f0bce311b28698ff42f3e89f713df31e2cedf64671cb18d9278029d51052017b.png"/>
+</div>
+</div>
+</section>
+<section id="longitudinal-bunch-shape">
+<h3>Longitudinal bunch shape<a class="headerlink" href="#longitudinal-bunch-shape" title="Permalink to this headline">#</a></h3>
+<p>Plot charge as function of time</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/timestructure/index.html#xplt.timestructure.TimeBinPlot" title="xplt.timestructure.TimeBinPlot"><span class="n">plot</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/timestructure/index.html#xplt.timestructure.TimeBinPlot" title="xplt.timestructure.TimeBinPlot"><span class="n">xplt</span><span class="o">.</span><span class="n">TimeBinPlot</span></a><span class="p">(</span>
+    <span class="n">particles</span><span class="p">,</span> <span class="s2">"charge-count,current-rate"</span><span class="p">,</span> <span class="n">twiss</span><span class="o">=</span><span class="n">tw</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">particles</span><span class="o">.</span><span class="n">state</span> <span class="o">&gt;</span> <span class="mi">0</span>  <span class="c1"># alive particles</span>
+<span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="../autoapi/xplt/timestructure/index.html#xplt.timestructure.TimeBinPlot.legend" title="xplt.timestructure.TimeBinPlot.legend"><span class="n">plot</span><span class="o">.</span><span class="n">legend</span></a><span class="p">(</span><span class="n">show</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/dcd4725a5819d028bf8be25e136c29012f574f52b1b54116897f3b9908590869.png" src="../_images/dcd4725a5819d028bf8be25e136c29012f574f52b1b54116897f3b9908590869.png"/>
+</div>
+</div>
+</section>
+</section>
+<section id="spill-quality">
+<h2>Spill quality<a class="headerlink" href="#spill-quality" title="Permalink to this headline">#</a></h2>
+<p>The following metrices exists to quantify the fluctuation of particle numbers in the respective bins:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cv</span></code>: Coefficient of variation</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">duty</span></code>: Spill duty factor</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">maxmean</span></code>: Maximum to mean ratio</p></li>
+</ul>
+<p>These are useful to assess the spill quality.</p>
+<p>Plot a metric as function of time in the spill</p>
+<div class="cell tag_remove-stderr docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/timestructure/index.html#xplt.timestructure.SpillQualityPlot" title="xplt.timestructure.SpillQualityPlot"><span class="n">plot</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/timestructure/index.html#xplt.timestructure.SpillQualityPlot" title="xplt.timestructure.SpillQualityPlot"><span class="n">xplt</span><span class="o">.</span><span class="n">SpillQualityPlot</span></a><span class="p">(</span>
+    <span class="n">particles</span><span class="p">,</span>
+    <span class="s2">"duty"</span><span class="p">,</span>
+    <span class="n">mask</span><span class="o">=</span><span class="n">particles</span><span class="o">.</span><span class="n">state</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">,</span>  <span class="c1"># only lost particles</span>
+    <span class="n">twiss</span><span class="o">=</span><span class="n">tw</span><span class="p">,</span>
+    <span class="n">counting_dt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># bin time for particle counting (detector resolution)</span>
+    <span class="n">evaluate_dt</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># bin time to evaluate metric</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/c8f5a1219986d5f344439d110688948d658b3edc892f771de69049226e15c7a2.png" src="../_images/c8f5a1219986d5f344439d110688948d658b3edc892f771de69049226e15c7a2.png"/>
+</div>
+</div>
+<p>Plot a metric as function of timescale (counting bin time)</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/timestructure/index.html#xplt.timestructure.SpillQualityTimescalePlot" title="xplt.timestructure.SpillQualityTimescalePlot"><span class="n">plot</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/timestructure/index.html#xplt.timestructure.SpillQualityTimescalePlot" title="xplt.timestructure.SpillQualityTimescalePlot"><span class="n">xplt</span><span class="o">.</span><span class="n">SpillQualityTimescalePlot</span></a><span class="p">(</span><span class="n">particles</span><span class="p">,</span> <span class="s2">"cv"</span><span class="p">,</span> <span class="n">twiss</span><span class="o">=</span><span class="n">tw</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/e13f6d5bc79c13e101e3555bbb845783f1abbeea51cf83b02038d96e040333f1.png" src="../_images/e13f6d5bc79c13e101e3555bbb845783f1abbeea51cf83b02038d96e040333f1.png"/>
+</div>
+</div>
+<p>Make a custom spill quality plot</p>
+<div class="cell tag_remove-stderr docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">dt_count</span> <span class="o">=</span> <span class="mf">50e-9</span>
+<span class="n">bins</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="n">dt_evaluate</span> <span class="o">=</span> <span class="n">dt_count</span> <span class="o">*</span> <span class="n">bins</span>
+
+<span class="c1"># use helper to calculate metric</span>
+<a class="sphinx-codeautolink-a" href="../autoapi/xplt/timestructure/index.html#xplt.timestructure.TimeBinMetricHelper" title="xplt.timestructure.TimeBinMetricHelper"><span class="n">helper</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/timestructure/index.html#xplt.timestructure.TimeBinMetricHelper" title="xplt.timestructure.TimeBinMetricHelper"><span class="n">xplt</span><span class="o">.</span><span class="n">TimeBinMetricHelper</span></a><span class="p">(</span><span class="n">twiss</span><span class="o">=</span><span class="n">tw</span><span class="p">)</span>
+<span class="n">t_min</span><span class="p">,</span> <span class="n">dt_count</span><span class="p">,</span> <span class="n">counts</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/timestructure/index.html#xplt.timestructure.TimeBinMetricHelper.binned_timeseries" title="xplt.timestructure.TimeBinMetricHelper.binned_timeseries"><span class="n">helper</span><span class="o">.</span><span class="n">binned_timeseries</span></a><span class="p">(</span><span class="n">particles</span><span class="p">,</span> <span class="n">dt_count</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">particles</span><span class="o">.</span><span class="n">state</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">Cv</span><span class="p">,</span> <span class="n">Cv_poisson</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/timestructure/index.html#xplt.timestructure.TimeBinMetricHelper.calculate_metric" title="xplt.timestructure.TimeBinMetricHelper.calculate_metric"><span class="n">helper</span><span class="o">.</span><span class="n">calculate_metric</span></a><span class="p">(</span><span class="n">counts</span><span class="p">,</span> <span class="s2">"cv"</span><span class="p">,</span> <span class="n">bins</span><span class="p">)</span>
+
+<span class="c1"># plot it</span>
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">constrained_layout</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">style</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">marker</span><span class="o">=</span><span class="s2">"."</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">""</span><span class="p">,</span> <span class="n">capsize</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"Spill quality"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">errorbar</span><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/generated/numpy.nanmean.html#numpy.nanmean" title="numpy.nanmean"><span class="n">np</span><span class="o">.</span><span class="n">nanmean</span></a><span class="p">(</span><span class="n">Cv</span><span class="p">),</span> <span class="p">[</span><span class="s2">"Dataset sample"</span><span class="p">],</span> <span class="n">xerr</span><span class="o">=</span><a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/generated/numpy.nanstd.html#numpy.nanstd" title="numpy.nanstd"><span class="n">np</span><span class="o">.</span><span class="n">nanstd</span></a><span class="p">(</span><span class="n">Cv</span><span class="p">),</span> <span class="o">**</span><span class="n">style</span><span class="p">)</span>
+<span class="n">style</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">hatch</span><span class="o">=</span><span class="s2">"////"</span><span class="p">,</span> <span class="n">ec</span><span class="o">=</span><span class="s2">"#aaa"</span><span class="p">,</span> <span class="n">fc</span><span class="o">=</span><span class="s2">"none"</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"Poisson limit"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.patches.Rectangle.html#matplotlib.patches.Rectangle" title="matplotlib.patches.Rectangle"><span class="n">mpl</span><span class="o">.</span><span class="n">patches</span><span class="o">.</span><span class="n">Rectangle</span></a><span class="p">((</span><a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/generated/numpy.nanmean.html#numpy.nanmean" title="numpy.nanmean"><span class="n">np</span><span class="o">.</span><span class="n">nanmean</span></a><span class="p">(</span><span class="n">Cv_poisson</span><span class="p">),</span> <span class="o">-</span><span class="mf">0.15</span><span class="p">),</span> <span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mf">0.3</span><span class="p">,</span> <span class="o">**</span><span class="n">style</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlim</span><span class="o">=</span><span class="p">(</span><span class="mf">4.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+<span class="c1"># use helper to style axes</span>
+<span class="n">helper</span><span class="o">.</span><span class="n">_link_cv_duty_axes</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">ax</span><span class="o">.</span><span class="n">twiny</span><span class="p">(),</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">"x"</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">"upper right"</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">));</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/0f317d8f00f8ca96f555ace0ce4e174e669abfb395bccdc9a497e5846af69cbe.png" src="../_images/0f317d8f00f8ca96f555ace0ce4e174e669abfb395bccdc9a497e5846af69cbe.png"/>
+</div>
+</div>
+</section>
+<section id="consecutive-particle-delay">
+<h2>Consecutive particle delay<a class="headerlink" href="#consecutive-particle-delay" title="Permalink to this headline">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">TimeIntervalPlot</span></code> allows analysis of the delay between consecutive particles.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/timestructure/index.html#xplt.timestructure.TimeIntervalPlot" title="xplt.timestructure.TimeIntervalPlot"><span class="n">plot</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/timestructure/index.html#xplt.timestructure.TimeIntervalPlot" title="xplt.timestructure.TimeIntervalPlot"><span class="n">xplt</span><span class="o">.</span><span class="n">TimeIntervalPlot</span></a><span class="p">(</span><span class="n">particles</span><span class="p">,</span> <span class="n">dt_max</span><span class="o">=</span><span class="mf">1e-9</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">twiss</span><span class="o">=</span><span class="n">tw</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/75dc99f530d57e6e87f215a335526b295b18c9a1895607ad93b3a64675897f2b.png" src="../_images/75dc99f530d57e6e87f215a335526b295b18c9a1895607ad93b3a64675897f2b.png"/>
+</div>
+</div>
+</section>
+<section id="frequency-domain">
+<h2>Frequency domain<a class="headerlink" href="#frequency-domain" title="Permalink to this headline">#</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">TimeFFTPlot</span></code> allows frequency analysis of particle data. Therefore the data is first binned into an equidistant time series as described above, and then an FFT is performed. This allows to plot the frequency spectrum of particle arrival time:</p>
+<section id="spill-fluctuations">
+<h3>Spill fluctuations<a class="headerlink" href="#spill-fluctuations" title="Permalink to this headline">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/timestructure/index.html#xplt.timestructure.TimeFFTPlot" title="xplt.timestructure.TimeFFTPlot"><span class="n">plot</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/timestructure/index.html#xplt.timestructure.TimeFFTPlot" title="xplt.timestructure.TimeFFTPlot"><span class="n">xplt</span><span class="o">.</span><span class="n">TimeFFTPlot</span></a><span class="p">(</span>
+    <span class="n">particles</span><span class="p">,</span>
+    <span class="s2">"count+smooth(count,n=100),cumulative"</span><span class="p">,</span>
+    <span class="n">mask</span><span class="o">=</span><span class="n">particles</span><span class="o">.</span><span class="n">state</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">,</span>  <span class="c1"># only lost particles</span>
+    <span class="n">fmax</span><span class="o">=</span><span class="mf">1e10</span><span class="p">,</span>
+    <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">twiss</span><span class="o">=</span><span class="n">tw</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlim</span><span class="o">=</span><span class="p">(</span><span class="mf">1e5</span><span class="p">,</span> <span class="kc">None</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">plot</span><span class="o">.</span><span class="n">ax</span><span class="p">:</span>
+    <span class="n">a</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">ylabel</span><span class="o">=</span><span class="n">a</span><span class="o">.</span><span class="n">get_ylabel</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">"   "</span><span class="p">,</span> <span class="s2">"</span><span class="se">\n</span><span class="s2">"</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/6f3a96132f91a887e8070ab0b6f7322811e93b145c95bc2820b8574345d77453.png" src="../_images/6f3a96132f91a887e8070ab0b6f7322811e93b145c95bc2820b8574345d77453.png"/>
+</div>
+</div>
+</section>
+<section id="longitudinal-schottky-spectrum">
+<h3>Longitudinal schottky spectrum<a class="headerlink" href="#longitudinal-schottky-spectrum" title="Permalink to this headline">#</a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># select only a single particle</span>
+<span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+<a class="sphinx-codeautolink-a" href="../autoapi/xplt/timestructure/index.html#xplt.timestructure.TimeFFTPlot" title="xplt.timestructure.TimeFFTPlot"><span class="n">plot</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/timestructure/index.html#xplt.timestructure.TimeFFTPlot" title="xplt.timestructure.TimeFFTPlot"><span class="n">xplt</span><span class="o">.</span><span class="n">TimeFFTPlot</span></a><span class="p">(</span>
+    <span class="n">line</span><span class="o">.</span><span class="n">record_last_track</span><span class="p">,</span>
+    <span class="s2">"count"</span><span class="p">,</span>
+    <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">,</span>
+    <span class="n">fmax</span><span class="o">=</span><span class="mf">50e6</span><span class="p">,</span>
+    <span class="n">log</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">display_units</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">f</span><span class="o">=</span><span class="s2">"MHz"</span><span class="p">),</span>
+    <span class="n">twiss</span><span class="o">=</span><span class="n">tw</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">frev</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">tw</span><span class="o">.</span><span class="n">T_rev0</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+    <span class="n">plot</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="n">frev</span> <span class="o">/</span> <span class="mf">1e6</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">"--"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"gray"</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/a98aea9e7af4df1b4a7b9fb3a734512d0ca72b0aa1992df8a9aa8d905290f464.png" src="../_images/a98aea9e7af4df1b4a7b9fb3a734512d0ca72b0aa1992df8a9aa8d905290f464.png"/>
+</div>
+</div>
+</section>
+<section id="tune-or-transverse-schottky-spectrum">
+<h3>Tune or transverse schottky spectrum<a class="headerlink" href="#tune-or-transverse-schottky-spectrum" title="Permalink to this headline">#</a></h3>
+<p>Simmilary, the frequency spectrum of transverse motion (betatron tune spectrum) can be plotted. Note that the spectrum is based on transverse position as function of time and not as function of turn (this gives access to frequencies above half the revolution frequency).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># select only a single particle, otherwise the tune signal is very small due to insufficient coherence of our beam</span>
+<span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+<a class="sphinx-codeautolink-a" href="../autoapi/xplt/timestructure/index.html#xplt.timestructure.TimeFFTPlot" title="xplt.timestructure.TimeFFTPlot"><span class="n">plot</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/timestructure/index.html#xplt.timestructure.TimeFFTPlot" title="xplt.timestructure.TimeFFTPlot"><span class="n">xplt</span><span class="o">.</span><span class="n">TimeFFTPlot</span></a><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">record_last_track</span><span class="p">,</span> <span class="s2">"x-y"</span><span class="p">,</span> <span class="n">relative</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">,</span> <span class="n">twiss</span><span class="o">=</span><span class="n">tw</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">Q</span> <span class="ow">in</span> <span class="p">(</span><span class="n">tw</span><span class="o">.</span><span class="n">qx</span><span class="p">,</span> <span class="n">tw</span><span class="o">.</span><span class="n">qy</span><span class="p">):</span>
+    <span class="n">q</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/generated/numpy.modf.html#numpy.modf" title="numpy.modf"><span class="n">np</span><span class="o">.</span><span class="n">modf</span></a><span class="p">(</span><span class="n">Q</span><span class="p">)</span>
+    <span class="n">plot</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mi">0</span> <span class="o">+</span> <span class="n">q</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">"--"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"gray"</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">plot</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">q</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="s2">":"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"gray"</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/1390905dca29db3ebdcc10783116e9a50ac0b5eff05e81139a677b17c4f36fce.png" src="../_images/1390905dca29db3ebdcc10783116e9a50ac0b5eff05e81139a677b17c4f36fce.png"/>
+</div>
+</div>
+<p>For reference, the spectrum of turn-by-turn positions:</p>
+<div class="cell tag_hide-input docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <a class="sphinx-codeautolink-a" href="https://matplotlib.org/stable/index.html#module-matplotlib" title="matplotlib"><span class="nn">matplotlib</span></a> <span class="kn">import</span> <a class="sphinx-codeautolink-a" href="https://matplotlib.org/stable/api/pyplot_summary.html#module-matplotlib.pyplot" title="matplotlib.pyplot"><span class="n">pyplot</span></a> <span class="k">as</span> <span class="n">plt</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">()</span>
+<span class="k">for</span> <span class="n">xy</span> <span class="ow">in</span> <span class="s2">"xy"</span><span class="p">:</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">record_last_track</span><span class="p">,</span> <span class="n">xy</span><span class="p">)[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="n">freq</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/generated/numpy.fft.rfftfreq.html#numpy.fft.rfftfreq" title="numpy.fft.rfftfreq"><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfftfreq</span></a><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">p</span><span class="p">))</span>
+    <span class="n">mag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/generated/numpy.fft.rfft.html#numpy.fft.rfft" title="numpy.fft.rfft"><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">rfft</span></a><span class="p">(</span><span class="n">p</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">freq</span><span class="p">,</span> <span class="n">mag</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">xy</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/generated/numpy.modf.html#numpy.modf" title="numpy.modf"><span class="n">np</span><span class="o">.</span><span class="n">modf</span></a><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">tw</span><span class="p">,</span> <span class="s2">"q"</span> <span class="o">+</span> <span class="n">xy</span><span class="p">))[</span><span class="mi">0</span><span class="p">],</span> <span class="n">ls</span><span class="o">=</span><span class="s2">"--"</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"gray"</span><span class="p">,</span> <span class="n">zorder</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="s2">"$f/f_</span><span class="se">\\</span><span class="s2">mathrm</span><span class="si">{rev}</span><span class="s2">$"</span><span class="p">,</span> <span class="n">ylabel</span><span class="o">=</span><span class="s2">"FFT / a.u."</span><span class="p">,</span> <span class="n">xlim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">yscale</span><span class="o">=</span><span class="s2">"log"</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<img alt="../_images/349a6790b1e1f0bc36b54c776ca5f4923bcad26797975b59082e54d6f95dacf7.png" src="../_images/349a6790b1e1f0bc36b54c776ca5f4923bcad26797975b59082e54d6f95dacf7.png"/>
+</div>
+</div>
+<hr class="docutils"/>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../autoapi/xplt/timestructure/index.html#module-xplt.timestructure" title="xplt.timestructure"><code class="xref py py-class docutils literal notranslate"><span class="pre">xplt.timestructure</span></code></a></p></li>
+</ul>
+</div>
+</section>
+</section>
+</section>
+</article>
+<footer class="bd-footer-article">
+<!-- Previous / next buttons -->
+<div class="prev-next-area">
+<a class="left-prev" href="hamiltonians.html" id="prev-link" title="previous page">
+<i class="fa-solid fa-angle-left"></i>
+<div class="prev-next-info">
+<p class="prev-next-subtitle">previous</p>
+<p class="prev-next-title">Hamiltonians</p>
+</div>
+</a>
+<a class="right-next" href="animations.html" id="next-link" title="next page">
+<div class="prev-next-info">
+<p class="prev-next-subtitle">next</p>
+<p class="prev-next-title">Animations</p>
+</div>
+<i class="fa-solid fa-angle-right"></i>
+</a>
+</div>
+</footer>
+</div>
+<div class="bd-sidebar-secondary bd-toc">
+<div class="toc-item">
+<div class="tocsection onthispage">
+<i class="fa-solid fa-list"></i> On this page
+</div>
+<nav class="page-toc" id="bd-toc-nav">
+<ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry">
+<a class="reference internal nav-link" href="#scatter-over-time">
+   Scatter over time
+  </a>
+</li>
+<li class="toc-h2 nav-item toc-entry">
+<a class="reference internal nav-link" href="#binned-time-series">
+   Binned time series
+  </a>
+<ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry">
+<a class="reference internal nav-link" href="#spill-intensity">
+     Spill intensity
+    </a>
+</li>
+<li class="toc-h3 nav-item toc-entry">
+<a class="reference internal nav-link" href="#transverse-beam-position-bpm">
+     Transverse beam position (BPM)
+    </a>
+</li>
+<li class="toc-h3 nav-item toc-entry">
+<a class="reference internal nav-link" href="#longitudinal-bunch-shape">
+     Longitudinal bunch shape
+    </a>
+</li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry">
+<a class="reference internal nav-link" href="#spill-quality">
+   Spill quality
+  </a>
+</li>
+<li class="toc-h2 nav-item toc-entry">
+<a class="reference internal nav-link" href="#consecutive-particle-delay">
+   Consecutive particle delay
+  </a>
+</li>
+<li class="toc-h2 nav-item toc-entry">
+<a class="reference internal nav-link" href="#frequency-domain">
+   Frequency domain
+  </a>
+<ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry">
+<a class="reference internal nav-link" href="#spill-fluctuations">
+     Spill fluctuations
+    </a>
+</li>
+<li class="toc-h3 nav-item toc-entry">
+<a class="reference internal nav-link" href="#longitudinal-schottky-spectrum">
+     Longitudinal schottky spectrum
+    </a>
+</li>
+<li class="toc-h3 nav-item toc-entry">
+<a class="reference internal nav-link" href="#tune-or-transverse-schottky-spectrum">
+     Tune or transverse schottky spectrum
+    </a>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</div>
+<div class="toc-item">
+<div id="searchbox"></div>
+</div>
+<div class="toc-item">
+</div>
+<div class="toc-item">
+</div>
+</div>
+</div>
+<footer class="bd-footer-content">
+<div class="bd-footer-content__inner">
+</div>
+</footer>
+</main>
+</div>
+</div>
+<!-- Scripts loaded after <body> so the DOM is not blocked -->
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=1e1de1a1873e13ef5536"></script>
+<footer class="bd-footer"><div class="bd-footer__inner container">
+<div class="footer-item">
+<p class="copyright">
+
+    © Copyright 2022-2024, Philipp Niedermayer (github.com/eltos).<br/>
+</p>
+</div>
+<div class="footer-item">
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br/>
+</p>
+</div>
+</div>
+</footer>
+</body>
+</html>
