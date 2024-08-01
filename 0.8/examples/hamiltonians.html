@@ -1,0 +1,464 @@
+
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="Docutils 0.17.1: http://docutils.sourceforge.net/" name="generator"/>
+<title>Hamiltonians — Xplt 0.8.0 documentation</title>
+<script>
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+<!-- Loaded before other Sphinx assets -->
+<link href="../_static/styles/theme.css?digest=1e1de1a1873e13ef5536" rel="stylesheet"/>
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=1e1de1a1873e13ef5536" rel="stylesheet"/>
+<link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css" rel="stylesheet"/>
+<link as="font" crossorigin="" href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="" href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="" href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" rel="preload" type="font/woff2"/>
+<link href="../_static/pygments.css" rel="stylesheet" type="text/css">
+<link href="../_static/graphviz.css" rel="stylesheet" type="text/css">
+<link href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" rel="stylesheet" type="text/css">
+<link href="../_static/sphinx-codeautolink.css" rel="stylesheet" type="text/css">
+<!-- Pre-loaded scripts that we'll load fully later -->
+<link as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=1e1de1a1873e13ef5536" rel="preload"/>
+<script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+<script src="../_static/jquery.js"></script>
+<script src="../_static/underscore.js"></script>
+<script src="../_static/doctools.js"></script>
+<script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script>DOCUMENTATION_OPTIONS.pagename = 'examples/hamiltonians';</script>
+<link href="../genindex.html" rel="index" title="Index">
+<link href="../search.html" rel="search" title="Search">
+<link href="timestructure.html" rel="next" title="Timestructure (spill, schottky)">
+<link href="phasespace.html" rel="prev" title="Phasespace"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="None" name="docsearch:language"/>
+</link></link></link></link></link></link></link></head>
+<body data-default-mode="" data-offset="180" data-spy="scroll" data-target="#bd-toc-nav">
+<input class="sidebar-toggle" id="__primary" name="__primary" type="checkbox"/>
+<label class="overlay overlay-primary" for="__primary"></label>
+<input class="sidebar-toggle" id="__secondary" name="__secondary" type="checkbox"/>
+<label class="overlay overlay-secondary" for="__secondary"></label>
+<div class="search-button__wrapper">
+<div class="search-button__overlay"></div>
+<div class="search-button__search-container">
+<form action="../search.html" class="bd-search d-flex align-items-center" method="get">
+<i class="fa-solid fa-magnifying-glass"></i>
+<input aria-label="Search the docs ..." autocapitalize="off" autocomplete="off" autocorrect="off" class="form-control" id="search-input" name="q" placeholder="Search the docs ..." spellcheck="false" type="search"/>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+</div>
+</div>
+<nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+<label class="sidebar-toggle primary-toggle" for="__primary">
+<span class="fa-solid fa-bars"></span>
+</label>
+<div id="navbar-start">
+<a class="navbar-brand logo" href="../index.html">
+<p class="title logo__title">Xplt 0.8.0 documentation</p>
+</a>
+</div>
+<div class="col-lg-9 navbar-header-items">
+<div class="mr-auto" id="navbar-center">
+<div class="navbar-center-item">
+<nav class="navbar-nav">
+<p aria-label="Site Navigation" aria-level="1" class="sidebar-header-items__title" role="heading">
+        Site Navigation
+    </p>
+<ul class="navbar-nav" id="navbar-main-elements">
+<li class="nav-item">
+<a class="nav-link" href="../quickstart.html">
+                        Quickstart
+                    </a>
+</li>
+<li class="nav-item current active">
+<a class="nav-link" href="../usage.html">
+                        User guide
+                    </a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="../api.html">
+                        API documentation
+                    </a>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+<div id="navbar-end">
+<div class="navbar-end-item navbar-end__search-button-container">
+<button class="btn btn-sm navbar-btn search-button search-button__button" data-toggle="tooltip" title="Search">
+<i class="fa-solid fa-magnifying-glass"></i>
+</button>
+</div>
+<div class="navbar-end-item">
+<span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" data-toggle="tooltip" title="light/dark">
+<a class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></a>
+<a class="theme-switch" data-mode="dark"><i class="fa-regular fa-moon"></i></a>
+<a class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></a>
+</span>
+</div>
+<div class="navbar-end-item">
+<ul aria-label="Icon Links" class="navbar-nav" id="navbar-icon-links">
+<li class="nav-item">
+<a class="nav-link" data-toggle="tooltip" href="https://github.com/xsuite/xplt" rel="noopener" target="_blank" title="GitHub"><span><i class="fa-brands fa-square-github"></i></span>
+<label class="sr-only">GitHub</label></a>
+</li>
+<li class="nav-item">
+<a class="nav-link" data-toggle="tooltip" href="https://pypi.org/project/xplt" rel="noopener" target="_blank" title="PyPI"><span><i class="fa-solid fa-cube"></i></span>
+<label class="sr-only">PyPI</label></a>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="search-button-container--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" data-toggle="tooltip" title="Search">
+<i class="fa-solid fa-magnifying-glass"></i>
+</button>
+</div>
+<label class="sidebar-toggle secondary-toggle" for="__secondary">
+<span class="fa-solid fa-outdent"></span>
+</label>
+</div>
+</nav>
+<div class="bd-container">
+<div class="bd-container__inner bd-page-width">
+<div class="bd-sidebar-primary bd-sidebar">
+<div class="sidebar-header-items sidebar-primary__section">
+<div class="sidebar-header-items__center">
+<div class="navbar-center-item">
+<nav class="navbar-nav">
+<p aria-label="Site Navigation" aria-level="1" class="sidebar-header-items__title" role="heading">
+        Site Navigation
+    </p>
+<ul class="navbar-nav" id="navbar-main-elements">
+<li class="nav-item">
+<a class="nav-link" href="../quickstart.html">
+                        Quickstart
+                    </a>
+</li>
+<li class="nav-item current active">
+<a class="nav-link" href="../usage.html">
+                        User guide
+                    </a>
+</li>
+<li class="nav-item">
+<a class="nav-link" href="../api.html">
+                        API documentation
+                    </a>
+</li>
+</ul>
+</nav>
+</div>
+</div>
+<div class="sidebar-header-items__end">
+<div class="navbar-end-item">
+<span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" data-toggle="tooltip" title="light/dark">
+<a class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></a>
+<a class="theme-switch" data-mode="dark"><i class="fa-regular fa-moon"></i></a>
+<a class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></a>
+</span>
+</div>
+<div class="navbar-end-item">
+<ul aria-label="Icon Links" class="navbar-nav" id="navbar-icon-links">
+<li class="nav-item">
+<a class="nav-link" data-toggle="tooltip" href="https://github.com/xsuite/xplt" rel="noopener" target="_blank" title="GitHub"><span><i class="fa-brands fa-square-github"></i></span>
+<label class="sr-only">GitHub</label></a>
+</li>
+<li class="nav-item">
+<a class="nav-link" data-toggle="tooltip" href="https://pypi.org/project/xplt" rel="noopener" target="_blank" title="PyPI"><span><i class="fa-solid fa-cube"></i></span>
+<label class="sr-only">PyPI</label></a>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sidebar-start-items sidebar-primary__section">
+<div class="sidebar-start-items__item"><nav aria-label="Section navigation" class="bd-links" id="bd-docs-nav">
+<p aria-level="1" class="bd-links__title" role="heading">
+    Section Navigation
+  </p>
+<div class="bd-toc-item navbar-nav">
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="line.html">Beamline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="twiss.html">Twiss</a></li>
+<li class="toctree-l1"><a class="reference internal" href="phasespace.html">Phasespace</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Hamiltonians</a></li>
+<li class="toctree-l1"><a class="reference internal" href="timestructure.html">Timestructure (spill, schottky)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="colors.html">Colors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="properties.html">Properties, Units and Labels</a></li>
+</ul>
+</div>
+</nav>
+</div>
+</div>
+<div class="sidebar-end-items sidebar-primary__section">
+<div class="sidebar-end-items__item">
+</div>
+</div>
+</div>
+<main class="bd-main">
+<div class="bd-content">
+<div class="bd-article-container">
+<div class="bd-header-article">
+</div>
+<article class="bd-article" role="main">
+<section id="hamiltonians">
+<h1>Hamiltonians<a class="headerlink" href="#hamiltonians" title="Permalink to this headline">#</a></h1>
+<p>This is an example of plotting hamiltonians in phase space distributions.
+First, create a simple line, a tracker and a particle set:</p>
+<div class="cell tag_hide-cell tag_remove-output docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show imports</span>
+<span class="expanded">Hide code cell content</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">load_ext</span> autoreload
+<span class="o">%</span><span class="k">autoreload</span> 2
+
+<span class="kn">import</span> <span class="nn">xtrack</span> <span class="k">as</span> <span class="nn">xt</span>
+<span class="kn">import</span> <span class="nn">xpart</span> <span class="k">as</span> <span class="nn">xp</span>
+<span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/index.html#module-xplt" title="xplt"><span class="nn">xplt</span></a>
+<span class="kn">import</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/index.html#module-numpy" title="numpy"><span class="nn">numpy</span></a> <span class="k">as</span> <span class="nn">np</span>
+
+<a class="sphinx-codeautolink-a" href="../autoapi/xplt/index.html#xplt.apply_style" title="xplt.apply_style"><span class="n">xplt</span><span class="o">.</span><span class="n">apply_style</span></a><span class="p">()</span>
+
+<a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.seed.html#numpy.random.seed" title="numpy.random.seed"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span></a><span class="p">(</span><span class="mi">43543557</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell tag_hide-cell tag_remove-output docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show line generation code</span>
+<span class="expanded">Hide code cell content</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## Generate a simple 6-fold symmetric FODO lattice</span>
+
+<span class="n">n</span> <span class="o">=</span> <span class="mi">6</span>  <span class="c1"># number of sections</span>
+<span class="n">elements</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"QF"</span><span class="p">:</span> <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.Multipole" title="xtrack.Multipole"><span class="n">xt</span><span class="o">.</span><span class="n">Multipole</span></a><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">knl</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">+</span><span class="mf">0.63</span><span class="p">]),</span>
+    <span class="s2">"QD"</span><span class="p">:</span> <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.Multipole" title="xtrack.Multipole"><span class="n">xt</span><span class="o">.</span><span class="n">Multipole</span></a><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">knl</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.48</span><span class="p">]),</span>
+    <span class="s2">"MU"</span><span class="p">:</span> <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.Multipole" title="xtrack.Multipole"><span class="n">xt</span><span class="o">.</span><span class="n">Multipole</span></a><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">knl</span><span class="o">=</span><span class="p">[</span><a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/constants.html#numpy.pi" title="numpy.pi"><span class="n">np</span><span class="o">.</span><span class="n">pi</span></a> <span class="o">/</span> <span class="n">n</span><span class="p">],</span> <span class="n">hxl</span><span class="o">=</span><span class="p">[</span><a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/constants.html#numpy.pi" title="numpy.pi"><span class="n">np</span><span class="o">.</span><span class="n">pi</span></a> <span class="o">/</span> <span class="n">n</span><span class="p">]),</span>
+<span class="p">}</span>
+<span class="n">parts</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"a"</span><span class="p">:</span> <span class="p">[</span><span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mf">0.7</span><span class="p">,</span> <span class="s2">"QF"</span><span class="p">),</span> <span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mf">1.4</span><span class="p">,</span> <span class="s2">"MU"</span><span class="p">),</span> <span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mf">2.1</span><span class="p">,</span> <span class="s2">"QD"</span><span class="p">),</span> <span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mf">2.8</span><span class="p">,</span> <span class="s2">"MU"</span><span class="p">)],</span>
+    <span class="s2">"b"</span><span class="p">:</span> <span class="p">[</span><span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mf">2.2</span><span class="p">,</span> <span class="s2">"MU"</span><span class="p">),</span> <span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mf">2.9</span><span class="p">,</span> <span class="s2">"QD"</span><span class="p">),</span> <span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mf">3.6</span><span class="p">,</span> <span class="s2">"MU"</span><span class="p">),</span> <span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mf">4.3</span><span class="p">,</span> <span class="s2">"QF"</span><span class="p">)],</span>
+<span class="p">}</span>
+<span class="n">nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mf">5.0</span> <span class="o">*</span> <span class="n">i</span><span class="p">,</span> <span class="s2">"a"</span> <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">2</span> <span class="k">else</span> <span class="s2">"b"</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">"S</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)]</span>
+
+<span class="c1"># sextupoles</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="n">sx</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.Multipole" title="xtrack.Multipole"><span class="n">xt</span><span class="o">.</span><span class="n">Multipole</span></a><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">knl</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span> <span class="o">*</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/generated/numpy.sin.html#numpy.sin" title="numpy.sin"><span class="n">np</span><span class="o">.</span><span class="n">sin</span></a><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/constants.html#numpy.pi" title="numpy.pi"><span class="n">np</span><span class="o">.</span><span class="n">pi</span></a> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">/</span> <span class="n">n</span><span class="p">))])</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">sx</span><span class="p">,</span> <span class="n">from_</span><span class="o">=</span><span class="sa">f</span><span class="s2">"S</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">"S</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">SX"</span><span class="p">))</span>
+
+<span class="c1"># aperture</span>
+<span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.LimitRect" title="xtrack.LimitRect"><span class="n">xt</span><span class="o">.</span><span class="n">LimitRect</span></a><span class="p">(</span><span class="n">min_x</span><span class="o">=-</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">max_x</span><span class="o">=</span><span class="mf">0.01</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="s2">"APERTURE"</span><span class="p">))</span>
+
+<span class="n">line</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.Line.from_sequence" title="xtrack.Line.from_sequence"><span class="n">xt</span><span class="o">.</span><span class="n">Line</span><span class="o">.</span><span class="n">from_sequence</span></a><span class="p">(</span>
+    <span class="n">nodes</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mf">5.0</span> <span class="o">*</span> <span class="n">n</span><span class="p">,</span> <span class="n">sequences</span><span class="o">=</span><span class="n">parts</span><span class="p">,</span> <span class="n">elements</span><span class="o">=</span><span class="n">elements</span><span class="p">,</span> <span class="n">auto_reorder</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+<span class="n">line</span><span class="o">.</span><span class="n">particle_ref</span> <span class="o">=</span> <span class="n">xp</span><span class="o">.</span><span class="n">Particles</span><span class="p">()</span>
+<span class="n">line</span><span class="o">.</span><span class="n">build_tracker</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<section id="kobayashi-hamiltonian">
+<h2>Kobayashi Hamiltonian<a class="headerlink" href="#kobayashi-hamiltonian" title="Permalink to this headline">#</a></h2>
+<p>The Kobayashi Hamiltonian describes the particle dynamics in the vicinity of a driven 3rd order resonance:</p>
+<div class="amsmath math notranslate nohighlight">
+\[\begin{equation*}
+H = 3\pi d \left(X^2 + X'^2\right) + \frac{S}{4} \left(3 X X'^2 - X^3\right)
+\end{equation*}\]</div>
+<p>with the tune distance d=q-r to the third integer resonance r=n/3 and the normalized sextupole strength:</p>
+<div class="amsmath math notranslate nohighlight">
+\[\begin{equation*}
+S = -\frac{1}{2} \beta_x^{3/2} k_2 l
+\end{equation*}\]</div>
+<div class="cell tag_hide-cell tag_remove-output docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show particle generation code</span>
+<span class="expanded">Hide code cell content</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## Generate particles</span>
+<span class="n">nparticles</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">1e4</span><span class="p">)</span>
+
+<span class="c1"># Transverse distribution (gaussian)</span>
+<span class="n">norm_emitt_x</span> <span class="o">=</span> <span class="mf">4e-6</span>  <span class="c1"># normalized 1-sigma emittance in m*rad (=beta*gamma*emitt_x)</span>
+<span class="n">norm_emitt_y</span> <span class="o">=</span> <span class="mf">1e-6</span>  <span class="c1"># normalized 1-sigma emittance in m*rad (=beta*gamma*emitt_y)</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">px</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xpart.generate_2D_gaussian" title="xpart.generate_2D_gaussian"><span class="n">xp</span><span class="o">.</span><span class="n">generate_2D_gaussian</span></a><span class="p">(</span><span class="n">nparticles</span><span class="p">)</span>
+<span class="n">y</span><span class="p">,</span> <span class="n">py</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xpart.generate_2D_gaussian" title="xpart.generate_2D_gaussian"><span class="n">xp</span><span class="o">.</span><span class="n">generate_2D_gaussian</span></a><span class="p">(</span><span class="n">nparticles</span><span class="p">)</span>
+
+<span class="c1"># Longitudinal distribution (coasting beam)</span>
+<span class="n">rel_momentum_spread</span> <span class="o">=</span> <span class="mf">1e-4</span>  <span class="c1"># relative momentum spread ( P/p0 - 1 )</span>
+<span class="n">zeta</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">get_length</span><span class="p">()</span> <span class="o">*</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.uniform.html#numpy.random.uniform" title="numpy.random.uniform"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span></a><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">nparticles</span><span class="p">)</span>
+<span class="n">delta</span> <span class="o">=</span> <span class="n">rel_momentum_spread</span> <span class="o">*</span> <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xpart.generate_2D_gaussian" title="xpart.generate_2D_gaussian"><span class="n">xp</span><span class="o">.</span><span class="n">generate_2D_gaussian</span></a><span class="p">(</span><span class="n">nparticles</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="n">particles</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">build_particles</span><span class="p">(</span>
+    <span class="n">x_norm</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
+    <span class="n">px_norm</span><span class="o">=</span><span class="n">px</span><span class="p">,</span>
+    <span class="n">nemitt_x</span><span class="o">=</span><span class="n">norm_emitt_x</span><span class="p">,</span>
+    <span class="n">y_norm</span><span class="o">=</span><span class="n">y</span><span class="p">,</span>
+    <span class="n">py_norm</span><span class="o">=</span><span class="n">py</span><span class="p">,</span>
+    <span class="n">nemitt_y</span><span class="o">=</span><span class="n">norm_emitt_y</span><span class="p">,</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">"4d"</span><span class="p">,</span>  <span class="c1"># for twiss (default is 6d, won't work without a cavity)</span>
+    <span class="n">zeta</span><span class="o">=</span><span class="n">zeta</span><span class="p">,</span>
+    <span class="n">delta</span><span class="o">=</span><span class="n">delta</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## Track for a few turns and then stop at the sextupole</span>
+<span class="n">line</span><span class="o">.</span><span class="n">track</span><span class="p">(</span><span class="n">particles</span><span class="p">,</span> <span class="n">num_turns</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">ele_stop</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="si">{</span><a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/generated/numpy.sum.html#numpy.sum" title="numpy.sum"><span class="n">np</span><span class="o">.</span><span class="n">sum</span></a><span class="p">(</span><span class="n">particles</span><span class="o">.</span><span class="n">state</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="si">}</span><span class="s2"> of </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">particles</span><span class="o">.</span><span class="n">state</span><span class="p">)</span><span class="si">}</span><span class="s2"> particles lost"</span><span class="p">)</span>
+
+<span class="c1">## Determine twiss parameters for normalized phase space plots</span>
+<span class="n">tw</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">twiss</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">"4d"</span><span class="p">,</span> <span class="n">at_elements</span><span class="o">=</span><span class="p">[</span><span class="mi">7</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"qx: </span><span class="si">{</span><span class="n">tw</span><span class="o">.</span><span class="n">qx</span><span class="si">:</span><span class="s2">g</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>549 of 10000 particles lost
+qx: 2.33247
+</pre></div>
+</div>
+</div>
+</div>
+<p>Phase space plot with separatrix and equipotential lines:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/phasespace/index.html#xplt.phasespace.PhaseSpacePlot" title="xplt.phasespace.PhaseSpacePlot"><span class="n">plot</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/phasespace/index.html#xplt.phasespace.PhaseSpacePlot" title="xplt.phasespace.PhaseSpacePlot"><span class="n">xplt</span><span class="o">.</span><span class="n">PhaseSpacePlot</span></a><span class="p">(</span>
+    <span class="n">particles</span><span class="p">,</span>
+    <span class="n">mask</span><span class="o">=</span><span class="n">particles</span><span class="o">.</span><span class="n">state</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span>
+    <span class="n">kind</span><span class="o">=</span><span class="s2">"X,x"</span><span class="p">,</span>
+    <span class="c1"># plot='scatter',</span>
+    <span class="n">twiss</span><span class="o">=</span><span class="n">tw</span><span class="p">,</span>
+    <span class="n">hist_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">gridsize</span><span class="o">=</span><span class="mi">50</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="c1"># determine the virtual sextupole</span>
+<span class="n">S</span><span class="p">,</span> <span class="n">mu</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/util/index.html#xplt.util.virtual_sextupole" title="xplt.util.virtual_sextupole"><span class="n">xplt</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">virtual_sextupole</span></a><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># plot the hamiltonian</span>
+<a class="sphinx-codeautolink-a" href="../autoapi/xplt/phasespace/index.html#xplt.phasespace.PhaseSpacePlot.plot_hamiltonian_kobayashi" title="xplt.phasespace.PhaseSpacePlot.plot_hamiltonian_kobayashi"><span class="n">plot</span><span class="o">.</span><span class="n">plot_hamiltonian_kobayashi</span></a><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">S</span><span class="o">=</span><span class="n">S</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="n">mu</span><span class="p">,</span> <span class="n">extend</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="../autoapi/xplt/phasespace/index.html#xplt.phasespace.PhaseSpacePlot.plot_hamiltonian_kobayashi" title="xplt.phasespace.PhaseSpacePlot.plot_hamiltonian_kobayashi"><span class="n">plot</span><span class="o">.</span><span class="n">plot_hamiltonian_kobayashi</span></a><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">S</span><span class="o">=</span><span class="n">S</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="n">mu</span><span class="p">,</span> <span class="n">equipotentials</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="../autoapi/xplt/phasespace/index.html#xplt.phasespace.PhaseSpacePlot.plot_hamiltonian_kobayashi" title="xplt.phasespace.PhaseSpacePlot.plot_hamiltonian_kobayashi"><span class="n">plot</span><span class="o">.</span><span class="n">plot_hamiltonian_kobayashi</span></a><span class="p">(</span>
+    <span class="mi">1</span><span class="p">,</span> <span class="n">S</span><span class="o">=</span><span class="n">S</span><span class="p">,</span> <span class="n">mu</span><span class="o">=</span><span class="n">mu</span><span class="p">,</span> <span class="n">equipotentials</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mf">3e-4</span><span class="p">,</span> <span class="n">separatrix_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="../autoapi/xplt/phasespace/index.html#xplt.phasespace.PhaseSpacePlot.axis" title="xplt.phasespace.PhaseSpacePlot.axis"><span class="n">plot</span><span class="o">.</span><span class="n">axis</span></a><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">legend</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Sextupoles
+  name       k2l     betx      mux        dx    S_abs       S_deg
+  S2SX   0.43301  0.53530  0.45590   1.36368  0.08479   -47.62808
+  S3SX   0.43301  3.05592  0.78793  -0.21368  1.15660   -49.03026
+  S4SX   0.00000  0.53530  1.23339   1.36368  0.00000    72.05980
+  S5SX  -0.43301  3.05592  1.56542  -0.21368  1.15660  -109.34238
+  S6SX  -0.43301  0.53530  2.01088   1.36368  0.08479    11.74769
+  ---------------------------------------------------------------
+  Virtual sextupole: S = 2.07503 m^(-1/2) at mu = -0.0700163 rad/2pi
+</pre></div>
+</div>
+<img alt="../_images/0c0769f283deb95982aa1e282dc21526006555087b1b96b00cf53f96edfb4744.png" src="../_images/0c0769f283deb95982aa1e282dc21526006555087b1b96b00cf53f96edfb4744.png"/>
+</div>
+</div>
+<hr class="docutils"/>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../autoapi/xplt/phasespace/index.html#module-xplt.phasespace" title="xplt.phasespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">xplt.phasespace</span></code></a></p></li>
+</ul>
+</div>
+</section>
+</section>
+</article>
+<footer class="bd-footer-article">
+<!-- Previous / next buttons -->
+<div class="prev-next-area">
+<a class="left-prev" href="phasespace.html" id="prev-link" title="previous page">
+<i class="fa-solid fa-angle-left"></i>
+<div class="prev-next-info">
+<p class="prev-next-subtitle">previous</p>
+<p class="prev-next-title">Phasespace</p>
+</div>
+</a>
+<a class="right-next" href="timestructure.html" id="next-link" title="next page">
+<div class="prev-next-info">
+<p class="prev-next-subtitle">next</p>
+<p class="prev-next-title">Timestructure (spill, schottky)</p>
+</div>
+<i class="fa-solid fa-angle-right"></i>
+</a>
+</div>
+</footer>
+</div>
+<div class="bd-sidebar-secondary bd-toc">
+<div class="toc-item">
+<div class="tocsection onthispage">
+<i class="fa-solid fa-list"></i> On this page
+</div>
+<nav class="page-toc" id="bd-toc-nav">
+<ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry">
+<a class="reference internal nav-link" href="#kobayashi-hamiltonian">
+   Kobayashi Hamiltonian
+  </a>
+</li>
+</ul>
+</nav>
+</div>
+<div class="toc-item">
+<div id="searchbox"></div>
+</div>
+<div class="toc-item">
+</div>
+<div class="toc-item">
+</div>
+</div>
+</div>
+<footer class="bd-footer-content">
+<div class="bd-footer-content__inner">
+</div>
+</footer>
+</main>
+</div>
+</div>
+<!-- Scripts loaded after <body> so the DOM is not blocked -->
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=1e1de1a1873e13ef5536"></script>
+<footer class="bd-footer"><div class="bd-footer__inner container">
+<div class="footer-item">
+<p class="copyright">
+
+    © Copyright 2022-2024, Philipp Niedermayer (github.com/eltos).<br/>
+</p>
+</div>
+<div class="footer-item">
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.5.0.<br/>
+</p>
+</div>
+</div>
+</footer>
+</body>
+</html>
