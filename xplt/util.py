@@ -31,7 +31,8 @@ def PUBLIC_SECTION_BEGIN():
 def PUBLIC_SECTION_END():
     """Finish object collection and return global names for the `__all__` magic"""
     g = inspect.stack()[1].frame.f_globals
-    return list(set(g.keys()).difference(g["__private_names"]))
+    public = list(set(g.keys()).difference(g["__private_names"]))
+    return public[:]  # copy needed for it to work with sphinx autoapi
 
 
 VOID = object()
