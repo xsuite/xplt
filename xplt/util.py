@@ -23,13 +23,19 @@ except ImportError:
 
 
 def PUBLIC_SECTION_BEGIN():
-    """Starting from here, collect objects to be included in file's `__all__` magic"""
+    """Starting from here, collect objects to be included in file's `__all__` magic
+
+    :nodoc:
+    """
     g = inspect.stack()[1].frame.f_globals
     g["__private_names"] = set(g.keys()).union(["__private_names"])
 
 
 def PUBLIC_SECTION_END():
-    """Finish object collection and return global names for the `__all__` magic"""
+    """Finish object collection and return global names for the `__all__` magic
+
+    :nodoc:
+    """
     g = inspect.stack()[1].frame.f_globals
     public = list(set(g.keys()).difference(g["__private_names"]))
     return public[:]  # copy needed for it to work with sphinx autoapi
@@ -38,7 +44,8 @@ def PUBLIC_SECTION_END():
 VOID = object()
 
 
-c0 = 299792458  # speed of light in m/s
+c0 = 299792458
+"""Speed of light in m/s"""
 
 
 def val(obj):

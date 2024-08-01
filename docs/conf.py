@@ -42,6 +42,8 @@ autoapi_add_toctree_entry = False
 
 def autoapi_skip_member(app, what, name, obj, skip, options):
     skip |= ".. deprecated::" in obj.docstring
+    skip |= ":nodoc:" in obj.docstring
+    skip |= not obj.docstring and what == "data"  # undocumented variables
     return skip
 
 
