@@ -10,8 +10,7 @@ __contact__ = "eltos@outlook.de"
 __date__ = "2022-11-15"
 
 
-import types
-
+import inspect
 import numpy as np
 import scipy.signal
 import matplotlib as mpl
@@ -21,6 +20,18 @@ try:
 except ImportError:
     # pandas is an optional dependency
     pd = None
+
+
+def PUBLIC_SECTION_BEGIN():
+    """Starting from here, collect objects to be included in file's `__all__` magic"""
+    g = inspect.stack()[1].frame.f_globals
+    g["__private_names"] = set(g.keys()).union(["__private_names"])
+
+
+def PUBLIC_SECTION_END():
+    """Finish object collection and return global names for the `__all__` magic"""
+    g = inspect.stack()[1].frame.f_globals
+    return list(set(g.keys()).difference(g["__private_names"]))
 
 
 VOID = object()
@@ -407,11 +418,3 @@ def hamiltonian_kobayashi(X, Px, S, mu, twiss, xy="x", delta=0, *, normalized=Fa
         H = H / Hsep
 
     return H
-
-
-## Restrict star imports to local namespace
-__all__ = [
-    name
-    for name, thing in globals().items()
-    if not (name.startswith("_") or isinstance(thing, types.ModuleType))
-]

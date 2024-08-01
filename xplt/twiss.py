@@ -9,11 +9,13 @@ __author__ = "Philipp Niedermayer"
 __contact__ = "eltos@outlook.de"
 __date__ = "2022-11-08"
 
-import types
 
-from .util import defaults
+from .util import *
 from .base import XManifoldPlot
 from .line import KnlPlot
+
+
+PUBLIC_SECTION_BEGIN()
 
 
 class TwissPlot(XManifoldPlot):
@@ -99,9 +101,4 @@ class TwissPlot(XManifoldPlot):
         return changed
 
 
-## Restrict star imports to local namespace
-__all__ = [
-    name
-    for name, thing in globals().items()
-    if not (name.startswith("_") or isinstance(thing, types.ModuleType))
-]
+__all__ = PUBLIC_SECTION_END()

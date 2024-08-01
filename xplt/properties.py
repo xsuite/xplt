@@ -10,13 +10,6 @@ __contact__ = "eltos@outlook.de"
 __date__ = "2023-11-11"
 
 
-import re
-import types
-import inspect
-from typing import Callable, Optional
-from dataclasses import dataclass
-
-import numpy as np
 import pint
 
 try:
@@ -24,8 +17,7 @@ try:
 except ImportError:
     # pandas is an optional dependency
     pd = None
-
-from .util import get
+from .util import *
 
 
 arb_unit = "arb. unit"
@@ -241,6 +233,9 @@ def register_property(name, property):
     _user_properties[name] = property
 
 
+PUBLIC_SECTION_BEGIN()
+
+
 def register_data_property(name, data_unit, symbol=None, description=None):
     """Register a user defined data property
 
@@ -270,6 +265,9 @@ def register_derived_property(name, function, unit=None, symbol=None, descriptio
         inputs = {p: pint.Quantity(1, find_property(p).unit) for p in inputs}
         unit = function(**inputs).units
     register_property(name, DerivedProperty(symbol or f"${name}$", unit, function, description))
+
+
+__all__ = PUBLIC_SECTION_END()
 
 
 # Property definitions
@@ -350,11 +348,3 @@ _default_properties.update(
         ),
     )
 )
-
-
-## Restrict star imports to local namespace
-__all__ = [
-    name
-    for name, thing in globals().items()
-    if not (name.startswith("_") or isinstance(thing, types.ModuleType))
-]

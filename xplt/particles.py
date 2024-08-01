@@ -10,14 +10,9 @@ __contact__ = "eltos@outlook.de"
 __date__ = "2022-12-07"
 
 
-import types
-
-import numpy as np
-import pint
-
+from .util import *
 from .base import XManifoldPlot
 from .properties import Property, DerivedProperty, find_property
-from .util import *
 
 
 class ParticlePlotMixin:
@@ -315,11 +310,3 @@ class ParticlesPlot(XManifoldPlot, ParticlePlotMixin):
                     a.autoscale()
 
         return changed
-
-
-## Restrict star imports to local namespace
-__all__ = [
-    name
-    for name, thing in globals().items()
-    if not (name.startswith("_") or isinstance(thing, types.ModuleType))
-]

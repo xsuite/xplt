@@ -9,18 +9,17 @@ __author__ = "Philipp Niedermayer"
 __contact__ = "eltos@outlook.de"
 __date__ = "2022-09-06"
 
-import types
 
-import matplotlib as mpl
-import numpy as np
 from matplotlib.patches import Ellipse
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
-
+from .util import *
 from .base import XPlot, XManifoldPlot, AngleLocator, RadiansFormatter
 from .particles import ParticlePlotMixin
-from .util import get, defaults, normalized_coordinates, denormalized_coordinates, defaults_for
 
 pairwise = np.c_
+
+
+PUBLIC_SECTION_BEGIN()
 
 
 class PhaseSpacePlot(XPlot, ParticlePlotMixin):
@@ -629,9 +628,4 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
                 self._autoscale(ax, data=np.transpose((x, y)), reset=True)
 
 
-## Restrict star imports to local namespace
-__all__ = [
-    name
-    for name, thing in globals().items()
-    if not (name.startswith("_") or isinstance(thing, types.ModuleType))
-]
+__all__ = PUBLIC_SECTION_END()
