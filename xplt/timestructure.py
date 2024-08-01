@@ -62,7 +62,7 @@ class _TimeBasePlot(XManifoldPlot):
             for ts in timeseries.values():
                 if not isinstance(ts, Timeseries):
                     raise ValueError(
-                        f"timeseries data must be of type ´xplt.Timeseries´, found {type(ts)}"
+                        f"timeseries data must be of type ´xplt.Timeseries(waveform, dt=1/fs)´, found {type(ts)}"
                     )
         return timeseries
 
