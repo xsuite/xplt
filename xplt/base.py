@@ -808,23 +808,23 @@ class XManifoldPlot(XPlot):
             for i, axt in enumerate(self.axflat_twin[s]):
                 self._autoscale(axt, flattened(self.artists[s][i]), **kwargs)
 
-    def axline(self, kind, val, subplots="all", **kwargs):
+    def axline(self, kind, val, **kwargs):
         """Plot a vertical or horizontal line for a given coordinate
 
         Args:
             kind (str): property at which to place the line (e.g. "s", "x", "betx", etc.)
-            val (float): Value of property
-            subplots (list of int): Subplots to plot line onto. Defaults to all with matching coordinates.
+            val (float): Value of property.
             kwargs: See :meth:`xplt.XManifoldPlot.axspan`.
 
         """
-        self.axspan(kind, val, None, subplots=subplots, **kwargs)
+        self.axspan(kind, val, None, **kwargs)
 
     def axspan(
         self,
         kind,
         val,
         val_to=None,
+        *,
         subplots="all",
         annotation=None,
         annotation_loc="lower",
@@ -836,13 +836,14 @@ class XManifoldPlot(XPlot):
         Args:
             kind (str): property at which to place the line (e.g. "s", "x", "betx", etc.).
             val (float): Value of property.
-            val_to (float | None): Second value of property to plot a span. If this is None, plot a line instead of a span.
-            subplots (list of int): Subplots to plot line onto. Defaults to all with matching coordinates.
+            val_to (float | None): Second value of property to plot a span. If this is `None`, plot a line instead of a span.
+            subplots (list[int]): Subplots to plot line onto. Defaults to all with matching coordinates.
             annotation (string | None): Optional text annotation for the line or span. Use this to place
                                         text on the axes. To put text in the legend, use `label=...`.
             annotation_loc (string): Location of annotation. Possible values: "lower", "upper".
             annotation_kwargs (dict | None): Arguments for :meth:`matplotlib.axes.Axes.text`.
-            kwargs: Arguments for axvspan or axhspan (or axvline or axhline if val_to is None)
+            kwargs: Arguments passed to :meth:`matplotlib.axes.Axes.axvspan` or :meth:`matplotlib.axes.Axes.axhspan`
+                    (or :meth:`matplotlib.axes.Axes.axvline` or :meth:`matplotlib.axes.Axes.axhline` if `val_to` is `None`)
 
         """
 
