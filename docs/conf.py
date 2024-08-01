@@ -40,6 +40,11 @@ autodoc_typehints = "description"
 autoapi_add_toctree_entry = False
 
 
+def autoapi_skip_member(app, what, name, obj, skip, options):
+    skip |= ".. deprecated::" in obj.docstring
+    return skip
+
+
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
@@ -117,6 +122,7 @@ nb_execution_mode = "off"
 def setup(app):
     app.connect("config-inited", np_example_notebooks_init)
     app.connect("build-finished", np_example_notebooks_clean)
+    app.connect("autoapi-skip-member", autoapi_skip_member)
 
 
 # -- Options for HTML output -------------------------------------------------
