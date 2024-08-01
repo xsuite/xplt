@@ -13,7 +13,10 @@ __date__ = "2022-09-06"
 
 
 import matplotlib as mpl
-import types
+from .util import *
+
+
+PUBLIC_SECTION_BEGIN()
 
 
 petroff_colors = [
@@ -73,9 +76,4 @@ def make_unicoloured_cmap(color):
     )
 
 
-## Restrict star imports to local namespace
-__all__ = [
-    name
-    for name, thing in globals().items()
-    if not (name.startswith("_") or isinstance(thing, types.ModuleType))
-]
+__all__ = PUBLIC_SECTION_END()

@@ -7,25 +7,18 @@ __contact__ = "eltos@outlook.de"
 
 __version__ = "0.7.2"
 
+
+# expose the following in global namespace
+from .colors import *
+from .line import *
+from .phasespace import *
+from .properties import *
+from .timestructure import *
+from .twiss import *
+
 # allow usage of xplt.mpl.* without importing matplotlib
 import matplotlib as mpl
 
-from .properties import register_data_property, register_derived_property
-from .colors import *
-from .line import KnlPlot, FloorPlot
-from .phasespace import PhaseSpacePlot
-from .timestructure import (
-    Timeseries,
-    TimePlot,
-    TimeBinPlot,
-    TimeFFTPlot,
-    TimeIntervalPlot,
-    SpillQualityPlot,
-    SpillQualityTimescalePlot,
-    TimeBinMetricHelper,
-)
-from .twiss import TwissPlot
-from .util import average, normalized_coordinates, denormalized_coordinates
 
 # Deprecated, for backwards compatibility
 class TimeVariationPlot(SpillQualityPlot):
@@ -46,19 +39,21 @@ class TimeVariationScalePlot(SpillQualityTimescalePlot):
     pass
 
 
-from . import hooks
+from . import hooks as _hooks
 
 try:
-    hooks.register_matplotlib_options()
+    _hooks.register_matplotlib_options()
 except:
     pass
 
 try:
-    hooks.register_pint_options()
+    _hooks.register_pint_options()
 except:
     pass
+
+import matplotlib.style as _mpl_style
 
 
 def apply_style():
     """Apply xplt's matplotlib style sheet and update rcParams"""
-    mpl.style.use("xplt.xplt")
+    _mpl_style.use("xplt.xplt")

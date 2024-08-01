@@ -9,14 +9,10 @@ __author__ = "Philipp Niedermayer"
 __contact__ = "eltos@outlook.de"
 __date__ = "2022-11-08"
 
+
 import re
-import types
-
-import matplotlib as mpl
-import numpy as np
-
+from .util import *
 from .base import XPlot, XManifoldPlot
-from .util import defaults, get, defaults_for
 from .properties import Property, DataProperty
 
 
@@ -69,9 +65,21 @@ def order(knl):
     return int(re.match(r"k(\d+)l", knl).group(1))
 
 
+# Known class names from xtrack and their order
+ORDER_NAMED_ELEMENTS = {
+    "Bend": 0,
+    "Quadrupole": 1,
+    "Sextupole": 2,
+    "Octupole": 3,
+}
+
+
 def tanc(x):
     """Tangens cardinalis, i.e. tan(x)/x with limit tanc(0)=1"""
     return np.sinc(x) / np.cos(x)
+
+
+PUBLIC_SECTION_BEGIN()
 
 
 class KnlPlot(XManifoldPlot):
@@ -574,17 +582,4 @@ class FloorPlot(XPlot):
             return default
 
 
-# Known class names from xtrack and their order
-ORDER_NAMED_ELEMENTS = {
-    "Bend": 0,
-    "Quadrupole": 1,
-    "Sextupole": 2,
-    "Octupole": 3,
-}
-
-## Restrict star imports to local namespace
-__all__ = [
-    name
-    for name, thing in globals().items()
-    if not (name.startswith("_") or isinstance(thing, types.ModuleType))
-]
+__all__ = PUBLIC_SECTION_END()
