@@ -320,13 +320,13 @@ class XPlot:
 
         Args:
             subplots (int | list[int] | str): Flat subplot indices or "all"
-            twins (int | list[int] | str): Twin indices or "all"
+            twins (int | list[int] | str | bool): Twin index or indices, or `"all"`, or `True` for `"all"`, or `False` for `0`
 
         Yields:
             matplotlib.axes.Axes: Iterator over the selected axes where
         """
         subplots = [subplots] if isinstance(subplots, int) else subplots
-        twins = [twins] if isinstance(twins, int) else twins
+        twins = [twins] if isinstance(twins, int) else {False: [0], True: "all"}.get(twins, twins)
         for s in range(len(self.axflat)):
             if subplots != "all" and s not in subplots:
                 continue
@@ -815,7 +815,7 @@ class XManifoldPlot(XPlot):
             kind (str): property at which to place the line (e.g. "s", "x", "betx", etc.)
             val (float): Value of property
             subplots (list of int): Subplots to plot line onto. Defaults to all with matching coordinates.
-            kwargs: Arguments for axvline or axhline
+            kwargs: See :meth:`xplt.XManifoldPlot.axspan`.
 
         """
         self.axspan(kind, val, None, subplots=subplots, **kwargs)

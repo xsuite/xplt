@@ -17,7 +17,7 @@ import pint
 
 from .base import XManifoldPlot
 from .properties import Property, DerivedProperty, find_property
-from .util import c0, get, val, defaults, normalized_coordinates, ieee_mod, defaults_for
+from .util import *
 
 
 class ParticlePlotMixin:
