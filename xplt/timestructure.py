@@ -934,6 +934,8 @@ class TimeIntervalPlot(_TimeBasePlot, ParticlePlotMixin, ParticleHistogramPlotMi
         self._bin_count = bin_count
         self.relative = relative
         self.dt_max = dt_max
+        logx = log is True or (type(log) is str and "x" in log.lower())
+        logy = log is True or (type(log) is str and "y" in log.lower())
 
         # Create plot elements
         def create_artists(i, j, k, ax, p):
@@ -966,11 +968,12 @@ class TimeIntervalPlot(_TimeBasePlot, ParticlePlotMixin, ParticleHistogramPlotMi
         self._create_artists(create_artists)
 
         # Format plot axes
-        self.axis(-1).set(xlim=(self.bin_time if log else 0, self.dt_max * self.factor_for("t")))
+        self.axis(-1).set(
+            xlim=(self.bin_time if logx else 0, self.dt_max * self.factor_for("t")),
+            xscale="log" if logx else "linear",
+        )
         for a in self.axflat:
-            if log in (True, "x", "xy"):
-                a.set(xscale="log")
-            if log in (True, "y", "xy"):
+            if logy:
                 a.set(yscale="log")
             else:
                 a.set(ylim=(0, None))
