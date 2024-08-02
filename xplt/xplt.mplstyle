@@ -1,4 +1,6 @@
 figure.constrained_layout.use: True
+savefig.pad_inches: layout
+savefig.bbox: tight
 legend.fontsize: x-small
 legend.title_fontsize: small
 axes.formatter.use_mathtext: True
