@@ -1188,9 +1188,7 @@ class SpillQualityPlot(_TimeBasePlot, ParticlePlotMixin, MetricesMixin):
             Changed artists
         """
 
-        timeseries = self._ensure_particles_timeseries_data(
-            particles, timeseries, keys=["count"]
-        )["count"]
+        timeseries = self._ensure_particles_timeseries_data(particles, timeseries, keys=["count"])
 
         # Particle timestamp based data
         ################################
@@ -1207,6 +1205,7 @@ class SpillQualityPlot(_TimeBasePlot, ParticlePlotMixin, MetricesMixin):
         # Timeseries based data
         ########################
         else:
+            timeseries = timeseries["count"]
 
             # extract times in range
             if self.time_range is not None:
