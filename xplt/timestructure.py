@@ -318,18 +318,20 @@ class Timeseries:
                 i_stop = int(np.argmin(np.abs(t_array - t_stop)))
             return Timeseries(self.data[i_start:i_stop], self.dt, t_array[i_start])
 
-    def resample(self, dt):
+    def resample(self, dt, *, mode="mean"):
         """Resample data to reduced time resolution
 
         Args:
             dt (float): The new sampling period. If not a multiple of the original sampling period,
                         it is rounded accordingly.
+            mode (str): Resampling mode, either `"mean"` (default) or `"sum"` (for count data)
         Returns:
             Timeseries: The timeseries with new resolution
         """
         n = int(max(1, round(dt / self.dt)))
         size = n * int(self.data.size / n)
-        data = np.reshape(self.data[:size], (-1, n)).mean(axis=1)
+        data = np.reshape(self.data[:size], (-1, n))
+        data = getattr(np, mode)(data, axis=1)
         return Timeseries(data, n * self.dt, self.t0)
 
 
@@ -1212,7 +1214,7 @@ class SpillQualityPlot(_TimeBasePlot, ParticlePlotMixin, MetricesMixin):
 
             # bin into counting bins
             if self.counting_dt:
-                timeseries = timeseries.resample(self.counting_dt)
+                timeseries = timeseries.resample(self.counting_dt, mode="sum")
 
         # make 2D array by subdividing into evaluation bins
         counts, edges = timeseries.data, timeseries.times(endpoint=True)
@@ -1477,8 +1479,8 @@ class SpillQualityTimescalePlot(_TimeBasePlot, ParticlePlotMixin, MetricesMixin)
                 rebins = np.linspace(rebin_min, rebin_max, 100)
             rebins = np.unique(rebins.astype(int))
 
-            # re-bin data
-            TS = [timeseries.resample(r * timeseries.dt) for r in rebins]
+            # re-bin data (use sum as it's particle counts)
+            TS = [timeseries.resample(r * timeseries.dt, mode="sum") for r in rebins]
 
         # Metric calculation
         #####################
