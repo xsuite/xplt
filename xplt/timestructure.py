@@ -46,7 +46,9 @@ class _TimeBasePlot(XManifoldPlot):
 
         self.time_range = time_range
 
-    def _ensure_particles_timeseries_data(self, particles, timeseries):
+    def _ensure_particles_timeseries_data(self, particles, timeseries, *, keys=None):
+        if keys is None:
+            keys = self.on_y_unique
         if particles is None and timeseries is None:
             raise ValueError("Data was neither passed via `particles` nor `timeseries`")
         elif particles is not None:
@@ -56,9 +58,9 @@ class _TimeBasePlot(XManifoldPlot):
             if particles is not None:
                 raise ValueError("`particles` must be None when passing data via `timeseries`")
             if not isinstance(timeseries, dict):
-                if len(self.on_y_unique) != 1:
+                if len(keys) != 1:
                     raise ValueError("timeseries must be a dict of the form {kind: array}")
-                timeseries = {self.on_y_unique[0]: timeseries}
+                timeseries = {keys[0]: timeseries}
             for ts in timeseries.values():
                 if not isinstance(ts, Timeseries):
                     raise ValueError(
@@ -1117,8 +1119,8 @@ class SpillQualityPlot(_TimeBasePlot, ParticlePlotMixin, MetricesMixin):
             evaluate_dt (float): Time bin width for metric evaluation if evaluate_bins is None.
             poisson (bool): If true, indicate poisson limit.
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
-            timeseries (Timeseries): Pre-binned timeseries data with particle counts
-                                     as alternative to timestamp-based particle data.
+            timeseries (Timeseries | dict[str, Timeseries]): Pre-binned timeseries data with particle counts
+                    as alternative to timestamp-based particle data. If a dictionary, it must contain the key `count`.
             time_range (tuple): Time range of particles to consider. If None, all particles are considered.
             time_offset (float): Time offset for x-axis is seconds, i.e. show values as `t-time_offset`.
             plot_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.step`.
@@ -1177,14 +1179,16 @@ class SpillQualityPlot(_TimeBasePlot, ParticlePlotMixin, MetricesMixin):
             particles (Any): Particles data to plot.
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
             autoscale (bool): Whether to perform autoscaling on all axes.
-            timeseries (Timeseries): Pre-binned timeseries data with particle counts
-                                     as alternative to timestamp-based particle data.
+            timeseries (Timeseries | dict[str, Timeseries]): Pre-binned timeseries data with particle counts
+                    as alternative to timestamp-based particle data. If a dictionary, it must contain the key `count`.
 
         Returns:
             Changed artists
         """
 
-        timeseries = self._ensure_particles_timeseries_data(particles, timeseries)
+        timeseries = self._ensure_particles_timeseries_data(
+            particles, timeseries, keys=["count"]
+        )["count"]
 
         # Particle timestamp based data
         ################################
@@ -1261,7 +1265,7 @@ class SpillQualityTimescalePlot(_TimeBasePlot, ParticlePlotMixin, MetricesMixin)
         *,
         counting_dt_min=None,
         counting_dt_max=None,
-        counting_bins_per_evaluation=50,
+        counting_bins_per_evaluation=50,  # 1000,
         std=True,
         poisson=True,
         mask=None,
@@ -1301,8 +1305,8 @@ class SpillQualityTimescalePlot(_TimeBasePlot, ParticlePlotMixin, MetricesMixin)
                 Only relevant if counting_bins_per_evaluation is not None.
             poisson (bool): Whether or not to plot the Poisson limit.
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
-            timeseries (Timeseries): Pre-binned timeseries data with particle counts
-                                     as alternative to timestamp-based particle data.
+            timeseries (Timeseries | dict[str, Timeseries]): Pre-binned timeseries data with particle counts
+                    as alternative to timestamp-based particle data. If a dictionary, it must contain the key `count`.
             time_range (tuple): Time range of particles to consider. If None, all particles are considered.
             log (bool): Whether or not to plot the x-axis in log scale.
             plot_kwargs (dict): Keyword arguments passed to the plot function. See :meth:`matplotlib.axes.Axes.plot`.
@@ -1390,15 +1394,17 @@ class SpillQualityTimescalePlot(_TimeBasePlot, ParticlePlotMixin, MetricesMixin)
             particles (Any): Particles data to plot.
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
             autoscale (bool): Whether to perform autoscaling on all axes.
-            timeseries (Timeseries): Pre-binned timeseries data with particle counts
-                                     as alternative to timestamp-based particle data.
+            timeseries (Timeseries | dict[str, Timeseries]): Pre-binned timeseries data with particle counts
+                    as alternative to timestamp-based particle data. If a dictionary, it must contain the key `count`.
             ignore_insufficient_statistics (bool): When set to True, the plot will include data with insufficient statistics.
 
         Returns:
             Changed artists
         """
 
-        timeseries = self._ensure_particles_timeseries_data(particles, timeseries)
+        timeseries = self._ensure_particles_timeseries_data(
+            particles, timeseries, keys=["count"]
+        )["count"]
 
         counting_dt_min = self.counting_dt_min
         counting_dt_max = self.counting_dt_max
