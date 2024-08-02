@@ -639,7 +639,8 @@ class TimeFFTPlot(_TimeBasePlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
         # Format plot axes
         self.axis(-1).set(xlabel="$f/f_{rev}$" if self.relative else self.label_for("f"))
         for a in self.axflat:
-            a.set(ylim=(0, None))
+            if not log or log == "x":  # yscale linear
+                a.set(ylim=(0, None))
             a.set(**{f"{xy}scale": "log" for xy in "xy" if log in (True, xy)})
 
         # Create plot elements
