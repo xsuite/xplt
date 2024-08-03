@@ -161,7 +161,7 @@ def average(*data, n=100, function=np.mean):
     Args:
         data (np.ndarray): the data to average over
         n (int): number of subsequent datapoints of intput to average into one point in the output. If the input size is not a multiple of n, the data will be clipped.
-        function (callable, optional): averaging function to apply to last axis of input data. Defaults to np.mean
+        function (function): averaging function to apply to last axis of input data. Defaults to np.mean
 
     Returns:
         averaged data
@@ -219,18 +219,19 @@ def binned_data(
         n (int | None): Number of bins. Must not be used together with `dv`.
         dv (float | None): Bin width. Must not be used together with n.
         v_range (tuple[float] | None): Tuple of (min, max) values to consider.
-                                       If None, the range is determined from the data.
+            If None, the range is determined from the data.
         what (np.ndarray | None): Array of associated data or None. Must have same shape as values. See above.
         moments (int | list[int | None] | None): The moment(s) to return for associated data if what is not None. See above.
         make_n_power_of_two (bool): If true, ensure that the number of bins is a power of two by rounding up.
-                                    Useful to increase performance of calculating FFTs on the timeseries data.
+            Useful to increase performance of calculating FFTs on the timeseries data.
 
     Returns:
-        The histogram or timeseries as tuple (v_min, dv, *counts_or_what) where
-        `v_min` is the start value of the histogram or timeseries data,
-        `dv` is the bin width and
-        `*counts_or_what` are the values of the histogram or timeseries as an array of length n
-            (if multiple moments are requested, an array is returned for each of them).
+        tuple: The histogram or timeseries as tuple
+            (v_min, dv, *counts_or_what) where
+            `v_min` is the start value of the histogram or timeseries data,
+            `dv` is the bin width and
+            `*counts_or_what` are the values of the histogram or timeseries as an array of length n
+            for each moment requested.
     """
 
     v_min = np.min(values) if v_range is None or v_range[0] is None else v_range[0]
@@ -293,7 +294,8 @@ def normalized_coordinates(x, px, twiss, xy, delta=0):
         delta (float): Momentum deviation to account for dispersive orbit.
 
     Returns:
-        Tuple of normalized coordinates (X, Px) in (m^(1/2), m^(1/2))
+        tuple: Tuple of normalized coordinates
+            (X, Px) in (m^(1/2), m^(1/2))
     """
     if twiss is None:
         raise ValueError("Cannot calculate normalized coordinates when twiss parameter is None")
@@ -318,7 +320,8 @@ def denormalized_coordinates(X, Px, twiss, xy, delta=0):
         delta (float): Momentum deviation to account for dispersive orbit.
 
     Returns:
-        Tuple of physical coordinates (x, px) in (m, rad)
+        tuple: Tuple of physical coordinates
+            (x, px) in (m, rad)
     """
     # apply Floquet transform
     alf, bet = get(twiss, "alf" + xy), get(twiss, "bet" + xy)
@@ -343,7 +346,8 @@ def virtual_sextupole(line, particle_ref=None, *, verbose=False):
         verbose (bool): If True, print information on sextupoles
 
     Returns:
-        Tuple (S, mu) with normalized strength in m^(-1/2) and phase in rad/2pi
+        tuple: Tuple (S, mu)
+            with normalized strength in m^(-1/2) and phase in rad/2pi
     """
 
     # for backwards compatibility for old xsuite versions
@@ -403,7 +407,8 @@ def hamiltonian_kobayashi(X, Px, S, mu, twiss, xy="x", delta=0, *, normalized=Fa
         normalized (bool): If true, return value of hamiltonian divided by value at separatrix.
 
     Returns:
-        Value of the hamiltonian (normalized if specified)
+        float: Value of the hamiltonian
+            (possibly normalized)
 
     """
 

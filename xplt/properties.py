@@ -65,7 +65,7 @@ class Property:
         """Create a new property with a custom property resolver
 
         Args:
-            resolver (callable): A function which takes a property name and returns a property
+            resolver (function[str]): A function which takes a property name and returns a property
         """
         p = self.__class__(self.symbol, self.unit, self.description)
         p.prop = resolver
@@ -84,11 +84,12 @@ class DataProperty(Property):
         """Class for property which can directly be accessed from data
 
         Args:
-            key (str): The key used to access data (or None if you promise not to call .value)
+            key (str): The key used to access data.
+                May be None only if you promise not to call :meth:`~.properties.DataProperty.values`.
             unit (str): Physical unit of property data.
-            symbol (str | None): Short physical symbol representing property, preferably latex (e.g. $x$).
-                                 If None, defaults to the key.
-            description (optional): Longer description of the property to display on legend and axes labels.
+            symbol (str | None): Short physical symbol representing property, preferably latex (e.g. ``"$x$"``).
+                If None, defaults to the key.
+            description (str | None): Longer description of the property to display on legend and axes labels.
         """
         super().__init__(symbol or f"${key}$", unit, description)
         self.key = key
@@ -103,15 +104,20 @@ class DataProperty(Property):
 
         Args:
             data (any): The data object providing the values
-            mask (None | Any | callable): An optional mask to apply to the values.
+            mask (None | Any | function): An optional mask to apply to the values.
                 Can be None, a slice, a binary mask or a callback.
-                If a callback, it must have the signature ``(mask_1, get) -> mask_2`` where mask_1 is the
+                If a callback, it must have the signature ``function(mask_1, get) -> mask_2`` where mask_1 is the
                 binary mask to be modified, mask_2 is the modified mask, and get is a method allowing the
                 callback to retrieve particle properties in their respective data units.
-                Example:
+
+                Example callback:
+
+                .. code-block:: python
+
                     def mask_callback(mask, get):
                         mask &= get("t") < 1e-3  # all particles with time < 1 ms
                         return mask
+
             unit (str): The unit to convert the data to, must be compatible with this property
         """
 
@@ -147,11 +153,11 @@ class DerivedProperty(Property):
         """Class for property which is derived from other properties
 
         Args:
-            symbol (str | None): Short physical symbol representing property, preferably latex (e.g. $x$).
+            symbol (str | None): Short physical symbol representing property, preferably latex (e.g. ``"$x$"``).
             unit (str): Physical unit of property data.
-            evaluate (Callable): The function which determines the property values. Function parameters must
-                                 be names of other properties, which will be provided to the function.
-            description (optional): Longer description of the property to display on legend and axes labels.
+            evaluate (function): The function which determines the property values. Function parameters must
+                be names of other properties, which will be provided to the function.
+            description (str | None): Longer description of the property to display on legend and axes labels.
         """
         super().__init__(symbol, unit, description)
         self.evaluate = evaluate
@@ -165,7 +171,7 @@ class DerivedProperty(Property):
         """Get masked data for this property
 
         Args:
-            *: See :py:func:`Property.values`
+            *: See :func:`Property.values`
         """
 
         # determine dependencies
@@ -242,8 +248,8 @@ def register_data_property(name, data_unit, symbol=None, description=None):
     Args:
         name (str): Property name as used in `kind` string
         data_unit (str): Unit of data values associated with this property
-        symbol (str, optional): Symbol to display in plots, e.g. $a_1$
-        description (str, optional): Description
+        symbol (str | None): Symbol to display in plots, e.g. ``"$a_1$"``
+        description (str | None): Description
     """
     register_property(name, DataProperty(name, data_unit, symbol, description))
 
@@ -253,11 +259,11 @@ def register_derived_property(name, function, unit=None, symbol=None, descriptio
 
     Args:
         name (str): Property name as used in `kind` string
-        function (Callable): Function to evaluate the property from other properties
+        function (function): Function to evaluate the property from other properties
         unit (str | None): Unit of data values associated with this property.
-                           If none, the unit is determined from the function return value.
-        symbol (str, optional): Symbol to display in plots, e.g. $a_1$
-        description (str, optional): Description
+            If None, the unit is determined from the function return value.
+        symbol (str | None): Symbol to display in plots, e.g. ``"$a_1$"``
+        description (str | None): Description
     """
     if unit is None:
         # determine unit from function return value

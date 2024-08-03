@@ -246,7 +246,7 @@ class ParticlesPlot(XManifoldPlot, ParticlePlotMixin):
             as_function_of (str): The property to plot as function of.
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
             plot_kwargs (dict): Keyword arguments passed to the plot function.
-            sort_by (str | None): Sort the data by this property. Default is to sort by the ``as_function_of`` property.
+            sort_by (str | None): Sort the data by this property. Default is to sort by the `as_function_of` property.
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
         """

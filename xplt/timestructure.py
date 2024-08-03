@@ -79,15 +79,19 @@ class _TimeBasePlot(XManifoldPlot):
 
 
 class MetricesMixin:
-    """Mixin to evaluate particle fluctuation metrices for spill quality analysis
+    r"""Mixin to evaluate particle fluctuation metrices for spill quality analysis
 
     The following metrics are implemented:
-        cv: Coefficient of variation
-            cv = std(N)/mean(N)
-        duty: Spill duty factor
-            F = mean(N)**2 / mean(N**2)
-        maxmean: Maximum to mean ratio
-            M = max(N) / mean(N)
+
+    - ``"cv"``: Coefficient of variation
+       |  Standard deviation divided by mean
+       |  :math:`c_\mathrm{v} = \mathrm{std}(N) / \mathrm{mean}(N) = \sqrt{ \left\langle{N^2}\right\rangle / \left\langle{N}\right\rangle^2 - 1}`
+    - ``"duty"``: Spill duty factor
+       |  Value between 0 and 1
+       |  :math:`F = 1 / ( 1+c_\mathrm{v}^2 ) = \left\langle{N}\right\rangle^2 / \left\langle{N^2}\right\rangle`
+    - ``"maxmean"``: Max-to-mean ratio
+       |  Maximum divided by mean
+       |  :math:`M = \mathrm{max}(N) / \mathrm{mean}(N)`
 
     """
 
@@ -402,7 +406,7 @@ class TimeBinPlot(_TimeBasePlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
 
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
             timeseries (Timeseries | dict[str, Timeseries]): Pre-binned timeseries data as alternative to timestamp-based particle data.
-                                                             The dictionary must contain keys for each `kind` (e.g. `count`).
+                The dictionary must contain keys for each `kind` (e.g. `count`).
             time_range (tuple): Time range of particles to consider. If None, all particles are considered.
             time_offset (float): Time offset for x-axis is seconds, i.e. show values as `t-time_offset`.
             plot_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.plot`.
@@ -459,7 +463,7 @@ class TimeBinPlot(_TimeBasePlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
             autoscale (bool): Whether or not to perform autoscaling on all axes.
             timeseries (Timeseries | dict[str, Timeseries]): Pre-binned timeseries data as alternative to timestamp-based particle data.
-                                                             The dictionary must contain keys for each `kind` (e.g. `count`).
+                The dictionary must contain keys for each `kind` (e.g. `count`).
 
         Returns:
             list: Changed artists
@@ -605,14 +609,14 @@ class TimeFFTPlot(_TimeBasePlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
             fmax (float): Maximum frequency (in Hz) to plot.
             relative (bool): If True, plot relative frequencies (f/frev) instead of absolute frequencies (f).
             log (bool | str): False, 'x', 'y' or True to plot none, the x-axis, y-axis or both on a log scale respectively.
-            scaling (str | dict): Scaling of the FFT. Can be 'amplitude', 'power' or 'pdspp' or a dict with a scaling per property where
-                                  `amplitude` (default for non-count based properties) scales the FFT magnitude to the amplitude,
-                                  `power` (power density spectrum, default for count based properties) scales the FFT magnitude to power,
-                                  `pdspp` (power density spectrum per particle) is simmilar to 'pds' but normalized to particle number.
+            scaling (str | dict): Scaling of the FFT. Can be ``"amplitude"``, ``"power"`` or ``"pdspp"`` or a dict with a scaling per property where
+                `amplitude` (default for non-count based properties) scales the FFT magnitude to the amplitude,
+                `power` (power density spectrum, default for count based properties) scales the FFT magnitude to power,
+                `pdspp` (power density spectrum per particle) is simmilar to 'pds' but normalized to particle number.
             smoothing (int | None): If not None, uses Welch's method to compute a smoothened FFT with `2**smoothing` segments.
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
             timeseries (Timeseries | dict[str, Timeseries]): Pre-binned timeseries data as alternative to timestamp-based particle data.
-                                                             The dictionary must contain keys for each `kind` (e.g. `count`).
+                The dictionary must contain keys for each `kind` (e.g. `count`).
             time_range (tuple): Time range of particles to consider. If None, all particles are considered.
             plot_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.plot`.
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
@@ -697,7 +701,7 @@ class TimeFFTPlot(_TimeBasePlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
             autoscale (bool): Whether to perform autoscaling on all axes.
             timeseries (Timeseries | dict[str, Timeseries]): Pre-binned timeseries data as alternative to timestamp-based particle data.
-                                                             The dictionary must contain keys for each `kind` (e.g. `count`).
+                The dictionary must contain keys for each `kind` (e.g. `count`).
 
         Returns:
             list: Changed artists
@@ -841,10 +845,10 @@ class TimeFFTPlot(_TimeBasePlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
 
         Args:
             f (float | list[float] | np.array): Fundamental frequency or list of frequencies.
-            df (float | list[float] | np.array, optional): Bandwidth or list of bandwidths centered around frequencies(s) in Hz.
+            df (float | list[float] | np.array): Bandwidth or list of bandwidths centered around frequencies(s) in Hz.
             n (int): Number of harmonics to plot.
             relative (bool): If true, then `f` and `df` are interpreted as relative frequencies (f/frev).
-                             Otherwise they are interpreted as absolute frequencies in Hz (default).
+                Otherwise they are interpreted as absolute frequencies in Hz (default).
             plot_kwargs: Keyword arguments to be passed to plotting method
         """
         s = 1
@@ -908,7 +912,7 @@ class TimeIntervalPlot(_TimeBasePlot, ParticlePlotMixin, ParticleHistogramPlotMi
             time_range (tuple): Time range of particles to consider. If None, all particles are considered.
             plot_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.plot`.
             poisson_kwargs (dict): Additional keyword arguments passed to the plot function for Poisson limit.
-                                   See :meth:`matplotlib.axes.Axes.plot` (only applicable if `poisson` is True).
+                See :meth:`matplotlib.axes.Axes.plot` (only applicable if `poisson` is True).
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
 
@@ -1126,12 +1130,12 @@ class SpillQualityPlot(_TimeBasePlot, ParticlePlotMixin, MetricesMixin):
             poisson (bool): If true, indicate poisson limit.
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
             timeseries (Timeseries | dict[str, Timeseries]): Pre-binned timeseries data with particle counts
-                    as alternative to timestamp-based particle data. If a dictionary, it must contain the key `count`.
+                as alternative to timestamp-based particle data. If a dictionary, it must contain the key `count`.
             time_range (tuple): Time range of particles to consider. If None, all particles are considered.
             time_offset (float): Time offset for x-axis is seconds, i.e. show values as `t-time_offset`.
             plot_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.step`.
             poisson_kwargs (dict): Additional keyword arguments passed to the plot function for Poisson limit.
-                                   See :meth:`matplotlib.axes.Axes.step` (only applicable if `poisson` is True).
+                See :meth:`matplotlib.axes.Axes.step` (only applicable if `poisson` is True).
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
         """
@@ -1186,7 +1190,7 @@ class SpillQualityPlot(_TimeBasePlot, ParticlePlotMixin, MetricesMixin):
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
             autoscale (bool): Whether to perform autoscaling on all axes.
             timeseries (Timeseries | dict[str, Timeseries]): Pre-binned timeseries data with particle counts
-                    as alternative to timestamp-based particle data. If a dictionary, it must contain the key `count`.
+                as alternative to timestamp-based particle data. If a dictionary, it must contain the key `count`.
 
         Returns:
             Changed artists
@@ -1311,14 +1315,14 @@ class SpillQualityTimescalePlot(_TimeBasePlot, ParticlePlotMixin, MetricesMixin)
             poisson (bool): Whether or not to plot the Poisson limit.
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
             timeseries (Timeseries | dict[str, Timeseries]): Pre-binned timeseries data with particle counts
-                    as alternative to timestamp-based particle data. If a dictionary, it must contain the key `count`.
+                as alternative to timestamp-based particle data. If a dictionary, it must contain the key `count`.
             time_range (tuple): Time range of particles to consider. If None, all particles are considered.
             log (bool): Whether or not to plot the x-axis in log scale.
             plot_kwargs (dict): Keyword arguments passed to the plot function. See :meth:`matplotlib.axes.Axes.plot`.
             std_kwargs (dict): Additional keyword arguments passed to the plot function for std errorbar.
-                               See :meth:`matplotlib.axes.Axes.fill_between` (only applicable if `std` is True).
+                See :meth:`matplotlib.axes.Axes.fill_between` (only applicable if `std` is True).
             poisson_kwargs (dict): Additional keyword arguments passed to the plot function for Poisson limit.
-                                   See :meth:`matplotlib.axes.Axes.plot` (only applicable if `poisson` is True).
+                See :meth:`matplotlib.axes.Axes.plot` (only applicable if `poisson` is True).
             ignore_insufficient_statistics (bool): When set to True, the plot will include data with insufficient statistics.
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
@@ -1400,7 +1404,7 @@ class SpillQualityTimescalePlot(_TimeBasePlot, ParticlePlotMixin, MetricesMixin)
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
             autoscale (bool): Whether to perform autoscaling on all axes.
             timeseries (Timeseries | dict[str, Timeseries]): Pre-binned timeseries data with particle counts
-                    as alternative to timestamp-based particle data. If a dictionary, it must contain the key `count`.
+                as alternative to timestamp-based particle data. If a dictionary, it must contain the key `count`.
             ignore_insufficient_statistics (bool): When set to True, the plot will include data with insufficient statistics.
 
         Returns:
@@ -1576,10 +1580,15 @@ class TimeBinMetricHelper(ParticlePlotMixin, MetricesMixin):
                 If a callback, it must have the signature ``(mask_1, get) -> mask_2`` where mask_1 is the
                 binary mask to be modified, mask_2 is the modified mask, and get is a method allowing the
                 callback to retriev particle properties in their respective data units.
-                Example:
+
+                Example callback:
+
+                .. code-block:: python
+
                     def mask_callback(mask, get):
                         mask &= get("t") < 1e-3  # all particles with time < 1 ms
                         return mask
+
             t_range (tuple[float] | None): Tuple of (min, max) time values to consider. If None, the range is determined from the data.
             what (str | None): Property to return per bin. Defaults to None, i.e. return counts per bins.
             moments (int | list[int]): The moment(s) to return if what is not None.

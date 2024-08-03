@@ -58,27 +58,31 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
         Args:
             particles (Any): A dictionary with particle information
             kind (str | list): Defines the properties to plot.
-                     This can be a nested list or a separated string or a mixture of lists and strings where
-                     the first list level (or separator ``,``) determines the subplots,
-                     and the second list level (or separator ``-``) determines coordinate pairs.
-                     In addition, abbreviations for x-y-parameter pairs are supported (e.g. 'x' for 'x-px').
-                     For normalized coordinates, use uppercase letters (e.g. 'X' for 'X-Px').
-            plot (str): Defines the type of plot. Can be 'auto', 'scatter' or 'hist'. Default is 'auto' for which the plot type is chosen automatically based on the number of particles.
+                This can be a nested list or a separated string or a mixture of lists and strings where
+                the first list level (or separator ``,``) determines the subplots,
+                and the second list level (or separator ``-``) determines coordinate pairs.
+                In addition, abbreviations for x-y-parameter pairs are supported (e.g. 'x' for 'x-px').
+                For normalized coordinates, use uppercase letters (e.g. 'X' for 'X-Px').
+            plot (str): Defines the type of plot. Can be ``"auto"``, ``"scatter"`` or ``"hist"``. Default is ``"auto"``
+                for which the plot type is chosen automatically based on the number of particles.
             scatter_kwargs (dict): Additional kwargs for scatter plot, see :meth:`matplotlib.axes.Axes.scatter`.
             hist_kwargs (dist): Additional kwargs for 2D histogram plot, see :meth:`matplotlib.axes.Axes.hexbin`.
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
             masks (list[mask]): List of masks for each subplot.
-            color (str | list[str]): Properties defining the color of points for the scatter plot(s). Implies plot='scatter'. Pass a list of properties to use different values for each subplot
+            color (str | list[str]): Properties defining the color of points for the scatter plot(s). Implies plot='scatter'.
+                Pass a list of properties to use different values for each subplot
             cmap (str): Colormap to use for the hist plot.
             cbar_loc (str): Location of the colorbar, such as 'auto', 'right', 'inside upper right', etc.
-                            Use None to disable colorbar.
-            projections (bool | str | list): Add histogrammed projections onto axis. Can be True, False, "x", "y", "auto" or a list of these for each subplot
+                Use None to disable colorbar.
+            projections (bool | str | list): Add histogrammed projections onto axis. Can be ``True``, ``False``, ``"x"``,
+                ``"y"``, ``"auto"`` or a list of these for each subplot.
             projections_kwargs (dict): Additional kwargs for histogram projection, see :meth:`matplotlib.axes.Axes.step`.
             mean (bool | list): Whether to indicate mean of distribution with a cross marker. Boolean or list of booleans for each subplot.
             mean_kwargs (dict): Additional kwargs for marker, see :meth:`matplotlib.axes.Axes.plot`.
             std (bool | list): Whether to indicate standard deviation of distribution with an ellipse. Boolean or list of booleans for each subplot.
             std_kwargs (dict): Additional kwargs for std ellipses, see :class:`matplotlib.patches.Ellipse`.
-            percentiles (list): List of percentiles (in percent) to indicate in the distribution with ellipses. Can also be a list of lists for each subplot.
+            percentiles (list): List of percentiles (in percent) to indicate in the distribution with ellipses.
+                Can also be a list of lists for each subplot.
             percentile_kwargs (dict): Additional kwargs for percentile ellipses, see :class:`matplotlib.patches.Ellipse`.
             ncols (int | None): Number of columns in subplot layout. If None, the layout is determined automatically.
             nrows (int | None): Number of columns in subplot layout. If None, the layout is determined automatically.
@@ -465,8 +469,8 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
             kind (str): Phase space coordinate
             val (float): Value of phase space coordinate
             subplots (list of int): Subplots to plot line onto. Defaults to all with matching coordinates.
-            also_on_normalized (bool, optional): If true, also plot line for related (de-)normalized phase space coordinates.
-            delta (float, optional): The momentrum error used to convert to (de-)normalized  phase space coordinates.
+            also_on_normalized (bool): If true, also plot line for related (de-)normalized phase space coordinates.
+            delta (float): The momentrum error used to convert to (de-)normalized  phase space coordinates.
             kwargs: Arguments for axvline or axhline
 
         """
@@ -517,13 +521,13 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
             subplots (int or list of int): Index of subplot(s)
             S (float): Virtual sextupole strength in m^(-1/2)
             mu (float): Virtual sextupole phase in rad/2pi
-            delta (float, optional): Momentum offset.
-            extend (float, optional): Extend of separatrix and equipotential lines. If > 1 they are drawn beyond the the stable region.
-            autoscale (bool or float, optional): Whether to autoscale axis or not (bool), or the extend to consider for autoscaling
-            separatrix (bool, optional): Plot separatrix. Defaults to True.
-            separatrix_kwargs (dict, optional): Keyword arguments for separatrix line plot.
-            equipotentials (bool, optional): Plot equipotential lines. Defaults to True.
-            equipotentials_kwargs (dict, optional): Keyword arguments for equipotential line contour plot.
+            delta (float): Momentum offset.
+            extend (float): Extend of separatrix and equipotential lines. If > 1 they are drawn beyond the the stable region.
+            autoscale (bool | float): Whether to autoscale axis or not (bool), or the extend to consider for autoscaling
+            separatrix (bool): Plot separatrix. Defaults to True.
+            separatrix_kwargs (dict | None): Keyword arguments for separatrix line plot.
+            equipotentials (bool): Plot equipotential lines. Defaults to True.
+            equipotentials_kwargs (dict | None): Keyword arguments for equipotential line contour plot.
         """
         if not hasattr(subplots, "__iter__"):
             subplots = [subplots]

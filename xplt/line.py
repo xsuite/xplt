@@ -96,7 +96,7 @@ class KnlPlot(XManifoldPlot):
                 If None, automatically determine from line.
             filled (bool): If True, make a filled plot instead of a line plot.
             resolution (int | string): Number of points to use for plotting. Use "auto" for
-                                       a point at the start/end of each element.
+                a point at the start/end of each element.
             kwargs: See :class:`~.base.XPlot` for additional arguments
 
         Known issues:
@@ -544,12 +544,14 @@ class FloorPlot(XPlot):
         Args:
             scale (float): The length of the scale in data units (typically meter).
             label (str | None): A label for the scale.
-            loc (str): The location of the scale. Can be any of the usual matplotlib locations, e.g. 'auto', 'upper left', 'upper center', 'upper right', 'center left', 'center', 'center right', 'lower left', 'lower center, 'lower right'.
+            loc (str): The location of the scale. Can be any of the usual matplotlib locations,
+                e.g. 'auto', 'upper left', 'upper center', 'upper right', 'center left', 'center',
+                'center right', 'lower left', 'lower center, 'lower right'.
             color (Any): Color for the patch.
             fontsize (Any): Font size of the label.
 
         Returns:
-            The artist added (an AnchoredOffsetbox).
+            matplotlib.offsetbox.AnchoredOffsetbox: The artist added
         """
         if scale is None:
             scale = 5

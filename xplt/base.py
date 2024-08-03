@@ -98,8 +98,8 @@ class TwinFunctionLocator(mpl.ticker.Locator):
 
         Args:
             twin_locator (mpl.ticker.Locator): The other locator to align tick locations with
-            function_twin_to_this (callable): Function to calculate tick values of this axis given the tick values of the other axis.
-            function_this_to_twin (callable): Function to calculate tick values of the other axis given the tick values of this axis.
+            function_twin_to_this (function): Function to calculate tick values of this axis given the tick values of the other axis.
+            function_this_to_twin (function): Function to calculate tick values of the other axis given the tick values of this axis.
             granularity (float): Base at multiples of which to locate ticks.
         """
         self.twin_locator = twin_locator
@@ -130,8 +130,8 @@ class TransformedLocator(mpl.ticker.Locator):
 
         Args:
             locator (mpl.ticker.Locator): The dependent locator to use for actual tick locating
-            transform (callable): Function to transform tick values of this locator to the values of the dependent locator
-            inverse (callable): Inverse of transform
+            transform (function): Function to transform tick values of this locator to the values of the dependent locator
+            inverse (function): Inverse of transform
             vmin (float): Optional lower limit for ticks in this locator
             vmax (float): Optional upper limit for ticks in this locator
         """
@@ -175,13 +175,13 @@ class XPlot:
         Initialize the subplots, axes and twin axes
 
         Args:
-            data_units (dict, optional): Units of the data. If None, the units are determined from default and user property settings.
-            display_units (dict, optional): Units to display the data in. If None, the units are determined from the data.
-            ax (matplotlib.axes.Axes, optional): Axes to plot onto. If None, a new figure is created.
+            data_units (dict | None): Units of the data. If None, the units are determined from default and user property settings.
+            display_units (dict | None): Units to display the data in. If None, the units are determined from the data.
+            ax (matplotlib.axes.Axes | None): Axes to plot onto. If None, a new figure is created.
             grid (bool): If True, show grid lines on all axes.
-            nntwins (list): List defining how many twin axes to create for each subplot.
+            nntwins (list | None): List defining how many twin axes to create for each subplot.
             annotation (bool | None): Whether to add an annotation or not. If None (default) add it unless `ax` is passed.
-            subplots_kwargs: Keyword arguments passed to matplotlib.pyplot.subplots command when a new figure is created.
+            subplots_kwargs: Keyword arguments passed to :func:`matplotlib.pyplot.subplots` command when a new figure is created.
         """
 
         self._default_properties = {}
@@ -307,8 +307,8 @@ class XPlot:
         """Return the axis for a given flat subplot index and twin index
 
         Args:
-            subplot (int, optional): Flat subplot index
-            twin (int, optional): Twin index
+            subplot (int): Flat subplot index
+            twin (int): Twin index
 
         Returns:
             matplotlib.axes.Axes: Axis for the given subplot and twin index
@@ -316,11 +316,12 @@ class XPlot:
         return self.axflat_twin[subplot][twin - 1] if twin else self.axflat[subplot]
 
     def axes(self, subplots="all", twins="all"):
-        """Return the axes for the given flat subplot and twin indices
+        """Generator yielding axes for the given flat subplot and twin indices
 
         Args:
-            subplots (int | list[int] | str): Flat subplot indices or "all"
-            twins (int | list[int] | str | bool): Twin index or indices, or `"all"`, or `True` for `"all"`, or `False` for `0`
+            subplots (int | list[int] | str): Flat subplot indices or ``"all"``
+            twins (int | list[int] | str | bool): Twin index or indices or ``"all"``.
+                ``True`` as alias for ``"all"`` and ``False`` as alias for ``0`` are also supported.
 
         Yields:
             matplotlib.axes.Axes: Iterator over the selected axes where
@@ -336,7 +337,7 @@ class XPlot:
                 yield self.axflat_twin[s][t - 1] if t else self.axflat[s]
 
     def save(self, fname, **kwargs):
-        """Save the figure
+        """Save the figure with sensible default options
 
         Args:
             fname (str): Filename
@@ -389,6 +390,7 @@ class XPlot:
 
     def prop(self, name):
         """Get property by key
+
         Args:
             name (str): Key
         Returns:
@@ -535,20 +537,21 @@ class XPlot:
     ):
         """Add vertical lines or spans indicating the location of values or spans and their harmonics
 
-        Indicates the bands at the h-th harmonics for h = 1, 2, ..., n
-        - h * (v ± dv/2)      if scale_width and not inverse (default)
-        - h * v ± dv/2        if not scale_width and not inverse
-        - h / (v ± dv/2)      if inverse and scale_width
-        - 1 / ( v/h ± dv/2 )  if inverse and not scale_width
+        Indicates the bands at the h-th harmonics (h = 1, 2, ..., n) at
+            - h * (v ± dv/2)      if scale_width and not inverse (default)
+            - h * v ± dv/2        if not scale_width and not inverse
+            - h / (v ± dv/2)      if inverse and scale_width
+            - 1 / ( v/h ± dv/2 )  if inverse and not scale_width
 
         Args:
             ax (matplotlib.axes.Axes): Axes to plot onto.
-            v (float or list of float): Value or list of values.
-            dv (float or list of float, optional): Width or list of widths centered around value(s).
+            v (float | list[float]): Value or list of values.
+            dv (float | list[float]): Width or list of widths centered around value(s).
             n (int): Number of harmonics to plot.
-            scale_width (bool, optional): Whether to scale the width for higher harmonics or keep it constant.
+            scale_width (bool): Whether to scale the width for higher harmonics or keep it constant.
             vertical (bool): Plot vertical lines if true, horizontal otherweise.
-            inverse (bool): If true, plot harmonics of n/(v±dv) instead of n*(v±dv). Useful to plot frequency harmonics in time domain and vice-versa.
+            inverse (bool): If true, plot harmonics of n/(v±dv) instead of n*(v±dv).
+                Useful to plot frequency harmonics in time domain and vice-versa.
             plot_kwargs: Keyword arguments to be passed to plotting method
         """
         if not hasattr(v, "__iter__"):
@@ -591,16 +594,19 @@ class XPlot:
         Args:
             ax (matplotlib.axes.Axes): The axis to add it to.
             scale (float): The size of the scale in data units.
-            label (str, optional): A label for the scale.
+            label (str | None): A label for the scale.
             vertical (bool): If true, make a vertical one (default is a horizontal one).
             width (float): The line width of the scale in axis units.
             padding (float): The padding between the scale and the axis.
-            loc (str): The location of the scale. Can be any of the usual matplotlib locations, e.g. 'auto', 'upper left', 'upper center', 'upper right', 'center left', 'center', 'center right', 'lower left', 'lower center, 'lower right'.
-            color (str): Color for the patch.
+            loc (str): The location of the scale. Can be any of the usual matplotlib locations,
+                e.g. ``"auto"``, ``"upper left"``, ``"upper center"``, ``"upper right"``,
+                ``"center left"``, ``"center"``, ``"center right"``, ``"lower left"``,
+                ``"lower center"`` or ``"lower right"``.
+            color (str | tuple): Color for the patch.
             fontsize (str): Font size of the label.
 
         Returns:
-            The artist added (an AnchoredOffsetbox).
+            matplotlib.offsetbox.AnchoredOffsetbox: The artist added
         """
         if loc == "auto":
             loc = "upper left" if vertical else "lower right"
@@ -634,17 +640,16 @@ class XManifoldPlot(XPlot):
         share the x-axis. The **manifold subplot specification string** ``on_y`` defines what
         is plotted on the y-axes. It should specify a property for each trace, separated by
         ``,`` for each subplot, by ``-`` for twin axes and by ``+`` for traces. For example, the
-        string ``"a+b,c-d"`` specifies 2 subplots where traces a and b share the same
-        y-axis on the first subplot and traces c and d have individual y-axis on the
-        second subplot.
+        string ``"a+b,c-d"`` specifies 2 subplots (a+b and c-d) where on the first subplot the
+        traces a and b share the same y-axis and on the second subplot traces c and d have individual y-axis.
 
         When deriving from this class, you should call :meth:`~.base.XManifoldPlot._create_artists` during init
 
         Args:
             on_x (str | None): What to plot on the x-axis
             on_y (str or list): What to plot on the y-axis. See :meth:`~.base.XManifoldPlot.parse_nested_list_string`.
-                                May optionally contain a post-processing function call with the property as first argument
-                                such as `smooth(key)` or `smooth(key, n=10)`.
+                May optionally contain a post-processing function call with the property as first argument
+                such as `smooth(key)` or `smooth(key, n=10)`.
             on_y_separators (str): See :meth:`~.base.XManifoldPlot.parse_nested_list_string`
             on_y_subs (dict): See :meth:`~.base.XManifoldPlot.parse_nested_list_string`
             kwargs: Keyword arguments passed to :class:`~.base.XPlot`
@@ -690,7 +695,7 @@ class XManifoldPlot(XPlot):
         """Helper method to create artists for subplots and twin axes
 
         Args:
-            callback (function): Callback function to create artists.
+            callback (function[int, int, int, matplotlib.axes.Axes, str]): Callback function to create artists.
                 Signature: (i, j, k, axis, p) -> artist
                 Where i, j, k are the subplot, twin-axis, trace indices respectively;
                 axis is the axis and the string p is the property to plot.
@@ -711,10 +716,10 @@ class XManifoldPlot(XPlot):
         """Return the artist either by name, or by subplot, twin axes and trace index
 
         Args:
-            name (str, optional): Name of the property the artist is plotting
-            subplot (int, optional): Flat subplot index
-            twin (int, optional): Twin axis index
-            trace (int, optional): Trace index
+            name (str | None): Name of the property the artist is plotting
+            subplot (int | None): Flat subplot index
+            twin (int | None): Twin axis index
+            trace (int | None): Trace index
 
         Returns:
             matplotlib.artist.Artist: First artist that matches the given criteria
@@ -754,9 +759,9 @@ class XManifoldPlot(XPlot):
         """Add, update or remove legend for a subplot
 
         Args:
-            subplot (Union[int, iterable, "all"]): Subplot axis index or indices
-            show (Union[bool, "auto"]): If True, show the legend. If "auto", show
-              legend for subplots with more than one trace, or if subplot is specified explicitly.
+            subplot (int | list | str): Subplot axis index or indices
+            show (bool | str): If True, show the legend. If "auto", show
+                legend for subplots with more than one trace, or if subplot is specified explicitly.
             kwargs: Keyword arguments passed to :meth:`matplotlib.axes.Axes.legend`
 
         """
@@ -798,7 +803,8 @@ class XManifoldPlot(XPlot):
             reset (bool): Whether to ignore any data limits already registered.
             freeze (bool): Whether to keep the updated axes limits (True) or enable automatic
                 autoscaling on future draws (for all present and new artists).
-            tight (str | None): Enables tight scaling without margins for "x", "y", "both" or None.
+            tight (str | None): Enables tight scaling without margins for the specified dimension.
+                May be ``"x"``, ``"y"``, ``"both"`` or ``None``.
         """
         kwargs = dict(reset=reset, freeze=freeze, tight=tight)
 
@@ -816,7 +822,7 @@ class XManifoldPlot(XPlot):
         Args:
             kind (str): property at which to place the line (e.g. "s", "x", "betx", etc.)
             val (float): Value of property.
-            kwargs: See :meth:`xplt.XManifoldPlot.axspan`.
+            kwargs: See :meth:`~.base.XManifoldPlot.axspan`.
 
         """
         self.axspan(kind, val, None, **kwargs)
@@ -841,11 +847,11 @@ class XManifoldPlot(XPlot):
             val_to (float | None): Second value of property to plot a span. If this is `None`, plot a line instead of a span.
             subplots (list[int]): Subplots to plot line onto. Defaults to all with matching coordinates.
             annotation (string | None): Optional text annotation for the line or span. Use this to place
-                                        text on the axes. To put text in the legend, use `label=...`.
-            annotation_loc (string): Location of annotation. Possible values: "lower", "upper".
+                text on the axes. To put text in the legend, use `label=...`.
+            annotation_loc (string): Location of annotation. Possible values: ``"lower"`` or ``"upper"``.
             annotation_kwargs (dict | None): Arguments for :meth:`matplotlib.axes.Axes.text`.
             kwargs: Arguments passed to :meth:`matplotlib.axes.Axes.axvspan` or :meth:`matplotlib.axes.Axes.axhspan`
-                    (or :meth:`matplotlib.axes.Axes.axvline` or :meth:`matplotlib.axes.Axes.axhline` if `val_to` is `None`)
+                (or :meth:`matplotlib.axes.Axes.axvline` or :meth:`matplotlib.axes.Axes.axhline` if `val_to` is `None`)
 
         """
 
@@ -923,8 +929,7 @@ class XManifoldPlot(XPlot):
             subs (dict): A dictionary of substitutions to apply to the elements during parsing.
                 May introduce additional separators of equal or deeper level.
             strip_off_methods (bool): If true, each element can be a name `name` or an expression
-                                      in the form `method(name, ...)`. The methods are stripped off,
-                                      and returned separately.
+                in the form `method(name, ...)`. The methods are stripped off, and returned separately.
 
         Returns:
             nested list of names in the string,
