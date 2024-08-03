@@ -1,4 +1,9 @@
 
+# Temporary files created by xsuite
+**/Release/*.obj
+**/Release/*.lib
+**/Release/*.exp
+
 
 ### Python ###
 # Byte-compiled / optimized / DLL files
@@ -72,7 +77,10 @@ instance/
 .scrapy
 
 # Sphinx documentation
+_build/
 docs/_build/
+docs/autoapi/
+docs/examples/
 
 # PyBuilder
 .pybuilder/
