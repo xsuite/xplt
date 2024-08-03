@@ -1611,22 +1611,29 @@ class TimeBinMetricHelper(ParticlePlotMixin, MetricesMixin):
 
         return t_min, dt_count, values
 
-    def calculate_metric(self, counts, metric, nbins):
+    def calculate_metric(self, counts, metric, nbins, *, sliding_window=False):
         """Calculate metric on timeseries
 
         Args:
             counts (np.array): 1D timeseries of counts per bin.
             metric (str): Metric to calculate. See :class:`MetricesMixin` for available metrics.
-            nbins (int): Number of subsequent bins to evaluate metric over.
+            nbins (int): Window size (number of subsequent bins) to evaluate metric over.
+            sliding_window (bool): If False, use adjacent (disjoint) windows.
+                If true, use sliding (overlapping) windows to evaluate metric.
 
         Returns:
             tuple[np.array]: Tuple of (value, limit) arrays for each evaluation of the metric.
         """
         # make 2D array by subdividing into evaluation bins
-        N = counts[: int(len(counts) / nbins) * nbins].reshape((-1, nbins))
+        if sliding_window:
+            NN = np.lib.stride_tricks.sliding_window_view(counts, nbins)
+            if NN.shape[0] > 10000:  # not more than this many windows for performance
+                NN = NN[:: NN.shape[0] // 10000, :]
+        else:
+            NN = counts[: int(len(counts) / nbins) * nbins].reshape((-1, nbins))
 
         # calculate metrics
-        F, F_limit = self._calculate_metric(N, metric, axis=1)
+        F, F_limit = self._calculate_metric(NN, metric, axis=1)
 
         return F, F_limit
 
