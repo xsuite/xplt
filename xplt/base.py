@@ -342,7 +342,9 @@ class XPlot:
             fname (str): Filename
             kwargs: Keyword arguments passed to :meth:`matplotlib.figure.Figure.savefig`
         """
-        self.fig.savefig(fname, **defaults(kwargs, dpi=300))
+        self.fig.savefig(
+            fname, **defaults(kwargs, dpi=300, pad_inches="layout", bbox_inches="tight")
+        )
 
     def title(self, title, **kwargs):
         """Set figure title
