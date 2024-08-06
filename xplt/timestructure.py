@@ -643,8 +643,6 @@ class TimeFFTPlot(_TimeBasePlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
         # Format plot axes
         self.axis(-1).set(xlabel="$f/f_{rev}$" if self.relative else self.label_for("f"))
         for a in self.axflat:
-            if not log or log == "x":  # yscale linear
-                a.set(ylim=(0, None))
             a.set(**{f"{xy}scale": "log" for xy in "xy" if log in (True, xy)})
 
         # Create plot elements
@@ -662,7 +660,6 @@ class TimeFFTPlot(_TimeBasePlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
                 particles,
                 mask=mask,
                 timeseries=timeseries,
-                autoscale=True,
             )
 
     def _get_scaling(self, key):
@@ -693,13 +690,14 @@ class TimeFFTPlot(_TimeBasePlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
             return default
         raise ValueError("fmax must be specified when plotting absolut frequencies.")
 
-    def update(self, particles=None, mask=None, autoscale=False, *, timeseries=None):
+    def update(self, particles=None, mask=None, autoscale=None, *, timeseries=None):
         """Update plot with new data
 
         Args:
             particles (Any): Particles data to plot.
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
-            autoscale (bool): Whether to perform autoscaling on all axes.
+            autoscale (bool | None): Whether to perform autoscaling on all axes.
+                If None, use :meth:`matplotlib.axes.Axis.get_autoscale_on` to decide.
             timeseries (Timeseries | dict[str, Timeseries]): Pre-binned timeseries data as alternative to timestamp-based particle data.
                 The dictionary must contain keys for each `kind` (e.g. `count`).
 
@@ -802,8 +800,8 @@ class TimeFFTPlot(_TimeBasePlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
                     self.artists[i][j][k].set_data(freq, mag)
                     changed.append(self.artists[i][j][k])
 
-                if autoscale:
-                    a = self.axis(i, j)
+                a = self.axis(i, j)
+                if autoscale or (autoscale is None and a.get_autoscalex_on()):
                     a.relim()
                     a.autoscale()
                     log = a.get_xscale() == "log"
@@ -812,7 +810,8 @@ class TimeFFTPlot(_TimeBasePlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
                         xlim /= self.frev(particles)
                     else:
                         xlim *= self.factor_for("f")
-                    a.set_xlim(xlim)
+                    a.set_xlim(*xlim)
+                if autoscale or (autoscale is None and a.get_autoscaley_on()):
                     if a.get_yscale() != "log":
                         a.set_ylim(0, None)
 
