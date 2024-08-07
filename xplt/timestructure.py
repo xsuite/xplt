@@ -72,64 +72,8 @@ class TimePlotMixin:
                     )
         return timeseries
 
-    def _times_in_range(self, times):
+    def _apply_time_range(self, times):
         """Cut the time data to time_range"""
-        if self.time_range is not None and self.time_range[0] is not None:
-            times = times[times >= self.time_range[0]]
-        if self.time_range is not None and self.time_range[1] is not None:
-            times = times[times < self.time_range[1]]
-        return times
-
-
-class _TimeBasePlot(XManifoldPlot):
-    # TODO: deprecated, use TimePlotMixin instead!
-    def __init__(
-        self,
-        *,
-        time_range=None,
-        time_offset=0.0,
-        **kwargs,
-    ):
-        kwargs["_properties"] = defaults(
-            kwargs.get("_properties"),
-            t_offset=DerivedProperty("$t-t_0$", "s", lambda t: t - time_offset),
-        )
-        kwargs["display_units"] = defaults(
-            kwargs.get("display_units"),
-            t_offset=kwargs.get("display_units", {}).get("t"),
-        )
-        if "on_x" not in kwargs:
-            kwargs["on_x"] = "t_offset" if time_offset else "t"
-
-        super().__init__(**kwargs)
-
-        self.time_range = time_range
-
-    def _ensure_particles_timeseries_data(self, particles, timeseries, *, keys=None):
-        if keys is None:
-            keys = self.on_y_unique
-        if particles is None and timeseries is None:
-            raise ValueError("Data was neither passed via `particles` nor `timeseries`")
-        elif particles is not None:
-            if timeseries is not None:
-                raise ValueError("`timeseries` must be None when passing data via `particles`")
-        elif timeseries is not None:
-            if particles is not None:
-                raise ValueError("`particles` must be None when passing data via `timeseries`")
-            if not isinstance(timeseries, dict):
-                if len(keys) != 1:
-                    raise ValueError("timeseries must be a dict of the form {kind: array}")
-                timeseries = {keys[0]: timeseries}
-            for ts in timeseries.values():
-                if not isinstance(ts, Timeseries):
-                    raise ValueError(
-                        f"timeseries data must be of type ´xplt.Timeseries(waveform, dt=1/fs)´, found {type(ts)}"
-                    )
-        return timeseries
-
-    def _get_times_in_range(self, particles, mask=None):
-        """Cut the time data to time_range"""
-        times = self.prop("t").values(particles, mask, unit="s")
         if self.time_range is not None and self.time_range[0] is not None:
             times = times[times >= self.time_range[0]]
         if self.time_range is not None and self.time_range[1] is not None:
@@ -514,7 +458,7 @@ class TimeBinPlot(ParticleHistogramPlot, TimePlotMixin):
         return super().update(timeseries if self._data_is_ts else particles, mask, autoscale)
 
 
-class TimeFFTPlot(_TimeBasePlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
+class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHistogramPlotMixin):
     """A frequency plot based on particle arrival times"""
 
     def __init__(
@@ -578,18 +522,19 @@ class TimeFFTPlot(_TimeBasePlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
             log = not relative
         self.smoothing = smoothing
 
+        kwargs = self._init_time_mixin(time_range=time_range, **kwargs)
         kwargs = self._init_particle_mixin(**kwargs)
         kwargs = self._init_particle_histogram_mixin(**kwargs)
         kwargs["_properties"] = defaults(
             kwargs.get("_properties"),
             f=Property("$f$", "Hz", description="Frequency"),
+            frel=Property("$f/f_{rev}$", "1"),
         )
         super().__init__(
-            time_range=time_range, on_x=None, on_y=kind, **kwargs
+            on_x="frel" if self.relative else "f", on_y=kind, **kwargs
         )  # handled manually
 
         # Format plot axes
-        self.axis(-1).set(xlabel="$f/f_{rev}$" if self.relative else self.label_for("f"))
         for a in self.axflat:
             a.set(**{f"{xy}scale": "log" for xy in "xy" if log in (True, xy)})
 
@@ -653,7 +598,7 @@ class TimeFFTPlot(_TimeBasePlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
             list: Changed artists
         """
 
-        timeseries = self._ensure_particles_timeseries_data(particles, timeseries)
+        timeseries = self._check_timeseries_data(particles, timeseries, keys=self.on_y_unique)
 
         # Particle timestamp based data
         ################################
@@ -749,9 +694,9 @@ class TimeFFTPlot(_TimeBasePlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
                     changed.append(self.artists[i][j][k])
 
                 a = self.axis(i, j)
+                a.relim()
                 if autoscale or (autoscale is None and a.get_autoscalex_on()):
-                    a.relim()
-                    a.autoscale()
+                    a.autoscale(axis="x")
                     log = a.get_xscale() == "log"
                     xlim = np.array((10.0 if log else 0.0, fmax))
                     if self.relative:
@@ -760,6 +705,7 @@ class TimeFFTPlot(_TimeBasePlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
                         xlim *= self.factor_for("f")
                     a.set_xlim(*xlim)
                 if autoscale or (autoscale is None and a.get_autoscaley_on()):
+                    a.autoscale(axis="y")
                     if a.get_yscale() != "log":
                         a.set_ylim(0, None)
 
@@ -812,7 +758,9 @@ class TimeFFTPlot(_TimeBasePlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
             super().plot_harmonics(a, f, df, n=n, **plot_kwargs)
 
 
-class TimeIntervalPlot(_TimeBasePlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
+class TimeIntervalPlot(
+    XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHistogramPlotMixin
+):
     """A histogram plot of particle arrival intervals (i.e. delay between consecutive particles)"""
 
     def __init__(
@@ -871,13 +819,14 @@ class TimeIntervalPlot(_TimeBasePlot, ParticlePlotMixin, ParticleHistogramPlotMi
             else:
                 bin_time = dt_max / round(dt_max / bin_time)
 
+        kwargs = self._init_time_mixin(time_range=time_range, **kwargs)
         kwargs = self._init_particle_mixin(**kwargs)
         kwargs = self._init_particle_histogram_mixin(**kwargs)
         kwargs["_properties"] = defaults(
             kwargs.get("_properties"),
             dt=Property("$\\Delta t$", "s", description="Delay between consecutive particles"),
         )
-        super().__init__(time_range=time_range, on_x="dt", on_y=kind, **kwargs)
+        super().__init__(on_x="dt", on_y=kind, **kwargs)
 
         if bin_time is None and bin_count is None:
             bin_count = 100
@@ -954,8 +903,7 @@ class TimeIntervalPlot(_TimeBasePlot, ParticlePlotMixin, ParticleHistogramPlotMi
 
         # extract times
         times = self.prop("t").values(particles, mask, unit="s")
-        if self.time_range:
-            times = times[(self.time_range[0] <= times) & (times < self.time_range[1])]
+        times = self._apply_time_range(times)
         delay = self.factor_for("t") * np.diff(sorted(times))
 
         self.annotate(f"$\\Delta t_\\mathrm{{bin}} = {fmt(self.bin_time)}$")
@@ -1038,7 +986,7 @@ class TimeIntervalPlot(_TimeBasePlot, ParticlePlotMixin, ParticleHistogramPlotMi
             super().plot_harmonics(a, self.factor_for("t") * t, n=n, **plot_kwargs)
 
 
-class SpillQualityPlot(_TimeBasePlot, ParticlePlotMixin, MetricesMixin):
+class SpillQualityPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, MetricesMixin):
     """Plot variability of particle time on microscopic scale as function of time on macroscopic scale"""
 
     def __init__(
@@ -1086,12 +1034,13 @@ class SpillQualityPlot(_TimeBasePlot, ParticlePlotMixin, MetricesMixin):
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
         """
+        kwargs = self._init_time_mixin(time_range=time_range, time_offset=time_offset, **kwargs)
         kwargs = self._init_particle_mixin(**kwargs)
         kwargs["_properties"] = defaults(
             kwargs.get("_properties"),
             **self._metric_properties,
         )
-        super().__init__(time_range=time_range, time_offset=time_offset, on_y=kind, **kwargs)
+        super().__init__(on_x="t_offset" if time_offset else "t", on_y=kind, **kwargs)
 
         self.counting_dt = counting_dt
         self.evaluate_dt = evaluate_dt
@@ -1143,14 +1092,15 @@ class SpillQualityPlot(_TimeBasePlot, ParticlePlotMixin, MetricesMixin):
             Changed artists
         """
 
-        timeseries = self._ensure_particles_timeseries_data(particles, timeseries, keys=["count"])
+        timeseries = self._check_timeseries_data(particles, timeseries, keys=["count"])
 
         # Particle timestamp based data
         ################################
         if particles is not None:
 
             # extract times in range
-            times = self._get_times_in_range(particles, mask)
+            times = self.prop("t").values(particles, mask, unit="s")
+            times = self._apply_time_range(times)
             duration = np.max(times) - np.min(times)
 
             # bin into counting bins
@@ -1211,7 +1161,7 @@ class SpillQualityPlot(_TimeBasePlot, ParticlePlotMixin, MetricesMixin):
         return changed
 
 
-class SpillQualityTimescalePlot(_TimeBasePlot, ParticlePlotMixin, MetricesMixin):
+class SpillQualityTimescalePlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, MetricesMixin):
     """Plot variability of particle time as function of timescale"""
 
     def __init__(
@@ -1275,13 +1225,14 @@ class SpillQualityTimescalePlot(_TimeBasePlot, ParticlePlotMixin, MetricesMixin)
 
 
         """
+        kwargs = self._init_time_mixin(time_range=time_range, **kwargs)
         kwargs = self._init_particle_mixin(**kwargs)
         kwargs["_properties"] = defaults(
             kwargs.get("_properties"),
             tbin=Property("$\\Delta t_\\mathrm{count}$", "s", description="Time resolution"),
             **self._metric_properties,
         )
-        super().__init__(time_range=time_range, on_x="tbin", on_y=kind, **kwargs)
+        super().__init__(on_x="tbin", on_y=kind, **kwargs)
 
         self.counting_dt_min = counting_dt_min
         self.counting_dt_max = counting_dt_max
@@ -1358,7 +1309,7 @@ class SpillQualityTimescalePlot(_TimeBasePlot, ParticlePlotMixin, MetricesMixin)
             Changed artists
         """
 
-        timeseries = self._ensure_particles_timeseries_data(particles, timeseries, keys=["count"])
+        timeseries = self._check_timeseries_data(particles, timeseries, keys=["count"])
 
         counting_dt_min = self.counting_dt_min
         counting_dt_max = self.counting_dt_max
@@ -1378,7 +1329,8 @@ class SpillQualityTimescalePlot(_TimeBasePlot, ParticlePlotMixin, MetricesMixin)
         if particles is not None:
 
             # extract times in range
-            times = self._get_times_in_range(particles, mask)
+            times = self.prop("t").values(particles, mask)
+            times = self._apply_time_range(times)
             ntotal = times.size
             duration = np.max(times) - np.min(times)
 
