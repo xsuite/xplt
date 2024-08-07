@@ -257,7 +257,7 @@ def binned_data(
     # count timestamps in bins
     bins = np.floor((values - v_min) / dv).astype(int)
     # bins are i*dt <= t < (i+1)*dt where i = 0 .. n-1
-    mask = (bins >= 0) & (bins < n)  # igore times outside range
+    mask = (bins >= 0) & (bins < n)  # ignore times outside range
     bins = bins[mask]
     # count particles per time bin
     counts = np.bincount(bins, minlength=n)[:n]
