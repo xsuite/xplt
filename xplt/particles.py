@@ -159,7 +159,7 @@ class ParticlePlotMixin:
                 raise ValueError(
                     "Particle arrival time can not be determined while at_turn > 0 "
                     "because all of the following are unknown: "
-                    "frev, twiss, (bata and circumference). "
+                    "frev, twiss, (beta and circumference). "
                     "To resolve this error, pass either to the plot constructor "
                     "and/or specify particle.beta0."
                 )
@@ -218,6 +218,211 @@ class ParticleHistogramPlotMixin:
 
     def _count_based(self, key):
         return key in self._histogram_particle_properties
+
+
+class ParticleHistogramPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
+    """A 1D histogram plot for any particle property
+
+    See also:
+        :class:`~.phasespace.PhaseSpacePlot` for a 2D histogram
+    """
+
+    def __init__(
+        self,
+        property,
+        particles=None,
+        kind="count",
+        *,
+        bin_width=None,
+        bin_count=None,
+        range=None,
+        relative=False,
+        moment=1,
+        mask=None,
+        plot_kwargs=None,
+        **kwargs,
+    ):
+        """
+
+        The main purpose is to plot particle distributions,
+        but the `kind` keyword also accepts particle properties
+        in which case the property is averaged over all particles falling into the bin.
+
+        Useful to plot beam profiles over `x`, `y` etc., bunch shapes over `zeta`, spill structures over `t`, ...
+
+
+        Args:
+            property (str): The property to bin.
+            particles (Any): Particles data to plot.
+            kind (str | list): Defines the type of the histogram. Can be 'count' (default), 'rate', 'cumulative',
+                or a particle property to use as weights when computing the histogram.
+                This is a manifold subplot specification string like ``"x,y"``, see :class:`~.base.XManifoldPlot` for details.
+            bin_width (float): Bin width (in data units of `property`) if `bin_count` is None.
+            bin_count (int): Number of bins if `bin_width` is None.
+            range (tuple[float] | None): The lower and upper range of the bins. Values outside the range are ignored.
+                If not provided, range is simply (min, max) of the data.
+            relative (bool): If True, plot relative numbers normalized to total count/charge/rate/....
+                If `kind` is a particle property, this has no effect.
+            moment (int): The moment(s) to plot if kind is a particle property.
+                Allows to get the mean (1st moment, default), variance (difference between 2nd and 1st moment) etc.
+            mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
+            plot_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.plot`.
+            kwargs: See :class:`~.particles.ParticlePlotMixin`, :class:`~.particles.ParticleHistogramPlotMixin`
+                and :class:`~.base.XManifoldPlot` for additional arguments
+
+        """
+
+        if bin_width is None and bin_count is None:
+            bin_count = 100
+        if bin_width is not None and bin_count is not None:
+            raise ValueError("Only one of bin_width or bin_count may be specified.")
+        self.bin_width = bin_width
+        self.bin_count = bin_count
+        self.range = range
+        self.relative = relative
+        self.moment = moment  # required by `self._symbol_for`, so set it before calling super
+
+        kwargs = self._init_particle_mixin(**kwargs)
+        kwargs = self._init_particle_histogram_mixin(**kwargs)
+
+        super().__init__(on_x=property, on_y=kind, **kwargs)
+
+        # Format plot axes
+        for i, ppp in enumerate(self.on_y):
+            for j, pp in enumerate(ppp):
+                count_based = np.all([self._count_based(p) for p in pp])
+                if count_based and relative:
+                    self.axis(i, j).yaxis.set_major_formatter(mpl.ticker.PercentFormatter(1))
+
+        # Create plot elements
+        def create_artists(i, j, k, ax, p):
+            kwargs = defaults_for(
+                "plot", plot_kwargs, lw=1, label=self._legend_label_for((i, j, k))
+            )
+            if self._count_based(p):
+                kwargs = defaults_for("plot", kwargs, drawstyle="steps-pre")
+            return ax.plot([], [], **kwargs)[0]
+
+        self._create_artists(create_artists)
+
+        # set data
+        if particles is not None:
+            self.update(particles, mask=mask)
+
+    def _symbol_for(self, p):
+        symbol = super()._symbol_for(p)
+        if p != self.on_x and not self._count_based(p):
+            # it is averaged
+            power = self.moment if self.moment > 1 else ""
+            symbol = f"$\\langle${symbol}$^{{{power}}}\\rangle$"
+        return symbol
+
+    def _histogram(self, p, particles, mask):
+
+        values = self.prop(self.on_x).values(particles, mask)
+        if p in ("current", "charge"):  # Note: these are also "count_based" i.e. use moments=None
+            what = self.prop("q").values(particles, mask)
+        elif self._count_based(p):
+            what = None
+        else:
+            what = self.prop(p).values(particles, mask)
+
+        v_min, dv, hist = binned_data(
+            values,
+            what=what,
+            n=self.bin_count,
+            dv=self.bin_width,
+            v_range=self.range,
+            moments=None if self._count_based(p) else self.moment,
+        )
+        edges = v_min + dv * np.arange(hist.size + 1)
+
+        return hist, edges
+
+    def update(self, particles, mask=None, autoscale=None):
+        """Update plot with new data
+
+        Args:
+            particles (Any): Particles data to plot.
+            mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
+            autoscale (bool | None): Whether to perform autoscaling on all axes.
+                If None, use :meth:`matplotlib.axes.Axis.get_autoscale_on` to decide.
+
+        Returns:
+            list: Changed artists
+        """
+
+        if self._count_based(self.on_x):
+            raise ValueError(f"Binning property cannot be `{self.on_x}`")
+
+        # update plots
+        changed = []
+        dv = None
+        for i, ppp in enumerate(self.on_y):
+            for j, pp in enumerate(ppp):
+                edges = None
+                for k, p in enumerate(pp):
+
+                    # compute histogram
+                    hist, edges = self._histogram(p, particles, mask)
+                    hist = hist.astype(np.float64)
+
+                    if self._count_based(p) and self.relative:
+                        hist /= np.sum(hist)
+
+                    if p in ("rate", "current"):
+                        hist /= np.diff(edges)
+
+                    # post-processing expression wrappers
+                    if wrap := self.on_y_expression[i][j][k]:
+                        hist = evaluate_expression_wrapper(wrap, p, hist)
+
+                    # display units
+                    hist *= self.factor_for(p)
+                    edges *= self.factor_for(self.on_x)
+
+                    # update plot
+                    if p == "cumulative":
+                        # steps open after last bin
+                        hist = np.concatenate(([0], np.cumsum(hist)))
+                    elif self._count_based(p):
+                        # steps go back to zero after last bin
+                        edges = np.append(edges, edges[-1])
+                        hist = np.concatenate(([0], hist, [0]))
+                    else:
+                        edges = (edges[1:] + edges[:-1]) / 2
+                    self.artists[i][j][k].set_data((edges, hist))
+                    changed.append(self.artists[i][j][k])
+
+                    # determine actual bin width for annotation
+                    if dv is None:
+                        dv = np.mean(np.diff(edges))
+                    elif dv != np.mean(np.diff(edges)):
+                        dv = False  # different traces have different bin widths
+                    elif np.abs(np.std(np.diff(edges)) / np.mean(np.diff(edges))) > 1e-5:
+                        dv = False  # trace has variable bin width
+
+                # autoscale
+                a = self.axis(i, j)
+                a.relim()
+                if autoscale or (autoscale is None and a.get_autoscalex_on()):
+                    a.autoscale(axis="x")
+                    if edges is not None:
+                        print(np.min(edges), np.max(edges))
+                        a.set(xlim=(np.min(edges), np.max(edges)))
+                if autoscale or (autoscale is None and a.get_autoscaley_on()):
+                    a.autoscale(axis="y")
+                    if np.any([self._count_based(p) for p in pp]):
+                        a.set_ylim(0, None)
+
+        # annotation
+        if dv is not None and dv is not False:
+            x = self.prop(self.on_x).symbol.strip("$")
+            self.annotate(f"$\\Delta {{{x}}}_\\mathrm{{bin}} = {fmt(dv)}$")
+        else:
+            self.annotate("")
+
+        return changed
 
 
 class ParticlesPlot(XManifoldPlot, ParticlePlotMixin):

@@ -12,6 +12,7 @@ __date__ = "2022-11-15"
 
 import inspect
 import numpy as np
+import pint
 import scipy.signal
 import matplotlib as mpl
 
@@ -53,6 +54,11 @@ def val(obj):
     if np.size(obj) == 1:
         return np.array(obj).item()
     return obj
+
+
+def fmt(t, unit="s"):
+    """Human-readable representation of value in unit (latex syntax)"""
+    return f"{pint.Quantity(t, unit):#~.4gL}"
 
 
 #

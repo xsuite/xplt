@@ -12,18 +12,77 @@ __date__ = "2022-11-24"
 
 from dataclasses import dataclass
 import scipy.signal
-import pint
 from .util import *
 from .base import XManifoldPlot, TwinFunctionLocator, TransformedLocator
-from .particles import ParticlePlotMixin, ParticlesPlot, ParticleHistogramPlotMixin
+from .particles import (
+    ParticlePlotMixin,
+    ParticlesPlot,
+    ParticleHistogramPlot,
+    ParticleHistogramPlotMixin,
+)
 from .properties import Property, DerivedProperty, arb_unit
 
 
-def fmt(t, unit="s"):
-    return f"{pint.Quantity(t, unit):#~.4gL}"
+class TimePlotMixin:
+    """Mixin for plotting time based data
+
+    .. automethod:: _init_particle_mixin
+    """
+
+    def _init_time_mixin(self, *, time_range=None, time_offset=0.0, **kwargs):
+        """Initializes the mixin by providing associated information
+
+        Args:
+            time_range (tuple[float] | None): Time range (min, max) of particles to consider.
+                The range includes a possible time_offset. If None, all particles are considered.
+            time_offset (float): Time offset for x-axis is seconds, i.e. show values as `t-time_offset`.
+            kwargs: Keyword arguments for :class:`~.base.XPlot`
+
+        Returns:
+            Updated keyword arguments for :class:`~.base.XPlot` constructor.
+
+        """
+        self.time_range = time_range
+
+        # Update kwargs with particle specific settings
+        kwargs["_properties"] = defaults(
+            kwargs.get("_properties"),
+            t_offset=DerivedProperty("$t-t_0$", "s", lambda t: t - time_offset),
+        )
+
+        return kwargs
+
+    def _check_timeseries_data(self, particles, timeseries, *, keys):
+        if particles is None and timeseries is None:
+            raise ValueError("Data was neither passed via `particles` nor `timeseries`")
+        elif particles is not None:
+            if timeseries is not None:
+                raise ValueError("`timeseries` must be None when passing data via `particles`")
+        elif timeseries is not None:
+            if particles is not None:
+                raise ValueError("`particles` must be None when passing data via `timeseries`")
+            if not isinstance(timeseries, dict):
+                if len(keys) != 1:
+                    raise ValueError("timeseries must be a dict of the form {kind: array}")
+                timeseries = {keys[0]: timeseries}
+            for ts in timeseries.values():
+                if not isinstance(ts, Timeseries):
+                    raise ValueError(
+                        f"timeseries data must be of type ´xplt.Timeseries(waveform, dt=1/fs)´, found {type(ts)}"
+                    )
+        return timeseries
+
+    def _times_in_range(self, times):
+        """Cut the time data to time_range"""
+        if self.time_range is not None and self.time_range[0] is not None:
+            times = times[times >= self.time_range[0]]
+        if self.time_range is not None and self.time_range[1] is not None:
+            times = times[times < self.time_range[1]]
+        return times
 
 
 class _TimeBasePlot(XManifoldPlot):
+    # TODO: deprecated, use TimePlotMixin instead!
     def __init__(
         self,
         *,
@@ -362,7 +421,7 @@ class TimePlot(ParticlesPlot):
         super().__init__(particles, kind, as_function_of="t", **kwargs)
 
 
-class TimeBinPlot(_TimeBasePlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
+class TimeBinPlot(ParticleHistogramPlot, TimePlotMixin):
     """A binned histogram plot of particles as function of times"""
 
     def __init__(
@@ -413,157 +472,46 @@ class TimeBinPlot(_TimeBasePlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
         """
-        self.moment = moment
-        kwargs = self._init_particle_mixin(**kwargs)
-        kwargs = self._init_particle_histogram_mixin(**kwargs)
+        kwargs = self._init_time_mixin(time_range=time_range, time_offset=time_offset, **kwargs)
 
-        super().__init__(time_range=time_range, time_offset=time_offset, on_y=kind, **kwargs)
+        self._use_timeseries_data = False
 
-        if bin_time is None and bin_count is None:
-            bin_count = 100
-        if bin_time is not None and bin_count is not None:
-            raise ValueError("Only one of bin_time or bin_count may be specified.")
-        self.bin_time = bin_time
-        self.bin_count = bin_count
-        self.relative = relative
+        super().__init__(
+            "t_offset" if time_offset else "t",
+            particles=None if particles == timeseries == None else (particles, timeseries),
+            kind=kind,
+            bin_width=bin_time,
+            bin_count=bin_count,
+            range=time_range,
+            relative=relative,
+            moment=moment,
+            mask=mask,
+            plot_kwargs=plot_kwargs,
+            **kwargs,
+        )
 
-        # Format plot axes
-        self.axis(-1).set(xlabel=self.label_for(self.on_x), ylim=(0, None))
-        if self.relative:
-            for a in self.axes():
-                a.yaxis.set_major_formatter(mpl.ticker.PercentFormatter(1))
+    def _histogram(self, p, data, mask):
+        if self._data_is_ts:
+            ts: Timeseries = get(data, p)
+            if self.time_range:
+                ts = ts.crop(*self.time_range)
+            return ts.data, ts.times(endpoint=True)
 
-        # Create plot elements
-        def create_artists(i, j, k, ax, p):
-            kwargs = defaults_for(
-                "plot", plot_kwargs, lw=1, label=self._legend_label_for((i, j, k))
-            )
-            if self._count_based(p):
-                kwargs = defaults_for("plot", kwargs, drawstyle="steps-pre")
-            return ax.plot([], [], **kwargs)[0]
+        return super()._histogram(p, data, mask)
 
-        self._create_artists(create_artists)
-
-        # set data
-        if particles is not None or timeseries is not None:
-            self.update(particles, mask=mask, timeseries=timeseries, autoscale=True)
-
-    def _symbol_for(self, p):
-        symbol = super()._symbol_for(p)
-        if p != self.on_x and self.moment is not None and not self._count_based(p):
-            # it is averaged
-            symbol = f"$\\langle${symbol}$\\rangle$"
-        return symbol
-
-    def update(self, particles, mask=None, autoscale=False, *, timeseries=None):
+    def update(self, particles_timeseries, mask=None, autoscale=None):
         """Update plot with new data
 
-        Args:
-            particles (Any): Particles data to plot.
-            mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
-            autoscale (bool): Whether or not to perform autoscaling on all axes.
-            timeseries (Timeseries | dict[str, Timeseries]): Pre-binned timeseries data as alternative to timestamp-based particle data.
-                The dictionary must contain keys for each `kind` (e.g. `count`).
+        See :meth:`~.particles.ParticleHistogramPlot.update`
+        except that `particles_timeseries` is a tupple (`particles`, `timeseries`).
 
-        Returns:
-            list: Changed artists
         """
 
-        timeseries = self._ensure_particles_timeseries_data(particles, timeseries)
+        particles, timeseries = particles_timeseries
+        timeseries = self._check_timeseries_data(particles, timeseries, keys=self.on_y_unique)
+        self._data_is_ts = timeseries is not None
 
-        # Particle timestamp based data
-        ################################
-        if particles is not None:
-
-            # extract times
-            times = self.prop(self.on_x).values(particles, mask, unit="s")
-
-            # compute binned timeseries
-            timeseries = {}
-            for p in self.on_y_unique:
-                count_based = self._count_based(p)
-                if p in ("current", "charge"):
-                    property = self.prop("q").values(particles, mask)
-                elif count_based:
-                    property = None
-                else:
-                    property = self.prop(p).values(particles, mask)
-                timeseries[p] = Timeseries.from_timestamps(
-                    times,
-                    what=property,
-                    n=self.bin_count,
-                    dt=self.bin_time,
-                    t_range=self.time_range,
-                    moments=None if count_based else self.moment,
-                )
-                timeseries[p].nparticles = len(times)
-
-        # Timeseries based data
-        ########################
-        else:
-            # binned timeseries provided by user, apply time range
-            for p in timeseries:
-                nparticles = np.sum(timeseries[p].data)
-                if self.time_range is not None:
-                    timeseries[p] = timeseries[p].crop(*self.time_range)
-                timeseries[p].nparticles = nparticles
-
-        # update plots
-        changed = []
-        for i, ppp in enumerate(self.on_y):
-            for j, pp in enumerate(ppp):
-                count_based = False
-                edges = None
-                for k, p in enumerate(pp):
-                    count_based = self._count_based(p)
-                    ts = timeseries[p]
-                    values = ts.data.astype(np.float64)
-                    edges = ts.times(endpoint=True)
-                    dt = ts.dt
-
-                    self.annotate(f"$\\Delta t_\\mathrm{{bin}} = {fmt(dt)}$")
-
-                    if self.relative:
-                        if not count_based:
-                            raise ValueError(
-                                f"Relative plots are only supported for kind 'count', 'rate', 'cumulative', 'charge' or 'current', but requested for {p}."
-                            )
-                        values /= ts.nparticles
-
-                    if p in ("rate", "current"):
-                        values /= dt
-
-                    # post-processing expression wrappers
-                    if wrap := self.on_y_expression[i][j][k]:
-                        values = evaluate_expression_wrapper(wrap, p, values)
-
-                    # display units
-                    edges *= self.factor_for(self.on_x)
-                    values *= self.factor_for(p)
-
-                    # update plot
-                    if p == "cumulative":
-                        # steps open after last bin
-                        values = np.concatenate(([0], np.cumsum(values)))
-                    elif count_based:
-                        # steps go back to zero after last bin
-                        edges = np.append(edges, edges[-1])
-                        values = np.concatenate(([0], values, [0]))
-                    else:
-                        edges = (edges[1:] + edges[:-1]) / 2
-                    self.artists[i][j][k].set_data((edges, values))
-                    changed.append(self.artists[i][j][k])
-
-                if autoscale:
-                    a = self.axis(i, j)
-                    a.relim()
-                    a.autoscale()
-                    if count_based:
-                        a.set(ylim=(0, None))
-                    if self.time_range is not None and edges is not None:
-                        a.set(xlim=(min(edges), max(edges)))
-
-        return changed
+        return super().update(timeseries if self._data_is_ts else particles, mask, autoscale)
 
 
 class TimeFFTPlot(_TimeBasePlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
