@@ -137,15 +137,17 @@ class KnlPlot(XManifoldPlot):
 
         # set data
         if line is not None:
-            self.update(line, autoscale=True)
+            self.update(line)
 
-    def update(self, line, autoscale=False):
+    def update(self, line, autoscale=None):
         """
         Update the line data this plot shows
 
         Args:
             line (xtrack.Line): Line of elements.
-            autoscale (bool): Whether to perform autoscaling on all axes
+            autoscale (str | None | bool): Whether and on which axes to perform autoscaling.
+                One of `"x"`, `"y"`, `"xy"`, `False` or `None`. If `None`, decide based on :meth:`matplotlib.axes.Axes.get_autoscalex_on` and :meth:`matplotlib.axes.Axes.get_autoscaley_on`.
+
 
         Returns:
             changed artists
@@ -191,17 +193,14 @@ class KnlPlot(XManifoldPlot):
                         art.set_data((s, y))
                     changed.append(art)
 
-                if autoscale:
-                    if self.filled:  # At present, relim does not support collection instances.
-                        ax.update_datalim(
-                            mpl.transforms.Bbox.union(
-                                [a.get_datalim(ax.transData) for a in self.artists[i][j]]
-                            )
-                        )
-                    else:
-                        ax.relim()
-                    ax.autoscale()
-                    ax.set(xlim=(np.min(s), np.max(s)))
+                # autoscale
+                if self.filled:  # At present, relim does not support collection instances.
+                    data = mpl.transforms.Bbox.union(
+                        [a.get_datalim(ax.transData) for a in self.artists[i][j]]
+                    ).get_points()
+                else:
+                    data = None
+                self._autoscale(ax, autoscale, data=data, tight="x")
 
         return changed
 
@@ -320,16 +319,17 @@ class FloorPlot(XPlot):
         if survey is None and line is not None:
             survey = line.survey()
         if survey is not None:
-            self.update(survey, line, autoscale=True)
+            self.update(survey, line)
 
-    def update(self, survey, line=None, autoscale=False):
+    def update(self, survey, line=None, autoscale=None):
         """
         Update the survey data this plot shows
 
         Args:
             survey (Any): Survey data.
             line (None | xtrack.Line): Line data.
-            autoscale (bool): Whether or not to perform autoscaling on all axes
+            autoscale (str | None | bool): Whether and on which axes to perform autoscaling.
+                One of `"x"`, `"y"`, `"xy"`, `False` or `None`. If `None`, decide based on :meth:`matplotlib.axes.Axes.get_autoscalex_on` and :meth:`matplotlib.axes.Axes.get_autoscaley_on`.
 
         Returns:
             changed artists
@@ -520,18 +520,8 @@ class FloorPlot(XPlot):
                     self.artists_labels.append(label)
                     changed.append(label)
 
-            if autoscale:
-                self.ax.relim()
-                datalim = self.ax.dataLim
-                self.fig.canvas.draw()  # required to get window extend
-                for artist in self.artists_boxes + self.artists_labels:
-                    bbox = artist.get_window_extent()
-                    datalim = mpl.transforms.Bbox.union(
-                        (datalim, bbox.transformed(self.ax.transData.inverted()))
-                    )
-
-                self.ax.update_datalim(datalim)
-                self.ax.autoscale()
+            # autoscale
+            self._autoscale(self.ax, autoscale, artists=self.artists_boxes + self.artists_labels)
 
         return changed
 

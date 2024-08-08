@@ -65,22 +65,28 @@ class TwissPlot(XManifoldPlot):
 
         # set data
         if twiss is not None:
-            self.update(twiss, autoscale=True)
+            self.update(twiss)
 
-    def update(self, twiss, *, autoscale=False, line=None):
+    def update(self, twiss, *, autoscale=None, line=None):
         """
         Update the twiss data this plot shows
 
         Args:
             twiss (Any): Dictionary with twiss information
-            autoscale (bool): Whether or not to perform autoscaling on all axes.
+            autoscale (str | None | bool): Whether and on which axes to perform autoscaling.
+                One of `"x"`, `"y"`, `"xy"`, `False` or `None`. If `None`, decide based on :meth:`matplotlib.axes.Axes.get_autoscalex_on` and :meth:`matplotlib.axes.Axes.get_autoscaley_on`.
             line (xtack.Line): Line of elements.
 
         Returns:
             changed artists
         """
-        s = self.prop("s").values(twiss, unit=self.display_unit_for("s"))
+
         changed = []
+
+        if line:
+            changed.append(self.lineplot.update(line, autoscale=autoscale))
+
+        s = self.prop("s").values(twiss, unit=self.display_unit_for("s"))
         for i, ppp in enumerate(self.on_y):
             if self.lineplot is not None and i == 0:
                 continue  # skip line plot
@@ -90,13 +96,8 @@ class TwissPlot(XManifoldPlot):
                     v = self.prop(p).values(twiss, unit=self.display_unit_for(p))
                     self.artists[i][j][k].set_data((s, v))
                     changed.append(self.artists[i][j][k])
-                if autoscale:
-                    a.relim()
-                    a.autoscale()
-                    a.set(xlim=(min(s), max(s)))
 
-        if line:
-            changed.append(self.lineplot.update(line, autoscale=autoscale))
+                self._autoscale(a, autoscale, tight="x")
 
         return changed
 

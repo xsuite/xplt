@@ -417,9 +417,9 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
             # Autoscale
             if autoscale:
                 if plot == "scatter":
-                    self._autoscale(ax, [self.artists_scatter[i]])
+                    self._autoscale(ax, artists=[self.artists_scatter[i]])
                 elif plot == "hist":
-                    self._autoscale(ax, self.artists_hexbin[i])
+                    self._autoscale(ax, artists=self.artists_hexbin[i])
 
             # 1D histogram projections
             ###########################

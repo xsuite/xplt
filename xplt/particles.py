@@ -345,8 +345,8 @@ class ParticleHistogramPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramP
         Args:
             particles (Any): Particles data to plot.
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
-            autoscale (bool | None): Whether to perform autoscaling on all axes.
-                If None, use :meth:`matplotlib.axes.Axis.get_autoscale_on` to decide.
+            autoscale (str | None | bool): Whether and on which axes to perform autoscaling.
+                One of `"x"`, `"y"`, `"xy"`, `False` or `None`. If `None`, decide based on :meth:`matplotlib.axes.Axes.get_autoscalex_on` and :meth:`matplotlib.axes.Axes.get_autoscaley_on`.
 
         Returns:
             list: Changed artists
@@ -360,7 +360,6 @@ class ParticleHistogramPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramP
         dv = None
         for i, ppp in enumerate(self.on_y):
             for j, pp in enumerate(ppp):
-                edges = None
                 for k, p in enumerate(pp):
 
                     # compute histogram
@@ -404,16 +403,10 @@ class ParticleHistogramPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramP
 
                 # autoscale
                 a = self.axis(i, j)
-                a.relim()
-                if autoscale or (autoscale is None and a.get_autoscalex_on()):
-                    a.autoscale(axis="x")
-                    if edges is not None:
-                        print(np.min(edges), np.max(edges))
-                        a.set(xlim=(np.min(edges), np.max(edges)))
-                if autoscale or (autoscale is None and a.get_autoscaley_on()):
-                    a.autoscale(axis="y")
+                scaled = self._autoscale(a, autoscale)  # , tight="x"
+                if "y" in scaled:
                     if np.any([self._count_based(p) for p in pp]):
-                        a.set_ylim(0, None)
+                        a.set_ylim(0, None, auto=None)
 
         # annotation
         if dv is not None and dv is not False:
@@ -478,15 +471,16 @@ class ParticlesPlot(XManifoldPlot, ParticlePlotMixin):
 
         # set data
         if particles is not None:
-            self.update(particles, mask=mask, autoscale=True)
+            self.update(particles, mask=mask)
 
-    def update(self, particles, mask=None, autoscale=False):
+    def update(self, particles, mask=None, autoscale=None):
         """Update plot with new data
 
         Args:
             particles (Any): Particles data to plot.
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
-            autoscale (bool): Whether or not to perform autoscaling on all axes.
+            autoscale (str | None | bool): Whether and on which axes to perform autoscaling.
+                One of `"x"`, `"y"`, `"xy"`, `False` or `None`. If `None`, decide based on :meth:`matplotlib.axes.Axes.get_autoscalex_on` and :meth:`matplotlib.axes.Axes.get_autoscaley_on`.
 
         Returns:
             List of artists that have been updated.
@@ -509,9 +503,7 @@ class ParticlesPlot(XManifoldPlot, ParticlePlotMixin):
                     self.artists[i][j][k].set_data((xdata, values))
                     changed.append(self.artists[i][j][k])
 
-                if autoscale:
-                    a = self.axis(i, j)
-                    a.relim()
-                    a.autoscale()
+                a = self.axis(i, j)
+                self._autoscale(a, autoscale)
 
         return changed

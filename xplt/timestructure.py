@@ -215,11 +215,11 @@ class MetricesMixin:
             callback = lambda a: at.set(ylim=a.get_ylim())
         ax.callbacks.connect(f"{xy}lim_changed", callback)
 
-        # force update once to initial values
+        # force update once to initial values (while not changing autoscale setting)
         if xy == "x":
-            ax.set(xlim=ax.get_xlim())
+            ax.set_xlim(ax.get_xlim(), auto=None)
         else:
-            ax.set(ylim=ax.get_ylim())
+            ax.set_ylim(ax.get_ylim(), auto=None)
 
     def _format_metric_axes(self, add_compatible_twin_axes):
         for i, ppp in enumerate(self.on_y):
@@ -582,8 +582,8 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
         Args:
             particles (Any): Particles data to plot.
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
-            autoscale (bool | None): Whether to perform autoscaling on all axes.
-                If None, use :meth:`matplotlib.axes.Axis.get_autoscale_on` to decide.
+            autoscale (str | None | bool): Whether and on which axes to perform autoscaling.
+                One of `"x"`, `"y"`, `"xy"`, `False` or `None`. If `None`, decide based on :meth:`matplotlib.axes.Axes.get_autoscalex_on` and :meth:`matplotlib.axes.Axes.get_autoscaley_on`.
             timeseries (Timeseries | dict[str, Timeseries]): Pre-binned timeseries data as alternative to timestamp-based particle data.
                 The dictionary must contain keys for each `kind` (e.g. `count`).
 
@@ -687,20 +687,9 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
                     changed.append(self.artists[i][j][k])
 
                 a = self.axis(i, j)
-                a.relim()
-                if autoscale or (autoscale is None and a.get_autoscalex_on()):
-                    a.autoscale(axis="x")
-                    log = a.get_xscale() == "log"
-                    xlim = np.array((10.0 if log else 0.0, fmax))
-                    if self.relative:
-                        xlim /= self.frev(particles)
-                    else:
-                        xlim *= self.factor_for("f")
-                    a.set_xlim(*xlim)
-                if autoscale or (autoscale is None and a.get_autoscaley_on()):
-                    a.autoscale(axis="y")
-                    if a.get_yscale() != "log":
-                        a.set_ylim(0, None)
+                scaled = self._autoscale(a, autoscale, tight="x")
+                if "y" in scaled and a.get_yscale() == "linear":
+                    a.set_ylim(0, None, auto=None)
 
         self.annotate(f"$\\Delta t_\\mathrm{{bin}} = {fmt(ts.dt)}$" if ts is not None else "")
 
@@ -857,17 +846,13 @@ class TimeIntervalPlot(
         self._create_artists(create_artists)
 
         # Format plot axes
-        xlim_min = 0 if self.axis(-1).get_xscale() == "linear" else self.bin_time
-        self.axis(-1).set(xlim=(xlim_min, self.dt_max * self.factor_for("t")))
         for a in self.axflat:
-            if a.get_yscale() == "linear":
-                a.set(ylim=(0, None))
             if self.relative:
                 a.yaxis.set_major_formatter(mpl.ticker.PercentFormatter(1))
 
         # set data
         if particles is not None:
-            self.update(particles, mask=mask, autoscale=True)
+            self.update(particles, mask=mask)
 
     @property
     def bin_time(self):
@@ -877,13 +862,15 @@ class TimeIntervalPlot(
     def bin_count(self):
         return int(np.ceil(self.dt_max / self.bin_time))
 
-    def update(self, particles, mask=None, autoscale=False):
+    def update(self, particles, mask=None, autoscale=None):
         """Update plot with new data
 
         Args:
             particles (Any): Particles data to plot.
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
-            autoscale (bool): Whether or not to perform autoscaling on all axes.
+            autoscale (str | None | bool): Whether and on which axes to perform autoscaling.
+                One of `"x"`, `"y"`, `"xy"`, `False` or `None`. If `None`, decide based on :meth:`matplotlib.axes.Axes.get_autoscalex_on` and :meth:`matplotlib.axes.Axes.get_autoscaley_on`.
+
         """
 
         # extract times
@@ -897,7 +884,6 @@ class TimeIntervalPlot(
         changed = []
         for i, ppp in enumerate(self.on_y):
             for j, pp in enumerate(ppp):
-                edges = None
                 for k, p in enumerate(pp):
                     if p in ("current", "charge"):
                         weights = self.prop("q").values(particles, mask)
@@ -946,16 +932,11 @@ class TimeIntervalPlot(
                         pplot.set_data((edges, limit))
                         changed.append(pplot)
 
-                if autoscale:
-                    ax = self.axis(i, j)
-                    ax.relim()
-                    ax.autoscale()
-                    if ax.get_yscale() == "linear":
-                        ax.set(ylim=(0, None))
-                    if edges is not None:
-                        e = edges if ax.get_xscale() == "linear" else edges[edges > 0]
-                        if e.size > 1:
-                            ax.set(xlim=(min(e), max(e)))
+                a = self.axis(i, j)
+                a.relim()
+                scaled = self._autoscale(a, autoscale, tight="x")
+                if "y" in scaled and a.get_yscale() == "linear":
+                    a.set_ylim(0, None, auto=None)
 
         return changed
 
@@ -1061,15 +1042,16 @@ class SpillQualityPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, Metrices
 
         # set data
         if particles is not None or timeseries is not None:
-            self.update(particles=particles, mask=mask, autoscale=True, timeseries=timeseries)
+            self.update(particles=particles, mask=mask, timeseries=timeseries)
 
-    def update(self, particles=None, mask=None, autoscale=False, *, timeseries=None):
+    def update(self, particles=None, mask=None, autoscale=None, *, timeseries=None):
         """Update plot with new data
 
         Args:
             particles (Any): Particles data to plot.
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
-            autoscale (bool): Whether to perform autoscaling on all axes.
+            autoscale (str | None | bool): Whether and on which axes to perform autoscaling.
+                One of `"x"`, `"y"`, `"xy"`, `False` or `None`. If `None`, decide based on :meth:`matplotlib.axes.Axes.get_autoscalex_on` and :meth:`matplotlib.axes.Axes.get_autoscaley_on`.
             timeseries (Timeseries | dict[str, Timeseries]): Pre-binned timeseries data with particle counts
                 as alternative to timestamp-based particle data. If a dictionary, it must contain the key `count`.
 
@@ -1139,10 +1121,9 @@ class SpillQualityPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, Metrices
                         pstep.set_data((edges, steps))
                         changed.append(pstep)
 
-                if autoscale:
-                    a = self.axis(i, j)
-                    a.relim()
-                    a.autoscale()
+                a = self.axis(i, j)
+                self._autoscale(a, autoscale)
+
         return changed
 
 
@@ -1264,7 +1245,6 @@ class SpillQualityTimescalePlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin,
             self.update(
                 particles=particles,
                 mask=mask,
-                autoscale=True,
                 timeseries=timeseries,
                 ignore_insufficient_statistics=ignore_insufficient_statistics,
             )
@@ -1273,7 +1253,7 @@ class SpillQualityTimescalePlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin,
         self,
         particles=None,
         mask=None,
-        autoscale=False,
+        autoscale=None,
         *,
         timeseries=None,
         ignore_insufficient_statistics=False,
@@ -1283,7 +1263,8 @@ class SpillQualityTimescalePlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin,
         Args:
             particles (Any): Particles data to plot.
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
-            autoscale (bool): Whether to perform autoscaling on all axes.
+            autoscale (str | None | bool): Whether and on which axes to perform autoscaling.
+                One of `"x"`, `"y"`, `"xy"`, `False` or `None`. If `None`, decide based on :meth:`matplotlib.axes.Axes.get_autoscalex_on` and :meth:`matplotlib.axes.Axes.get_autoscaley_on`.
             timeseries (Timeseries | dict[str, Timeseries]): Pre-binned timeseries data with particle counts
                 as alternative to timestamp-based particle data. If a dictionary, it must contain the key `count`.
             ignore_insufficient_statistics (bool): When set to True, the plot will include data with insufficient statistics.
@@ -1428,9 +1409,10 @@ class SpillQualityTimescalePlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin,
                         pstep.set_data((DT, F_poisson[p]))
                         changed.append(pstep)
 
-                if autoscale:
-                    self._autoscale(ax, self.artists[i][j], tight="x")
-                    ax.set(ylim=(0, None))
+                # autoscale only
+                scaled = self._autoscale(ax, autoscale, tight="x")
+                if "y" in scaled:
+                    ax.set_ylim(0, None, auto=None)
 
         return changed
 
