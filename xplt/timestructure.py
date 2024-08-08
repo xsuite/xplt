@@ -817,7 +817,7 @@ class TimeFFTPlot(_TimeBasePlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
 
     def _symbol_for(self, p):
         symbol = super()._symbol_for(p)
-        if p not in "f":
+        if p != self.on_x:
             # it is the FFT of it
             symbol = symbol.strip("$")
             if self._get_scaling(p) == "amplitude":
