@@ -457,9 +457,6 @@ class ParticlesPlot(XManifoldPlot, ParticlePlotMixin):
         # parse kind string
         self.sort_by = sort_by
 
-        # Format plot axes
-        self.axis(-1).set(xlabel=self.label_for(self.on_x))
-
         # create plot elements
         def create_artists(i, j, k, a, p):
             kwargs = defaults_for(
