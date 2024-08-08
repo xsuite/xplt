@@ -11,6 +11,7 @@ __version__ = "0.8.0"
 # expose the following in global namespace
 from .colors import *
 from .line import *
+from .particles import *
 from .phasespace import *
 from .properties import *
 from .timestructure import *

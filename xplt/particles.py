@@ -220,6 +220,9 @@ class ParticleHistogramPlotMixin:
         return key in self._histogram_particle_properties
 
 
+PUBLIC_SECTION_BEGIN()
+
+
 class ParticleHistogramPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramPlotMixin):
     """A 1D histogram plot for any particle property
 
@@ -505,3 +508,6 @@ class ParticlesPlot(XManifoldPlot, ParticlePlotMixin):
                 self._autoscale(a, autoscale)
 
         return changed
+
+
+__all__ = PUBLIC_SECTION_END()
