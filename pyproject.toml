@@ -21,13 +21,12 @@ classifiers = [
     "Programming Language :: Python :: 3",
 ]
 
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 dependencies = [
-    "packaging>14.0",
-    "matplotlib>=3.6",  # >=3.8 for optional features
-    "numpy",
-    "scipy",
-    "pint<0.24",
+    "matplotlib>=3.6",
+    "numpy>=1.17.0",
+    "scipy>=1.2.0",
+    "pint>=0.24.1",
 ]
 dynamic = ["version"]
 

@@ -1,11 +1,15 @@
-
-numpy==1.23.3
-Pint==0.19.2
-xdeps==0.4.2
-xfields==0.13.1
-xobjects==0.2.8
-xpart==0.15.3
-xtrack==0.42.0
-jupyterlab==4.0.11
-pandas==2.0.3
+# xplt dependencies
+matplotlib==3.9.2
+numpy==2.0.1
+scipy==1.13.1
+pint==0.24.1
+# xplt optional dependencies
+pandas==2.2.2
+# other dependencies
+xdeps==0.6.2
+xfields==0.20.2
+xobjects==0.4.3
+xpart==0.18.5
+xtrack==0.65.3
+jupyterlab==4.2.4
 tabulate==0.9.0
