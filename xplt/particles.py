@@ -376,6 +376,14 @@ class ParticleHistogramPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramP
                     if wrap := self.on_y_expression[i][j][k]:
                         hist = evaluate_expression_wrapper(wrap, p, hist)
 
+                    # determine actual bin width for annotation
+                    if dv is None:
+                        dv = np.mean(np.diff(edges))
+                    elif dv != np.mean(np.diff(edges)):
+                        dv = False  # different traces have different bin widths
+                    elif np.abs(np.std(np.diff(edges)) / np.mean(np.diff(edges))) > 1e-5:
+                        dv = False  # trace has variable bin width
+
                     # display units
                     hist *= self.factor_for(p)
                     edges *= self.factor_for(self.on_x)
@@ -393,14 +401,6 @@ class ParticleHistogramPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramP
                     self.artists[i][j][k].set_data((edges, hist))
                     changed.append(self.artists[i][j][k])
 
-                    # determine actual bin width for annotation
-                    if dv is None:
-                        dv = np.mean(np.diff(edges))
-                    elif dv != np.mean(np.diff(edges)):
-                        dv = False  # different traces have different bin widths
-                    elif np.abs(np.std(np.diff(edges)) / np.mean(np.diff(edges))) > 1e-5:
-                        dv = False  # trace has variable bin width
-
                 # autoscale
                 a = self.axis(i, j)
                 scaled = self._autoscale(a, autoscale)  # , tight="x"
@@ -410,8 +410,9 @@ class ParticleHistogramPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramP
 
         # annotation
         if dv is not None and dv is not False:
-            x = self.prop(self.on_x).symbol.strip("$")
-            self.annotate(f"$\\Delta {{{x}}}_\\mathrm{{bin}} = {fmt(dv)}$")
+            prop = self.prop(self.on_x)
+            x = prop.symbol.strip("$")
+            self.annotate(f"$\\Delta {{{x}}}_\\mathrm{{bin}} = {fmt(dv, prop.unit)}$")
         else:
             self.annotate("")
 
