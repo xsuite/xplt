@@ -164,6 +164,7 @@ class XPlot:
         display_units=None,
         ax=None,
         grid=True,
+        log=False,
         nntwins=None,
         annotation=None,
         _properties=None,
@@ -179,6 +180,7 @@ class XPlot:
             display_units (dict | None): Units to display the data in. If None, the units are determined from the data.
             ax (matplotlib.axes.Axes | None): Axes to plot onto. If None, a new figure is created.
             grid (bool): If True, show grid lines on all axes.
+            log (bool | str): If True, `"xy"`, `"x"` or `"y"`, make the respective axis/axes log-scaled
             nntwins (list | None): List defining how many twin axes to create for each subplot.
             annotation (bool | None): Whether to add an annotation or not. If None (default) add it unless `ax` is passed.
             subplots_kwargs: Keyword arguments passed to :func:`matplotlib.pyplot.subplots` command when a new figure is created.
@@ -208,12 +210,17 @@ class XPlot:
         for i, a in enumerate(self.axflat):
             if grid:
                 a.grid(grid, alpha=0.5)
+            for xy in "xy":
+                if log is True or (isinstance(log, str) and xy in log.lower()):
+                    a.set(**{f"{xy}scale": "log"})
 
             # Create twin axes
             self.axflat_twin.append([])
             if nntwins is not None:
                 for j in range(nntwins[i]):
                     twin = a.twinx()
+                    if log is True or (isinstance(log, str) and "y" in log.lower()):
+                        twin.set(yscale="log")
                     try:
                         # hack for shared cyclers
                         # see https://github.com/matplotlib/matplotlib/issues/19479

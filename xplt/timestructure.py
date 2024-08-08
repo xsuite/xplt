@@ -468,7 +468,6 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
         *,
         fmax=None,
         relative=False,
-        log=None,
         scaling=None,
         smoothing=None,
         mask=None,
@@ -500,7 +499,6 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
                 In addition, abbreviations for x-y-parameter pairs are supported (e.g. ``P`` for ``Px+Py``).
             fmax (float): Maximum frequency (in Hz) to plot.
             relative (bool): If True, plot relative frequencies (f/frev) instead of absolute frequencies (f).
-            log (bool | str): False, 'x', 'y' or True to plot none, the x-axis, y-axis or both on a log scale respectively.
             scaling (str | dict): Scaling of the FFT. Can be ``"amplitude"``, ``"power"`` or ``"pdspp"`` or a dict with a scaling per property where
                 `amplitude` (default for non-count based properties) scales the FFT magnitude to the amplitude,
                 `power` (power density spectrum, default for count based properties) scales the FFT magnitude to power,
@@ -518,9 +516,8 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
         self._fmax = fmax
         self.relative = relative
         self._scaling = scaling
-        if log is None:
-            log = not relative
         self.smoothing = smoothing
+        kwargs = defaults(kwargs, log="y" if relative else "xy")
 
         kwargs = self._init_time_mixin(time_range=time_range, **kwargs)
         kwargs = self._init_particle_mixin(**kwargs)
@@ -533,10 +530,6 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
         super().__init__(
             on_x="frel" if self.relative else "f", on_y=kind, **kwargs
         )  # handled manually
-
-        # Format plot axes
-        for a in self.axflat:
-            a.set(**{f"{xy}scale": "log" for xy in "xy" if log in (True, xy)})
 
         # Create plot elements
         def create_artists(i, j, k, ax, p):
@@ -773,7 +766,6 @@ class TimeIntervalPlot(
         bin_count=None,
         exact_bin_time=True,
         relative=False,
-        log=True,
         poisson=False,
         mask=None,
         time_range=None,
@@ -801,7 +793,6 @@ class TimeIntervalPlot(
                 If False, bin_time is adjusted instead.
             relative (bool): If True, plot relative numbers normalized to total count.
                 If `kind` is a particle property, this has no effect.
-            log (bool | str): To make the plot log scaled, can be any of (True, 'x', 'y', 'xy' or False).
             poisson (bool): If true, indicate ideal poisson distribution.
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
             time_range (tuple): Time range of particles to consider. If None, all particles are considered.
@@ -834,8 +825,6 @@ class TimeIntervalPlot(
         self._bin_count = bin_count
         self.relative = relative
         self.dt_max = dt_max
-        logx = log is True or (type(log) is str and "x" in log.lower())
-        logy = log is True or (type(log) is str and "y" in log.lower())
 
         # Create plot elements
         def create_artists(i, j, k, ax, p):
@@ -868,14 +857,10 @@ class TimeIntervalPlot(
         self._create_artists(create_artists)
 
         # Format plot axes
-        self.axis(-1).set(
-            xlim=(self.bin_time if logx else 0, self.dt_max * self.factor_for("t")),
-            xscale="log" if logx else "linear",
-        )
+        xlim_min = 0 if self.axis(-1).get_xscale() == "linear" else self.bin_time
+        self.axis(-1).set(xlim=(xlim_min, self.dt_max * self.factor_for("t")))
         for a in self.axflat:
-            if logy:
-                a.set(yscale="log")
-            else:
+            if a.get_yscale() == "linear":
                 a.set(ylim=(0, None))
             if self.relative:
                 a.yaxis.set_major_formatter(mpl.ticker.PercentFormatter(1))
@@ -965,10 +950,10 @@ class TimeIntervalPlot(
                     ax = self.axis(i, j)
                     ax.relim()
                     ax.autoscale()
-                    if not ax.get_yscale() == "log":
+                    if ax.get_yscale() == "linear":
                         ax.set(ylim=(0, None))
                     if edges is not None:
-                        e = edges[edges > 0] if ax.get_xscale() == "log" else edges
+                        e = edges if ax.get_xscale() == "linear" else edges[edges > 0]
                         if e.size > 1:
                             ax.set(xlim=(min(e), max(e)))
 
@@ -1177,7 +1162,6 @@ class SpillQualityTimescalePlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin,
         mask=None,
         timeseries=None,
         time_range=None,
-        log=True,
         plot_kwargs=None,
         std_kwargs=None,
         poisson_kwargs=None,
@@ -1214,7 +1198,6 @@ class SpillQualityTimescalePlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin,
             timeseries (Timeseries | dict[str, Timeseries]): Pre-binned timeseries data with particle counts
                 as alternative to timestamp-based particle data. If a dictionary, it must contain the key `count`.
             time_range (tuple): Time range of particles to consider. If None, all particles are considered.
-            log (bool): Whether or not to plot the x-axis in log scale.
             plot_kwargs (dict): Keyword arguments passed to the plot function. See :meth:`matplotlib.axes.Axes.plot`.
             std_kwargs (dict): Additional keyword arguments passed to the plot function for std errorbar.
                 See :meth:`matplotlib.axes.Axes.fill_between` (only applicable if `std` is True).
@@ -1225,6 +1208,9 @@ class SpillQualityTimescalePlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin,
 
 
         """
+
+        kwargs = defaults(kwargs, log="x")
+
         kwargs = self._init_time_mixin(time_range=time_range, **kwargs)
         kwargs = self._init_particle_mixin(**kwargs)
         kwargs["_properties"] = defaults(
@@ -1237,13 +1223,10 @@ class SpillQualityTimescalePlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin,
         self.counting_dt_min = counting_dt_min
         self.counting_dt_max = counting_dt_max
         self.counting_bins_per_evaluation = counting_bins_per_evaluation
-        self.log = log
         std = std and self.counting_bins_per_evaluation
 
         # Format plot axes
         self._format_metric_axes(kwargs.get("ax") is None)
-        for a in self.axflat:
-            a.set(xscale="log" if self.log else "lin")
 
         # Create plot elements
         def create_artists(i, j, k, ax, p):
@@ -1347,7 +1330,7 @@ class SpillQualityTimescalePlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin,
             # determine bins
             bins_min = int(duration / counting_dt_max + 1)
             bins_max = int(duration / counting_dt_min + 1)
-            if self.log:
+            if self.axis().get_xscale == "log":
                 ncbins = 1 / np.geomspace(1 / bins_min, 1 / bins_max, 100)
             else:
                 ncbins = 1 / np.linspace(1 / bins_min, 1 / bins_max, 100)
@@ -1378,7 +1361,7 @@ class SpillQualityTimescalePlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin,
             # determine bins
             rebin_min = int(round(counting_dt_min * timeseries.fs))
             rebin_max = int(round(counting_dt_max * timeseries.fs))
-            if self.log:
+            if self.axis().get_xscale == "log":
                 rebins = np.geomspace(rebin_min, rebin_max, 100)
             else:
                 rebins = np.linspace(rebin_min, rebin_max, 100)
