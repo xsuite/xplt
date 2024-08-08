@@ -256,8 +256,11 @@ def binned_data(
     else:
         raise ValueError(f"Exactly one of n or dt must be specified, but got n={n} and dt={dv}")
 
-    # Note: The code below was optimized to run much faster than an ordinary
-    # np.histogram, which quickly slows down for large datasets.
+    # Note: The code below was optimized to run much faster than an ordinary np.histogram,
+    # which quickly slows down for large number of bins as required for FFT calculation.
+    # Benchmark: Binning of a data array of size=1000000 into 100000000 bins
+    #     np.histogram(data, bins=100000000) takes 6.21 s ± 374 ms
+    #     binned_data(data, n=100000000) takes 93.9 ms ± 2.8 ms
     # If you intend to change something here, make sure to benchmark it!
 
     # count timestamps in bins
