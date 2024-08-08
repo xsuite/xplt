@@ -752,7 +752,7 @@ class XManifoldPlot(XPlot):
                     artist = callback(i, j, k, a, p)
                     self.artists[i][j].append(artist)
 
-            self.legend(i, show="auto")
+        self.legend(show="auto")
 
     def artist(self, name=None, subplot=None, twin=None, trace=None):
         """Return the artist either by name, or by subplot, twin axes and trace index
