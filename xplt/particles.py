@@ -257,7 +257,7 @@ class ParticleHistogramPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramP
         Args:
             property (str): The property to bin.
             particles (Any): Particles data to plot.
-            kind (str | list): Defines the type of the histogram. Can be 'count' (default), 'rate', 'cumulative',
+            kind (str | list): Defines the type of the histogram. Can be 'count' (default), 'cumulative', 'charge',
                 or a particle property to use as weights when computing the histogram.
                 This is a manifold subplot specification string like ``"x,y"``, see :class:`~.base.XManifoldPlot` for details.
             bin_width (float): Bin width (in data units of `property`) if `bin_count` is None.
@@ -355,6 +355,7 @@ class ParticleHistogramPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramP
             list: Changed artists
         """
 
+        prop_x = self.prop(self.on_x)
         if self._count_based(self.on_x):
             raise ValueError(f"Binning property cannot be `{self.on_x}`")
 
@@ -373,7 +374,8 @@ class ParticleHistogramPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramP
                         hist /= np.sum(hist)
 
                     if p in ("rate", "current"):
-                        hist /= np.diff(edges)
+                        factor = pint.Quantity(1, prop_x.unit).to("s").m
+                        hist /= factor * np.diff(edges)
 
                     # post-processing expression wrappers
                     if wrap := self.on_y_expression[i][j][k]:
@@ -413,9 +415,8 @@ class ParticleHistogramPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramP
 
         # annotation
         if dv is not None and dv is not False:
-            prop = self.prop(self.on_x)
-            x = prop.symbol.strip("$")
-            self.annotate(f"$\\Delta {{{x}}}_\\mathrm{{bin}} = {fmt(dv, prop.unit)}$")
+            x = prop_x.symbol.strip("$")
+            self.annotate(f"$\\Delta {{{x}}}_\\mathrm{{bin}} = {fmt(dv, prop_x.unit)}$")
         else:
             self.annotate("")
 

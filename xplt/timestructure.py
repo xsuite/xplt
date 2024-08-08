@@ -397,7 +397,7 @@ class TimeBinPlot(ParticleHistogramPlot, TimePlotMixin):
 
         Args:
             particles (Any): Particles data to plot.
-            kind (str | list): Defines the properties to plot, including 'count' (default), 'rate', 'cumulative', or a particle property to average.
+            kind (str | list): Defines the properties to plot, including 'count' (default), 'cumulative', 'rate', 'charge', 'current', or a particle property to average.
                 This is a manifold subplot specification string like ``"count-cumulative"``, see :class:`~.base.XManifoldPlot` for details.
                 In addition, abbreviations for x-y-parameter pairs are supported (e.g. ``P`` for ``Px+Py``).
             bin_time (float): Time bin width (in s) if bin_count is None.
