@@ -382,6 +382,7 @@ class TimeBinPlot(ParticleHistogramPlot, TimePlotMixin):
         time_range=None,
         time_offset=0,
         plot_kwargs=None,
+        add_default_dataset=True,
         **kwargs,
     ):
         """
@@ -413,6 +414,8 @@ class TimeBinPlot(ParticleHistogramPlot, TimePlotMixin):
             time_range (tuple): Time range of particles to consider. If None, all particles are considered.
             time_offset (float): Time offset for x-axis is seconds, i.e. show values as `t-time_offset`.
             plot_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.plot`.
+            add_default_dataset (bool): Whether to add a default dataset.
+                Use :meth:`~.timestructure.SpillQualityTimescalePlot.add_dataset` to manually add datasets.
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
         """
@@ -424,17 +427,36 @@ class TimeBinPlot(ParticleHistogramPlot, TimePlotMixin):
 
         super().__init__(
             "t_offset" if time_offset else "t",
-            particles=None if particles == timeseries == None else (particles, timeseries),
             kind=kind,
             bin_width=bin_time,
             bin_count=bin_count,
             range=time_range,
             relative=relative,
             moment=moment,
-            mask=mask,
-            plot_kwargs=plot_kwargs,
+            add_default_dataset=False,
             **kwargs,
         )
+
+        if add_default_dataset:
+            self.add_dataset(
+                None,
+                particles=particles,
+                timeseries=timeseries,
+                mask=mask,
+                plot_kwargs=plot_kwargs,
+            )
+
+    def add_dataset(self, id, *, plot_kwargs=None, particles=None, timeseries=None, **kwargs):
+        """Create artists for a new dataset to the plot and optionally update their values
+
+        See :meth:`~.particles.ParticleHistogramPlot.add_dataset`.
+        """
+
+        super().add_dataset(id, plot_kwargs=plot_kwargs, **kwargs)
+
+        # set data
+        if particles is not None or timeseries is not None:
+            self.update(particles, timeseries=timeseries, **kwargs, dataset_id=id)
 
     def _histogram(self, p, data, mask):
         if self._data_is_ts:
@@ -445,12 +467,10 @@ class TimeBinPlot(ParticleHistogramPlot, TimePlotMixin):
 
         return super()._histogram(p, data, mask)
 
-    def update(self, particles_timeseries, mask=None, autoscale=None):
+    def update(self, particles, mask=None, *, timeseries=None, autoscale=None, dataset_id=None):
         """Update plot with new data
 
-        See :meth:`~.particles.ParticleHistogramPlot.update`
-        except that `particles_timeseries` is a tupple (`particles`, `timeseries`).
-
+        See :meth:`~.particles.ParticleHistogramPlot.update`.
         """
 
         # check that the provided data is sufficient to plot the requested properties
@@ -458,7 +478,12 @@ class TimeBinPlot(ParticleHistogramPlot, TimePlotMixin):
         timeseries = self._check_timeseries_data(particles, timeseries, keys=keys)
         self._data_is_ts = timeseries is not None
 
-        return super().update(timeseries if self._data_is_ts else particles, mask, autoscale)
+        return super().update(
+            timeseries if self._data_is_ts else particles,
+            mask,
+            autoscale=autoscale,
+            dataset_id=dataset_id,
+        )
 
 
 class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHistogramPlotMixin):
@@ -1150,6 +1175,7 @@ class SpillQualityTimescalePlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin,
         std_kwargs=None,
         poisson_kwargs=None,
         ignore_insufficient_statistics=False,
+        add_default_dataset=True,
         **kwargs,
     ):
         """
@@ -1188,6 +1214,8 @@ class SpillQualityTimescalePlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin,
             poisson_kwargs (dict): Additional keyword arguments passed to the plot function for Poisson limit.
                 See :meth:`matplotlib.axes.Axes.plot` (only applicable if `poisson` is True).
             ignore_insufficient_statistics (bool): When set to True, the plot will include data with insufficient statistics.
+            add_default_dataset (bool): Whether to add a default dataset.
+                Use :meth:`~.timestructure.SpillQualityTimescalePlot.add_dataset` to manually add datasets.
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
 
@@ -1211,6 +1239,51 @@ class SpillQualityTimescalePlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin,
 
         # Format plot axes
         self._format_metric_axes(kwargs.get("ax") is None)
+
+        if add_default_dataset:
+            self.add_dataset(
+                None,
+                particles=particles,
+                mask=mask,
+                timeseries=timeseries,
+                plot_kwargs=plot_kwargs,
+                std=std,
+                std_kwargs=std_kwargs,
+                poisson=poisson,
+                poisson_kwargs=poisson_kwargs,
+                ignore_insufficient_statistics=ignore_insufficient_statistics,
+            )
+
+        # legend with combined patch
+        if std:
+            self.legend()
+
+    def add_dataset(
+        self,
+        id,
+        *,
+        plot_kwargs=None,
+        std=True,
+        std_kwargs=None,
+        poisson=True,
+        poisson_kwargs=None,
+        **kwargs,
+    ):
+        """Create artists for a new dataset to the plot and optionally update their values
+
+        Args:
+            id (str): An arbitrary dataset identifier unique for this plot
+            plot_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.plot`.
+            std (bool): Whether or not to plot standard deviation of variability as errorbar.
+                Only relevant if counting_bins_per_evaluation is not None.
+            std_kwargs (dict): Additional keyword arguments passed to the plot function for std errorbar.
+                See :meth:`matplotlib.axes.Axes.fill_between` (only applicable if `std` is True).
+            poisson (bool): Whether or not to plot the Poisson limit.
+            poisson_kwargs (dict): Additional keyword arguments passed to the plot function for Poisson limit.
+                See :meth:`matplotlib.axes.Axes.plot` (only applicable if `poisson` is True).
+            **kwargs: Arguments passed to :meth:`~.timestructure.SpillQualityTimescalePlot.update`.
+
+        """
 
         # Create plot elements
         def create_artists(i, j, k, ax, p):
@@ -1237,20 +1310,11 @@ class SpillQualityTimescalePlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin,
                 pstep = None
             return [plot, errorbar, pstep]
 
-        self._create_artists(create_artists)
-
-        # legend with combined patch
-        if std:
-            self.legend()
+        self._create_artists(create_artists, dataset_id=id)
 
         # set data
-        if particles is not None or timeseries is not None:
-            self.update(
-                particles=particles,
-                mask=mask,
-                timeseries=timeseries,
-                ignore_insufficient_statistics=ignore_insufficient_statistics,
-            )
+        if kwargs.get("particles") or kwargs.get("timeseries") is not None:
+            self.update(**kwargs, dataset_id=id)
 
     def update(
         self,
@@ -1260,6 +1324,7 @@ class SpillQualityTimescalePlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin,
         *,
         timeseries=None,
         ignore_insufficient_statistics=False,
+        dataset_id=None,
     ):
         """Update plot with new data
 
@@ -1271,6 +1336,7 @@ class SpillQualityTimescalePlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin,
             timeseries (Timeseries | dict[str, Timeseries]): Pre-binned timeseries data with particle counts
                 as alternative to timestamp-based particle data. If a dictionary, it must contain the key `count`.
             ignore_insufficient_statistics (bool): When set to True, the plot will include data with insufficient statistics.
+            dataset_id (str | None): The dataset identifier to update if this plot represents multiple datasets
 
         Returns:
             Changed artists
@@ -1393,7 +1459,7 @@ class SpillQualityTimescalePlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin,
             for j, pp in enumerate(ppp):
                 ax = self.axis(i, j)
                 for k, p in enumerate(pp):
-                    plot, errorbar, pstep = self.artists[i][j][k]
+                    plot, errorbar, pstep = art = self.artists[dataset_id, i, j, k]
 
                     # update plot
                     plot.set_data((DT, F[p]))
@@ -1406,7 +1472,7 @@ class SpillQualityTimescalePlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin,
                             DT, F[p] - F_std[p], F[p] + F_std[p], **self._errkw
                         )
                         errorbar._join_legend_entry_with = join_legend_entry_with
-                        self.artists[i][j][k][1] = errorbar
+                        art[1] = errorbar
                         changed.append(errorbar)
                     if pstep:
                         pstep.set_data((DT, F_poisson[p]))

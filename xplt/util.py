@@ -137,7 +137,7 @@ def defaults_for(alias_provider, kwargs, /, **default_kwargs):
 
 def flattened(lists):
     """Flatten a list of nested lists recursively"""
-    if hasattr(lists, "__iter__"):
+    if hasattr(lists, "__iter__") and not isinstance(lists, str):
         return [item for sublist in lists for item in flattened(sublist)]
     return [lists]
 

@@ -705,6 +705,7 @@ class XManifoldPlot(XPlot):
         self.on_y, self.on_y_expression = self.parse_nested_list_string(
             on_y, on_y_separators, on_y_subs, strip_off_methods=True
         )
+        self._artists = {}
 
         super().__init__(
             nrows=len(self.on_y),
@@ -733,28 +734,139 @@ class XManifoldPlot(XPlot):
     def on_y_unique(self):
         return np.unique([p for ppp in self.on_y for pp in ppp for p in pp])
 
-    def _create_artists(self, callback):
+    def _create_artists(self, callback, dataset_id=None):
         """Helper method to create artists for subplots and twin axes
 
         Args:
-            callback (function[int, int, int, matplotlib.axes.Axes, str]): Callback function to create artists.
+            callback (callable[int, int, int, matplotlib.axes.Axes, str]): Callback function to create artists.
                 Signature: (i, j, k, axis, p) -> artist
                 Where i, j, k are the subplot, twin-axis, trace indices respectively;
                 axis is the axis and the string p is the property to plot.
+            dataset_id (str | None): The dataset identifier if this plot represents multiple datasets
         """
-        self.artists = []
+
+        if dataset_id in self._artists:
+            raise ValueError(f"Dataset identifier `{dataset_id}` already exists")
+        if dataset_id is not None and not isinstance(dataset_id, str):
+            raise ValueError(f"The dataset identifier must be a str, but got {type(dataset_id)}")
+
+        self._artists[dataset_id] = []
         for i, ppp in enumerate(self.on_y):
-            self.artists.append([])
+            self._artists[dataset_id].append([])
             for j, pp in enumerate(ppp):
-                self.artists[i].append([])
+                self._artists[dataset_id][i].append([])
                 a = self.axis(i, j)
                 for k, p in enumerate(pp):
                     artist = callback(i, j, k, a, p)
-                    self.artists[i][j].append(artist)
+                    self._artists[dataset_id][i][j].append(artist)
 
         self.legend(show="auto")
 
-    def artist(self, name=None, subplot=None, twin=None, trace=None):
+    @property
+    def artists(self):
+        """Convenient access to artist
+
+        The index can be an (optional) dataset identifier, followed by the subplot, axis and trace index.
+        If the dataset identifier is missing, traces are concatenated for all datasets
+        Examples: `self.artists[i][j][k]`, `self.artists[i,j,k]`, `self.artists[dataset_id,i,j,k]`
+        """
+
+        ALL = object()
+
+        class ArtistIndexHelper:
+            """Helper for convenient and backwards-compatible indexing of artists"""
+
+            def __init__(s, dataset=ALL, *indices):
+                s.dataset = dataset
+                s.indices = indices
+
+            def __iter__(s):
+                for i in range(len(s)):
+                    yield s[i]
+
+            def __len__(s):
+                d = s.dataset if s.dataset is not ALL else list(self._artists)[0]
+                if len(s.indices) == 0:
+                    return len(self._artists[d])
+                elif len(s.indices) == 1:
+                    (i,) = s.indices
+                    return len(self._artists[d][i])
+                elif len(s.indices) == 2:
+                    i, j = s.indices
+                    if s.dataset is not ALL:
+                        return len(self._artists[d][i][j])
+                    else:
+                        return sum([len(self._artists[d][i][j]) for d in self._artists])
+
+            def __getitem__(s, item):
+                if isinstance(item, tuple):
+                    return s[item[0]][item[1:]] if len(item) > 1 else s[item[0]]
+
+                elif item is None or isinstance(item, str) or item == ALL:  # select dataset
+                    if len(s.indices) > 0:
+                        raise IndexError("only the first index may be a string or None")
+                    return ArtistIndexHelper(dataset=item)
+
+                elif isinstance(item, int):  # return index for all datasets
+                    if len(s.indices) < 2:
+                        if item < 0 or item >= len(s):
+                            raise IndexError(f"list index {item} out of range 0..{len(s)}")
+                        return ArtistIndexHelper(s.dataset, *s.indices, item)
+                    else:
+                        i, j, k = *s.indices, item
+                        if s.dataset is not ALL:
+                            return self._artists[s.dataset][i][j][k]
+                        else:
+                            for d in self._artists:
+                                if 0 <= k < len(self._artists[d][i][j]):
+                                    return self._artists[d][i][j][k]
+                                else:
+                                    k -= len(self._artists[d][i][j])
+                            raise IndexError(f"list index {item} out of range")
+
+                else:
+                    raise IndexError(f"Index must be an int, string, tuple or None. Got {item}.")
+
+            def __setitem__(s, item, value):
+                if isinstance(item, tuple):
+                    if len(item) > 1:
+                        s[item[0]][item[1:]] = value
+                    else:
+                        s[item[0]] = value
+
+                elif len(s.indices) < 2:
+                    raise TypeError("Only single elements may be assigned")
+
+                elif isinstance(item, int):
+                    if item < 0 or item >= len(s):
+                        raise IndexError(f"list index {item} out of range 0..{len(s)}")
+
+                    i, j, k = *s.indices, item
+                    if s.dataset is not ALL:
+                        self._artists[s.dataset][i][j][k] = value
+                    else:
+                        for d in self._artists:
+                            if 0 <= k < len(self._artists[d][i][j]):
+                                self._artists[d][i][j][k] = value
+                                break
+                            else:
+                                k -= len(self._artists[d][i][j])
+                        else:
+                            raise IndexError(f"list index {item} out of range")
+
+                else:
+                    raise IndexError(f"Index must be an int, string, tuple or None. Got {item}.")
+
+            def __repr__(s):
+                info = f"ArtistIndexHelper(dataset={'ALL' if s.dataset is ALL else s.dataset}"
+                for i, label in enumerate(("subplot", "axis", "trace")):
+                    if len(s.indices) > i:
+                        info += f", {label}={s.indices[i]}"
+                return info + ")"
+
+        return ArtistIndexHelper()
+
+    def artist(self, name=None, subplot=None, twin=None, trace=None, *, dataset_id=None):
         """Return the artist either by name, or by subplot, twin axes and trace index
 
         Args:
@@ -762,6 +874,7 @@ class XManifoldPlot(XPlot):
             subplot (int | None): Flat subplot index
             twin (int | None): Twin axis index
             trace (int | None): Trace index
+            dataset_id (str | None): The dataset identifier if this plot represents multiple datasets
 
         Returns:
             matplotlib.artist.Artist: First artist that matches the given criteria
@@ -775,7 +888,7 @@ class XManifoldPlot(XPlot):
                         and (j == twin or twin is None)
                         and (k == trace or trace is None)
                     ):
-                        return self.artists[i][j][k]
+                        return self.artists[dataset_id][i][j][k]
 
     def _legend_label_for(self, p):
         """
