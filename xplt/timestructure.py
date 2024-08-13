@@ -63,7 +63,7 @@ class TimePlotMixin:
                 raise ValueError("`particles` must be None when passing data via `timeseries`")
             if not isinstance(timeseries, dict):
                 if len(keys) != 1:
-                    raise ValueError("timeseries must be a dict of the form {kind: array}")
+                    raise ValueError(f"timeseries must be a dict with the following keys: {keys}")
                 timeseries = {keys[0]: timeseries}
             for ts in timeseries.values():
                 if not isinstance(ts, Timeseries):
@@ -418,7 +418,9 @@ class TimeBinPlot(ParticleHistogramPlot, TimePlotMixin):
         """
         kwargs = self._init_time_mixin(time_range=time_range, time_offset=time_offset, **kwargs)
 
-        self._use_timeseries_data = False
+        self._timeseries_key_mapping = dict(
+            rate="count", cumulative="count", charge="q", current="q"
+        )
 
         super().__init__(
             "t_offset" if time_offset else "t",
@@ -436,7 +438,7 @@ class TimeBinPlot(ParticleHistogramPlot, TimePlotMixin):
 
     def _histogram(self, p, data, mask):
         if self._data_is_ts:
-            ts: Timeseries = get(data, p)
+            ts: Timeseries = get(data, self._timeseries_key_mapping.get(p, p))
             if self.time_range:
                 ts = ts.crop(*self.time_range)
             return ts.data, ts.times(endpoint=True)
@@ -451,8 +453,9 @@ class TimeBinPlot(ParticleHistogramPlot, TimePlotMixin):
 
         """
 
-        particles, timeseries = particles_timeseries
-        timeseries = self._check_timeseries_data(particles, timeseries, keys=self.on_y_unique)
+        # check that the provided data is sufficient to plot the requested properties
+        keys = list(set([self._timeseries_key_mapping.get(k, k) for k in self.on_y_unique]))
+        timeseries = self._check_timeseries_data(particles, timeseries, keys=keys)
         self._data_is_ts = timeseries is not None
 
         return super().update(timeseries if self._data_is_ts else particles, mask, autoscale)
