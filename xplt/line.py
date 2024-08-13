@@ -139,7 +139,7 @@ class KnlPlot(XManifoldPlot):
         if line is not None:
             self.update(line)
 
-    def update(self, line, autoscale=None):
+    def update(self, line, *, autoscale=None):
         """
         Update the line data this plot shows
 
@@ -321,7 +321,7 @@ class FloorPlot(XPlot):
         if survey is not None:
             self.update(survey, line)
 
-    def update(self, survey, line=None, autoscale=None):
+    def update(self, survey, line=None, *, autoscale=None):
         """
         Update the survey data this plot shows
 

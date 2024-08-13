@@ -604,7 +604,7 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
             return default
         raise ValueError("fmax must be specified when plotting absolut frequencies.")
 
-    def update(self, particles=None, mask=None, autoscale=None, *, timeseries=None):
+    def update(self, particles=None, mask=None, *, autoscale=None, timeseries=None):
         """Update plot with new data
 
         Args:
@@ -890,7 +890,7 @@ class TimeIntervalPlot(
     def bin_count(self):
         return int(np.ceil(self.dt_max / self.bin_time))
 
-    def update(self, particles, mask=None, autoscale=None):
+    def update(self, particles, mask=None, *, autoscale=None):
         """Update plot with new data
 
         Args:
@@ -1072,7 +1072,7 @@ class SpillQualityPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, Metrices
         if particles is not None or timeseries is not None:
             self.update(particles=particles, mask=mask, timeseries=timeseries)
 
-    def update(self, particles=None, mask=None, autoscale=None, *, timeseries=None):
+    def update(self, particles=None, mask=None, *, autoscale=None, timeseries=None):
         """Update plot with new data
 
         Args:
