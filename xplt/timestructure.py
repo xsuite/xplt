@@ -1311,7 +1311,7 @@ class SpillQualityTimescalePlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin,
             # determine bins
             bins_min = int(duration / counting_dt_max + 1)
             bins_max = int(duration / counting_dt_min + 1)
-            if self.axis().get_xscale == "log":
+            if self.axis().get_xscale() == "log":
                 ncbins = 1 / np.geomspace(1 / bins_min, 1 / bins_max, 100)
             else:
                 ncbins = 1 / np.linspace(1 / bins_min, 1 / bins_max, 100)
@@ -1342,7 +1342,7 @@ class SpillQualityTimescalePlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin,
             # determine bins
             rebin_min = int(round(counting_dt_min * timeseries.fs))
             rebin_max = int(round(counting_dt_max * timeseries.fs))
-            if self.axis().get_xscale == "log":
+            if self.axis().get_xscale() == "log":
                 rebins = np.geomspace(rebin_min, rebin_max, 100)
             else:
                 rebins = np.linspace(rebin_min, rebin_max, 100)
