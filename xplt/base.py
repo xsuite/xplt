@@ -274,7 +274,8 @@ class XPlot:
         tight = {False: "", True: "xy", "both": "xy", None: ""}.get(tight, tight)
 
         if artists is None and data is None:
-            ax.relim()  # use limits from all artists associated with the axis
+            # use limits from all artists associated with the axis   https://stackoverflow.com/a/71966295
+            artists = ax.lines + ax.collections + ax.patches + ax.images
 
         data = [] if data is None else data[:]  # make a copy so we can safely append
         limits = []
