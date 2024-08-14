@@ -23,6 +23,7 @@ classifiers = [
 
 requires-python = ">=3.8"
 dependencies = [
+    "packaging>14.0",
     "matplotlib>=3.6",
     "numpy",
     "scipy",
