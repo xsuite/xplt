@@ -260,7 +260,7 @@ class XPlot:
             reset (bool): Whether to ignore any data limits already registered.
             freeze (bool): Whether to keep the updated axes limits (True) or enable automatic
                 autoscaling on future draws (for all present and new artists).
-            tight (str | None): Enables tight scaling without margins for axis.
+            tight (str | None | bool): Enables tight scaling without margins for axis.
                 Any of `"x"`, `"y"`, `"xy"` or `"both"`, `""` or `None`.
 
         Returns:
@@ -271,7 +271,7 @@ class XPlot:
         autoscale = {False: "", True: "xy", "both": "xy"}.get(autoscale, autoscale)
         if not autoscale:
             return ""
-        tight = {"both": "xy", None: ""}.get(tight, tight)
+        tight = {False: "", True: "xy", "both": "xy", None: ""}.get(tight, tight)
 
         if artists is None and data is None:
             ax.relim()  # use limits from all artists associated with the axis
