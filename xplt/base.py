@@ -309,7 +309,7 @@ class XPlot:
                 raise NotImplementedError(f"Autoscaling not implemented for {art!r}")
 
         # Add limits from raw data
-        if data:
+        if len(data) > 0:
             x, y = [a[np.isfinite(a)] for a in np.transpose(data)]
             limits.append(mpl.transforms.Bbox.from_extents(x.min(), y.min(), x.max(), y.max()))
 
