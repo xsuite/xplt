@@ -275,6 +275,7 @@ class XPlot:
 
         if artists is None and data is None:
             # use limits from all artists associated with the axis   https://stackoverflow.com/a/71966295
+            # unlike ax.relim(), we also handle collections
             artists = ax.lines + ax.collections + ax.patches + ax.images
 
         data = [] if data is None else data[:]  # make a copy so we can safely append
@@ -308,8 +309,9 @@ class XPlot:
                 raise NotImplementedError(f"Autoscaling not implemented for {art!r}")
 
         # Add limits from raw data
-        x, y = [a[np.isfinite(a)] for a in np.transpose(data)]
-        limits.append(mpl.transforms.Bbox.from_extents(x.min(), y.min(), x.max(), y.max()))
+        if data:
+            x, y = [a[np.isfinite(a)] for a in np.transpose(data)]
+            limits.append(mpl.transforms.Bbox.from_extents(x.min(), y.min(), x.max(), y.max()))
 
         # Update axes limits
         if len(limits) > 0:
