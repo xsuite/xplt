@@ -460,9 +460,16 @@ class TimeBinPlot(ParticleHistogramPlot, TimePlotMixin):
 
     def _histogram(self, p, data, mask):
         if self._data_is_ts:
-            ts: Timeseries = get(data, self._timeseries_key_mapping.get(p, p))
-            if self.time_range:
-                ts = ts.crop(*self.time_range)
+            p = self._timeseries_key_mapping.get(p, p)
+            ts: Timeseries = get(data, p)
+            if self.range:
+                ts = ts.crop(*self.range)
+            if self.bin_width and self.bin_count is None:
+                ts = ts.resample(dt=self.bin_width, mode="sum")
+            elif self.bin_count and self.bin_width is None:
+                ts = ts.resample(dt=ts.duration / self.bin_count, mode="sum")
+            else:
+                raise ValueError("Only one of bin_count or bin_width must be given")
             return ts.data, ts.times(endpoint=True)
 
         return super()._histogram(p, data, mask)
