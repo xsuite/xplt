@@ -950,18 +950,21 @@ class XManifoldPlot(XPlot):
                 if len(handles) > 0:
                     ax.legend(handles=handles, labels=labels, **kwargs)
 
-    def autoscale(self, subplot="all", *, reset=False, freeze=True, tight=None):
+    def autoscale(self, subplot="all", *, axis="xy", reset=False, freeze=True, tight=None):
         """Autoscale the axes of a subplot
 
         Args:
             subplot (int | iterable | str): Subplot axis index, indices or "all"
+            axis (str | None | bool): Whether and on which axes to perform autoscaling.
+                One of `"x"`, `"y"`, `"xy"`, `False` or `None`. If `None`, decide based on :meth:`matplotlib.axes.Axes.get_autoscalex_on` and :meth:`matplotlib.axes.Axes.get_autoscaley_on`.
+                For backwards compatibility, the following aliases are also supported: `"both"`, `True`, `""`.
             reset (bool): Whether to ignore any data limits already registered.
             freeze (bool): Whether to keep the updated axes limits (True) or enable automatic
                 autoscaling on future draws (for all present and new artists).
             tight (str | None): Enables tight scaling without margins for the specified dimension.
                 May be ``"x"``, ``"y"``, ``"both"`` or ``None``.
         """
-        kwargs = dict(reset=reset, freeze=freeze, tight=tight)
+        kwargs = dict(autoscale=axis, reset=reset, freeze=freeze, tight=tight)
 
         if subplot == "all":
             subplot = range(len(self.axflat))
