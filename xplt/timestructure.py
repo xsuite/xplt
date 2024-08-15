@@ -583,7 +583,7 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
                 "plot", plot_kwargs, lw=1, label=self._legend_label_for((i, j, k))
             )
             plot = ax.plot([], [], **kwargs)[0]
-            if smoothing_shadow:
+            if smoothing is not None and smoothing_shadow:
                 kwargs.update(color=plot.get_color())
                 self._errkw = kwargs.copy()
                 self._errkw.update(
@@ -745,7 +745,7 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
                     # update plot
                     art = self.artists[i][j][k]
 
-                    if isinstance(art, list):
+                    if self.smoothing and isinstance(art, list):
                         # smoothing
                         args = dict(n=self.smoothing, logspace=a.get_xscale() == "log")
                         magma = average(mag, function=np.max, **args)
