@@ -896,7 +896,10 @@ class TimeIntervalPlot(
         # Create plot elements
         def create_artists(i, j, k, ax, p):
             kwargs = defaults_for(
-                "plot", plot_kwargs, lw=1, label=self._legend_label_for((i, j, k))
+                "plot",
+                plot_kwargs,
+                lw=1.5 if p == "cumulative" else 1,
+                label=self._legend_label_for((i, j, k)),
             )
             if self._count_based(p):
                 kwargs = defaults_for("plot", kwargs, drawstyle="steps-pre")
@@ -911,7 +914,7 @@ class TimeIntervalPlot(
                         color=plot.get_color() or "gray",
                         alpha=0.5,
                         zorder=1.9,
-                        lw=1,
+                        lw=1.5 if p == "cumulative" else 1,
                         ls=":",
                         label="Poisson ideal",
                     )
