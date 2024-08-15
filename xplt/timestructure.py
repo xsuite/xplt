@@ -706,7 +706,7 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
                         freq, mag2 = scipy.signal.welch(
                             ts.data,
                             fs=ts.fs,
-                            nperseg=ts.size // 2**self.smoothing,
+                            nperseg=ts.size // 2**self.welch,
                             scaling="spectrum",
                         )
                         mag = np.sqrt(2 * mag2)  # one-sided spectrum contains only half the power
