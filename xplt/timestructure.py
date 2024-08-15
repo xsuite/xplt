@@ -504,11 +504,14 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
         fmax=None,
         relative=False,
         scaling=None,
-        smoothing=None,
+        welch=None,
         mask=None,
         timeseries=None,
         time_range=None,
         plot_kwargs=None,
+        smoothing=None,
+        smoothing_shadow=True,
+        smoothing_kwargs=None,
         **kwargs,
     ):
         """
@@ -538,12 +541,19 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
                 `amplitude` (default for non-count based properties) scales the FFT magnitude to the amplitude,
                 `power` (power density spectrum, default for count based properties) scales the FFT magnitude to power,
                 `pdspp` (power density spectrum per particle) is simmilar to 'pds' but normalized to particle number.
-            smoothing (int | None): If not None, uses Welch's method to compute a smoothened FFT with `2**smoothing` segments.
+            welch (int | None): If not None, uses Welch's method to compute a smoothened FFT with `2**welch` segments.
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
             timeseries (Timeseries | dict[str, Timeseries]): Pre-binned timeseries data as alternative to timestamp-based particle data.
                 The dictionary must contain keys for each `kind` (e.g. `count`).
             time_range (tuple): Time range of particles to consider. If None, all particles are considered.
             plot_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.plot`.
+            smoothing (int | float | None): If not None, smooth the FFT by averaging over this many subsequent bins.
+                This also adds a shadow with min/max values in the corresponding bins (unless smoothing_shadow is False).
+                For linear scaled frequency axis, the smoothing factor corresponds to the number of bins.
+                For log scaled axis, the factor corresponds to the first bins and is then raised to the x-th power to maintain a persistent smoothing range in log space.
+                This also reduces the plot complexity (line segments) and improves rendering speed.
+            smoothing_shadow (bool): Use this to en-/disable the shadow in case of smoothing. See smoothing parameter.
+            smoothing_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.fill_between`.
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
         """
@@ -551,6 +561,7 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
         self._fmax = fmax
         self.relative = relative
         self._scaling = scaling
+        self.welch = welch
         self.smoothing = smoothing
         kwargs = defaults(kwargs, log="y" if relative else "xy")
 
@@ -571,7 +582,20 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
             kwargs = defaults_for(
                 "plot", plot_kwargs, lw=1, label=self._legend_label_for((i, j, k))
             )
-            return ax.plot([], [], **kwargs)[0]
+            plot = ax.plot([], [], **kwargs)[0]
+            if smoothing_shadow:
+                kwargs.update(color=plot.get_color())
+                self._errkw = kwargs.copy()
+                self._errkw.update(
+                    defaults_for(
+                        "fill_between", smoothing_kwargs, zorder=1.8, alpha=0.1, ls="-", lw=0
+                    )
+                )
+                errorbar = ax.fill_between([], [], [], **self._errkw)
+                errorbar._join_legend_entry_with = plot
+                return [plot, errorbar]
+            else:
+                return plot
 
         self._create_artists(create_artists)
 
@@ -666,11 +690,12 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
         ts = None
         for i, ppp in enumerate(self.on_y):
             for j, pp in enumerate(ppp):
+                a = self.axis(i, j)
                 for k, p in enumerate(pp):
 
                     # calculate FFT
                     ts = timeseries[p]
-                    if self.smoothing is None:
+                    if self.welch is None:
                         freq = np.fft.rfftfreq(ts.size, d=ts.dt)
                         mag = np.abs(np.fft.rfft(ts.data, norm="forward"))
                         mag[
@@ -718,10 +743,28 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
                         mag = np.cumsum(mag)
 
                     # update plot
-                    self.artists[i][j][k].set_data(freq, mag)
-                    changed.append(self.artists[i][j][k])
+                    art = self.artists[i][j][k]
 
-                a = self.axis(i, j)
+                    if isinstance(art, list):
+                        # smoothing
+                        args = dict(n=self.smoothing, logspace=a.get_xscale() == "log")
+                        magma = average(mag, function=np.max, **args)
+                        magmi = average(mag, function=np.min, **args)
+                        freq, mag = average(freq, mag, function=np.mean, **args)
+
+                        # update plot
+                        join_legend_entry_with = art[1]._join_legend_entry_with
+                        changed.append(art[1])
+                        art[1].remove()
+                        art[1] = a.fill_between(freq, magmi, magma, **self._errkw)
+                        art[1]._join_legend_entry_with = join_legend_entry_with
+                        changed.append(art[1])
+
+                        art = art[0]
+
+                    art.set_data(freq, mag)
+                    changed.append(art)
+
                 scaled = self._autoscale(a, autoscale, tight="x")
                 if "y" in scaled and a.get_yscale() == "linear":
                     a.set_ylim(0, None, auto=None)
