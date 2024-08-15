@@ -288,6 +288,7 @@ def binned_data(
         n = int(np.ceil((v_max - v_min) / dv))
         if make_n_power_of_two:
             n = 1 << (n - 1).bit_length()
+            dv = (v_max - v_min) / n  # adjust bin width to match new n
     else:
         raise ValueError(f"Exactly one of n or dt must be specified, but got n={n} and dt={dv}")
 
