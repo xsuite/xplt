@@ -502,6 +502,7 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
         kind="count",
         *,
         fmax=None,
+        exact_fmax=False,
         relative=False,
         scaling=None,
         welch=None,
@@ -537,6 +538,11 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
                 This is a manifold subplot specification string like ``"count-cumulative"``, see :class:`~.base.XManifoldPlot` for details.
                 In addition, abbreviations for x-y-parameter pairs are supported (e.g. ``P`` for ``Px+Py``).
             fmax (float): Maximum frequency (in Hz) to plot.
+            exact_fmax (bool): Set this to True to force binning of particle times with exactly dt=1/(2*fmax).
+                By default, the bin width is reduced such that the number of bins is a power of two.
+                While this improves the performance of the FFT calculation (radix-2 FFT), it changes the Nyquist frequency
+                and thus may cause an unexpected aliasing. With exact_fmax=True, the Nyquist frequency is fmax and aliasing
+                occurs at that exact frequency. To avoid aliasing, one has to choose a sufficiently high fmax in the first place.
             relative (bool): If True, plot relative frequencies (f/frev) instead of absolute frequencies (f).
             scaling (str | dict): Scaling of the FFT. Can be ``"amplitude"``, ``"power"`` or ``"pdspp"`` or a dict with a scaling per property where
                 `amplitude` (default for non-count based properties) scales the FFT magnitude to the amplitude,
@@ -562,6 +568,7 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
         """
 
         self._fmax = fmax
+        self._exact_fmax = exact_fmax
         self.relative = relative
         self._scaling = scaling
         if smoothing := kwargs.pop("smoothing", None):  # for backwards compatibility
@@ -712,7 +719,7 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
                     what=property,
                     dt=1 / (2 * fmax),
                     t_range=self.time_range,
-                    make_n_power_of_two=True,  # to improve FFT performance, round up to next power of 2
+                    make_n_power_of_two=not self._exact_fmax,  # to improve FFT performance
                 )
 
         # Timeseries based data
