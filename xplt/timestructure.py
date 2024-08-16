@@ -854,6 +854,7 @@ class TimeIntervalPlot(
         time_range=None,
         plot_kwargs=None,
         poisson_kwargs=None,
+        add_default_dataset=True,
         **kwargs,
     ):
         """
@@ -882,6 +883,8 @@ class TimeIntervalPlot(
             plot_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.plot`.
             poisson_kwargs (dict): Additional keyword arguments passed to the plot function for Poisson limit.
                 See :meth:`matplotlib.axes.Axes.plot` (only applicable if `poisson` is True).
+            add_default_dataset (bool): Whether to add a default dataset.
+                Use :meth:`~.timestructure.SpillQualityTimescalePlot.add_dataset` to manually add datasets.
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
 
@@ -908,6 +911,33 @@ class TimeIntervalPlot(
         self._bin_count = bin_count
         self.relative = relative
         self.dt_max = dt_max
+
+        # Format plot axes
+        for a in self.axflat:
+            if self.relative:
+                a.yaxis.set_major_formatter(mpl.ticker.PercentFormatter(1))
+
+        if add_default_dataset:
+            self.add_dataset(
+                None,
+                particles=particles,
+                mask=mask,
+                plot_kwargs=plot_kwargs,
+                poisson=poisson,
+                poisson_kwargs=poisson_kwargs,
+            )
+
+    def add_dataset(self, id, *, plot_kwargs=None, poisson=False, poisson_kwargs=None, **kwargs):
+        """Create artists for a new dataset to the plot and optionally update their values
+
+        Args:
+            id (str): An arbitrary dataset identifier unique for this plot
+            plot_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.plot`.
+            poisson (bool): If true, indicate ideal poisson distribution.
+            poisson_kwargs (dict): Additional keyword arguments passed to the plot function for Poisson limit.
+                See :meth:`matplotlib.axes.Axes.plot` (only applicable if `poisson` is True).
+            **kwargs: Arguments passed to :meth:`~.particles.ParticleHistogramPlot.update`.
+        """
 
         # Create plot elements
         def create_artists(i, j, k, ax, p):
@@ -942,14 +972,9 @@ class TimeIntervalPlot(
 
         self._create_artists(create_artists)
 
-        # Format plot axes
-        for a in self.axflat:
-            if self.relative:
-                a.yaxis.set_major_formatter(mpl.ticker.PercentFormatter(1))
-
         # set data
-        if particles is not None:
-            self.update(particles, mask=mask)
+        if kwargs.get("particles") is not None:
+            self.update(**kwargs, dataset_id=id)
 
     @property
     def bin_time(self):
@@ -959,7 +984,7 @@ class TimeIntervalPlot(
     def bin_count(self):
         return int(np.ceil(self.dt_max / self.bin_time))
 
-    def update(self, particles, mask=None, *, autoscale=None):
+    def update(self, particles, mask=None, *, autoscale=None, dataset_id=None):
         """Update plot with new data
 
         Args:
@@ -967,6 +992,7 @@ class TimeIntervalPlot(
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
             autoscale (str | None | bool): Whether and on which axes to perform autoscaling.
                 One of `"x"`, `"y"`, `"xy"`, `False` or `None`. If `None`, decide based on :meth:`matplotlib.axes.Axes.get_autoscalex_on` and :meth:`matplotlib.axes.Axes.get_autoscaley_on`.
+            dataset_id (str | None): The dataset identifier to update if this plot represents multiple datasets
 
         """
 
@@ -1004,7 +1030,7 @@ class TimeIntervalPlot(
                     counts *= self.factor_for(p)
 
                     # update plot
-                    plot, pplot = self.artists[i][j][k]
+                    plot, pplot = self.artists[dataset_id, i, j, k]
                     if p == "cumulative":
                         # steps open after last bin
                         counts = np.concatenate(([0], np.cumsum(counts)))
