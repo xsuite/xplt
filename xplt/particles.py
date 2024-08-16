@@ -272,7 +272,7 @@ class ParticleHistogramPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramP
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
             plot_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.plot`.
             add_default_dataset (bool): Whether to add a default dataset.
-                Use :meth:`~.timestructure.SpillQualityTimescalePlot.add_dataset` to manually add datasets.
+                Use :meth:`~.particles.ParticleHistogramPlot.add_dataset` to manually add datasets.
             kwargs: See :class:`~.particles.ParticlePlotMixin`, :class:`~.particles.ParticleHistogramPlotMixin`
                 and :class:`~.base.XManifoldPlot` for additional arguments
 
@@ -473,7 +473,7 @@ class ParticlesPlot(XManifoldPlot, ParticlePlotMixin):
             plot_kwargs (dict): Keyword arguments passed to the plot function.
             sort_by (str | None): Sort the data by this property. Default is to sort by the `as_function_of` property.
             add_default_dataset (bool): Whether to add a default dataset.
-                Use :meth:`~.timestructure.SpillQualityTimescalePlot.add_dataset` to manually add datasets.
+                Use :meth:`~.particles.ParticlesPlot.add_dataset` to manually add datasets.
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
         """

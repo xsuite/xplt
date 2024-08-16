@@ -415,7 +415,7 @@ class TimeBinPlot(ParticleHistogramPlot, TimePlotMixin):
             time_offset (float): Time offset for x-axis is seconds, i.e. show values as `t-time_offset`.
             plot_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.plot`.
             add_default_dataset (bool): Whether to add a default dataset.
-                Use :meth:`~.timestructure.SpillQualityTimescalePlot.add_dataset` to manually add datasets.
+                Use :meth:`~.timestructure.TimeBinPlot.add_dataset` to manually add datasets.
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
         """
