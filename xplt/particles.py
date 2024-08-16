@@ -456,6 +456,7 @@ class ParticlesPlot(XManifoldPlot, ParticlePlotMixin):
         mask=None,
         plot_kwargs=None,
         sort_by=None,
+        add_default_dataset=True,
         **kwargs,
     ):
         """
@@ -471,6 +472,8 @@ class ParticlesPlot(XManifoldPlot, ParticlePlotMixin):
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
             plot_kwargs (dict): Keyword arguments passed to the plot function.
             sort_by (str | None): Sort the data by this property. Default is to sort by the `as_function_of` property.
+            add_default_dataset (bool): Whether to add a default dataset.
+                Use :meth:`~.timestructure.SpillQualityTimescalePlot.add_dataset` to manually add datasets.
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
         """
@@ -483,6 +486,18 @@ class ParticlesPlot(XManifoldPlot, ParticlePlotMixin):
         # parse kind string
         self.sort_by = sort_by
 
+        if add_default_dataset:
+            self.add_dataset(None, particles=particles, mask=mask, plot_kwargs=plot_kwargs)
+
+    def add_dataset(self, id, *, plot_kwargs=None, **kwargs):
+        """Create artists for a new dataset to the plot and optionally update their values
+
+        Args:
+            id (str): An arbitrary dataset identifier unique for this plot
+            plot_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.plot`.
+            **kwargs: Arguments passed to :meth:`~.particles.ParticleHistogramPlot.update`.
+        """
+
         # create plot elements
         def create_artists(i, j, k, a, p):
             kwargs = defaults_for(
@@ -490,13 +505,13 @@ class ParticlesPlot(XManifoldPlot, ParticlePlotMixin):
             )
             return a.plot([], [], **kwargs)[0]
 
-        self._create_artists(create_artists)
+        self._create_artists(create_artists, dataset_id=id)
 
         # set data
-        if particles is not None:
-            self.update(particles, mask=mask)
+        if kwargs.get("particles") is not None:
+            self.update(**kwargs, dataset_id=id)
 
-    def update(self, particles, mask=None, *, autoscale=None):
+    def update(self, particles, mask=None, *, autoscale=None, dataset_id=None):
         """Update plot with new data
 
         Args:
@@ -504,6 +519,7 @@ class ParticlesPlot(XManifoldPlot, ParticlePlotMixin):
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
             autoscale (str | None | bool): Whether and on which axes to perform autoscaling.
                 One of `"x"`, `"y"`, `"xy"`, `False` or `None`. If `None`, decide based on :meth:`matplotlib.axes.Axes.get_autoscalex_on` and :meth:`matplotlib.axes.Axes.get_autoscaley_on`.
+            dataset_id (str | None): The dataset identifier to update if this plot represents multiple datasets
 
         Returns:
             List of artists that have been updated.
@@ -521,10 +537,11 @@ class ParticlesPlot(XManifoldPlot, ParticlePlotMixin):
         for i, ppp in enumerate(self.on_y):
             for j, pp in enumerate(ppp):
                 for k, p in enumerate(pp):
+                    art = self.artists[dataset_id, i, j, k]
                     values = self.prop(p).values(particles, mask, unit=self.display_unit_for(p))
                     values = values[order]
-                    self.artists[i][j][k].set_data((xdata, values))
-                    changed.append(self.artists[i][j][k])
+                    art.set_data((xdata, values))
+                    changed.append(art)
 
                 a = self.axis(i, j)
                 self._autoscale(a, autoscale)
