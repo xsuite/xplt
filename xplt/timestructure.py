@@ -9,7 +9,7 @@ __author__ = "Philipp Niedermayer"
 __contact__ = "eltos@outlook.de"
 __date__ = "2022-11-24"
 
-
+import warnings
 from dataclasses import dataclass
 import scipy.signal
 from .util import *
@@ -509,9 +509,9 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
         timeseries=None,
         time_range=None,
         plot_kwargs=None,
-        smoothing=None,
-        smoothing_shadow=True,
-        smoothing_kwargs=None,
+        averaging=None,
+        averaging_shadow=True,
+        averaging_shadow_kwargs=None,
         **kwargs,
     ):
         """
@@ -547,13 +547,14 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
                 The dictionary must contain keys for each `kind` (e.g. `count`).
             time_range (tuple): Time range of particles to consider. If None, all particles are considered.
             plot_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.plot`.
-            smoothing (int | float | None): If not None, smooth the FFT by averaging over this many subsequent bins.
-                This also adds a shadow with min/max values in the corresponding bins (unless smoothing_shadow is False).
-                For linear scaled frequency axis, the smoothing factor corresponds to the number of bins.
-                For log scaled axis, the factor corresponds to the first bins and is then raised to the x-th power to maintain a persistent smoothing range in log space.
+            averaging (int | float | None): If not None, smooth the FFT by averaging over this many subsequent bins.
+                This also adds a shadow with min/max values in the corresponding bins (unless averaging_shadow is False).
+                For linear scaled frequency axis, the averaging factor corresponds to the number of bins.
+                For log scaled axis, the factor corresponds to the first bins and is then raised to the x-th power
+                to maintain a persistent averaging range in log space.
                 This also reduces the plot complexity (line segments) and improves rendering speed.
-            smoothing_shadow (bool): Use this to en-/disable the shadow in case of smoothing. See smoothing parameter.
-            smoothing_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.fill_between`.
+            averaging_shadow (bool): Use this to en-/disable the shadow in case of averaging. See averaging parameter.
+            averaging_shadow_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.fill_between`.
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
         """
@@ -561,8 +562,11 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
         self._fmax = fmax
         self.relative = relative
         self._scaling = scaling
+        if smoothing := kwargs.pop("smoothing", None):  # for backwards compatibility
+            warnings.warn("Use welch=... instead of smoothing=...!", DeprecationWarning)
+            welch = smoothing
         self.welch = welch
-        self.smoothing = smoothing
+        self.averaging = averaging
         kwargs = defaults(kwargs, log="y" if relative else "xy")
 
         kwargs = self._init_time_mixin(time_range=time_range, **kwargs)
@@ -583,12 +587,17 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
                 "plot", plot_kwargs, lw=1, label=self._legend_label_for((i, j, k))
             )
             plot = ax.plot([], [], **kwargs)[0]
-            if smoothing is not None and smoothing_shadow:
+            if averaging is not None and averaging_shadow:
                 kwargs.update(color=plot.get_color())
                 self._errkw = kwargs.copy()
                 self._errkw.update(
                     defaults_for(
-                        "fill_between", smoothing_kwargs, zorder=1.8, alpha=0.1, ls="-", lw=0
+                        "fill_between",
+                        averaging_shadow_kwargs,
+                        zorder=1.8,
+                        alpha=0.1,
+                        ls="-",
+                        lw=0,
                     )
                 )
                 errorbar = ax.fill_between([], [], [], **self._errkw)
@@ -745,9 +754,9 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
                     # update plot
                     art = self.artists[i][j][k]
 
-                    if self.smoothing and isinstance(art, list):
-                        # smoothing
-                        args = dict(n=self.smoothing, logspace=a.get_xscale() == "log")
+                    if self.averaging and isinstance(art, list):
+                        # smoothing by averaging
+                        args = dict(n=self.averaging, logspace=a.get_xscale() == "log")
                         magma = average(mag, function=np.max, **args)
                         magmi = average(mag, function=np.min, **args)
                         freq, mag = average(freq, mag, function=np.mean, **args)
