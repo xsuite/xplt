@@ -775,6 +775,13 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
                     changed.append(art)
 
                 scaled = self._autoscale(a, autoscale, tight="x")
+                if "x" in scaled:
+                    xlim = np.array((10.0 if a.get_xscale() == "log" else 0.0, fmax))
+                    if self.relative:
+                        xlim /= self.frev(particles)
+                    else:
+                        xlim *= self.factor_for("f")
+                    a.set_xlim(*xlim, auto=None)
                 if "y" in scaled and a.get_yscale() == "linear":
                     a.set_ylim(0, None, auto=None)
 
