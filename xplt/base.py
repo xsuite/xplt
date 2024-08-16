@@ -974,9 +974,9 @@ class XManifoldPlot(XPlot):
             subplot = range(len(self.axflat))
 
         for s in flattened(subplot):
-            self._autoscale(self.axflat[s], artists=self.artists[s][0], **kwargs)
+            self._autoscale(self.axflat[s], **kwargs)
             for i, axt in enumerate(self.axflat_twin[s]):
-                self._autoscale(axt, artists=self.artists[s][i], **kwargs)
+                self._autoscale(axt, **kwargs)
 
     def axline(self, kind, val, **kwargs):
         """Plot a vertical or horizontal line for a given coordinate
