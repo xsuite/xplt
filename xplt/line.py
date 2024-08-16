@@ -194,13 +194,7 @@ class KnlPlot(XManifoldPlot):
                     changed.append(art)
 
                 # autoscale
-                if self.filled:  # At present, relim does not support collection instances.
-                    data = mpl.transforms.Bbox.union(
-                        [a.get_datalim(ax.transData) for a in self.artists[i][j]]
-                    ).get_points()
-                else:
-                    data = None
-                self._autoscale(ax, autoscale, data=data, tight="x")
+                self._autoscale(ax, autoscale, tight="x")
 
         return changed
 
