@@ -512,6 +512,7 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
         averaging=None,
         averaging_shadow=True,
         averaging_shadow_kwargs=None,
+        add_default_dataset=True,
         **kwargs,
     ):
         """
@@ -555,6 +556,7 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
                 This also reduces the plot complexity (line segments) and improves rendering speed.
             averaging_shadow (bool): Use this to en-/disable the shadow in case of averaging. See averaging parameter.
             averaging_shadow_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.fill_between`.
+            add_default_dataset (bool): Whether to add a default dataset.
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
         """
@@ -581,13 +583,44 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
             on_x="frel" if self.relative else "f", on_y=kind, **kwargs
         )  # handled manually
 
+        if add_default_dataset:
+            self.add_dataset(
+                None,
+                particles=particles,
+                mask=mask,
+                timeseries=timeseries,
+                plot_kwargs=plot_kwargs,
+                averaging_shadow=averaging_shadow,
+                averaging_shadow_kwargs=averaging_shadow_kwargs,
+            )
+
+    def add_dataset(
+        self,
+        id,
+        *,
+        plot_kwargs=None,
+        averaging_shadow=True,
+        averaging_shadow_kwargs=None,
+        **kwargs,
+    ):
+        """Create artists for a new dataset to the plot and optionally update their values
+
+        Args:
+            id (str): An arbitrary dataset identifier unique for this plot
+            plot_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.plot`.
+            averaging_shadow (bool): Use this to en-/disable the shadow in case of averaging.
+                See averaging parameter of :class:`~.particles.ParticleHistogramPlot` constructor.
+            averaging_shadow_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.fill_between`.
+            **kwargs: Arguments passed to :meth:`~.particles.ParticleHistogramPlot.update`.
+        """
+
         # Create plot elements
         def create_artists(i, j, k, ax, p):
             kwargs = defaults_for(
                 "plot", plot_kwargs, lw=1, label=self._legend_label_for((i, j, k))
             )
             plot = ax.plot([], [], **kwargs)[0]
-            if averaging is not None and averaging_shadow:
+            if self.averaging is not None and averaging_shadow:
                 kwargs.update(color=plot.get_color())
                 self._errkw = kwargs.copy()
                 self._errkw.update(
@@ -609,12 +642,8 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
         self._create_artists(create_artists)
 
         # set data
-        if particles is not None or timeseries is not None:
-            self.update(
-                particles,
-                mask=mask,
-                timeseries=timeseries,
-            )
+        if kwargs.get("particles") is not None or kwargs.get("timeseries") is not None:
+            self.update(**kwargs, dataset_id=id)
 
     def _get_scaling(self, key):
         if isinstance(self._scaling, str):
@@ -644,7 +673,9 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
             return default
         raise ValueError("fmax must be specified when plotting absolut frequencies.")
 
-    def update(self, particles=None, mask=None, *, autoscale=None, timeseries=None):
+    def update(
+        self, particles=None, mask=None, *, autoscale=None, timeseries=None, dataset_id=None
+    ):
         """Update plot with new data
 
         Args:
@@ -654,6 +685,7 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
                 One of `"x"`, `"y"`, `"xy"`, `False` or `None`. If `None`, decide based on :meth:`matplotlib.axes.Axes.get_autoscalex_on` and :meth:`matplotlib.axes.Axes.get_autoscaley_on`.
             timeseries (Timeseries | dict[str, Timeseries]): Pre-binned timeseries data as alternative to timestamp-based particle data.
                 The dictionary must contain keys for each `kind` (e.g. `count`).
+            dataset_id (str | None): The dataset identifier to update if this plot represents multiple datasets
 
         Returns:
             list: Changed artists
@@ -752,7 +784,7 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
                         mag = np.cumsum(mag)
 
                     # update plot
-                    art = self.artists[i][j][k]
+                    art = self.artists[dataset_id, i, j, k]
 
                     if self.averaging and isinstance(art, list):
                         # smoothing by averaging
@@ -884,7 +916,7 @@ class TimeIntervalPlot(
             poisson_kwargs (dict): Additional keyword arguments passed to the plot function for Poisson limit.
                 See :meth:`matplotlib.axes.Axes.plot` (only applicable if `poisson` is True).
             add_default_dataset (bool): Whether to add a default dataset.
-                Use :meth:`~.timestructure.SpillQualityTimescalePlot.add_dataset` to manually add datasets.
+                Use :meth:`~.timestructure.TimeIntervalPlot.add_dataset` to manually add datasets.
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
 
