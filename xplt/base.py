@@ -244,7 +244,7 @@ class XPlot:
             self.annotation = None
 
     def _autoscale(
-        self, ax, autoscale="xy", *, artists=None, data=None, reset=False, freeze=True, tight=None
+        self, ax, axis="xy", *, artists=None, data=None, reset=False, freeze=True, tight=None
     ):
         """Autoscale axes to fit given artists
 
@@ -252,7 +252,7 @@ class XPlot:
 
         Args:
             ax (matplotlib.axes.Axes): Axes to autoscale
-            autoscale (str | None | bool): Whether and on which axes to perform autoscaling.
+            axis (str | None | bool): Whether and on which axes to perform autoscaling.
                 One of `"x"`, `"y"`, `"xy"`, `False` or `None`. If `None`, decide based on :meth:`matplotlib.axes.Axes.get_autoscalex_on` and :meth:`matplotlib.axes.Axes.get_autoscaley_on`.
                 For backwards compatibility, the following aliases are also supported: `"both"`, `True`, `""`.
             artists (iterable): Artists to consider (if any)
@@ -266,12 +266,13 @@ class XPlot:
         Returns:
             str: The axes autoscaled (`""`, `"x"`, `"y"` or `"xy"`)
         """
-        if autoscale is None:
-            autoscale = "x" * ax.get_autoscalex_on() + "y" * ax.get_autoscaley_on()
-        autoscale = {False: "", True: "xy", "both": "xy"}.get(autoscale, autoscale)
-        if not autoscale:
+        if axis is None:
+            axis = "x" * ax.get_autoscalex_on() + "y" * ax.get_autoscaley_on()
+        axis = {False: "", True: "xy", "both": "xy"}.get(axis, axis)
+        if not axis:
             return ""
-        tight = {False: "", True: "xy", "both": "xy", None: ""}.get(tight, tight)
+        tight_x = ("x" in tight or tight == "both") if isinstance(tight, str) else tight
+        tight_y = ("y" in tight or tight == "both") if isinstance(tight, str) else tight
 
         if artists is None and data is None:
             # use limits from all artists associated with the axis   https://stackoverflow.com/a/71966295
@@ -323,10 +324,14 @@ class XPlot:
                 ax.update_datalim(dataLim)  # takes previous datalim into account
 
         # Autoscale (on next and future draws)
-        if "x" in autoscale:
-            ax.autoscale(axis="x", tight="x" in tight)
-        if "y" in autoscale:
-            ax.autoscale(axis="y", tight="y" in tight)
+        if "x" in axis:
+            if tight_x is False and ax.margins()[0] == 0:
+                ax.margins(x=0.05)  # restore default margins
+            ax.autoscale(axis="x", tight=tight_x)
+        if "y" in axis:
+            if tight_y is False and ax.margins()[1] == 0:
+                ax.margins(y=0.05)  # restore default margins
+            ax.autoscale(axis="y", tight=tight_y)
 
         if freeze:
             # perform autoscale immediately and freeze limits
@@ -334,7 +339,7 @@ class XPlot:
             ax.set(xlim=ax.get_xlim(), ylim=ax.get_ylim())
             ax.set_autoscale_on(False)
 
-        return autoscale
+        return axis
 
     def annotate(self, text, **kwargs):
         if self.annotation is not None:
@@ -968,7 +973,7 @@ class XManifoldPlot(XPlot):
             tight (str | None): Enables tight scaling without margins for the specified dimension.
                 May be ``"x"``, ``"y"``, ``"both"`` or ``None``.
         """
-        kwargs = dict(autoscale=axis, reset=reset, freeze=freeze, tight=tight)
+        kwargs = dict(axis=axis, reset=reset, freeze=freeze, tight=tight)
 
         if subplot == "all":
             subplot = range(len(self.axflat))
