@@ -928,6 +928,8 @@ class XManifoldPlot(XPlot):
             if show == "auto":
                 show = True  # always show legend if single subplot is specified
 
+        set_kwargs = {k: kwargs.pop(k) for k in ("in_layout",) if k in kwargs}
+
         for s in subplot:
             # aggregate handles and use topmost axes for legend
             handles = []
@@ -949,7 +951,8 @@ class XManifoldPlot(XPlot):
 
                 # show legend
                 if len(handles) > 0:
-                    ax.legend(handles=handles, labels=labels, **kwargs)
+                    legend = ax.legend(handles=handles, labels=labels, **kwargs)
+                    legend.set(**set_kwargs)
 
     def autoscale(self, subplot="all", *, axis="xy", reset=False, freeze=True, tight=None):
         """Autoscale the axes of a subplot
