@@ -1092,6 +1092,7 @@ class SpillQualityPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, Metrices
         time_offset=0,
         plot_kwargs=None,
         poisson_kwargs=None,
+        add_default_dataset=True,
         **kwargs,
     ):
         """
@@ -1120,6 +1121,8 @@ class SpillQualityPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, Metrices
             plot_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.step`.
             poisson_kwargs (dict): Additional keyword arguments passed to the plot function for Poisson limit.
                 See :meth:`matplotlib.axes.Axes.step` (only applicable if `poisson` is True).
+            add_default_dataset (bool): Whether to add a default dataset.
+                Use :meth:`~.timestructure.SpillQualityPlot.add_dataset` to manually add datasets.
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
         """
@@ -1136,6 +1139,29 @@ class SpillQualityPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, Metrices
 
         # Format plot axes
         self._format_metric_axes(kwargs.get("ax") is None)
+
+        if add_default_dataset:
+            self.add_dataset(
+                None,
+                particles=particles,
+                mask=mask,
+                timeseries=timeseries,
+                plot_kwargs=plot_kwargs,
+                poisson=poisson,
+                poisson_kwargs=poisson_kwargs,
+            )
+
+    def add_dataset(self, id, *, plot_kwargs=None, poisson=True, poisson_kwargs=None, **kwargs):
+        """Create artists for a new dataset to the plot and optionally update their values
+
+        Args:
+            id (str): An arbitrary dataset identifier unique for this plot
+            plot_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.plot`.
+            poisson (bool): If true, indicate ideal poisson distribution.
+            poisson_kwargs (dict): Additional keyword arguments passed to the plot function for Poisson limit.
+                See :meth:`matplotlib.axes.Axes.plot` (only applicable if `poisson` is True).
+            **kwargs: Arguments passed to :meth:`~.particles.ParticleHistogramPlot.update`.
+        """
 
         # Create plot elements
         def create_artists(i, j, k, ax, p):
@@ -1164,10 +1190,12 @@ class SpillQualityPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, Metrices
         self._create_artists(create_artists)
 
         # set data
-        if particles is not None or timeseries is not None:
-            self.update(particles=particles, mask=mask, timeseries=timeseries)
+        if kwargs.get("particles") is not None or kwargs.get("timeseries") is not None:
+            self.update(**kwargs, dataset_id=id)
 
-    def update(self, particles=None, mask=None, *, autoscale=None, timeseries=None):
+    def update(
+        self, particles=None, mask=None, *, autoscale=None, timeseries=None, dataset_id=None
+    ):
         """Update plot with new data
 
         Args:
@@ -1177,6 +1205,7 @@ class SpillQualityPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, Metrices
                 One of `"x"`, `"y"`, `"xy"`, `False` or `None`. If `None`, decide based on :meth:`matplotlib.axes.Axes.get_autoscalex_on` and :meth:`matplotlib.axes.Axes.get_autoscaley_on`.
             timeseries (Timeseries | dict[str, Timeseries]): Pre-binned timeseries data with particle counts
                 as alternative to timestamp-based particle data. If a dictionary, it must contain the key `count`.
+            dataset_id (str | None): The dataset identifier to update if this plot represents multiple datasets
 
         Returns:
             Changed artists
@@ -1235,7 +1264,7 @@ class SpillQualityPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, Metrices
                     F, F_poisson = self._calculate_metric(counts, p, axis=1)
 
                     # update plot
-                    step, pstep = self.artists[i][j][k]
+                    step, pstep = self.artists[dataset_id, i, j, k]
                     steps = np.concatenate(([0], F, [0]))
                     step.set_data((edges, steps))
                     changed.append(step)
