@@ -143,4 +143,10 @@ html_theme_options = {
             "icon": "fa-solid fa-cube",
         },
     ],
+    "navbar_end": ["navbar-icon-links", "version-switcher"],
+    "switcher": {
+        "json_url": "https://xsuite.github.io/xplt/versions.json",
+        "version_match": '.'.join(version.split('.')[:2]),
+    },
+    "check_switcher": False,  # don't check url during build
 }
