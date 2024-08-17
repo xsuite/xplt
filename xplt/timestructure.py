@@ -502,7 +502,8 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
         kind="count",
         *,
         fmax=None,
-        exact_fmax=False,
+        fsamp=None,
+        fsamp_exact=False,
         relative=False,
         scaling=None,
         welch=None,
@@ -538,7 +539,9 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
                 This is a manifold subplot specification string like ``"count-cumulative"``, see :class:`~.base.XManifoldPlot` for details.
                 In addition, abbreviations for x-y-parameter pairs are supported (e.g. ``P`` for ``Px+Py``).
             fmax (float): Maximum frequency (in Hz) to plot.
-            exact_fmax (bool): Set this to True to force binning of particle times with exactly dt=1/(2*fmax).
+            fsamp (float | None): Sampling frequency (in Hz) for binning of particle times before FFT calculation.
+                Defaults to 2*fmax if not specified. See `fsamp_exact` parameter for details.
+            fsamp_exact (bool): Set this to True to force binning of particle times with exactly dt=1/fsamp.
                 By default, the bin width is reduced such that the number of bins is a power of two.
                 While this improves the performance of the FFT calculation (radix-2 FFT), it changes the Nyquist frequency
                 and thus may cause an unexpected aliasing. With exact_fmax=True, the Nyquist frequency is fmax and aliasing
@@ -568,7 +571,8 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
         """
 
         self._fmax = fmax
-        self._exact_fmax = exact_fmax
+        self._fsamp = fsamp
+        self._fsamp_exact = fsamp_exact
         self.relative = relative
         self._scaling = scaling
         if smoothing := kwargs.pop("smoothing", None):  # for backwards compatibility
@@ -576,6 +580,8 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
             welch = smoothing
         self.welch = welch
         self.averaging = averaging
+        self._actual_fs = {}
+
         kwargs = defaults(kwargs, log="y" if relative else "xy")
 
         kwargs = self._init_time_mixin(time_range=time_range, **kwargs)
@@ -675,7 +681,11 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
         if self._fmax is not None:
             return self._fmax
         if self.relative:
-            return self.frev(particles)
+            if fmax := self.frev(particles) is not None:
+                return fmax
+            raise ValueError(
+                "Either fmax, frev or twiss must be known when plotting relative frequencies."
+            )
         if default is not None:
             return default
         raise ValueError("fmax must be specified when plotting absolut frequencies.")
@@ -717,25 +727,25 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
                 timeseries[p] = Timeseries.from_timestamps(
                     times,
                     what=property,
-                    dt=1 / (2 * fmax),
+                    dt=1 / (self._fsamp or (2 * fmax)),
                     t_range=self.time_range,
-                    make_n_power_of_two=not self._exact_fmax,  # to improve FFT performance
+                    make_n_power_of_two=not self._fsamp_exact,  # to improve FFT performance
                 )
 
         # Timeseries based data
         ########################
         else:
             # binned timeseries provided by user, apply time range
-            fmax = np.nan
+            fmax = None
             ppscale = 1 if "count" not in timeseries else np.sum(timeseries["count"].data)
             for p in timeseries:
-                fmax = np.nanmax([fmax, self.fmax(default=timeseries[p].fs / 2)])
+                fmax = np.max(self.fmax(default=timeseries[p].fs / 2), initial=fmax)
                 if self.time_range is not None:
                     timeseries[p] = timeseries[p].crop(*self.time_range)
 
         # update plots
         changed = []
-        ts = None
+        fs = []
         for i, ppp in enumerate(self.on_y):
             for j, pp in enumerate(ppp):
                 a = self.axis(i, j)
@@ -743,6 +753,7 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
 
                     # calculate FFT
                     ts = timeseries[p]
+                    fs.append(ts.fs)
                     if self.welch is None:
                         freq = np.fft.rfftfreq(ts.size, d=ts.dt)
                         mag = np.abs(np.fft.rfft(ts.data, norm="forward"))
@@ -824,7 +835,23 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
                 if "y" in scaled and a.get_yscale() == "linear":
                     a.set_ylim(0, None, auto=None)
 
-        self.annotate(f"$\\Delta t_\\mathrm{{bin}} = {fmt(ts.dt)}$" if ts is not None else "")
+        # keep track of actual sampling frequencies
+        if np.abs(np.std(fs) / np.mean(fs)) > 1e-5:
+            fs = None  # trace has variable bin width
+        else:
+            fs = np.mean(fs)
+        self._actual_fs[dataset_id] = fs
+
+        # annotation
+        fs = np.unique(list(self._actual_fs.values()))
+        if len(fs) == 1:
+            if self.relative:
+                f = fs[0] / self.frev(particles)
+                self.annotate(f"$f_\\mathrm{{samp}} = {fmt(f, '1')}\\, f_\\mathrm{{rev}}$")
+            else:
+                self.annotate(f"$f_\\mathrm{{samp}} = {fmt(fs[ 0 ], 'Hz')}$")
+        else:
+            self.annotate("")
 
         return changed
 
