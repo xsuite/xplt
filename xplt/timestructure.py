@@ -9,7 +9,7 @@ __author__ = "Philipp Niedermayer"
 __contact__ = "eltos@outlook.de"
 __date__ = "2022-11-24"
 
-
+import warnings
 from dataclasses import dataclass
 import scipy.signal
 from .util import *
@@ -63,7 +63,7 @@ class TimePlotMixin:
                 raise ValueError("`particles` must be None when passing data via `timeseries`")
             if not isinstance(timeseries, dict):
                 if len(keys) != 1:
-                    raise ValueError("timeseries must be a dict of the form {kind: array}")
+                    raise ValueError(f"timeseries must be a dict with the following keys: {keys}")
                 timeseries = {keys[0]: timeseries}
             for ts in timeseries.values():
                 if not isinstance(ts, Timeseries):
@@ -382,6 +382,7 @@ class TimeBinPlot(ParticleHistogramPlot, TimePlotMixin):
         time_range=None,
         time_offset=0,
         plot_kwargs=None,
+        add_default_dataset=True,
         **kwargs,
     ):
         """
@@ -413,49 +414,83 @@ class TimeBinPlot(ParticleHistogramPlot, TimePlotMixin):
             time_range (tuple): Time range of particles to consider. If None, all particles are considered.
             time_offset (float): Time offset for x-axis is seconds, i.e. show values as `t-time_offset`.
             plot_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.plot`.
+            add_default_dataset (bool): Whether to add a default dataset.
+                Use :meth:`~.timestructure.TimeBinPlot.add_dataset` to manually add datasets.
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
         """
         kwargs = self._init_time_mixin(time_range=time_range, time_offset=time_offset, **kwargs)
 
-        self._use_timeseries_data = False
+        self._timeseries_key_mapping = dict(
+            rate="count", cumulative="count", charge="q", current="q"
+        )
 
         super().__init__(
             "t_offset" if time_offset else "t",
-            particles=None if particles == timeseries == None else (particles, timeseries),
             kind=kind,
             bin_width=bin_time,
             bin_count=bin_count,
             range=time_range,
             relative=relative,
             moment=moment,
-            mask=mask,
-            plot_kwargs=plot_kwargs,
+            add_default_dataset=False,
             **kwargs,
         )
 
+        if add_default_dataset:
+            self.add_dataset(
+                None,
+                particles=particles,
+                timeseries=timeseries,
+                mask=mask,
+                plot_kwargs=plot_kwargs,
+            )
+
+    def add_dataset(self, id, *, plot_kwargs=None, particles=None, timeseries=None, **kwargs):
+        """Create artists for a new dataset to the plot and optionally update their values
+
+        See :meth:`~.particles.ParticleHistogramPlot.add_dataset`.
+        """
+
+        super().add_dataset(id, plot_kwargs=plot_kwargs, **kwargs)
+
+        # set data
+        if particles is not None or timeseries is not None:
+            self.update(particles, timeseries=timeseries, **kwargs, dataset_id=id)
+
     def _histogram(self, p, data, mask):
         if self._data_is_ts:
+            p = self._timeseries_key_mapping.get(p, p)
             ts: Timeseries = get(data, p)
-            if self.time_range:
-                ts = ts.crop(*self.time_range)
+            if self.range:
+                ts = ts.crop(*self.range)
+            if self.bin_width and self.bin_count is None:
+                ts = ts.resample(dt=self.bin_width, mode="sum")
+            elif self.bin_count and self.bin_width is None:
+                ts = ts.resample(dt=ts.duration / self.bin_count, mode="sum")
+            else:
+                raise ValueError("Only one of bin_count or bin_width must be given")
             return ts.data, ts.times(endpoint=True)
 
         return super()._histogram(p, data, mask)
 
-    def update(self, particles_timeseries, mask=None, autoscale=None):
+    def update(self, particles, mask=None, *, timeseries=None, autoscale=None, dataset_id=None):
         """Update plot with new data
 
-        See :meth:`~.particles.ParticleHistogramPlot.update`
-        except that `particles_timeseries` is a tupple (`particles`, `timeseries`).
-
+        See :meth:`~.particles.ParticleHistogramPlot.update`.
         """
 
-        particles, timeseries = particles_timeseries
-        timeseries = self._check_timeseries_data(particles, timeseries, keys=self.on_y_unique)
+        # check that the provided data is sufficient to plot the requested properties
+        keys = list(set([self._timeseries_key_mapping.get(k, k) for k in self.on_y_unique]))
+        timeseries = self._check_timeseries_data(particles, timeseries, keys=keys)
         self._data_is_ts = timeseries is not None
 
-        return super().update(timeseries if self._data_is_ts else particles, mask, autoscale)
+        return super().update(
+            timeseries if self._data_is_ts else particles,
+            mask,
+            autoscale=autoscale,
+            dataset_id=dataset_id,
+        )
 
 
 class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHistogramPlotMixin):
@@ -467,13 +502,19 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
         kind="count",
         *,
         fmax=None,
+        fsamp=None,
+        fsamp_exact=False,
         relative=False,
         scaling=None,
-        smoothing=None,
+        welch=None,
         mask=None,
         timeseries=None,
         time_range=None,
         plot_kwargs=None,
+        averaging=None,
+        averaging_shadow=True,
+        averaging_shadow_kwargs=None,
+        add_default_dataset=True,
         **kwargs,
     ):
         """
@@ -498,25 +539,49 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
                 This is a manifold subplot specification string like ``"count-cumulative"``, see :class:`~.base.XManifoldPlot` for details.
                 In addition, abbreviations for x-y-parameter pairs are supported (e.g. ``P`` for ``Px+Py``).
             fmax (float): Maximum frequency (in Hz) to plot.
+            fsamp (float | None): Sampling frequency (in Hz) for binning of particle times before FFT calculation.
+                Defaults to 2*fmax if not specified. See `fsamp_exact` parameter for details.
+            fsamp_exact (bool): Set this to True to force binning of particle times with exactly dt=1/fsamp.
+                By default, the bin width is reduced such that the number of bins is a power of two.
+                While this improves the performance of the FFT calculation (radix-2 FFT), it changes the Nyquist frequency
+                and thus may cause an unexpected aliasing. With exact_fmax=True, the Nyquist frequency is fmax and aliasing
+                occurs at that exact frequency. To avoid aliasing, one has to choose a sufficiently high fmax in the first place.
             relative (bool): If True, plot relative frequencies (f/frev) instead of absolute frequencies (f).
             scaling (str | dict): Scaling of the FFT. Can be ``"amplitude"``, ``"power"`` or ``"pdspp"`` or a dict with a scaling per property where
                 `amplitude` (default for non-count based properties) scales the FFT magnitude to the amplitude,
                 `power` (power density spectrum, default for count based properties) scales the FFT magnitude to power,
                 `pdspp` (power density spectrum per particle) is simmilar to 'pds' but normalized to particle number.
-            smoothing (int | None): If not None, uses Welch's method to compute a smoothened FFT with `2**smoothing` segments.
+            welch (int | None): If not None, uses Welch's method to compute a smoothened FFT with `2**welch` segments.
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
             timeseries (Timeseries | dict[str, Timeseries]): Pre-binned timeseries data as alternative to timestamp-based particle data.
                 The dictionary must contain keys for each `kind` (e.g. `count`).
             time_range (tuple): Time range of particles to consider. If None, all particles are considered.
             plot_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.plot`.
+            averaging (int | float | None): If not None, smooth the FFT by averaging over this many subsequent bins.
+                This also adds a shadow with min/max values in the corresponding bins (unless averaging_shadow is False).
+                For linear scaled frequency axis, the averaging factor corresponds to the number of bins.
+                For log scaled axis, the factor corresponds to the first bins and is then raised to the x-th power
+                to maintain a persistent averaging range in log space.
+                This also reduces the plot complexity (line segments) and improves rendering speed.
+            averaging_shadow (bool): Use this to en-/disable the shadow in case of averaging. See averaging parameter.
+            averaging_shadow_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.fill_between`.
+            add_default_dataset (bool): Whether to add a default dataset.
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
         """
 
         self._fmax = fmax
+        self._fsamp = fsamp
+        self._fsamp_exact = fsamp_exact
         self.relative = relative
         self._scaling = scaling
-        self.smoothing = smoothing
+        if smoothing := kwargs.pop("smoothing", None):  # for backwards compatibility
+            warnings.warn("Use welch=... instead of smoothing=...!", DeprecationWarning)
+            welch = smoothing
+        self.welch = welch
+        self.averaging = averaging
+        self._actual_fs = {}
+
         kwargs = defaults(kwargs, log="y" if relative else "xy")
 
         kwargs = self._init_time_mixin(time_range=time_range, **kwargs)
@@ -531,22 +596,67 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
             on_x="frel" if self.relative else "f", on_y=kind, **kwargs
         )  # handled manually
 
+        if add_default_dataset:
+            self.add_dataset(
+                None,
+                particles=particles,
+                mask=mask,
+                timeseries=timeseries,
+                plot_kwargs=plot_kwargs,
+                averaging_shadow=averaging_shadow,
+                averaging_shadow_kwargs=averaging_shadow_kwargs,
+            )
+
+    def add_dataset(
+        self,
+        id,
+        *,
+        plot_kwargs=None,
+        averaging_shadow=True,
+        averaging_shadow_kwargs=None,
+        **kwargs,
+    ):
+        """Create artists for a new dataset to the plot and optionally update their values
+
+        Args:
+            id (str): An arbitrary dataset identifier unique for this plot
+            plot_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.plot`.
+            averaging_shadow (bool): Use this to en-/disable the shadow in case of averaging.
+                See averaging parameter of :class:`~.particles.ParticleHistogramPlot` constructor.
+            averaging_shadow_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.fill_between`.
+            **kwargs: Arguments passed to :meth:`~.particles.ParticleHistogramPlot.update`.
+        """
+
         # Create plot elements
         def create_artists(i, j, k, ax, p):
             kwargs = defaults_for(
                 "plot", plot_kwargs, lw=1, label=self._legend_label_for((i, j, k))
             )
-            return ax.plot([], [], **kwargs)[0]
+            plot = ax.plot([], [], **kwargs)[0]
+            if self.averaging is not None and averaging_shadow:
+                kwargs.update(color=plot.get_color())
+                self._errkw = kwargs.copy()
+                self._errkw.update(
+                    defaults_for(
+                        "fill_between",
+                        averaging_shadow_kwargs,
+                        zorder=1.8,
+                        alpha=0.1,
+                        ls="-",
+                        lw=0,
+                    )
+                )
+                errorbar = ax.fill_between([], [], [], **self._errkw)
+                errorbar._join_legend_entry_with = plot
+                return [plot, errorbar]
+            else:
+                return plot
 
         self._create_artists(create_artists)
 
         # set data
-        if particles is not None or timeseries is not None:
-            self.update(
-                particles,
-                mask=mask,
-                timeseries=timeseries,
-            )
+        if kwargs.get("particles") is not None or kwargs.get("timeseries") is not None:
+            self.update(**kwargs, dataset_id=id)
 
     def _get_scaling(self, key):
         if isinstance(self._scaling, str):
@@ -571,12 +681,18 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
         if self._fmax is not None:
             return self._fmax
         if self.relative:
-            return self.frev(particles)
+            if fmax := self.frev(particles) is not None:
+                return fmax
+            raise ValueError(
+                "Either fmax, frev or twiss must be known when plotting relative frequencies."
+            )
         if default is not None:
             return default
         raise ValueError("fmax must be specified when plotting absolut frequencies.")
 
-    def update(self, particles=None, mask=None, autoscale=None, *, timeseries=None):
+    def update(
+        self, particles=None, mask=None, *, autoscale=None, timeseries=None, dataset_id=None
+    ):
         """Update plot with new data
 
         Args:
@@ -586,6 +702,7 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
                 One of `"x"`, `"y"`, `"xy"`, `False` or `None`. If `None`, decide based on :meth:`matplotlib.axes.Axes.get_autoscalex_on` and :meth:`matplotlib.axes.Axes.get_autoscaley_on`.
             timeseries (Timeseries | dict[str, Timeseries]): Pre-binned timeseries data as alternative to timestamp-based particle data.
                 The dictionary must contain keys for each `kind` (e.g. `count`).
+            dataset_id (str | None): The dataset identifier to update if this plot represents multiple datasets
 
         Returns:
             list: Changed artists
@@ -610,32 +727,34 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
                 timeseries[p] = Timeseries.from_timestamps(
                     times,
                     what=property,
-                    dt=1 / (2 * fmax),
+                    dt=1 / (self._fsamp or (2 * fmax)),
                     t_range=self.time_range,
-                    make_n_power_of_two=True,  # to improve FFT performance, round up to next power of 2
+                    make_n_power_of_two=not self._fsamp_exact,  # to improve FFT performance
                 )
 
         # Timeseries based data
         ########################
         else:
             # binned timeseries provided by user, apply time range
-            fmax = np.nan
+            fmax = None
             ppscale = 1 if "count" not in timeseries else np.sum(timeseries["count"].data)
             for p in timeseries:
-                fmax = np.nanmax([fmax, self.fmax(default=timeseries[p].fs / 2)])
+                fmax = np.max(self.fmax(default=timeseries[p].fs / 2), initial=fmax)
                 if self.time_range is not None:
                     timeseries[p] = timeseries[p].crop(*self.time_range)
 
         # update plots
         changed = []
-        ts = None
+        fs = []
         for i, ppp in enumerate(self.on_y):
             for j, pp in enumerate(ppp):
+                a = self.axis(i, j)
                 for k, p in enumerate(pp):
 
                     # calculate FFT
                     ts = timeseries[p]
-                    if self.smoothing is None:
+                    fs.append(ts.fs)
+                    if self.welch is None:
                         freq = np.fft.rfftfreq(ts.size, d=ts.dt)
                         mag = np.abs(np.fft.rfft(ts.data, norm="forward"))
                         mag[
@@ -646,7 +765,7 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
                         freq, mag2 = scipy.signal.welch(
                             ts.data,
                             fs=ts.fs,
-                            nperseg=ts.size // 2**self.smoothing,
+                            nperseg=ts.size // 2**self.welch,
                             scaling="spectrum",
                         )
                         mag = np.sqrt(2 * mag2)  # one-sided spectrum contains only half the power
@@ -683,15 +802,56 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
                         mag = np.cumsum(mag)
 
                     # update plot
-                    self.artists[i][j][k].set_data(freq, mag)
-                    changed.append(self.artists[i][j][k])
+                    art = self.artists[dataset_id, i, j, k]
 
-                a = self.axis(i, j)
+                    if self.averaging and isinstance(art, list):
+                        # smoothing by averaging
+                        args = dict(n=self.averaging, logspace=a.get_xscale() == "log")
+                        magma = average(mag, function=np.max, **args)
+                        magmi = average(mag, function=np.min, **args)
+                        freq, mag = average(freq, mag, function=np.mean, **args)
+
+                        # update plot
+                        join_legend_entry_with = art[1]._join_legend_entry_with
+                        changed.append(art[1])
+                        art[1].remove()
+                        art[1] = a.fill_between(freq, magmi, magma, **self._errkw)
+                        art[1]._join_legend_entry_with = join_legend_entry_with
+                        changed.append(art[1])
+
+                        art = art[0]
+
+                    art.set_data(freq, mag)
+                    changed.append(art)
+
                 scaled = self._autoscale(a, autoscale, tight="x")
+                if "x" in scaled:
+                    xlim = np.array((10.0 if a.get_xscale() == "log" else 0.0, fmax))
+                    if self.relative:
+                        xlim /= self.frev(particles)
+                    else:
+                        xlim *= self.factor_for("f")
+                    a.set_xlim(*xlim, auto=None)
                 if "y" in scaled and a.get_yscale() == "linear":
                     a.set_ylim(0, None, auto=None)
 
-        self.annotate(f"$\\Delta t_\\mathrm{{bin}} = {fmt(ts.dt)}$" if ts is not None else "")
+        # keep track of actual sampling frequencies
+        if np.abs(np.std(fs) / np.mean(fs)) > 1e-5:
+            fs = None  # trace has variable bin width
+        else:
+            fs = np.mean(fs)
+        self._actual_fs[dataset_id] = fs
+
+        # annotation
+        fs = np.unique(list(self._actual_fs.values()))
+        if len(fs) == 1:
+            if self.relative:
+                f = fs[0] / self.frev(particles)
+                self.annotate(f"$f_\\mathrm{{samp}} = {fmt(f, '1')}\\, f_\\mathrm{{rev}}$")
+            else:
+                self.annotate(f"$f_\\mathrm{{samp}} = {fmt(fs[ 0 ], 'Hz')}$")
+        else:
+            self.annotate("")
 
         return changed
 
@@ -760,6 +920,7 @@ class TimeIntervalPlot(
         time_range=None,
         plot_kwargs=None,
         poisson_kwargs=None,
+        add_default_dataset=True,
         **kwargs,
     ):
         """
@@ -788,6 +949,8 @@ class TimeIntervalPlot(
             plot_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.plot`.
             poisson_kwargs (dict): Additional keyword arguments passed to the plot function for Poisson limit.
                 See :meth:`matplotlib.axes.Axes.plot` (only applicable if `poisson` is True).
+            add_default_dataset (bool): Whether to add a default dataset.
+                Use :meth:`~.timestructure.TimeIntervalPlot.add_dataset` to manually add datasets.
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
 
@@ -815,10 +978,40 @@ class TimeIntervalPlot(
         self.relative = relative
         self.dt_max = dt_max
 
+        # Format plot axes
+        for a in self.axflat:
+            if self.relative:
+                a.yaxis.set_major_formatter(mpl.ticker.PercentFormatter(1))
+
+        if add_default_dataset:
+            self.add_dataset(
+                None,
+                particles=particles,
+                mask=mask,
+                plot_kwargs=plot_kwargs,
+                poisson=poisson,
+                poisson_kwargs=poisson_kwargs,
+            )
+
+    def add_dataset(self, id, *, plot_kwargs=None, poisson=False, poisson_kwargs=None, **kwargs):
+        """Create artists for a new dataset to the plot and optionally update their values
+
+        Args:
+            id (str): An arbitrary dataset identifier unique for this plot
+            plot_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.plot`.
+            poisson (bool): If true, indicate ideal poisson distribution.
+            poisson_kwargs (dict): Additional keyword arguments passed to the plot function for Poisson limit.
+                See :meth:`matplotlib.axes.Axes.plot` (only applicable if `poisson` is True).
+            **kwargs: Arguments passed to :meth:`~.particles.ParticleHistogramPlot.update`.
+        """
+
         # Create plot elements
         def create_artists(i, j, k, ax, p):
             kwargs = defaults_for(
-                "plot", plot_kwargs, lw=1, label=self._legend_label_for((i, j, k))
+                "plot",
+                plot_kwargs,
+                lw=1.5 if p == "cumulative" else 1,
+                label=self._legend_label_for((i, j, k)),
             )
             if self._count_based(p):
                 kwargs = defaults_for("plot", kwargs, drawstyle="steps-pre")
@@ -833,7 +1026,7 @@ class TimeIntervalPlot(
                         color=plot.get_color() or "gray",
                         alpha=0.5,
                         zorder=1.9,
-                        lw=1,
+                        lw=1.5 if p == "cumulative" else 1,
                         ls=":",
                         label="Poisson ideal",
                     )
@@ -845,14 +1038,9 @@ class TimeIntervalPlot(
 
         self._create_artists(create_artists)
 
-        # Format plot axes
-        for a in self.axflat:
-            if self.relative:
-                a.yaxis.set_major_formatter(mpl.ticker.PercentFormatter(1))
-
         # set data
-        if particles is not None:
-            self.update(particles, mask=mask)
+        if kwargs.get("particles") is not None:
+            self.update(**kwargs, dataset_id=id)
 
     @property
     def bin_time(self):
@@ -862,7 +1050,7 @@ class TimeIntervalPlot(
     def bin_count(self):
         return int(np.ceil(self.dt_max / self.bin_time))
 
-    def update(self, particles, mask=None, autoscale=None):
+    def update(self, particles, mask=None, *, autoscale=None, dataset_id=None):
         """Update plot with new data
 
         Args:
@@ -870,6 +1058,7 @@ class TimeIntervalPlot(
             mask (Any): An index mask to select particles to plot. If None, all particles are plotted.
             autoscale (str | None | bool): Whether and on which axes to perform autoscaling.
                 One of `"x"`, `"y"`, `"xy"`, `False` or `None`. If `None`, decide based on :meth:`matplotlib.axes.Axes.get_autoscalex_on` and :meth:`matplotlib.axes.Axes.get_autoscaley_on`.
+            dataset_id (str | None): The dataset identifier to update if this plot represents multiple datasets
 
         """
 
@@ -907,7 +1096,7 @@ class TimeIntervalPlot(
                     counts *= self.factor_for(p)
 
                     # update plot
-                    plot, pplot = self.artists[i][j][k]
+                    plot, pplot = self.artists[dataset_id, i, j, k]
                     if p == "cumulative":
                         # steps open after last bin
                         counts = np.concatenate(([0], np.cumsum(counts)))
@@ -969,6 +1158,7 @@ class SpillQualityPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, Metrices
         time_offset=0,
         plot_kwargs=None,
         poisson_kwargs=None,
+        add_default_dataset=True,
         **kwargs,
     ):
         """
@@ -997,6 +1187,8 @@ class SpillQualityPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, Metrices
             plot_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.step`.
             poisson_kwargs (dict): Additional keyword arguments passed to the plot function for Poisson limit.
                 See :meth:`matplotlib.axes.Axes.step` (only applicable if `poisson` is True).
+            add_default_dataset (bool): Whether to add a default dataset.
+                Use :meth:`~.timestructure.SpillQualityPlot.add_dataset` to manually add datasets.
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
         """
@@ -1013,6 +1205,29 @@ class SpillQualityPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, Metrices
 
         # Format plot axes
         self._format_metric_axes(kwargs.get("ax") is None)
+
+        if add_default_dataset:
+            self.add_dataset(
+                None,
+                particles=particles,
+                mask=mask,
+                timeseries=timeseries,
+                plot_kwargs=plot_kwargs,
+                poisson=poisson,
+                poisson_kwargs=poisson_kwargs,
+            )
+
+    def add_dataset(self, id, *, plot_kwargs=None, poisson=True, poisson_kwargs=None, **kwargs):
+        """Create artists for a new dataset to the plot and optionally update their values
+
+        Args:
+            id (str): An arbitrary dataset identifier unique for this plot
+            plot_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.plot`.
+            poisson (bool): If true, indicate ideal poisson distribution.
+            poisson_kwargs (dict): Additional keyword arguments passed to the plot function for Poisson limit.
+                See :meth:`matplotlib.axes.Axes.plot` (only applicable if `poisson` is True).
+            **kwargs: Arguments passed to :meth:`~.particles.ParticleHistogramPlot.update`.
+        """
 
         # Create plot elements
         def create_artists(i, j, k, ax, p):
@@ -1041,10 +1256,12 @@ class SpillQualityPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, Metrices
         self._create_artists(create_artists)
 
         # set data
-        if particles is not None or timeseries is not None:
-            self.update(particles=particles, mask=mask, timeseries=timeseries)
+        if kwargs.get("particles") is not None or kwargs.get("timeseries") is not None:
+            self.update(**kwargs, dataset_id=id)
 
-    def update(self, particles=None, mask=None, autoscale=None, *, timeseries=None):
+    def update(
+        self, particles=None, mask=None, *, autoscale=None, timeseries=None, dataset_id=None
+    ):
         """Update plot with new data
 
         Args:
@@ -1054,6 +1271,7 @@ class SpillQualityPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, Metrices
                 One of `"x"`, `"y"`, `"xy"`, `False` or `None`. If `None`, decide based on :meth:`matplotlib.axes.Axes.get_autoscalex_on` and :meth:`matplotlib.axes.Axes.get_autoscaley_on`.
             timeseries (Timeseries | dict[str, Timeseries]): Pre-binned timeseries data with particle counts
                 as alternative to timestamp-based particle data. If a dictionary, it must contain the key `count`.
+            dataset_id (str | None): The dataset identifier to update if this plot represents multiple datasets
 
         Returns:
             Changed artists
@@ -1112,7 +1330,7 @@ class SpillQualityPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, Metrices
                     F, F_poisson = self._calculate_metric(counts, p, axis=1)
 
                     # update plot
-                    step, pstep = self.artists[i][j][k]
+                    step, pstep = self.artists[dataset_id, i, j, k]
                     steps = np.concatenate(([0], F, [0]))
                     step.set_data((edges, steps))
                     changed.append(step)
@@ -1147,6 +1365,7 @@ class SpillQualityTimescalePlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin,
         std_kwargs=None,
         poisson_kwargs=None,
         ignore_insufficient_statistics=False,
+        add_default_dataset=True,
         **kwargs,
     ):
         """
@@ -1185,6 +1404,8 @@ class SpillQualityTimescalePlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin,
             poisson_kwargs (dict): Additional keyword arguments passed to the plot function for Poisson limit.
                 See :meth:`matplotlib.axes.Axes.plot` (only applicable if `poisson` is True).
             ignore_insufficient_statistics (bool): When set to True, the plot will include data with insufficient statistics.
+            add_default_dataset (bool): Whether to add a default dataset.
+                Use :meth:`~.timestructure.SpillQualityTimescalePlot.add_dataset` to manually add datasets.
             kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
 
@@ -1208,6 +1429,51 @@ class SpillQualityTimescalePlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin,
 
         # Format plot axes
         self._format_metric_axes(kwargs.get("ax") is None)
+
+        if add_default_dataset:
+            self.add_dataset(
+                None,
+                particles=particles,
+                mask=mask,
+                timeseries=timeseries,
+                plot_kwargs=plot_kwargs,
+                std=std,
+                std_kwargs=std_kwargs,
+                poisson=poisson,
+                poisson_kwargs=poisson_kwargs,
+                ignore_insufficient_statistics=ignore_insufficient_statistics,
+            )
+
+        # legend with combined patch
+        if std:
+            self.legend()
+
+    def add_dataset(
+        self,
+        id,
+        *,
+        plot_kwargs=None,
+        std=True,
+        std_kwargs=None,
+        poisson=True,
+        poisson_kwargs=None,
+        **kwargs,
+    ):
+        """Create artists for a new dataset to the plot and optionally update their values
+
+        Args:
+            id (str): An arbitrary dataset identifier unique for this plot
+            plot_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.plot`.
+            std (bool): Whether or not to plot standard deviation of variability as errorbar.
+                Only relevant if counting_bins_per_evaluation is not None.
+            std_kwargs (dict): Additional keyword arguments passed to the plot function for std errorbar.
+                See :meth:`matplotlib.axes.Axes.fill_between` (only applicable if `std` is True).
+            poisson (bool): Whether or not to plot the Poisson limit.
+            poisson_kwargs (dict): Additional keyword arguments passed to the plot function for Poisson limit.
+                See :meth:`matplotlib.axes.Axes.plot` (only applicable if `poisson` is True).
+            **kwargs: Arguments passed to :meth:`~.timestructure.SpillQualityTimescalePlot.update`.
+
+        """
 
         # Create plot elements
         def create_artists(i, j, k, ax, p):
@@ -1234,20 +1500,11 @@ class SpillQualityTimescalePlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin,
                 pstep = None
             return [plot, errorbar, pstep]
 
-        self._create_artists(create_artists)
-
-        # legend with combined patch
-        if std:
-            self.legend()
+        self._create_artists(create_artists, dataset_id=id)
 
         # set data
-        if particles is not None or timeseries is not None:
-            self.update(
-                particles=particles,
-                mask=mask,
-                timeseries=timeseries,
-                ignore_insufficient_statistics=ignore_insufficient_statistics,
-            )
+        if kwargs.get("particles") or kwargs.get("timeseries") is not None:
+            self.update(**kwargs, dataset_id=id)
 
     def update(
         self,
@@ -1257,6 +1514,7 @@ class SpillQualityTimescalePlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin,
         *,
         timeseries=None,
         ignore_insufficient_statistics=False,
+        dataset_id=None,
     ):
         """Update plot with new data
 
@@ -1268,6 +1526,7 @@ class SpillQualityTimescalePlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin,
             timeseries (Timeseries | dict[str, Timeseries]): Pre-binned timeseries data with particle counts
                 as alternative to timestamp-based particle data. If a dictionary, it must contain the key `count`.
             ignore_insufficient_statistics (bool): When set to True, the plot will include data with insufficient statistics.
+            dataset_id (str | None): The dataset identifier to update if this plot represents multiple datasets
 
         Returns:
             Changed artists
@@ -1390,7 +1649,7 @@ class SpillQualityTimescalePlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin,
             for j, pp in enumerate(ppp):
                 ax = self.axis(i, j)
                 for k, p in enumerate(pp):
-                    plot, errorbar, pstep = self.artists[i][j][k]
+                    plot, errorbar, pstep = art = self.artists[dataset_id, i, j, k]
 
                     # update plot
                     plot.set_data((DT, F[p]))
@@ -1403,7 +1662,7 @@ class SpillQualityTimescalePlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin,
                             DT, F[p] - F_std[p], F[p] + F_std[p], **self._errkw
                         )
                         errorbar._join_legend_entry_with = join_legend_entry_with
-                        self.artists[i][j][k][1] = errorbar
+                        art[1] = errorbar
                         changed.append(errorbar)
                     if pstep:
                         pstep.set_data((DT, F_poisson[p]))

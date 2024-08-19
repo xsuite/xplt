@@ -58,7 +58,8 @@ def val(obj):
 
 def fmt(t, unit="s"):
     """Human-readable representation of value in unit (latex syntax)"""
-    return f"{pint.Quantity(t, unit):#~.4gL}"
+    t = float(f"{t:g}")  # to handle corner cases like 9.999999e-07
+    return f"{pint.Quantity(t, unit):#~.4gL}".rstrip("\\")
 
 
 #
@@ -137,7 +138,7 @@ def defaults_for(alias_provider, kwargs, /, **default_kwargs):
 
 def flattened(lists):
     """Flatten a list of nested lists recursively"""
-    if hasattr(lists, "__iter__"):
+    if hasattr(lists, "__iter__") and not isinstance(lists, str):
         return [item for sublist in lists for item in flattened(sublist)]
     return [lists]
 
@@ -159,27 +160,62 @@ class AttrDict(dict):
 #                self[k] = v
 
 
-def average(*data, n=100, function=np.mean):
+def average(*data, n=100, function=np.mean, logspace=False, keepdim=False):
     """Average the data
 
     Applies the function to n subsequent points of the data (along last axis) to yield one point in the output
 
     Args:
         data (np.ndarray): the data to average over
-        n (int): number of subsequent datapoints of intput to average into one point in the output. If the input size is not a multiple of n, the data will be clipped.
+        n (int | floor): number of subsequent datapoints of intput to average into one point in the output.
+            If the input size is not a multiple of n, the data will be clipped.
+            In case of logspace scaling, this can be a flost (usually 1 < n < 2 gives good results)
         function (function): averaging function to apply to last axis of input data. Defaults to np.mean
+        logspace (bool): If true, average N subsequent points where N is adjusted along the data to yield equal window sizes on a log scale
+        keepdim (bool): If true, repeat averaged data to keep the diemension of the input array
 
     Returns:
         averaged data
     """
     result = []
     for d in data:
-        w = int(d.shape[-1] / n)
-        result.append(function(d[..., : w * n].reshape(*d.shape[:-1], w, n), axis=-1))
+        if not logspace:
+            # linear space: work on every subsequent n samples
+            w = int(d.shape[-1] / n)
+            new = function(d[..., : w * n].reshape(*d.shape[:-1], w, n), axis=-1)
+            if keepdim:
+                new = np.repeat(new, n, axis=-1)
+                new = np.pad(
+                    new,
+                    [(0, 0)] * (new.ndim - 1) + [(0, d.shape[-1] - new.shape[-1])],
+                    constant_values=np.nan,
+                )
+        else:
+            # log space: work on every subsequent n**i samples
+            N = n ** np.arange(1, np.log(d.shape[-1]) / np.log(n))
+            N = np.unique(np.hstack(([0], N[N < d.shape[-1]].astype("int"))))
+            new = np.nan * (
+                np.empty_like(d) if keepdim else np.empty([*d.shape[:-1], N.size - 1])
+            )
+            for i, (n0, n1) in enumerate(zip(N[:-1], N[1:])):
+                new[..., slice(n0, n1) if keepdim else i] = v = function(d[..., n0:n1])
+
+        result.append(new)
+
     return result[0] if len(result) == 1 else result
 
 
 def smooth(*data, n):
+    """Smooth the data over n consecutive bins
+
+    Args:
+        *data (np.array): The data
+        n (int): Number of items to smooth over
+    Returns
+         (np.array | list[np.array]): The smooth array(s) with same shape as the original data
+             (but first and last n/2 values will be np.nan).
+
+    """
     if n:
         # preserves shape but first and last n/2 values will be np.nan
         data = [scipy.signal.savgol_filter(d, n, 0, mode="constant", cval=np.nan) for d in data]
@@ -189,7 +225,7 @@ def smooth(*data, n):
 def evaluate_expression_wrapper(expression, key, data):
     """Evaluate the expression wrapper"""
 
-    methods = dict(smooth=smooth, average=average, offset=lambda x, o: x + o)
+    methods = dict(np=np, smooth=smooth, average=average, offset=lambda x, o: x + o)
 
     try:
         return eval(expression, methods, {key: data})
@@ -253,6 +289,7 @@ def binned_data(
         n = int(np.ceil((v_max - v_min) / dv))
         if make_n_power_of_two:
             n = 1 << (n - 1).bit_length()
+            dv = (v_max - v_min) / n  # adjust bin width to match new n
     else:
         raise ValueError(f"Exactly one of n or dt must be specified, but got n={n} and dt={dv}")
 

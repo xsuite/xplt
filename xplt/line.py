@@ -139,7 +139,7 @@ class KnlPlot(XManifoldPlot):
         if line is not None:
             self.update(line)
 
-    def update(self, line, autoscale=None):
+    def update(self, line, *, autoscale=None):
         """
         Update the line data this plot shows
 
@@ -194,13 +194,7 @@ class KnlPlot(XManifoldPlot):
                     changed.append(art)
 
                 # autoscale
-                if self.filled:  # At present, relim does not support collection instances.
-                    data = mpl.transforms.Bbox.union(
-                        [a.get_datalim(ax.transData) for a in self.artists[i][j]]
-                    ).get_points()
-                else:
-                    data = None
-                self._autoscale(ax, autoscale, data=data, tight="x")
+                self._autoscale(ax, autoscale, tight="x")
 
         return changed
 
@@ -321,7 +315,7 @@ class FloorPlot(XPlot):
         if survey is not None:
             self.update(survey, line)
 
-    def update(self, survey, line=None, autoscale=None):
+    def update(self, survey, line=None, *, autoscale=None):
         """
         Update the survey data this plot shows
 

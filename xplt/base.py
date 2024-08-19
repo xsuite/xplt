@@ -12,6 +12,7 @@ __date__ = "2022-11-08"
 
 import re
 import types
+from packaging.version import Version
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -243,7 +244,7 @@ class XPlot:
             self.annotation = None
 
     def _autoscale(
-        self, ax, autoscale="xy", *, artists=None, data=None, reset=False, freeze=True, tight=None
+        self, ax, axis="xy", *, artists=None, data=None, reset=False, freeze=True, tight=None
     ):
         """Autoscale axes to fit given artists
 
@@ -251,7 +252,7 @@ class XPlot:
 
         Args:
             ax (matplotlib.axes.Axes): Axes to autoscale
-            autoscale (str | None | bool): Whether and on which axes to perform autoscaling.
+            axis (str | None | bool): Whether and on which axes to perform autoscaling.
                 One of `"x"`, `"y"`, `"xy"`, `False` or `None`. If `None`, decide based on :meth:`matplotlib.axes.Axes.get_autoscalex_on` and :meth:`matplotlib.axes.Axes.get_autoscaley_on`.
                 For backwards compatibility, the following aliases are also supported: `"both"`, `True`, `""`.
             artists (iterable): Artists to consider (if any)
@@ -259,21 +260,24 @@ class XPlot:
             reset (bool): Whether to ignore any data limits already registered.
             freeze (bool): Whether to keep the updated axes limits (True) or enable automatic
                 autoscaling on future draws (for all present and new artists).
-            tight (str | None): Enables tight scaling without margins for axis.
+            tight (str | None | bool): Enables tight scaling without margins for axis.
                 Any of `"x"`, `"y"`, `"xy"` or `"both"`, `""` or `None`.
 
         Returns:
             str: The axes autoscaled (`""`, `"x"`, `"y"` or `"xy"`)
         """
-        if autoscale is None:
-            autoscale = "x" * ax.get_autoscalex_on() + "y" * ax.get_autoscaley_on()
-        autoscale = {False: "", True: "xy", "both": "xy"}.get(autoscale, autoscale)
-        if not autoscale:
+        if axis is None:
+            axis = "x" * ax.get_autoscalex_on() + "y" * ax.get_autoscaley_on()
+        axis = {False: "", True: "xy", "both": "xy"}.get(axis, axis)
+        if not axis:
             return ""
-        tight = {"both": "xy", None: ""}.get(tight, tight)
+        tight_x = ("x" in tight or tight == "both") if isinstance(tight, str) else tight
+        tight_y = ("y" in tight or tight == "both") if isinstance(tight, str) else tight
 
         if artists is None and data is None:
-            ax.relim()  # use limits from all artists associated with the axis
+            # use limits from all artists associated with the axis   https://stackoverflow.com/a/71966295
+            # unlike ax.relim(), we also handle collections
+            artists = ax.lines + ax.collections + ax.patches + ax.images
 
         data = [] if data is None else data[:]  # make a copy so we can safely append
         limits = []
@@ -306,12 +310,9 @@ class XPlot:
                 raise NotImplementedError(f"Autoscaling not implemented for {art!r}")
 
         # Add limits from raw data
-        for x, y in data:
-            lim = mpl.transforms.Bbox.from_extents(
-                np.nanmin(x), np.nanmin(y), np.nanmax(x), np.nanmax(y)
-            )
-            if np.all(np.isfinite(lim.bounds)):
-                limits.append(lim)
+        if len(data) > 0:
+            x, y = [a[np.isfinite(a)] for a in np.transpose(data)]
+            limits.append(mpl.transforms.Bbox.from_extents(x.min(), y.min(), x.max(), y.max()))
 
         # Update axes limits
         if len(limits) > 0:
@@ -323,10 +324,14 @@ class XPlot:
                 ax.update_datalim(dataLim)  # takes previous datalim into account
 
         # Autoscale (on next and future draws)
-        if "x" in autoscale:
-            ax.autoscale(axis="x", tight="x" in tight)
-        if "y" in autoscale:
-            ax.autoscale(axis="y", tight="y" in tight)
+        if "x" in axis:
+            if tight_x is False and ax.margins()[0] == 0:
+                ax.margins(x=0.05)  # restore default margins
+            ax.autoscale(axis="x", tight=tight_x)
+        if "y" in axis:
+            if tight_y is False and ax.margins()[1] == 0:
+                ax.margins(y=0.05)  # restore default margins
+            ax.autoscale(axis="y", tight=tight_y)
 
         if freeze:
             # perform autoscale immediately and freeze limits
@@ -334,7 +339,7 @@ class XPlot:
             ax.set(xlim=ax.get_xlim(), ylim=ax.get_ylim())
             ax.set_autoscale_on(False)
 
-        return autoscale
+        return axis
 
     def annotate(self, text, **kwargs):
         if self.annotation is not None:
@@ -385,8 +390,9 @@ class XPlot:
             fname (str): Filename
             kwargs: Keyword arguments passed to :meth:`matplotlib.figure.Figure.savefig`
         """
+        pad_inches = "layout" if Version(mpl.__version__) >= Version("3.8") else None
         self.fig.savefig(
-            fname, **defaults(kwargs, dpi=300, pad_inches="layout", bbox_inches="tight")
+            fname, **defaults(kwargs, dpi=300, pad_inches=pad_inches, bbox_inches="tight")
         )
 
     def title(self, title, **kwargs):
@@ -705,6 +711,7 @@ class XManifoldPlot(XPlot):
         self.on_y, self.on_y_expression = self.parse_nested_list_string(
             on_y, on_y_separators, on_y_subs, strip_off_methods=True
         )
+        self._artists = {}
 
         super().__init__(
             nrows=len(self.on_y),
@@ -733,28 +740,139 @@ class XManifoldPlot(XPlot):
     def on_y_unique(self):
         return np.unique([p for ppp in self.on_y for pp in ppp for p in pp])
 
-    def _create_artists(self, callback):
+    def _create_artists(self, callback, dataset_id=None):
         """Helper method to create artists for subplots and twin axes
 
         Args:
-            callback (function[int, int, int, matplotlib.axes.Axes, str]): Callback function to create artists.
+            callback (callable[int, int, int, matplotlib.axes.Axes, str]): Callback function to create artists.
                 Signature: (i, j, k, axis, p) -> artist
                 Where i, j, k are the subplot, twin-axis, trace indices respectively;
                 axis is the axis and the string p is the property to plot.
+            dataset_id (str | None): The dataset identifier if this plot represents multiple datasets
         """
-        self.artists = []
+
+        if dataset_id in self._artists:
+            raise ValueError(f"Dataset identifier `{dataset_id}` already exists")
+        if dataset_id is not None and not isinstance(dataset_id, str):
+            raise ValueError(f"The dataset identifier must be a str, but got {type(dataset_id)}")
+
+        self._artists[dataset_id] = []
         for i, ppp in enumerate(self.on_y):
-            self.artists.append([])
+            self._artists[dataset_id].append([])
             for j, pp in enumerate(ppp):
-                self.artists[i].append([])
+                self._artists[dataset_id][i].append([])
                 a = self.axis(i, j)
                 for k, p in enumerate(pp):
                     artist = callback(i, j, k, a, p)
-                    self.artists[i][j].append(artist)
+                    self._artists[dataset_id][i][j].append(artist)
 
         self.legend(show="auto")
 
-    def artist(self, name=None, subplot=None, twin=None, trace=None):
+    @property
+    def artists(self):
+        """Convenient access to artist
+
+        The index can be an (optional) dataset identifier, followed by the subplot, axis and trace index.
+        If the dataset identifier is missing, traces are concatenated for all datasets
+        Examples: `self.artists[i][j][k]`, `self.artists[i,j,k]`, `self.artists[dataset_id,i,j,k]`
+        """
+
+        ALL = object()
+
+        class ArtistIndexHelper:
+            """Helper for convenient and backwards-compatible indexing of artists"""
+
+            def __init__(s, dataset=ALL, *indices):
+                s.dataset = dataset
+                s.indices = indices
+
+            def __iter__(s):
+                for i in range(len(s)):
+                    yield s[i]
+
+            def __len__(s):
+                d = s.dataset if s.dataset is not ALL else list(self._artists)[0]
+                if len(s.indices) == 0:
+                    return len(self._artists[d])
+                elif len(s.indices) == 1:
+                    (i,) = s.indices
+                    return len(self._artists[d][i])
+                elif len(s.indices) == 2:
+                    i, j = s.indices
+                    if s.dataset is not ALL:
+                        return len(self._artists[d][i][j])
+                    else:
+                        return sum([len(self._artists[d][i][j]) for d in self._artists])
+
+            def __getitem__(s, item):
+                if isinstance(item, tuple):
+                    return s[item[0]][item[1:]] if len(item) > 1 else s[item[0]]
+
+                elif item is None or isinstance(item, str) or item == ALL:  # select dataset
+                    if len(s.indices) > 0:
+                        raise IndexError("only the first index may be a string or None")
+                    return ArtistIndexHelper(dataset=item)
+
+                elif isinstance(item, int):  # return index for all datasets
+                    if len(s.indices) < 2:
+                        if item < 0 or item >= len(s):
+                            raise IndexError(f"list index {item} out of range 0..{len(s)}")
+                        return ArtistIndexHelper(s.dataset, *s.indices, item)
+                    else:
+                        i, j, k = *s.indices, item
+                        if s.dataset is not ALL:
+                            return self._artists[s.dataset][i][j][k]
+                        else:
+                            for d in self._artists:
+                                if 0 <= k < len(self._artists[d][i][j]):
+                                    return self._artists[d][i][j][k]
+                                else:
+                                    k -= len(self._artists[d][i][j])
+                            raise IndexError(f"list index {item} out of range")
+
+                else:
+                    raise IndexError(f"Index must be an int, string, tuple or None. Got {item}.")
+
+            def __setitem__(s, item, value):
+                if isinstance(item, tuple):
+                    if len(item) > 1:
+                        s[item[0]][item[1:]] = value
+                    else:
+                        s[item[0]] = value
+
+                elif len(s.indices) < 2:
+                    raise TypeError("Only single elements may be assigned")
+
+                elif isinstance(item, int):
+                    if item < 0 or item >= len(s):
+                        raise IndexError(f"list index {item} out of range 0..{len(s)}")
+
+                    i, j, k = *s.indices, item
+                    if s.dataset is not ALL:
+                        self._artists[s.dataset][i][j][k] = value
+                    else:
+                        for d in self._artists:
+                            if 0 <= k < len(self._artists[d][i][j]):
+                                self._artists[d][i][j][k] = value
+                                break
+                            else:
+                                k -= len(self._artists[d][i][j])
+                        else:
+                            raise IndexError(f"list index {item} out of range")
+
+                else:
+                    raise IndexError(f"Index must be an int, string, tuple or None. Got {item}.")
+
+            def __repr__(s):
+                info = f"ArtistIndexHelper(dataset={'ALL' if s.dataset is ALL else s.dataset}"
+                for i, label in enumerate(("subplot", "axis", "trace")):
+                    if len(s.indices) > i:
+                        info += f", {label}={s.indices[i]}"
+                return info + ")"
+
+        return ArtistIndexHelper()
+
+    def artist(self, name=None, subplot=None, twin=None, trace=None, *, dataset_id=None):
         """Return the artist either by name, or by subplot, twin axes and trace index
 
         Args:
@@ -762,6 +880,7 @@ class XManifoldPlot(XPlot):
             subplot (int | None): Flat subplot index
             twin (int | None): Twin axis index
             trace (int | None): Trace index
+            dataset_id (str | None): The dataset identifier if this plot represents multiple datasets
 
         Returns:
             matplotlib.artist.Artist: First artist that matches the given criteria
@@ -775,7 +894,7 @@ class XManifoldPlot(XPlot):
                         and (j == twin or twin is None)
                         and (k == trace or trace is None)
                     ):
-                        return self.artists[i][j][k]
+                        return self.artists[dataset_id][i][j][k]
 
     def _legend_label_for(self, p):
         """
@@ -814,6 +933,8 @@ class XManifoldPlot(XPlot):
             if show == "auto":
                 show = True  # always show legend if single subplot is specified
 
+        set_kwargs = {k: kwargs.pop(k) for k in ("in_layout",) if k in kwargs}
+
         for s in subplot:
             # aggregate handles and use topmost axes for legend
             handles = []
@@ -835,28 +956,32 @@ class XManifoldPlot(XPlot):
 
                 # show legend
                 if len(handles) > 0:
-                    ax.legend(handles=handles, labels=labels, **kwargs)
+                    legend = ax.legend(handles=handles, labels=labels, **kwargs)
+                    legend.set(**set_kwargs)
 
-    def autoscale(self, subplot="all", *, reset=False, freeze=True, tight=None):
+    def autoscale(self, subplot="all", *, axis="xy", reset=False, freeze=True, tight=None):
         """Autoscale the axes of a subplot
 
         Args:
             subplot (int | iterable | str): Subplot axis index, indices or "all"
+            axis (str | None | bool): Whether and on which axes to perform autoscaling.
+                One of `"x"`, `"y"`, `"xy"`, `False` or `None`. If `None`, decide based on :meth:`matplotlib.axes.Axes.get_autoscalex_on` and :meth:`matplotlib.axes.Axes.get_autoscaley_on`.
+                For backwards compatibility, the following aliases are also supported: `"both"`, `True`, `""`.
             reset (bool): Whether to ignore any data limits already registered.
             freeze (bool): Whether to keep the updated axes limits (True) or enable automatic
                 autoscaling on future draws (for all present and new artists).
             tight (str | None): Enables tight scaling without margins for the specified dimension.
                 May be ``"x"``, ``"y"``, ``"both"`` or ``None``.
         """
-        kwargs = dict(reset=reset, freeze=freeze, tight=tight)
+        kwargs = dict(axis=axis, reset=reset, freeze=freeze, tight=tight)
 
         if subplot == "all":
             subplot = range(len(self.axflat))
 
         for s in flattened(subplot):
-            self._autoscale(self.axflat[s], artists=self.artists[s][0], **kwargs)
+            self._autoscale(self.axflat[s], **kwargs)
             for i, axt in enumerate(self.axflat_twin[s]):
-                self._autoscale(axt, artists=self.artists[s][i], **kwargs)
+                self._autoscale(axt, **kwargs)
 
     def axline(self, kind, val, **kwargs):
         """Plot a vertical or horizontal line for a given coordinate

@@ -31,7 +31,7 @@ def test_phasespace(tb):
     tb.execute()  # just confirm that the notebook runs
 
 
-@testbook(f"{dir}/properties.ipynb")
+@testbook(f"{dir}/concepts.ipynb")
 def test_units(tb):
     tb.execute()  # just confirm that the notebook runs
 
