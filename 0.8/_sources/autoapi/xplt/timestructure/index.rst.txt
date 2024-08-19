@@ -81,8 +81,8 @@ Functions
    :param mask: An index mask to select particles to plot. If None, all particles are plotted.
    :type mask: Any
    :param timeseries: Pre-binned timeseries data with particle counts
-                      as alternative to timestamp-based particle data.
-   :type timeseries: Timeseries
+                      as alternative to timestamp-based particle data. If a dictionary, it must contain the key `count`.
+   :type timeseries: Timeseries | dict[str, Timeseries]
    :param time_range: Time range of particles to consider. If None, all particles are considered.
    :type time_range: tuple
    :param time_offset: Time offset for x-axis is seconds, i.e. show values as `t-time_offset`.
@@ -395,8 +395,8 @@ Functions
       :param autoscale: Whether to perform autoscaling on all axes.
       :type autoscale: bool
       :param timeseries: Pre-binned timeseries data with particle counts
-                         as alternative to timestamp-based particle data.
-      :type timeseries: Timeseries
+                         as alternative to timestamp-based particle data. If a dictionary, it must contain the key `count`.
+      :type timeseries: Timeseries | dict[str, Timeseries]
 
       :returns: Changed artists
 
@@ -441,8 +441,8 @@ Functions
    :param mask: An index mask to select particles to plot. If None, all particles are plotted.
    :type mask: Any
    :param timeseries: Pre-binned timeseries data with particle counts
-                      as alternative to timestamp-based particle data.
-   :type timeseries: Timeseries
+                      as alternative to timestamp-based particle data. If a dictionary, it must contain the key `count`.
+   :type timeseries: Timeseries | dict[str, Timeseries]
    :param time_range: Time range of particles to consider. If None, all particles are considered.
    :type time_range: tuple
    :param log: Whether or not to plot the x-axis in log scale.
@@ -760,8 +760,8 @@ Functions
       :param autoscale: Whether to perform autoscaling on all axes.
       :type autoscale: bool
       :param timeseries: Pre-binned timeseries data with particle counts
-                         as alternative to timestamp-based particle data.
-      :type timeseries: Timeseries
+                         as alternative to timestamp-based particle data. If a dictionary, it must contain the key `count`.
+      :type timeseries: Timeseries | dict[str, Timeseries]
       :param ignore_insufficient_statistics: When set to True, the plot will include data with insufficient statistics.
       :type ignore_insufficient_statistics: bool
 
@@ -2291,13 +2291,15 @@ Functions
       Create a timeseries from the timestamps provided
 
 
-   .. py:method:: resample(dt)
+   .. py:method:: resample(dt, *, mode='mean')
 
       Resample data to reduced time resolution
 
       :param dt: The new sampling period. If not a multiple of the original sampling period,
                  it is rounded accordingly.
       :type dt: float
+      :param mode: Resampling mode, either `"mean"` (default) or `"sum"` (for count data)
+      :type mode: str
 
       :returns: The timeseries with new resolution
       :rtype: Timeseries

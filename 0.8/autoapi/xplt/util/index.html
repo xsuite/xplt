@@ -6,25 +6,25 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>xplt.util &#8212; Xplt 0.8.0 documentation</title>
-  <script>
+    <title>xplt.util &#8212; Xplt 0.8.1 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=1e1de1a1873e13ef5536" rel="stylesheet">
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=1e1de1a1873e13ef5536" rel="stylesheet">
+  <link href="../../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
 
   
-  <link rel="stylesheet"
-    href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
-  <link rel="preload" as="font" type="font/woff2" crossorigin
-    href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+  <link href="../../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css" />
@@ -32,13 +32,18 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-codeautolink.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=1e1de1a1873e13ef5536">
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
 
     <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
     <script src="../../../_static/jquery.js"></script>
     <script src="../../../_static/underscore.js"></script>
     <script src="../../../_static/doctools.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'autoapi/xplt/util/index';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://xsuite.github.io/xplt/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.8';
+        </script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="prev" title="xplt.twiss" href="../twiss/index.html" />
@@ -48,6 +53,10 @@
   
   
   <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
 
   
   <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
@@ -93,7 +102,7 @@
 
   
   
-    <p class="title logo__title">Xplt 0.8.0 documentation</p>
+    <p class="title logo__title">Xplt 0.8.1 documentation</p>
   
 </a>
     
@@ -110,25 +119,25 @@
     </p>
     <ul id="navbar-main-elements" class="navbar-nav">
         
-                <li class="nav-item">
-                    <a class="nav-link" href="../../../quickstart.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../quickstart.html">
                         Quickstart
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="../../../usage.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../usage.html">
                         User guide
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item current active">
-                    <a class="nav-link" href="../../../api.html">
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../../../api.html">
                         API documentation
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
     </ul>
 </nav>
@@ -137,20 +146,14 @@
     </div>
 
     <div id="navbar-end">
-      <div class="navbar-end-item navbar-end__search-button-container">
-        
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" data-toggle="tooltip">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
   <i class="fa-solid fa-magnifying-glass"></i>
 </button>
-      </div>
+        </div>
       
-      <div class="navbar-end-item">
-        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" data-toggle="tooltip">
-    <a class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></a>
-    <a class="theme-switch" data-mode="dark"><i class="fa-regular fa-moon"></i></a>
-    <a class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></a>
-</span>
-      </div>
       
       <div class="navbar-end-item">
         <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
@@ -179,16 +182,30 @@
       </ul>
       </div>
       
+      <div class="navbar-end-item">
+        <div class="version-switcher__container dropdown">
+    <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-toggle="dropdown">
+        0.8  <!-- this text may get changed later by javascript -->
+        <span class="caret"></span>
+    </button>
+    <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+</div>
+      </div>
+      
     </div>
   </div>
 
 
   
-  <div class="search-button-container--mobile">
-<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" data-toggle="tooltip">
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
   <i class="fa-solid fa-magnifying-glass"></i>
 </button>
-  </div>
+    </div>
+  
 
   
   <label class="sidebar-toggle secondary-toggle" for="__secondary">
@@ -218,25 +235,25 @@
     </p>
     <ul id="navbar-main-elements" class="navbar-nav">
         
-                <li class="nav-item">
-                    <a class="nav-link" href="../../../quickstart.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../quickstart.html">
                         Quickstart
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item">
-                    <a class="nav-link" href="../../../usage.html">
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../../usage.html">
                         User guide
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
 
-                <li class="nav-item current active">
-                    <a class="nav-link" href="../../../api.html">
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="../../../api.html">
                         API documentation
-                    </a>
-                </li>
+                      </a>
+                    </li>
                 
     </ul>
 </nav>
@@ -248,14 +265,6 @@
     
     
     <div class="sidebar-header-items__end">
-      
-      <div class="navbar-end-item">
-        <span class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" data-toggle="tooltip">
-    <a class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></a>
-    <a class="theme-switch" data-mode="dark"><i class="fa-regular fa-moon"></i></a>
-    <a class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></a>
-</span>
-      </div>
       
       <div class="navbar-end-item">
         <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
@@ -282,6 +291,18 @@
             <label class="sr-only">PyPI</label></a>
         </li>
       </ul>
+      </div>
+      
+      <div class="navbar-end-item">
+        <div class="version-switcher__container dropdown">
+    <button type="button" class="version-switcher__button btn btn-sm navbar-btn dropdown-toggle" data-toggle="dropdown">
+        0.8  <!-- this text may get changed later by javascript -->
+        <span class="caret"></span>
+    </button>
+    <div class="version-switcher__menu dropdown-menu list-group-flush py-0">
+    <!-- dropdown will be populated by javascript on page load -->
+    </div>
+</div>
       </div>
       
     </div>
@@ -323,8 +344,11 @@
     </div>
   </div>
 
+  
+  <div id="rtd-footer-container"></div>
+
       </div>
-      <main class="bd-main">
+      <main id="main-content" class="bd-main">
         
         
         <div class="bd-content">
@@ -424,7 +448,7 @@
 </table>
 <dl class="py class">
 <dt class="sig sig-object py" id="xplt.util.AttrDict">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">AttrDict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.8.0/xplt/util.py#L139-L144"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.AttrDict" title="Permalink to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">AttrDict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.8.1/xplt/util.py#L139-L144"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.AttrDict" title="Permalink to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></p>
 <p>Dict which allows accessing values via key attributes</p>
 <p>Initialize self.  See help(type(self)) for accurate signature.</p>
@@ -500,7 +524,7 @@ In either case, this is followed by: for k in F:  D[k] = F[k]</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="xplt.util.average">
-<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">average</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">np.mean</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.8.0/xplt/util.py#L156-L173"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.average" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">average</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">np.mean</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.8.1/xplt/util.py#L156-L173"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.average" title="Permalink to this definition">#</a></dt>
 <dd><p>Average the data</p>
 <p>Applies the function to n subsequent points of the data (along last axis) to yield one point in the output</p>
 <dl class="field-list simple">
@@ -519,7 +543,7 @@ In either case, this is followed by: for k in F:  D[k] = F[k]</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="xplt.util.binned_data">
-<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">binned_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">what</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">moments</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">make_n_power_of_two</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.8.0/xplt/util.py#L203-L282"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.binned_data" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">binned_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">what</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">moments</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">make_n_power_of_two</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.8.1/xplt/util.py#L203-L282"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.binned_data" title="Permalink to this definition">#</a></dt>
 <dd><p>Get histogrammed data with equally spaced bins</p>
 <p>From the non-equally distributed values, a histogram or timeseries with equally
 spaced bins is derived. The parameter <code class="docutils literal notranslate"><span class="pre">what</span></code> determines what is returned for the timeseries.
@@ -558,7 +582,7 @@ Useful to increase performance of calculating FFTs on the timeseries data.</p></
 
 <dl class="py function">
 <dt class="sig sig-object py" id="xplt.util.defaults">
-<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">defaults</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kwargs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">default_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.8.0/xplt/util.py#L94-L103"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.defaults" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">defaults</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kwargs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">default_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.8.1/xplt/util.py#L94-L103"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.defaults" title="Permalink to this definition">#</a></dt>
 <dd><p>Return keyword arguments with defaults</p>
 <p>Returns a union of keyword arguments, where <cite>kwargs</cite> take precedence over <cite>default_kwargs</cite>.</p>
 <dl class="field-list simple">
@@ -573,7 +597,7 @@ Useful to increase performance of calculating FFTs on the timeseries data.</p></
 
 <dl class="py function">
 <dt class="sig sig-object py" id="xplt.util.defaults_for">
-<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">defaults_for</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alias_provider</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">default_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.8.0/xplt/util.py#L106-L129"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.defaults_for" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">defaults_for</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alias_provider</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">default_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.8.1/xplt/util.py#L106-L129"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.defaults_for" title="Permalink to this definition">#</a></dt>
 <dd><p>Return normalized keyword arguments with defaults</p>
 <p>Returns a union of keyword arguments, where <cite>kwargs</cite> take precedence over <cite>default_kwargs</cite>.
 All keyword arguments are normalized beforehand via <code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.cbook.normalize_kwargs()</span></code>.</p>
@@ -590,7 +614,7 @@ All keyword arguments are normalized beforehand via <code class="xref py py-meth
 
 <dl class="py function">
 <dt class="sig sig-object py" id="xplt.util.denormalized_coordinates">
-<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">denormalized_coordinates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Px</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">twiss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.8.0/xplt/util.py#L310-L330"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.denormalized_coordinates" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">denormalized_coordinates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Px</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">twiss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.8.1/xplt/util.py#L310-L330"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.denormalized_coordinates" title="Permalink to this definition">#</a></dt>
 <dd><p>Convert normalized to physical coordinates</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -610,19 +634,19 @@ All keyword arguments are normalized beforehand via <code class="xref py py-meth
 
 <dl class="py function">
 <dt class="sig sig-object py" id="xplt.util.evaluate_expression_wrapper">
-<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">evaluate_expression_wrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expression</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.8.0/xplt/util.py#L183-L200"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.evaluate_expression_wrapper" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">evaluate_expression_wrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expression</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.8.1/xplt/util.py#L183-L200"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.evaluate_expression_wrapper" title="Permalink to this definition">#</a></dt>
 <dd><p>Evaluate the expression wrapper</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="xplt.util.flattened">
-<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">flattened</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lists</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.8.0/xplt/util.py#L132-L136"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.flattened" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">flattened</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lists</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.8.1/xplt/util.py#L132-L136"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.flattened" title="Permalink to this definition">#</a></dt>
 <dd><p>Flatten a list of nested lists recursively</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="xplt.util.get">
-<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">VOID</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.8.0/xplt/util.py#L64-L91"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.get" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">VOID</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.8.1/xplt/util.py#L64-L91"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.get" title="Permalink to this definition">#</a></dt>
 <dd><p>Get value from object</p>
 <p>Tries to get the value using attributes and indices,
 and handles special objects like pandas data frames.</p>
@@ -648,7 +672,7 @@ and handles special objects like pandas data frames.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="xplt.util.hamiltonian_kobayashi">
-<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">hamiltonian_kobayashi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Px</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">twiss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'x'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalized</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.8.0/xplt/util.py#L392-L428"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.hamiltonian_kobayashi" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">hamiltonian_kobayashi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Px</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">twiss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'x'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalized</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.8.1/xplt/util.py#L392-L428"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.hamiltonian_kobayashi" title="Permalink to this definition">#</a></dt>
 <dd><p>Calculate the kobayashi hamiltonian</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -671,13 +695,13 @@ and handles special objects like pandas data frames.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="xplt.util.ieee_mod">
-<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">ieee_mod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.8.0/xplt/util.py#L59-L61"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.ieee_mod" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">ieee_mod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.8.1/xplt/util.py#L59-L61"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.ieee_mod" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the IEEE remainder (in range -x/2 .. x/2)</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="xplt.util.normalized_coordinates">
-<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">normalized_coordinates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">px</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">twiss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.8.0/xplt/util.py#L285-L307"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.normalized_coordinates" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">normalized_coordinates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">px</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">twiss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.8.1/xplt/util.py#L285-L307"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.normalized_coordinates" title="Permalink to this definition">#</a></dt>
 <dd><p>Convert physical to normalized coordinates</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -697,18 +721,18 @@ and handles special objects like pandas data frames.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="xplt.util.smooth">
-<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">smooth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.8.0/xplt/util.py#L176-L180"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.smooth" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">smooth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.8.1/xplt/util.py#L176-L180"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.smooth" title="Permalink to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="xplt.util.val">
-<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">val</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.8.0/xplt/util.py#L51-L55"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.val" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">val</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.8.1/xplt/util.py#L51-L55"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.val" title="Permalink to this definition">#</a></dt>
 <dd><p>Return the value if this is an array of size 1, object otherwise</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="xplt.util.virtual_sextupole">
-<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">virtual_sextupole</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_ref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.8.0/xplt/util.py#L333-L389"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.virtual_sextupole" title="Permalink to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">virtual_sextupole</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_ref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.8.1/xplt/util.py#L333-L389"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.virtual_sextupole" title="Permalink to this definition">#</a></dt>
 <dd><p>Determine virtual sextupole strength from twiss data</p>
 <p>The normalized strenght is defined as S = -1/2 * betx^(3/2) * k2l</p>
 <p>The implementation considers only normal sextupole components.</p>
@@ -958,7 +982,8 @@ and handles special objects like pandas data frames.</p>
   
     
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=1e1de1a1873e13ef5536"></script>
+  <script src="../../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
 
   <footer class="bd-footer"><div class="bd-footer__inner container">
   
@@ -970,6 +995,16 @@ and handles special objects like pandas data frames.</p>
 
 </p>
 
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
   </div>
   
   <div class="footer-item">
