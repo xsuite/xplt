@@ -9,8 +9,10 @@ jobs:
   checks:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
       - run: |
           # Assert git and python versions match
           pip install -e .
@@ -27,8 +29,10 @@ jobs:
     needs: checks
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
       - run: |
           pip install build
       - name: Build
@@ -44,7 +48,7 @@ jobs:
     needs: [checks, pypi-test]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - run: |
           VERSION=$(git describe --tags)
           echo "Version: $VERSION"
@@ -58,30 +62,48 @@ jobs:
   docs-publish:
     needs: ready
     runs-on: ubuntu-latest
+    env:
+      PAGES_BRANCH: gh-pages
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
       - name: Install dependencies
         run: |
           pip install -e .
           pip install -r docs/requirements.txt
       - name: Sphinx build
         run: |
-          sphinx-build docs _build
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          publish_branch: gh-pages
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: _build/
-          force_orphan: true
+          sphinx-build docs _build/html
+          VERSION=$(python -c "from docs.conf import version;print('.'.join(version.split('.')[:2]))")
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+      - name: Deploy docs
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "<>"
+          git checkout $PAGES_BRANCH
+          # Copy to version folder
+          rm -rf $VERSION
+          cp -r _build/html $VERSION
+          # Update docs
+          ./update.py
+          cat versions.json
+          # Commit and push
+          git add $VERSION latest versions.json
+          git commit -m "Deploy docs/$VERSION"
+          git push origin $PAGES_BRANCH
 
   pypi-publish:
     needs: ready
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
       - run: |
           pip install build
       - name: Build
