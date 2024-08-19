@@ -59,6 +59,7 @@ extensions = [
     "myst_nb",
     "sphinx.ext.intersphinx",
     "sphinx_codeautolink",
+    "matplotlib.sphinxext.roles",
 ]
 
 myst_heading_anchors = 3
@@ -144,10 +145,13 @@ html_theme_options = {
             "icon": "fa-solid fa-cube",
         },
     ],
-    "navbar_end": ["navbar-icon-links", "version-switcher"],
+    "navbar_end": ["theme-switcher", "navbar-icon-links", "version-switcher"],
+    "secondary_sidebar_items": ["page-toc", "edit-this-page", "sourcelink"],
+    "footer_start": ["copyright"],
+    "footer_end": ["sphinx-version", "theme-version"],
     "switcher": {
         "json_url": "https://xsuite.github.io/xplt/versions.json",
-        "version_match": '.'.join(version.split('.')[:2]),
+        "version_match": ".".join(version.split(".")[:2]),
     },
     "check_switcher": False,  # don't check url during build
 }

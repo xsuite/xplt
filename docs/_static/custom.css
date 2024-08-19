@@ -1,11 +1,11 @@
 
-/* Stack footer items horizontally with separating border line instead of vertically */
-.footer-item {
-  display: inline-block;
+/* Stack footer items horizontally instead of vertically */
+.footer-items__start, .footer-items__end {
+  flex-direction: row !important;
 }
-.footer-item:not(:last-child) {
-  border-right: 1px solid var(--pst-color-text-base);
-  margin-right: .5em;
-  padding-right: .5em;
+
+/* Fix expandable sections color for darkmode (see https://github.com/executablebooks/MyST-NB/issues/607) */
+details.above-input > summary {
+    background-color: var(--pst-color-background) !important; /* or --pst-color-surface */
 }
 

@@ -269,10 +269,10 @@ def binned_data(
 
     Returns:
         tuple: The histogram or timeseries as tuple
-            (v_min, dv, *counts_or_what) where
-            `v_min` is the start value of the histogram or timeseries data,
-            `dv` is the bin width and
-            `*counts_or_what` are the values of the histogram or timeseries as an array of length n
+            ``(v_min, dv, *counts_or_what)`` where
+            ``v_min`` is the start value of the histogram or timeseries data,
+            ``dv`` is the bin width and
+            ``*counts_or_what`` are the values of the histogram or timeseries as an array of length n
             for each moment requested.
     """
 

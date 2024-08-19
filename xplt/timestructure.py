@@ -26,7 +26,7 @@ from .properties import Property, DerivedProperty, arb_unit
 class TimePlotMixin:
     """Mixin for plotting time based data
 
-    .. automethod:: _init_particle_mixin
+    .. automethod:: _init_time_mixin
     """
 
     def _init_time_mixin(self, *, time_range=None, time_offset=0.0, **kwargs):
