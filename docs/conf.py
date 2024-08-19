@@ -133,6 +133,7 @@ def setup(app):
 html_theme = "pydata_sphinx_theme"
 html_show_sourcelink = False
 html_static_path = ["_static"]
+html_css_files = ["custom.css"]
 html_theme_options = {
     "show_nav_level": 2,
     "github_url": "https://github.com/xsuite/xplt",
