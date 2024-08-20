@@ -681,7 +681,7 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
         if self._fmax is not None:
             return self._fmax
         if self.relative:
-            if fmax := self.frev(particles) is not None:
+            if (fmax := self.frev(particles)) is not None:
                 return fmax
             raise ValueError(
                 "Either fmax, frev or twiss must be known when plotting relative frequencies."
