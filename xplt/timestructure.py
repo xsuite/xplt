@@ -541,6 +541,8 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
             fmax (float): Maximum frequency (in Hz) to plot.
             fsamp (float | None): Sampling frequency (in Hz) for binning of particle times before FFT calculation.
                 Defaults to 2*fmax if not specified. See `fsamp_exact` parameter for details.
+                Note: When passing timeseries data instead of particle data, this parameter may be used to re-sample
+                      the timeseries data before the FFT calculation, see :meth:`~.timestructure.Timeseries.resample`
             fsamp_exact (bool): Set this to True to force binning of particle times with exactly dt=1/fsamp.
                 By default, the bin width is reduced such that the number of bins is a power of two.
                 While this improves the performance of the FFT calculation (radix-2 FFT), it changes the Nyquist frequency
@@ -740,9 +742,14 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
             fmax = None
             ppscale = 1 if "count" not in timeseries else np.sum(timeseries["count"].data)
             for p in timeseries:
-                fmax = np.max(self.fmax(default=timeseries[p].fs / 2), initial=fmax)
+                if self._fsamp is not None:
+                    if self._fsamp_exact:
+                        raise ValueError("fsamp_exact must not be used with timeseries data")
+                    resample_mode = "sum" if self._count_based(p) else "mean"
+                    timeseries[p] = timeseries[p].resample(dt=1 / self._fsamp, mode=resample_mode)
                 if self.time_range is not None:
                     timeseries[p] = timeseries[p].crop(*self.time_range)
+                fmax = np.max(self.fmax(default=timeseries[p].fs / 2), initial=fmax)
 
         # update plots
         changed = []
