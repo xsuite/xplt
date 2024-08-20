@@ -590,7 +590,7 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
         kwargs["_properties"] = defaults(
             kwargs.get("_properties"),
             f=Property("$f$", "Hz", description="Frequency"),
-            frel=Property("$f/f_{rev}$", "1"),
+            frel=Property("$f/f_\\mathrm{rev}$", "1"),
         )
         super().__init__(
             on_x="frel" if self.relative else "f", on_y=kind, **kwargs
