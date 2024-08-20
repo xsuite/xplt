@@ -749,7 +749,9 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
                     timeseries[p] = timeseries[p].resample(dt=1 / self._fsamp, mode=resample_mode)
                 if self.time_range is not None:
                     timeseries[p] = timeseries[p].crop(*self.time_range)
-                fmax = np.max(self.fmax(default=timeseries[p].fs / 2), initial=fmax)
+                fmax = np.max(timeseries[p].fs / 2, initial=fmax)
+            if self._fmax is not None:
+                fmax = self._fmax  # takes precedence
 
         # update plots
         changed = []
