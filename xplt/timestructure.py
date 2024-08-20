@@ -683,12 +683,13 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
         if self.relative:
             if (fmax := self.frev(particles)) is not None:
                 return fmax
-            raise ValueError(
-                "Either fmax, frev or twiss must be known when plotting relative frequencies."
-            )
         if default is not None:
             return default
-        raise ValueError("fmax must be specified when plotting absolut frequencies.")
+        raise ValueError(
+            "Either fmax, frev or twiss must be specified when plotting relative frequencies."
+            if self.relative
+            else "fmax must be specified when plotting absolut frequencies."
+        )
 
     def update(
         self, particles=None, mask=None, *, autoscale=None, timeseries=None, dataset_id=None
