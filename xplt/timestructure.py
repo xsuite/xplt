@@ -771,6 +771,10 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
                         )
                         mag = np.sqrt(2 * mag2)  # one-sided spectrum contains only half the power
 
+                    # cut data above fmax
+                    visible = freq <= fmax
+                    freq, mag = freq[visible], mag[visible]
+
                     # scale frequency according to user preferences
                     if self.relative:
                         freq *= 1 / self.frev(particles)
@@ -790,10 +794,6 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
                             mag /= ppscale  # per particle
                     else:
                         raise ValueError(f'Unknown scaling "{self._get_scaling(p)}"')
-
-                    # cut data above fmax which was only added to increase FFT performance
-                    visible = freq <= fmax
-                    freq, mag = freq[visible], mag[visible]
 
                     # post-processing expression wrappers
                     if wrap := self.on_y_expression[i][j][k]:
