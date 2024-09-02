@@ -446,6 +446,11 @@ class TimeBinPlot(ParticleHistogramPlot, TimePlotMixin):
                 plot_kwargs=plot_kwargs,
             )
 
+    @property
+    def bin_time(self):
+        """Time bin width in s"""
+        return self.bin_width
+
     def add_dataset(self, id, *, plot_kwargs=None, particles=None, timeseries=None, **kwargs):
         """Create artists for a new dataset to the plot and optionally update their values
 
