@@ -23,7 +23,46 @@ release = version
 root = os.path.abspath("..")
 sys.path.insert(0, root)
 
-# Auto API
+
+# -- General configuration ---------------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
+
+extensions = [
+    "sphinx.ext.napoleon",
+    "sphinx.ext.autodoc",
+    "sphinx.ext.linkcode",
+    "autoapi.extension",
+    "sphinx.ext.githubpages",
+    "myst_nb",
+    "sphinx.ext.intersphinx",
+    "sphinx_codeautolink",
+    "matplotlib.sphinxext.roles",
+]
+
+templates_path = ["_templates"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+
+
+def np_example_notebooks_init(app, *args):
+    shutil.copytree(
+        os.path.join(root, "examples"),
+        os.path.join(app.srcdir, "examples"),
+    )
+
+
+def np_example_notebooks_clean(app, *args):
+    shutil.rmtree(os.path.join(app.srcdir, "examples"))
+
+
+def setup(app):
+    app.connect("config-inited", np_example_notebooks_init)
+    app.connect("build-finished", np_example_notebooks_clean)
+    app.connect("autoapi-skip-member", autoapi_skip_member)
+
+
+# -- Auto API ----------------------------------------------------------------
+# > auto-generate API documentation
+
 autoapi_type = "python"
 autoapi_dirs = ["../xplt"]
 autoapi_ignore = ["*/.ipynb_checkpoints/*"]
@@ -47,20 +86,8 @@ def autoapi_skip_member(app, what, name, obj, skip, options):
     return skip
 
 
-# -- General configuration ---------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
-
-extensions = [
-    "sphinx.ext.napoleon",
-    "sphinx.ext.autodoc",
-    "sphinx.ext.linkcode",
-    "autoapi.extension",
-    "sphinx.ext.githubpages",
-    "myst_nb",
-    "sphinx.ext.intersphinx",
-    "sphinx_codeautolink",
-    "matplotlib.sphinxext.roles",
-]
+# -- MyST{NB} ----------------------------------------------------------------
+# > use markdown and jupyter notebooks for building docs
 
 myst_heading_anchors = 3
 myst_enable_extensions = [
@@ -68,11 +95,12 @@ myst_enable_extensions = [
     "amsmath",
 ]
 
-templates_path = ["_templates"]
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+nb_execution_mode = "off"
 
-# Codeautolink and intersphinx
-# > make code examples clickable, linking to the docs
+
+# -- Intersphinx & Codeautolink ----------------------------------------------
+# > make code examples clickable, linking to the API docs
+
 codeautolink_concat_default = True
 intersphinx_mapping = {
     #'python': ('https://docs.python.org/3', None),
@@ -83,8 +111,11 @@ intersphinx_mapping = {
     "xsuite": ("https://xsuite.readthedocs.io/en/latest/", None),
 }
 
-# Linkcode
-# > in API reference, add links to source code on GitHub
+
+# -- Linkcode ----------------------------------------------------------------
+# > add [source] links to the API docs, linking to source code on GitHub
+
+
 def linkcode_resolve(domain, info):
     if domain != "py" or not info["module"]:
         return None
@@ -102,34 +133,12 @@ def linkcode_resolve(domain, info):
         else:
             path = (root + sourcefile.split(root)[-1]).replace(os.path.sep, "/")
             filename = f"{path}#L{line}-L{line + len(sourcecode) - 1}"
-            return f"https://github.com/xsuite/xplt/blob/v{version}/{filename}"
+            return f"https://github.com/{github_username}/{github_repository}/blob/v{version}/{filename}"
     except:
         return None
 
 
-# Example notebooks
-def np_example_notebooks_init(app, *args):
-    shutil.copytree(
-        os.path.join(root, "examples"),
-        os.path.join(app.srcdir, "examples"),
-    )
-
-
-def np_example_notebooks_clean(app, *args):
-    shutil.rmtree(os.path.join(app.srcdir, "examples"))
-
-
-nb_execution_mode = "off"
-
-
-def setup(app):
-    app.connect("config-inited", np_example_notebooks_init)
-    app.connect("build-finished", np_example_notebooks_clean)
-    app.connect("autoapi-skip-member", autoapi_skip_member)
-
-
-# -- Options for HTML output -------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
+# -- HTML theme: PyData Sphinx Theme -----------------------------------------
 
 html_theme = "pydata_sphinx_theme"
 html_show_sourcelink = False
@@ -137,7 +146,7 @@ html_static_path = ["_static"]
 html_css_files = ["custom.css"]
 html_theme_options = {
     "show_nav_level": 2,
-    "github_url": "https://github.com/xsuite/xplt",
+    "github_url": f"https://github.com/{github_username}/{github_repository}",
     "icon_links": [
         {
             "name": "PyPI",
@@ -150,7 +159,7 @@ html_theme_options = {
     "footer_start": ["copyright"],
     "footer_end": ["sphinx-version", "theme-version"],
     "switcher": {
-        "json_url": "https://xsuite.github.io/xplt/versions.json",
+        "json_url": f"https://{github_username}.github.io/{github_repository}/versions.json",
         "version_match": ".".join(version.split(".")[:2]),
     },
     "check_switcher": False,  # don't check url during build
