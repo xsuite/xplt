@@ -40,3 +40,15 @@ def test_binned_data(benchmark, benchmark_ref, ndata, nbins, exp_time_fract):
         f"Performance of binned_data compared to np.histogram is {fract:g} but expected"
         f" {exp_time_fract} or less ({benchmark.stats.stats.median:g}s vs {benchmark_ref.stats.stats.median:g}s"
     )
+
+
+def test_averaging():
+
+    data = np.array([1, 2, 4, 5, 6, 8, 3, 10, 25, 13])
+
+    avg = xplt.util.average(data, n=2)
+    assert_equal(avg, [1.5, 4.5, 7, 6.5, 19])
+    avg = xplt.util.average(data, n=2, keepdim=True)
+    assert_equal(avg, [1.5, 1.5, 4.5, 4.5, 7, 7, 6.5, 6.5, 19, 19])
+    avg = xplt.util.average(data, n=3, function=np.max)
+    assert_equal(avg, [4, 8, 25])
