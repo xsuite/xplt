@@ -12,7 +12,6 @@ __date__ = "2022-11-08"
 
 import re
 import types
-from packaging.version import Version
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -390,10 +389,7 @@ class XPlot:
             fname (str): Filename
             kwargs: Keyword arguments passed to :meth:`matplotlib.figure.Figure.savefig`
         """
-        pad_inches = "layout" if Version(mpl.__version__) >= Version("3.8") else None
-        self.fig.savefig(
-            fname, **defaults(kwargs, dpi=300, pad_inches=pad_inches, bbox_inches="tight")
-        )
+        self.fig.savefig(fname, **defaults(kwargs, dpi=300))
 
     def title(self, title, **kwargs):
         """Set figure title
