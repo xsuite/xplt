@@ -11,6 +11,8 @@ __date__ = "2022-11-15"
 
 
 import inspect
+import re
+
 import numpy as np
 import pint
 import scipy.signal
@@ -121,6 +123,7 @@ def defaults_for(alias_provider, kwargs, /, **default_kwargs):
         kwargs (dict | None): keyword arguments (overwrite defaults)
         default_kwargs: default keyword arguments
     """
+    # resolve aliases
     if isinstance(alias_provider, str):
         alias_provider = dict(
             text=mpl.text.Text,
@@ -133,6 +136,20 @@ def defaults_for(alias_provider, kwargs, /, **default_kwargs):
         kwargs["color"] = kwargs.pop("c")
     kwargs = mpl.cbook.normalize_kwargs(kwargs, alias_provider)
     default_kwargs = mpl.cbook.normalize_kwargs(default_kwargs, alias_provider)
+
+    # handle custom values
+    def apply_custom_to(kwargs):
+        if (ls := kwargs.get("linestyle")) and isinstance(ls, str):
+            if match := re.match(r"-(\d+)", ls):
+                n = int(match.group(1))
+                kwargs["linestyle"] = "-" if n == 0 else (0, [1, 1.6] * n + [48.4 - 2.6 * n, 1.6])
+            if match := re.match(r"-\.(\d+)", ls):
+                n = int(match.group(1))
+                kwargs["linestyle"] = (0, [1, 1.6] * (n + 1) + [6.4, 1.6])
+
+    apply_custom_to(kwargs)
+    apply_custom_to(default_kwargs)
+    # apply with defaults
     return defaults(kwargs, **default_kwargs)
 
 
