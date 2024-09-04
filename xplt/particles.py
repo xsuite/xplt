@@ -318,7 +318,7 @@ class ParticleHistogramPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramP
             kwargs = defaults_for(
                 "plot", plot_kwargs, lw=1, label=self._legend_label_for((i, j, k))
             )
-            if self._count_based(p):
+            if self._count_based(p) and p != "cumulative":
                 kwargs = defaults_for("plot", kwargs, drawstyle="steps-pre")
             return ax.plot([], [], **kwargs)[0]
 
