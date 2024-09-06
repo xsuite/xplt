@@ -1034,7 +1034,7 @@ class XManifoldPlot(XPlot):
         *,
         subplots="all",
         annotation=None,
-        annotation_loc="lower",
+        annotation_loc=None,
         annotation_kwargs=None,
         **kwargs,
     ):
@@ -1047,12 +1047,22 @@ class XManifoldPlot(XPlot):
             subplots (list[int]): Subplots to plot line onto. Defaults to all with matching coordinates.
             annotation (string | None): Optional text annotation for the line or span. Use this to place
                 text on the axes. To put text in the legend, use `label=...`.
-            annotation_loc (string): Location of annotation. Possible values: ``"lower"`` or ``"upper"``.
+            annotation_loc (float, string): Location of annotation. Possible values: ``0``, ``"lower"``, ``"bottom"``, ``left"``
+                or ``1``, ``"upper"``, ``"top"``, ``"right"`` or ``0.5``, ``center``.
             annotation_kwargs (dict | None): Arguments for :meth:`matplotlib.axes.Axes.text`.
             kwargs: Arguments passed to :meth:`matplotlib.axes.Axes.axvspan` or :meth:`matplotlib.axes.Axes.axhspan`
                 (or :meth:`matplotlib.axes.Axes.axvline` or :meth:`matplotlib.axes.Axes.axhline` if `val_to` is `None`)
 
         """
+        if isinstance(annotation_loc, str):
+            if annotation_loc in ("lower", "bottom", "left"):
+                annotation_loc = 0
+            elif annotation_loc in ("upper", "top", "right"):
+                annotation_loc = 1
+            elif annotation_loc in ("center", "centre"):
+                annotation_loc = 0.5
+            else:
+                raise ValueError(f"Invalid annotation location: {annotation_loc}")
 
         if val_to is None:  # only a line
             kwargs = defaults_for("plot", kwargs, color="k", lw=1, zorder=1.9)
@@ -1073,6 +1083,8 @@ class XManifoldPlot(XPlot):
                 line = (a.axhspan if hor else a.axvspan)(val, val_to, **kwargs)
                 color = line.get_facecolor()
             if annotation and with_annotation:
+                loc = annotation_loc if annotation_loc is not None else (0 if hor else 1)
+                align = int(np.clip(round(2 * loc), 0, 2))  # 0, 1 or 2
                 text_kwargs = defaults_for(
                     "text",
                     annotation_kwargs,
@@ -1080,16 +1092,16 @@ class XManifoldPlot(XPlot):
                     c=color,  # RGBA tuple
                     alpha=1,  # overwrites color[3]
                     zorder=line.get_zorder(),
+                    ha=["left", "center", "right"][align] if hor else "right",
+                    va="bottom" if hor else ["bottom", "center", "top"][align],
+                    rotation=0 if hor else 90,
                 )
                 a.text(
-                    *(val, 0 if annotation_loc == "lower" else 1)[:: -1 if hor else 1],
-                    " " + annotation + " ",
+                    *(val, loc)[:: -1 if hor else 1],
+                    s=f" {annotation} ",
                     transform=mpl.transforms.blended_transform_factory(
                         *(a.transData, a.transAxes)[:: -1 if hor else 1]
                     ),
-                    ha="left" if hor and annotation_loc == "lower" else "right",
-                    va="bottom" if hor or annotation_loc == "lower" else "top",
-                    rotation=0 if hor else 90,
                     **text_kwargs,
                 )
 
