@@ -279,6 +279,9 @@ __all__ = PUBLIC_SECTION_END()
 # Property definitions
 #######################
 
+# Define global properties below,
+# for plot-specific properties, use Mixins or define them in the context of the plot
+
 
 P = DataProperty
 
@@ -315,21 +318,6 @@ for p in [
     # P("energy0", "eV", "E_\\mathrm{ref}", description="Reference energy (total energy)"),
     # P("gamma0", "1", "\\gamma_\\mathrm{ref}", description="Reference relativistic gamma"),
     # P("beta0", "1", "\\beta_\\mathrm{ref}", description="Reference relativistic beta"),
-    ##
-    ## twiss
-    #############################################################################
-    P("betx", "m", "$\\beta_x$"),  # Horizontal twiss beta-function
-    P("bety", "m", "$\\beta_y$"),  # Vertical twiss beta-function
-    P("alfx", "1", "$\\alpha_x$"),  # Horizontal twiss alpha-function
-    P("alfy", "1", "$\\alpha_y$"),  # Vertical twiss alpha-function
-    P("gamx", "1/m", "$\\gamma_x$"),  # Horizontal twiss gamma-function
-    P("gamy", "1/m", "$\\gamma_y$"),  # Vertical twiss gamma-function
-    P("mux", "1", "$\\mu_x$"),  # Horizontal phase advance
-    P("muy", "1", "$\\mu_y$"),  # Vertical phase advance
-    P("dx", "m", "$D_x$"),  # Horizontal dispersion
-    P("dy", "m", "$D_y$"),  # Vertical dispersion
-    P("dpx", "1", "$D_{x'}$"),  # Horizontal dispersion of px
-    P("dpy", "1", "$D_{y'}$"),  # Vertical dispersion of py
     ##
     ## beam monitors
     #############################################################################

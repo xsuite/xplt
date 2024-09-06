@@ -13,6 +13,7 @@ __date__ = "2022-11-08"
 from .util import *
 from .base import XManifoldPlot
 from .line import KnlPlot
+from .properties import Property, DataProperty
 
 
 PUBLIC_SECTION_BEGIN()
@@ -40,6 +41,22 @@ class TwissPlot(XManifoldPlot):
         if line:
             kind = self.parse_nested_list_string(kind, subs=subs)
             kind = [[[None]], *kind]
+
+        kwargs["_properties"] = defaults(
+            kwargs.get("_properties"),
+            betx=DataProperty("betx", "m", "$\\beta_x$"),  # Horizontal twiss beta-function
+            bety=DataProperty("bety", "m", "$\\beta_y$"),  # Vertical twiss beta-function
+            alfx=DataProperty("alfx", "1", "$\\alpha_x$"),  # Horizontal twiss alpha-function
+            alfy=DataProperty("alfy", "1", "$\\alpha_y$"),  # Vertical twiss alpha-function
+            gamx=DataProperty("gamx", "1/m", "$\\gamma_x$"),  # Horizontal twiss gamma-function
+            gamy=DataProperty("gamy", "1/m", "$\\gamma_y$"),  # Vertical twiss gamma-function
+            mux=DataProperty("mux", "1", "$\\mu_x$"),  # Horizontal phase advance
+            muy=DataProperty("muy", "1", "$\\mu_y$"),  # Vertical phase advance
+            dx=DataProperty("dx", "m", "$D_x$"),  # Horizontal dispersion
+            dy=DataProperty("dy", "m", "$D_y$"),  # Vertical dispersion
+            dpx=DataProperty("dpx", "1", "$D_{x'}$"),  # Horizontal dispersion of px
+            dpy=DataProperty("dpy", "1", "$D_{y'}$"),  # Vertical dispersion of py
+        )
 
         super().__init__(
             on_x="s",
