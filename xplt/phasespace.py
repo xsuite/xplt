@@ -459,7 +459,8 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
         }
         title = titles.get(f"{a}-{b}", titles.get(f"{b}-{a}"))
         if title is None:
-            title = f"{self.label_for(a, unit=False)}-{self.label_for(b, unit=False)} phase space"
+            style = dict(unit=False, description=False)
+            title = f"{self.label_for(a, **style)}-{self.label_for(b, **style)} phase space"
         return title
 
     def axline(self, kind, val, *, subplots="all", also_on_normalized=False, delta=0, **kwargs):
