@@ -99,7 +99,7 @@ class MetricesMixin:
     """
 
     _metric_properties = dict(
-        cv=Property("$c_v=\\sigma/\\mu$", "1", description="Coefficient of variation"),
+        cv=Property("$c_\\mathrm{v}=\\sigma/\\mu$", "1", description="Coefficient of variation"),
         duty=Property(
             "$F=\\langle N \\rangle^2/\\langle N^2 \\rangle$",
             "1",
@@ -547,7 +547,7 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
             fsamp (float | None): Sampling frequency (in Hz) for binning of particle times before FFT calculation.
                 Defaults to 2*fmax if not specified. See `fsamp_exact` parameter for details.
                 Note: When passing timeseries data instead of particle data, this parameter may be used to re-sample
-                      the timeseries data before the FFT calculation, see :meth:`~.timestructure.Timeseries.resample`
+                the timeseries data before the FFT calculation, see :meth:`~.timestructure.Timeseries.resample`
             fsamp_exact (bool): Set this to True to force binning of particle times with exactly dt=1/fsamp.
                 By default, the bin width is reduced such that the number of bins is a power of two.
                 While this improves the performance of the FFT calculation (radix-2 FFT), it changes the Nyquist frequency

@@ -92,9 +92,10 @@ def autoapi_skip_member(app, what, name, obj, skip, options):
 myst_heading_anchors = 3
 myst_enable_extensions = [
     "colon_fence",
+    "dollarmath",
     "amsmath",
 ]
-
+nb_render_markdown_format = "myst"
 nb_execution_mode = "off"
 
 

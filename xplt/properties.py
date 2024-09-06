@@ -311,7 +311,7 @@ for p in [
     P(
         "chi",
         "1",
-        "$q/q_\\mathrm{ref} \\cdot m_\\mathrm{ref}/m$",
+        "$(q/q_\\mathrm{ref})/(m/m_\\mathrm{ref})$",
         description="Charge-over-rest-mass ratio",
     ),  # chi = q/q0 * m0/m
     # P("p0c", "eV", "p_\\mathrm{ref}c", description="Reference momentum"),

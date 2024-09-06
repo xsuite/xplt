@@ -6,6 +6,9 @@
 
 /* Fix expandable sections color for darkmode (see https://github.com/executablebooks/MyST-NB/issues/607) */
 details.above-input > summary {
-    background-color: var(--pst-color-background) !important; /* or --pst-color-surface */
+  background-color: var(--pst-color-background) !important; /* or --pst-color-surface */
 }
 
+.text-left {
+  text-align: left !important;
+}
