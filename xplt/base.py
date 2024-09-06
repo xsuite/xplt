@@ -707,6 +707,8 @@ class XManifoldPlot(XPlot):
         self.on_y, self.on_y_expression = self.parse_nested_list_string(
             on_y, on_y_separators, on_y_subs, strip_off_methods=True
         )
+        self._on_y_separators = on_y_separators
+        self._on_y_subs = on_y_subs
         self._artists = {}
 
         super().__init__(
@@ -891,6 +893,40 @@ class XManifoldPlot(XPlot):
                         and (k == trace or trace is None)
                     ):
                         return self.artists[dataset_id][i][j][k]
+
+    def axis(self, subplot_or_name=0, twin=0, *, subplot=None, name=None):
+        """Return the axis for a given flat subplot index and twin index, or an artist name
+
+        Either get axis by index ``axis(subplot, twin)`` or by property name ``axis(name)``.
+
+        Args:
+            subplot_or_name (int | str): Flat subplot index or property name
+            subplot (int): Flat subplot index
+            twin (int): Twin index
+            name (str | None): Name of the property the axis is plotting. If this is not None, subplot and twin are ignored.
+
+        Returns:
+            matplotlib.axes.Axes: Axis for the given subplot and twin index
+        """
+        if isinstance(subplot_or_name, str):
+            name = subplot_or_name
+        elif subplot is None:
+            subplot = subplot_or_name
+        if name is not None:
+            if subs := self._on_y_subs.get(name):
+                for n in subs.split(self._on_y_separators[2]):
+                    try:
+                        return self.axis(name=n)
+                    except ValueError:
+                        continue
+            else:
+                for i, ppp in enumerate(self.on_y):
+                    for j, pp in enumerate(ppp):
+                        for k, p in enumerate(pp):
+                            if p == name:
+                                return self.axis(i, j)
+            raise ValueError(f"Property {name} not found")
+        return super().axis(subplot, twin)
 
     def _legend_label_for(self, p):
         """
