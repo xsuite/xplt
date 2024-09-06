@@ -1047,13 +1047,18 @@ class XManifoldPlot(XPlot):
             subplots (list[int]): Subplots to plot line onto. Defaults to all with matching coordinates.
             annotation (string | None): Optional text annotation for the line or span. Use this to place
                 text on the axes. To put text in the legend, use `label=...`.
-            annotation_loc (float, string): Location of annotation. Possible values: ``0``, ``"lower"``, ``"bottom"``, ``left"``
-                or ``1``, ``"upper"``, ``"top"``, ``"right"`` or ``0.5``, ``center``.
+            annotation_loc (float, string): Location of annotation along line or span as fraction between 0 and 1,
+                or a string ``"lower"``, ``"bottom"``, ``left"``, ``"upper"``, ``"top"``, ``"right"``, ``center``.
+                For vertical lines or spans extending over multiple subplots, 0 is the bottom of the lowermost
+                and 1 the top of the uppermost subplot.
             annotation_kwargs (dict | None): Arguments for :meth:`matplotlib.axes.Axes.text`.
             kwargs: Arguments passed to :meth:`matplotlib.axes.Axes.axvspan` or :meth:`matplotlib.axes.Axes.axhspan`
                 (or :meth:`matplotlib.axes.Axes.axvline` or :meth:`matplotlib.axes.Axes.axhline` if `val_to` is `None`)
 
         """
+        if subplots == "all":
+            subplots = list(range(len(self.on_y)))
+
         if isinstance(annotation_loc, str):
             if annotation_loc in ("lower", "bottom", "left"):
                 annotation_loc = 0
@@ -1075,7 +1080,7 @@ class XManifoldPlot(XPlot):
         if val_to is not None:
             val_to = val_to * self.factor_for(kind)
 
-        def plot_line_with_annotation(hor=True, with_annotation=True):
+        def plot_line_with_annotation(hor, loc, with_annotation=True):
             if val_to is None:
                 line = (a.axhline if hor else a.axvline)(val, **kwargs)
                 color = line.get_color()
@@ -1083,7 +1088,6 @@ class XManifoldPlot(XPlot):
                 line = (a.axhspan if hor else a.axvspan)(val, val_to, **kwargs)
                 color = line.get_facecolor()
             if annotation and with_annotation:
-                loc = annotation_loc if annotation_loc is not None else (0 if hor else 1)
                 align = int(np.clip(round(2 * loc), 0, 2))  # 0, 1 or 2
                 text_kwargs = defaults_for(
                     "text",
@@ -1105,24 +1109,25 @@ class XManifoldPlot(XPlot):
                     **text_kwargs,
                 )
 
-        annotated = False
         for i, ppp in enumerate(self.on_y):
-            if subplots != "all" and i not in subplots:
+            if i not in subplots:
                 continue
 
             for j, pp in enumerate(ppp):
                 a = self.axis(i, j)
-                if kind == self.on_x:
-                    # vertical line or span
-                    plot_line_with_annotation(hor=False, with_annotation=not annotated)
-                    annotated = True
+                if kind == self.on_x:  # vertical line or span
+                    loc = annotation_loc if annotation_loc is not None else 1
+                    # rescale from global to subplot coordinates:
+                    loc = (max(subplots) - min(subplots) + 1) * loc - (max(subplots) - i)
+                    plot_line_with_annotation(hor=False, loc=loc, with_annotation=0 <= loc <= 1)
                     break  # skip twin axes
 
                 else:
                     # horizontal line or span
                     for k, p in enumerate(pp):
                         if p == kind:  # axis found
-                            plot_line_with_annotation(hor=True)
+                            loc = annotation_loc if annotation_loc is not None else 0
+                            plot_line_with_annotation(hor=True, loc=loc)
 
     @staticmethod
     def parse_nested_list_string(
