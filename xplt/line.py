@@ -381,7 +381,15 @@ class FloorPlot(XPlot):
             helicity = 1
             legend_entries = []
             for i, (x, y, rt, name, arc) in enumerate(zip(X, Y, R, NAME, BEND)):
+
                 drift_length = get(survey, "drift_length", None)
+
+                if line is not None:
+                    if name=='_end_point':
+                        continue
+                    if line[name].__class__.__name__ == 'Replica':
+                        name = line[name].resolve(line, get_name=True)
+
                 is_thick = line is not None and name in line.element_dict and line[name].isthick
                 if drift_length is not None and drift_length[i] > 0 and not is_thick:
                     continue  # skip drift spaces
