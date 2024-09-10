@@ -142,7 +142,7 @@ def defaults_for(alias_provider, kwargs, /, **default_kwargs):
         if (ls := kwargs.get("linestyle")) and isinstance(ls, str):
             if match := re.match(r"-(\d+)", ls):
                 n = int(match.group(1))
-                kwargs["linestyle"] = "-" if n == 0 else (0, [1, 1.6] * n + [48.4 - 2.6 * n, 1.6])
+                kwargs["linestyle"] = (0, [] if n == 0 else [1, 1.6] * n + [48.4 - 2.6 * n, 1.6])
             if match := re.match(r"-\.(\d+)", ls):
                 n = int(match.group(1))
                 kwargs["linestyle"] = (0, [1, 1.6] * (n + 1) + [6.4, 1.6])
