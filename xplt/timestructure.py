@@ -819,7 +819,7 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
                     # update plot
                     art = self.artists[dataset_id, i, j, k]
 
-                    if self.averaging and isinstance(art, list):
+                    if self.averaging:
                         # smoothing by averaging
                         args = dict(n=self.averaging, logspace=a.get_xscale() == "log")
                         magma = average(mag, function=np.max, **args)
@@ -827,14 +827,16 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
                         freq, mag = average(freq, mag, function=np.mean, **args)
 
                         # update plot
-                        join_legend_entry_with = art[1]._join_legend_entry_with
-                        changed.append(art[1])
-                        art[1].remove()
-                        art[1] = a.fill_between(freq, magmi, magma, **self._errkw)
-                        art[1]._join_legend_entry_with = join_legend_entry_with
-                        changed.append(art[1])
+                        if isinstance(art, list):
+                            # averaging shadow
+                            join_legend_entry_with = art[1]._join_legend_entry_with
+                            changed.append(art[1])
+                            art[1].remove()
+                            art[1] = a.fill_between(freq, magmi, magma, **self._errkw)
+                            art[1]._join_legend_entry_with = join_legend_entry_with
+                            changed.append(art[1])
 
-                        art = art[0]
+                            art = art[0]
 
                     art.set_data(freq, mag)
                     changed.append(art)
