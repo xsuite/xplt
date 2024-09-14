@@ -385,9 +385,9 @@ class FloorPlot(XPlot):
                 drift_length = get(survey, "drift_length", None)
 
                 if line is not None:
-                    if name=='_end_point':
+                    if name == "_end_point":
                         continue
-                    if line[name].__class__.__name__ == 'Replica':
+                    if line[name].__class__.__name__ == "Replica":
                         name = line[name].resolve(line, get_name=True)
 
                 is_thick = line is not None and name in line.element_dict and line[name].isthick
