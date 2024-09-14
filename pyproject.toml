@@ -27,7 +27,7 @@ dependencies = [
     "matplotlib>=3.6",  # >=3.8 for optional features
     "numpy",
     "scipy",
-    "pint>=0.24.3",
+    "pint",
 ]
 dynamic = ["version"]
 
