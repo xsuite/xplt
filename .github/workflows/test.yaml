@@ -8,6 +8,10 @@ jobs:
     strategy:
       matrix:
         python-version: [ '3.9', '3.10', '3.11', '3.12' ]
+        dep-versions: [ '', '-numpy1' ]
+        exclude:
+          - python-version: '3.12'
+            dep-versions: '-numpy1'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -17,6 +21,7 @@ jobs:
         run: |
           pip install -e .
           pip install -r tests/requirements.txt
+          pip install -r tests/requirements${{ matrix.dep-versions }}.txt
       - name: Pytest
         run: |
           cd tests
