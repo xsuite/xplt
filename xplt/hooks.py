@@ -24,13 +24,13 @@ def try_register_hooks():
     try:
         register_matplotlib_options()
     except Exception as e:
-        warnings.warn(f"Failed to register color names with matplotlib: {e}")
+        warnings.warn(f"Failed to register color names with matplotlib: {e}", RuntimeWarning)
         pass
 
     try:
         register_pint_options()
     except Exception as e:
-        warnings.warn(f"Failed to register formatters with pint: {e}")
+        warnings.warn(f"Failed to register formatters with pint: {e}", RuntimeWarning)
         pass
 
 
