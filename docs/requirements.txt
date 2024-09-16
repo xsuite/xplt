@@ -1,16 +1,14 @@
-numpy==1.23.3
-astroid==3.2.4
-ipython==8.12.3
-matplotlib==3.9.2
+-r ../examples/requirements.txt
+astroid==3.3.2
 myst-nb==1.1.1
 pydata-sphinx-theme==0.15.4
 sphinx==8.0.2
-sphinx-autoapi==3.2.1
-sphinx-autodoc-typehints==1.19.1
+sphinx-autoapi==3.3.1
+sphinx-autodoc-typehints==2.4.1
 sphinx-codeautolink==0.15.2
-sphinx-gallery==0.11.1
-sphinx-jinja2-compat==0.2.0
-sphinx-prompt==1.5.0
+sphinx-gallery==0.17.1
+sphinx-jinja2-compat==0.3.0
+sphinx-prompt==1.9.0
 sphinx-tabs==3.4.5
 sphinx-toolbox==3.8.0
 sphinxcontrib-applehelp==2.0.0
