@@ -7,12 +7,12 @@ on:
 
 jobs:
   checks:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.12'
       - run: |
           # Assert git and python versions match
           pip install -e .
@@ -27,12 +27,12 @@ jobs:
   
   pypi-test:
     needs: checks
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.12'
       - run: |
           pip install build
       - name: Build
@@ -46,7 +46,7 @@ jobs:
 
   ready:
     needs: [checks, pypi-test]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - run: |
@@ -61,7 +61,7 @@ jobs:
 
   docs-publish:
     needs: ready
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     env:
       PAGES_BRANCH: gh-pages
     steps:
@@ -70,7 +70,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.12'
       - name: Install dependencies
         run: |
           pip install -e .
@@ -98,12 +98,12 @@ jobs:
 
   pypi-publish:
     needs: ready
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: '3.12'
       - run: |
           pip install build
       - name: Build
