@@ -16,6 +16,7 @@ jobs:
       - run: |
           # Assert git and python versions match
           pip install -e .
+          pip install -r examples/requirements.txt
           VERSION_PY=$(python3 -c "from xplt import __version__;print('v' + __version__)")
           echo "Python version: $VERSION_PY"
           VERSION_GIT=$(git describe --tags)
