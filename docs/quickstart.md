@@ -8,6 +8,9 @@ pip install xplt
 ```
 
 ## Gallery
+
+Click on the plots below to show the respective section in the [User guide](usage):
+
 |Floor plan from survey | Twiss parameters | Phasespace distributions|
 |:-:|:-:|:-:|
 |[![](gallery/floorplot.png)](examples/line.ipynb#survey) | [![](gallery/twissplot.png)](examples/twiss) | [![](gallery/phasespaceplot.png)](examples/phasespace) |
