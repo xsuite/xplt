@@ -1,6 +1,11 @@
 [
  {
-  "name": "0.8 (latest)",
+  "name": "0.9 (latest)",
+  "version": "0.9",
+  "url": "https://xsuite.github.io/xplt/0.9/"
+ },
+ {
+  "name": "0.8",
   "version": "0.8",
   "url": "https://xsuite.github.io/xplt/0.8/"
  }

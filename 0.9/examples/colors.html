@@ -1,0 +1,469 @@
+
+<!DOCTYPE html>
+
+<html data-content_root="../" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Colors — Xplt 0.9.1 documentation</title>
+<script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+<!-- Loaded before other Sphinx assets -->
+<link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet"/>
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet"/>
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet"/>
+<link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet"/>
+<link as="font" crossorigin="" href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="" href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="" href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" rel="preload" type="font/woff2"/>
+<link href="../_static/pygments.css?v=a746c00c" rel="stylesheet" type="text/css"/>
+<link href="../_static/graphviz.css?v=fd3f3429" rel="stylesheet" type="text/css"/>
+<link href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/sphinx-codeautolink.css?v=125d5c1c" rel="stylesheet" type="text/css"/>
+<link href="../_static/custom.css?v=603c5a11" rel="stylesheet" type="text/css"/>
+<!-- Pre-loaded scripts that we'll load fully later -->
+<link as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" rel="preload"/>
+<link as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" rel="preload"/>
+<script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/documentation_options.js?v=9dc39874"></script>
+<script src="../_static/doctools.js?v=9a2dae69"></script>
+<script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+<script>DOCUMENTATION_OPTIONS.pagename = 'examples/colors';</script>
+<script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.15.4';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://xsuite.github.io/xplt/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.9';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
+        </script>
+<link href="../genindex.html" rel="index" title="Index"/>
+<link href="../search.html" rel="search" title="Search"/>
+<link href="../api.html" rel="next" title="API documentation"/>
+<link href="animations.html" rel="prev" title="Animations"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="en" name="docsearch:language"/>
+</head>
+<body data-bs-root-margin="0px 0px -60%" data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-default-mode="" data-offset="180">
+<div class="skip-link d-print-none" id="pst-skip-link"><a href="#main-content">Skip to main content</a></div>
+<div id="pst-scroll-pixel-helper"></div>
+<button class="btn rounded-pill" id="pst-back-to-top" type="button">
+<i class="fa-solid fa-arrow-up"></i>Back to top</button>
+<input class="sidebar-toggle" id="pst-primary-sidebar-checkbox" type="checkbox"/>
+<label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+<input class="sidebar-toggle" id="pst-secondary-sidebar-checkbox" type="checkbox"/>
+<label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+<div class="search-button__wrapper">
+<div class="search-button__overlay"></div>
+<div class="search-button__search-container">
+<form action="../search.html" class="bd-search d-flex align-items-center" method="get">
+<i class="fa-solid fa-magnifying-glass"></i>
+<input aria-label="Search the docs ..." autocapitalize="off" autocomplete="off" autocorrect="off" class="form-control" id="search-input" name="q" placeholder="Search the docs ..." spellcheck="false" type="search"/>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+</div>
+<div class="pst-async-banner-revealer d-none">
+<aside aria-label="Version warning" class="d-none d-print-none" id="bd-header-version-warning"></aside>
+</div>
+<header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+<button aria-label="Site navigation" class="pst-navbar-icon sidebar-toggle primary-toggle">
+<span class="fa-solid fa-bars"></span>
+</button>
+<div class="col-lg-3 navbar-header-items__start">
+<div class="navbar-item">
+<a class="navbar-brand logo" href="../index.html">
+<p class="title logo__title">Xplt 0.9.1 documentation</p>
+</a></div>
+</div>
+<div class="col-lg-9 navbar-header-items">
+<div class="me-auto navbar-header-items__center">
+<div class="navbar-item">
+<nav>
+<ul class="bd-navbar-elements navbar-nav">
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../quickstart.html">
+    Quickstart
+  </a>
+</li>
+<li class="nav-item current active">
+<a class="nav-link nav-internal" href="../usage.html">
+    User guide
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../api.html">
+    API documentation
+  </a>
+</li>
+</ul>
+</nav></div>
+</div>
+<div class="navbar-header-items__end">
+<div class="navbar-item navbar-persistent--container">
+<script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+</div>
+<div class="navbar-item">
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+<div class="navbar-item"><ul aria-label="Icon Links" class="navbar-icon-links">
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://github.com/xsuite/xplt" rel="noopener" target="_blank" title="GitHub"><i aria-hidden="true" class="fa-brands fa-square-github fa-lg"></i>
+<span class="sr-only">GitHub</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://pypi.org/project/xplt" rel="noopener" target="_blank" title="PyPI"><i aria-hidden="true" class="fa-solid fa-cube fa-lg"></i>
+<span class="sr-only">PyPI</span></a>
+</li>
+</ul></div>
+<div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="pst-version-switcher-button-2"
+      type="button"
+      class="version-switcher__button btn btn-sm dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-haspopup="listbox"
+      aria-controls="pst-version-switcher-list-2"
+      aria-label="Version switcher list"
+    >
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="pst-version-switcher-list-2"
+      class="version-switcher__menu dropdown-menu list-group-flush py-0"
+      role="listbox" aria-labelledby="pst-version-switcher-button-2">
+      <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+</div>
+</div>
+<div class="navbar-persistent--mobile">
+<script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+</div>
+<button aria-label="On this page" class="pst-navbar-icon sidebar-toggle secondary-toggle">
+<span class="fa-solid fa-outdent"></span>
+</button>
+</div>
+</header>
+<div class="bd-container">
+<div class="bd-container__inner bd-page-width">
+<div class="bd-sidebar-primary bd-sidebar">
+<div class="sidebar-header-items sidebar-primary__section">
+<div class="sidebar-header-items__center">
+<div class="navbar-item">
+<nav>
+<ul class="bd-navbar-elements navbar-nav">
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../quickstart.html">
+    Quickstart
+  </a>
+</li>
+<li class="nav-item current active">
+<a class="nav-link nav-internal" href="../usage.html">
+    User guide
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../api.html">
+    API documentation
+  </a>
+</li>
+</ul>
+</nav></div>
+</div>
+<div class="sidebar-header-items__end">
+<div class="navbar-item">
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+<div class="navbar-item"><ul aria-label="Icon Links" class="navbar-icon-links">
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://github.com/xsuite/xplt" rel="noopener" target="_blank" title="GitHub"><i aria-hidden="true" class="fa-brands fa-square-github fa-lg"></i>
+<span class="sr-only">GitHub</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://pypi.org/project/xplt" rel="noopener" target="_blank" title="PyPI"><i aria-hidden="true" class="fa-solid fa-cube fa-lg"></i>
+<span class="sr-only">PyPI</span></a>
+</li>
+</ul></div>
+<div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="pst-version-switcher-button-3"
+      type="button"
+      class="version-switcher__button btn btn-sm dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-haspopup="listbox"
+      aria-controls="pst-version-switcher-list-3"
+      aria-label="Version switcher list"
+    >
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="pst-version-switcher-list-3"
+      class="version-switcher__menu dropdown-menu list-group-flush py-0"
+      role="listbox" aria-labelledby="pst-version-switcher-button-3">
+      <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+</div>
+</div>
+<div class="sidebar-primary-items__start sidebar-primary__section">
+<div class="sidebar-primary-item">
+<nav aria-label="Section Navigation" class="bd-docs-nav bd-links">
+<p aria-level="1" class="bd-links__title" role="heading">Section Navigation</p>
+<div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">Common concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="line.html">Beamline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="twiss.html">Twiss</a></li>
+<li class="toctree-l1"><a class="reference internal" href="phasespace.html">Phasespace</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hamiltonians.html">Hamiltonians</a></li>
+<li class="toctree-l1"><a class="reference internal" href="timestructure.html">Timestructure (Spill, Schottky)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Colors</a></li>
+</ul>
+</div>
+</nav></div>
+</div>
+<div class="sidebar-primary-items__end sidebar-primary__section">
+</div>
+<div id="rtd-footer-container"></div>
+</div>
+<main class="bd-main" id="main-content" role="main">
+<div class="bd-content">
+<div class="bd-article-container">
+<div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+<div class="header-article-items__start">
+<div class="header-article-item">
+<nav aria-label="Breadcrumb" class="d-print-none">
+<ul class="bd-breadcrumbs">
+<li class="breadcrumb-item breadcrumb-home">
+<a aria-label="Home" class="nav-link" href="../index.html">
+<i class="fa-solid fa-home"></i>
+</a>
+</li>
+<li class="breadcrumb-item"><a class="nav-link" href="../usage.html">User guide</a></li>
+<li aria-current="page" class="breadcrumb-item active">Colors</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+</div>
+<div id="searchbox"></div>
+<article class="bd-article">
+<section class="tex2jax_ignore mathjax_ignore" id="colors">
+<h1>Colors<a class="headerlink" href="#colors" title="Link to this heading">#</a></h1>
+<p>This library uses the <a class="reference external" href="https://doi.org/10.48550/arXiv.2107.02270">Accessible Color Sequences for Data Visualization</a> by Matthew A. Petroff.</p>
+<div class="cell tag_hide-cell docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show imports</span>
+<span class="expanded">Hide code cell content</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">load_ext</span> autoreload
+<span class="o">%</span><span class="k">autoreload</span> 2
+
+<span class="kn">import</span> <a class="sphinx-codeautolink-a" href="https://matplotlib.org/stable/api/pyplot_summary.html#module-matplotlib.pyplot" title="matplotlib.pyplot"><span class="nn">matplotlib.pyplot</span></a> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/index.html#module-numpy" title="numpy"><span class="nn">numpy</span></a> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/index.html#module-xplt" title="xplt"><span class="nn">xplt</span></a>
+
+<a class="sphinx-codeautolink-a" href="../autoapi/xplt/index.html#xplt.apply_style" title="xplt.apply_style"><span class="n">xplt</span><span class="o">.</span><span class="n">apply_style</span></a><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<section id="color-palette">
+<h2>Color palette<a class="headerlink" href="#color-palette" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">xplt</span><span class="o">.</span><span class="n">cmap_petroff</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div style="vertical-align: middle;"><strong>petroff</strong> </div><div class="cmap"><img alt="petroff colormap" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAABACAYAAABsv8+/AAAAFnRFWHRUaXRsZQBwZXRyb2ZmIGNvbG9ybWFwMsiuoAAAABx0RVh0RGVzY3JpcHRpb24AcGV0cm9mZiBjb2xvcm1hcJXmH9kAAAAwdEVYdEF1dGhvcgBNYXRwbG90bGliIHYzLjkuMiwgaHR0cHM6Ly9tYXRwbG90bGliLm9yZ2GZxVMAAAAydEVYdFNvZnR3YXJlAE1hdHBsb3RsaWIgdjMuOS4yLCBodHRwczovL21hdHBsb3RsaWIub3JnTz9adAAAAX5JREFUeJzt1iEyBWAYQFHswIwiKlYgP9keVF16OxBee1swgi1IRlUVMzYhKBqb+Mc3456zghvv4eX+4+fgH3k5vZhOWOZ5+zWdsMz73f10wjKfu5PphGXONw/TCctsvh+nE5Z5u7qdTljm6fV4OmGZs5vr6YSljqYDAIC/ZwAAIMgAAECQAQCAIAMAAEEGAACCDAAABBkAAAgyAAAQZAAAIMgAAECQAQCAIAMAAEEGAACCDAAABBkAAAgyAAAQZAAAIMgAAECQAQCAIAMAAEEGAACCDAAABBkAAAgyAAAQZAAAIMgAAECQAQCAIAMAAEEGAACCDAAABBkAAAgyAAAQZAAAIMgAAECQAQCAIAMAAEEGAACCDAAABBkAAAgyAAAQZAAAIMgAAECQAQCAIAMAAEEGAACCDAAABBkAAAgyAAAQZAAAIMgAAECQAQCAIAMAAEEGAACCDAAABBkAAAgyAAAQZAAAIMgAAECQAQCAIAMAAEEGAACCDAAABP0C0BwQyM263O8AAAAASUVORK5CYII=" style="border: 1px solid #555;" title="petroff"/></div><div style="vertical-align: middle; max-width: 514px; display: flex; justify-content: space-between;"><div style="float: left;"><div style="display: inline-block; width: 1em; height: 1em; margin: 0; vertical-align: middle; border: 1px solid #555; background-color: #00000000;" title="#00000000"></div> under</div><div style="margin: 0 auto; display: inline-block;">bad <div style="display: inline-block; width: 1em; height: 1em; margin: 0; vertical-align: middle; border: 1px solid #555; background-color: #00000000;" title="#00000000"></div></div><div style="float: right;">over <div style="display: inline-block; width: 1em; height: 1em; margin: 0; vertical-align: middle; border: 1px solid #555; background-color: #00000000;" title="#00000000"></div></div></div></div></div>
+</div>
+</section>
+<section id="color-gradients">
+<h2>Color gradients<a class="headerlink" href="#color-gradients" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">xplt</span><span class="o">.</span><span class="n">cmap_petroff_gradient</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div style="vertical-align: middle;"><strong>petroff_gradient</strong> </div><div class="cmap"><img alt="petroff_gradient colormap" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAABACAYAAABsv8+/AAAAH3RFWHRUaXRsZQBwZXRyb2ZmX2dyYWRpZW50IGNvbG9ybWFwvFogsAAAACV0RVh0RGVzY3JpcHRpb24AcGV0cm9mZl9ncmFkaWVudCBjb2xvcm1hcGGd4JAAAAAwdEVYdEF1dGhvcgBNYXRwbG90bGliIHYzLjkuMiwgaHR0cHM6Ly9tYXRwbG90bGliLm9yZ2GZxVMAAAAydEVYdFNvZnR3YXJlAE1hdHBsb3RsaWIgdjMuOS4yLCBodHRwczovL21hdHBsb3RsaWIub3JnTz9adAAAAfNJREFUeJzt1j1ygzAURtEH+6+yvMxkJzFKEXAGsAz+mTTfOQ0jkEByUtzh4/OrVVVNU6uqqvlSbarVeJrHbTPuzT87b//edn/92e8ffefgXG2+8fD+3/z7DfON5Tpex73n1Zm/Xte7v1vXevPvv2+7j/P77Jyr9eYf7P/F32N3rmUf7fv3Wsv1srl/ufl87D1/dt3Bd59dt//um865W/+ec17H8z/sMNT6Oq7H1bn/3/Pr4D3/Nb9OnuvVfWx/l2Vibx/X59vvjsN6vFu/eb7dx7j57qPv7f69e+tvn/Nv3oPvfdPvt9wGAIIIAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAINAPJf8FRJR7hUEAAAAASUVORK5CYII=" style="border: 1px solid #555;" title="petroff_gradient"/></div><div style="vertical-align: middle; max-width: 514px; display: flex; justify-content: space-between;"><div style="float: left;"><div style="display: inline-block; width: 1em; height: 1em; margin: 0; vertical-align: middle; border: 1px solid #555; background-color: #94a4a2ff;" title="#94a4a2ff"></div> under</div><div style="margin: 0 auto; display: inline-block;">bad <div style="display: inline-block; width: 1em; height: 1em; margin: 0; vertical-align: middle; border: 1px solid #555; background-color: #00000000;" title="#00000000"></div></div><div style="float: right;">over <div style="display: inline-block; width: 1em; height: 1em; margin: 0; vertical-align: middle; border: 1px solid #555; background-color: #b9ac70ff;" title="#b9ac70ff"></div></div></div></div></div>
+</div>
+<hr class="docutils"/>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">xplt</span><span class="o">.</span><span class="n">cmap_petroff_bipolar</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div style="vertical-align: middle;"><strong>petroff_bipolar</strong> </div><div class="cmap"><img alt="petroff_bipolar colormap" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAABACAYAAABsv8+/AAAAHnRFWHRUaXRsZQBwZXRyb2ZmX2JpcG9sYXIgY29sb3JtYXAnroqCAAAAJHRFWHREZXNjcmlwdGlvbgBwZXRyb2ZmX2JpcG9sYXIgY29sb3JtYXDtEmPtAAAAMHRFWHRBdXRob3IATWF0cGxvdGxpYiB2My45LjIsIGh0dHBzOi8vbWF0cGxvdGxpYi5vcmdhmcVTAAAAMnRFWHRTb2Z0d2FyZQBNYXRwbG90bGliIHYzLjkuMiwgaHR0cHM6Ly9tYXRwbG90bGliLm9yZ08/WnQAAAHpSURBVHic7dZBUoMwGIbhH/Qe3v8QHq3ERaUOoUDB0c33PJsMIQnQ6eIdPj+GVlVV8zDWfRxqeb01b93uuurWzTf6/f38Y9980Oo5z+dr7M7p1m/Nnz5n9X1Dt64752D+6Jx5/tbe7mPdx6nez123k+u3rtvf7P/v95j6P+jj99/4Q4/9H/FgfnXuq/uX+9rZ9zn6nqvv87i//z7T1L7HWo6tns//+n67tL9dfn67uO/a/XnB2I3DrZbX8/1b250fpuW+n/n+/Pm6NuaPnlu756/n6+n5x8+tF8/vvqcAgDgCAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACPQFl0fa5UexADwAAAAASUVORK5CYII=" style="border: 1px solid #555;" title="petroff_bipolar"/></div><div style="vertical-align: middle; max-width: 514px; display: flex; justify-content: space-between;"><div style="float: left;"><div style="display: inline-block; width: 1em; height: 1em; margin: 0; vertical-align: middle; border: 1px solid #555; background-color: #a96b59ff;" title="#a96b59ff"></div> under</div><div style="margin: 0 auto; display: inline-block;">bad <div style="display: inline-block; width: 1em; height: 1em; margin: 0; vertical-align: middle; border: 1px solid #555; background-color: #00000000;" title="#00000000"></div></div><div style="float: right;">over <div style="display: inline-block; width: 1em; height: 1em; margin: 0; vertical-align: middle; border: 1px solid #555; background-color: #717581ff;" title="#717581ff"></div></div></div></div></div>
+</div>
+<hr class="docutils"/>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">xplt</span><span class="o">.</span><span class="n">cmap_petroff_cyclic</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_html"><div style="vertical-align: middle;"><strong>petroff_cyclic</strong> </div><div class="cmap"><img alt="petroff_cyclic colormap" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAABACAYAAABsv8+/AAAAHXRFWHRUaXRsZQBwZXRyb2ZmX2N5Y2xpYyBjb2xvcm1hcPk3ET0AAAAjdEVYdERlc2NyaXB0aW9uAHBldHJvZmZfY3ljbGljIGNvbG9ybWFw/xz0zAAAADB0RVh0QXV0aG9yAE1hdHBsb3RsaWIgdjMuOS4yLCBodHRwczovL21hdHBsb3RsaWIub3JnYZnFUwAAADJ0RVh0U29mdHdhcmUATWF0cGxvdGxpYiB2My45LjIsIGh0dHBzOi8vbWF0cGxvdGxpYi5vcmdPP1p0AAAB/ElEQVR4nO3WQW6rMABFUYPa/U+6gqq7TMAdBCLhhEAgs3fOxN/GBoqUr9v9/P3WUkqpXVdKKaV0/W3s2/k0zvtW5585Xz/9/JPvOdbbdByX4zA+X9+6/rheD57be70+vz585u+o0/37YRqneTc8X+/b9a1z9+vl4Ll967vfd2W92zpXr7d95TLNL8v5xnpXP73vupw3+9fud3rf6ntN36f5mbbjw897a3/zs3773M7zD/vPntt5fv4g2+vz/2vtfZv1tf3N/dbXm+d2J99za1/zfer0j6F8vRzH8r1cr6/3b45vnr8//+hzD56bnzt/VgAgiAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAAC/QPaBfVZKPSFJgAAAABJRU5ErkJggg==" style="border: 1px solid #555;" title="petroff_cyclic"/></div><div style="vertical-align: middle; max-width: 514px; display: flex; justify-content: space-between;"><div style="float: left;"><div style="display: inline-block; width: 1em; height: 1em; margin: 0; vertical-align: middle; border: 1px solid #555; background-color: #94a4a2ff;" title="#94a4a2ff"></div> under</div><div style="margin: 0 auto; display: inline-block;">bad <div style="display: inline-block; width: 1em; height: 1em; margin: 0; vertical-align: middle; border: 1px solid #555; background-color: #00000000;" title="#00000000"></div></div><div style="float: right;">over <div style="display: inline-block; width: 1em; height: 1em; margin: 0; vertical-align: middle; border: 1px solid #555; background-color: #94a4a2ff;" title="#94a4a2ff"></div></div></div></div></div>
+</div>
+</section>
+<hr class="docutils"/>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">#</a></h2>
+<p>With <a class="reference internal" href="../autoapi/xplt/index.html#xplt.apply_style" title="xplt.apply_style"><code class="xref py py-meth docutils literal notranslate"><span class="pre">xplt.apply_style()</span></code></a> in the import section above, the default color cycle is updated to use the petroff colors.<br/>
+The colors are also accessible by name as <code class="docutils literal notranslate"><span class="pre">p0</span></code>, <code class="docutils literal notranslate"><span class="pre">p1</span></code>, … <code class="docutils literal notranslate"><span class="pre">p9</span></code> even without applying Xplt’s style:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.figure.html#matplotlib.pyplot.figure" title="matplotlib.pyplot.figure"><span class="n">plt</span><span class="o">.</span><span class="n">figure</span></a><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<a class="sphinx-codeautolink-a" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html#matplotlib.pyplot.plot" title="matplotlib.pyplot.plot"><span class="n">plt</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/generated/numpy.linspace.html#numpy.linspace" title="numpy.linspace"><span class="n">np</span><span class="o">.</span><span class="n">linspace</span></a><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.plot.html#matplotlib.pyplot.plot" title="matplotlib.pyplot.plot"><span class="n">plt</span><span class="o">.</span><span class="n">plot</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/generated/numpy.linspace.html#numpy.linspace" title="numpy.linspace"><span class="n">np</span><span class="o">.</span><span class="n">linspace</span></a><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">"p2"</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/64fccd92d3b1329ee6ae67380caa50d7cb0b2a56cc912eda5ea126786dc9eda8.png" src="../_images/64fccd92d3b1329ee6ae67380caa50d7cb0b2a56cc912eda5ea126786dc9eda8.png">
+</img></div>
+</div>
+<p>Colormaps can be used like <code class="docutils literal notranslate"><span class="pre">cmap='petroff_bipolar'</span></code>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">()</span>
+<span class="n">t</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/generated/numpy.linspace.html#numpy.linspace" title="numpy.linspace"><span class="n">np</span><span class="o">.</span><span class="n">linspace</span></a><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span> <span class="o">*</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/constants.html#numpy.pi" title="numpy.pi"><span class="n">np</span><span class="o">.</span><span class="n">pi</span></a><span class="p">,</span> <span class="mi">1024</span><span class="p">)</span>
+<span class="n">data2d</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/generated/numpy.sin.html#numpy.sin" title="numpy.sin"><span class="n">np</span><span class="o">.</span><span class="n">sin</span></a><span class="p">(</span><span class="n">t</span><span class="p">)[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span> <span class="o">*</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/generated/numpy.cos.html#numpy.cos" title="numpy.cos"><span class="n">np</span><span class="o">.</span><span class="n">cos</span></a><span class="p">(</span><span class="n">t</span><span class="p">)[</span><span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">,</span> <span class="p">:]</span>
+<span class="n">im</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">data2d</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">"petroff_bipolar"</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">"Color"</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/03f465a9dc35a55d558390ea70aea79343a46aa6c42116b73f2667602f628359.png" src="../_images/03f465a9dc35a55d558390ea70aea79343a46aa6c42116b73f2667602f628359.png">
+</img></div>
+</div>
+<hr class="docutils"/>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../autoapi/xplt/colors/index.html#module-xplt.colors" title="xplt.colors"><code class="xref py py-class docutils literal notranslate"><span class="pre">xplt.colors</span></code></a></p></li>
+</ul>
+</div>
+</section>
+</section>
+</article>
+<footer class="prev-next-footer d-print-none">
+<div class="prev-next-area">
+<a class="left-prev" href="animations.html" title="previous page">
+<i class="fa-solid fa-angle-left"></i>
+<div class="prev-next-info">
+<p class="prev-next-subtitle">previous</p>
+<p class="prev-next-title">Animations</p>
+</div>
+</a>
+<a class="right-next" href="../api.html" title="next page">
+<div class="prev-next-info">
+<p class="prev-next-subtitle">next</p>
+<p class="prev-next-title">API documentation</p>
+</div>
+<i class="fa-solid fa-angle-right"></i>
+</a>
+</div>
+</footer>
+</div>
+<div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+<div class="sidebar-secondary-item">
+<div class="page-toc tocsection onthispage" id="pst-page-navigation-heading-2">
+<i class="fa-solid fa-list"></i> On this page
+  </div>
+<nav aria-labelledby="pst-page-navigation-heading-2" class="bd-toc-nav page-toc">
+<ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#color-palette">Color palette</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#color-gradients">Color gradients</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#usage">Usage</a></li>
+</ul>
+</nav></div>
+</div></div>
+</div>
+<footer class="bd-footer-content">
+</footer>
+</main>
+</div>
+</div>
+<!-- Scripts loaded after <body> so the DOM is not blocked -->
+<script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+<footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+<div class="footer-items__start">
+<div class="footer-item">
+<p class="copyright">
+    
+      © Copyright 2022-2024, Philipp Niedermayer (github.com/eltos).
+      <br/>
+</p>
+</div>
+</div>
+<div class="footer-items__end">
+<div class="footer-item">
+<p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.0.2.
+    <br/>
+</p>
+</div>
+<div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+</div>
+</div>
+</footer>
+</body>
+</html>

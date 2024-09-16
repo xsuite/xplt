@@ -1,0 +1,1059 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>xplt.util &#8212; Xplt 0.9.1 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="../../../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=a746c00c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=fd3f3429" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-codeautolink.css?v=125d5c1c" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=603c5a11" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+    <script src="../../../_static/documentation_options.js?v=9dc39874"></script>
+    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'autoapi/xplt/util/index';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.15.4';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://xsuite.github.io/xplt/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.9';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
+        </script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="prev" title="xplt.twiss" href="../twiss/index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         id="search-input"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+  </div>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Xplt 0.9.1 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../quickstart.html">
+    Quickstart
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../usage.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API documentation
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/xsuite/xplt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/xplt" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-cube fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="pst-version-switcher-button-2"
+      type="button"
+      class="version-switcher__button btn btn-sm dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-haspopup="listbox"
+      aria-controls="pst-version-switcher-list-2"
+      aria-label="Version switcher list"
+    >
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="pst-version-switcher-list-2"
+      class="version-switcher__menu dropdown-menu list-group-flush py-0"
+      role="listbox" aria-labelledby="pst-version-switcher-button-2">
+      <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <div class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../quickstart.html">
+    Quickstart
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../usage.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API documentation
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/xsuite/xplt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/xplt" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-cube fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="pst-version-switcher-button-3"
+      type="button"
+      class="version-switcher__button btn btn-sm dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-haspopup="listbox"
+      aria-controls="pst-version-switcher-list-3"
+      aria-label="Version switcher list"
+    >
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="pst-version-switcher-list-3"
+      class="version-switcher__menu dropdown-menu list-group-flush py-0"
+      role="listbox" aria-labelledby="pst-version-switcher-button-3">
+      <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">xplt</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../base/index.html">xplt.base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../colors/index.html">xplt.colors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../hooks/index.html">xplt.hooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../line/index.html">xplt.line</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../particles/index.html">xplt.particles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../phasespace/index.html">xplt.phasespace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../properties/index.html">xplt.properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../timestructure/index.html">xplt.timestructure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../twiss/index.html">xplt.twiss</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">xplt.util</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+  </div>
+  
+  <div id="rtd-footer-container"></div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../api.html" class="nav-link">API documentation</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">xplt</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page">xplt.util</li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-xplt.util">
+<span id="xplt-util"></span><h1>xplt.util<a class="headerlink" href="#module-xplt.util" title="Link to this heading">#</a></h1>
+<p>Utility methods for accelerator physics</p>
+<section id="attributes">
+<h2>Attributes<a class="headerlink" href="#attributes" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#xplt.util.c0" title="xplt.util.c0"><code class="xref py py-obj docutils literal notranslate"><span class="pre">c0</span></code></a></p></td>
+<td><p>Speed of light in m/s</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#xplt.util.AttrDict" title="xplt.util.AttrDict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AttrDict</span></code></a></p></td>
+<td><p>Dict which allows accessing values via key attributes</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="functions">
+<h2>Functions<a class="headerlink" href="#functions" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#xplt.util.average" title="xplt.util.average"><code class="xref py py-obj docutils literal notranslate"><span class="pre">average</span></code></a>(*data[, n, function, logspace, keepdim])</p></td>
+<td><p>Average the data</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#xplt.util.binned_data" title="xplt.util.binned_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">binned_data</span></code></a>(values, *[, what, n, dv, v_range, ...])</p></td>
+<td><p>Get histogrammed data with equally spaced bins</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#xplt.util.defaults" title="xplt.util.defaults"><code class="xref py py-obj docutils literal notranslate"><span class="pre">defaults</span></code></a>(kwargs, /, **default_kwargs)</p></td>
+<td><p>Return keyword arguments with defaults</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#xplt.util.defaults_for" title="xplt.util.defaults_for"><code class="xref py py-obj docutils literal notranslate"><span class="pre">defaults_for</span></code></a>(alias_provider, kwargs, /, **default_kwargs)</p></td>
+<td><p>Return normalized keyword arguments with defaults</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#xplt.util.denormalized_coordinates" title="xplt.util.denormalized_coordinates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">denormalized_coordinates</span></code></a>(X, Px, twiss, xy[, delta])</p></td>
+<td><p>Convert normalized to physical coordinates</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#xplt.util.evaluate_expression_wrapper" title="xplt.util.evaluate_expression_wrapper"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_expression_wrapper</span></code></a>(expression, key, data)</p></td>
+<td><p>Evaluate the expression wrapper</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#xplt.util.flattened" title="xplt.util.flattened"><code class="xref py py-obj docutils literal notranslate"><span class="pre">flattened</span></code></a>(lists)</p></td>
+<td><p>Flatten a list of nested lists recursively</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#xplt.util.fmt" title="xplt.util.fmt"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fmt</span></code></a>(t[, unit])</p></td>
+<td><p>Human-readable representation of value in unit (latex syntax)</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#xplt.util.get" title="xplt.util.get"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get</span></code></a>(obj, value[, default])</p></td>
+<td><p>Get value from object</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#xplt.util.hamiltonian_kobayashi" title="xplt.util.hamiltonian_kobayashi"><code class="xref py py-obj docutils literal notranslate"><span class="pre">hamiltonian_kobayashi</span></code></a>(X, Px, S, mu, twiss[, xy, ...])</p></td>
+<td><p>Calculate the kobayashi hamiltonian</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#xplt.util.ieee_mod" title="xplt.util.ieee_mod"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ieee_mod</span></code></a>(values, m)</p></td>
+<td><p>Return the IEEE remainder (in range -x/2 .. x/2)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#xplt.util.normalized_coordinates" title="xplt.util.normalized_coordinates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">normalized_coordinates</span></code></a>(x, px, twiss, xy[, delta])</p></td>
+<td><p>Convert physical to normalized coordinates</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#xplt.util.smooth" title="xplt.util.smooth"><code class="xref py py-obj docutils literal notranslate"><span class="pre">smooth</span></code></a>(*data, n)</p></td>
+<td><p>Smooth the data over n consecutive bins</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#xplt.util.val" title="xplt.util.val"><code class="xref py py-obj docutils literal notranslate"><span class="pre">val</span></code></a>(obj)</p></td>
+<td><p>Return the value if this is an array of size 1, object otherwise</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#xplt.util.virtual_sextupole" title="xplt.util.virtual_sextupole"><code class="xref py py-obj docutils literal notranslate"><span class="pre">virtual_sextupole</span></code></a>(line[, particle_ref, verbose])</p></td>
+<td><p>Determine virtual sextupole strength from twiss data</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="xplt.util.AttrDict">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">AttrDict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.9.1/xplt/util.py#L163-L168"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.AttrDict" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></p>
+<p>Dict which allows accessing values via key attributes</p>
+<p>Initialize self.  See help(type(self)) for accurate signature.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="xplt.util.AttrDict.clear">
+<span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#xplt.util.AttrDict.clear" title="Link to this definition">#</a></dt>
+<dd><p>D.clear() -&gt; None.  Remove all items from D.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xplt.util.AttrDict.copy">
+<span class="sig-name descname"><span class="pre">copy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#xplt.util.AttrDict.copy" title="Link to this definition">#</a></dt>
+<dd><p>D.copy() -&gt; a shallow copy of D</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xplt.util.AttrDict.get">
+<span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#xplt.util.AttrDict.get" title="Link to this definition">#</a></dt>
+<dd><p>Return the value for key if key is in the dictionary, else default.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xplt.util.AttrDict.items">
+<span class="sig-name descname"><span class="pre">items</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#xplt.util.AttrDict.items" title="Link to this definition">#</a></dt>
+<dd><p>D.items() -&gt; a set-like object providing a view on D’s items</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xplt.util.AttrDict.keys">
+<span class="sig-name descname"><span class="pre">keys</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#xplt.util.AttrDict.keys" title="Link to this definition">#</a></dt>
+<dd><p>D.keys() -&gt; a set-like object providing a view on D’s keys</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xplt.util.AttrDict.pop">
+<span class="sig-name descname"><span class="pre">pop</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#xplt.util.AttrDict.pop" title="Link to this definition">#</a></dt>
+<dd><p>D.pop(k[,d]) -&gt; v, remove specified key and return the corresponding value.</p>
+<p>If the key is not found, return the default if given; otherwise,
+raise a KeyError.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xplt.util.AttrDict.popitem">
+<span class="sig-name descname"><span class="pre">popitem</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#xplt.util.AttrDict.popitem" title="Link to this definition">#</a></dt>
+<dd><p>Remove and return a (key, value) pair as a 2-tuple.</p>
+<p>Pairs are returned in LIFO (last-in, first-out) order.
+Raises KeyError if the dict is empty.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xplt.util.AttrDict.setdefault">
+<span class="sig-name descname"><span class="pre">setdefault</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#xplt.util.AttrDict.setdefault" title="Link to this definition">#</a></dt>
+<dd><p>Insert key with a value of default if key is not in the dictionary.</p>
+<p>Return the value for key if key is in the dictionary, else default.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xplt.util.AttrDict.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#xplt.util.AttrDict.update" title="Link to this definition">#</a></dt>
+<dd><p>D.update([E, ]**F) -&gt; None.  Update D from dict/iterable E and F.
+If E is present and has a .keys() method, then does:  for k in E: D[k] = E[k]
+If E is present and lacks a .keys() method, then does:  for k, v in E: D[k] = v
+In either case, this is followed by: for k in F:  D[k] = F[k]</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xplt.util.AttrDict.values">
+<span class="sig-name descname"><span class="pre">values</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#xplt.util.AttrDict.values" title="Link to this definition">#</a></dt>
+<dd><p>D.values() -&gt; an object providing a view on D’s values</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="xplt.util.average">
+<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">average</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">np.mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logspace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keepdim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.9.1/xplt/util.py#L180-L222"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.average" title="Link to this definition">#</a></dt>
+<dd><p>Average the data</p>
+<p>Applies the function to n subsequent points of the data (along last axis) to yield one point in the output</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>np.ndarray</em>) – the data to average over</p></li>
+<li><p><strong>n</strong> (<em>int</em><em> | </em><em>floor</em>) – number of subsequent datapoints of intput to average into one point in the output.
+If the input size is not a multiple of n, the data will be clipped.
+In case of logspace scaling, this can be a flost (usually 1 &lt; n &lt; 2 gives good results)</p></li>
+<li><p><strong>function</strong> (<em>function</em>) – averaging function to apply to last axis of input data. Defaults to np.mean</p></li>
+<li><p><strong>logspace</strong> (<em>bool</em>) – If true, average N subsequent points where N is adjusted along the data to yield equal window sizes on a log scale</p></li>
+<li><p><strong>keepdim</strong> (<em>bool</em>) – If true, repeat averaged data to keep the diemension of the input array</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>averaged data</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="xplt.util.binned_data">
+<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">binned_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">what</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">moments</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">make_n_power_of_two</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.9.1/xplt/util.py#L262-L346"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.binned_data" title="Link to this definition">#</a></dt>
+<dd><p>Get histogrammed data with equally spaced bins</p>
+<p>From the non-equally distributed values, a histogram or timeseries with equally
+spaced bins is derived. The parameter <code class="docutils literal notranslate"><span class="pre">what</span></code> determines what is returned for the timeseries.
+By default (what=None), the number of particles for each bin is returned.
+Alternatively, a particle property can be passed as array, in which case that property is averaged
+over all particles of the respective bin (or 0 if no particles are within a bin).
+It is also possible to specify the moments to return, i.e. the power to which the property is raised
+before averaging. This allows to determine mean (1st moment, default) and variance (difference between
+2nd and 1st moment) etc. To disable averaging, pass None as the moment</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>values</strong> (<em>np.ndarray</em>) – Array of particle data, e.g. timestamps.</p></li>
+<li><p><strong>n</strong> (<em>int</em><em> | </em><em>None</em>) – Number of bins. Must not be used together with <cite>dv</cite>.</p></li>
+<li><p><strong>dv</strong> (<em>float</em><em> | </em><em>None</em>) – Bin width. Must not be used together with n.</p></li>
+<li><p><strong>v_range</strong> (<em>tuple</em><em>[</em><em>float</em><em>] </em><em>| </em><em>None</em>) – Tuple of (min, max) values to consider.
+If None, the range is determined from the data.</p></li>
+<li><p><strong>what</strong> (<em>np.ndarray</em><em> | </em><em>None</em>) – Array of associated data or None. Must have same shape as values. See above.</p></li>
+<li><p><strong>moments</strong> (<em>int</em><em> | </em><em>list</em><em>[</em><em>int</em><em> | </em><em>None</em><em>] </em><em>| </em><em>None</em>) – The moment(s) to return for associated data if what is not None. See above.</p></li>
+<li><p><strong>make_n_power_of_two</strong> (<em>bool</em>) – If true, ensure that the number of bins is a power of two by rounding up.
+Useful to increase performance of calculating FFTs on the timeseries data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>The histogram or timeseries as tuple</dt><dd><p><code class="docutils literal notranslate"><span class="pre">(v_min,</span> <span class="pre">dv,</span> <span class="pre">*counts_or_what)</span></code> where
+<code class="docutils literal notranslate"><span class="pre">v_min</span></code> is the start value of the histogram or timeseries data,
+<code class="docutils literal notranslate"><span class="pre">dv</span></code> is the bin width and
+<code class="docutils literal notranslate"><span class="pre">*counts_or_what</span></code> are the values of the histogram or timeseries as an array of length n
+for each moment requested.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="xplt.util.defaults">
+<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">defaults</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kwargs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">default_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.9.1/xplt/util.py#L103-L112"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.defaults" title="Link to this definition">#</a></dt>
+<dd><p>Return keyword arguments with defaults</p>
+<p>Returns a union of keyword arguments, where <cite>kwargs</cite> take precedence over <cite>default_kwargs</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>kwargs</strong> (<em>dict</em><em> | </em><em>None</em>) – keyword arguments (overwrite defaults)</p></li>
+<li><p><strong>default_kwargs</strong> – default keyword arguments</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="xplt.util.defaults_for">
+<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">defaults_for</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alias_provider</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kwargs</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">default_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.9.1/xplt/util.py#L115-L153"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.defaults_for" title="Link to this definition">#</a></dt>
+<dd><p>Return normalized keyword arguments with defaults</p>
+<p>Returns a union of keyword arguments, where <cite>kwargs</cite> take precedence over <cite>default_kwargs</cite>.
+All keyword arguments are normalized beforehand via <code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.cbook.normalize_kwargs()</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>alias_provider</strong> (<em>str</em><em> | </em><em>dict</em><em> | </em><em>class</em><em> | </em><em>artist</em>) – alias provider for <code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.cbook.normalize_kwargs()</span></code></p></li>
+<li><p><strong>kwargs</strong> (<em>dict</em><em> | </em><em>None</em>) – keyword arguments (overwrite defaults)</p></li>
+<li><p><strong>default_kwargs</strong> – default keyword arguments</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="xplt.util.denormalized_coordinates">
+<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">denormalized_coordinates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Px</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">twiss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.9.1/xplt/util.py#L375-L396"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.denormalized_coordinates" title="Link to this definition">#</a></dt>
+<dd><p>Convert normalized to physical coordinates</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>float</em>) – Normalized X-coordinate in m^(1/2)</p></li>
+<li><p><strong>Px</strong> (<em>float</em>) – Normalized Px-coordinate in m^(1/2)</p></li>
+<li><p><strong>twiss</strong> (<em>Any</em>) – Object or dict with local twiss information in m and rad</p></li>
+<li><p><strong>xy</strong> (<em>str</em>) – Plane. Either “x” or “y”.</p></li>
+<li><p><strong>delta</strong> (<em>float</em>) – Momentum deviation to account for dispersive orbit.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Tuple of physical coordinates</dt><dd><p>(x, px) in (m, rad)</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="xplt.util.evaluate_expression_wrapper">
+<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">evaluate_expression_wrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expression</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.9.1/xplt/util.py#L242-L259"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.evaluate_expression_wrapper" title="Link to this definition">#</a></dt>
+<dd><p>Evaluate the expression wrapper</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="xplt.util.flattened">
+<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">flattened</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lists</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.9.1/xplt/util.py#L156-L160"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.flattened" title="Link to this definition">#</a></dt>
+<dd><p>Flatten a list of nested lists recursively</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="xplt.util.fmt">
+<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">fmt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'s'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.9.1/xplt/util.py#L61-L64"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.fmt" title="Link to this definition">#</a></dt>
+<dd><p>Human-readable representation of value in unit (latex syntax)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="xplt.util.get">
+<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">VOID</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.9.1/xplt/util.py#L73-L100"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.get" title="Link to this definition">#</a></dt>
+<dd><p>Get value from object</p>
+<p>Tries to get the value using attributes and indices,
+and handles special objects like pandas data frames.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj</strong> (<em>Any</em>) – Object to get data from</p></li>
+<li><p><strong>value</strong> (<em>str</em>) – Name of attribute, index, column etc. to get</p></li>
+<li><p><strong>default</strong> (<em>Any</em>) – Default value to return. By default an exception is raised</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Value of the object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Any</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>AttributeError</strong> – if object does not provide the value and no default was specified</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="xplt.util.hamiltonian_kobayashi">
+<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">hamiltonian_kobayashi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Px</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">S</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">twiss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'x'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalized</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.9.1/xplt/util.py#L459-L496"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.hamiltonian_kobayashi" title="Link to this definition">#</a></dt>
+<dd><p>Calculate the kobayashi hamiltonian</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>float</em>) – Normalized X-coordinate in m^(1/2)</p></li>
+<li><p><strong>Px</strong> (<em>float</em>) – Normalized Px-coordinate in m^(1/2)</p></li>
+<li><p><strong>S</strong> (<em>float</em>) – Normalized sextupole strength in m^(-1/2)</p></li>
+<li><p><strong>mu</strong> (<em>float</em>) – Sextupole phase in rad/2pi</p></li>
+<li><p><strong>twiss</strong> (<em>Any</em>) – Object or dict with local twiss information in m and rad</p></li>
+<li><p><strong>xy</strong> (<em>str</em>) – Plane. Either “x” or “y”.</p></li>
+<li><p><strong>delta</strong> (<em>float</em>) – Momentum deviation to account for dispersive orbit.</p></li>
+<li><p><strong>normalized</strong> (<em>bool</em>) – If true, return value of hamiltonian divided by value at separatrix.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Value of the hamiltonian</dt><dd><p>(possibly normalized)</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="xplt.util.ieee_mod">
+<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">ieee_mod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.9.1/xplt/util.py#L68-L70"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.ieee_mod" title="Link to this definition">#</a></dt>
+<dd><p>Return the IEEE remainder (in range -x/2 .. x/2)</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="xplt.util.normalized_coordinates">
+<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">normalized_coordinates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">px</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">twiss</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xy</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.9.1/xplt/util.py#L349-L372"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.normalized_coordinates" title="Link to this definition">#</a></dt>
+<dd><p>Convert physical to normalized coordinates</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> (<em>float</em>) – Physical x-coordinate in m</p></li>
+<li><p><strong>px</strong> (<em>float</em>) – Physical px-coordinate in rad</p></li>
+<li><p><strong>twiss</strong> (<em>Any</em>) – Object or dict with twiss information in m and rad</p></li>
+<li><p><strong>xy</strong> (<em>str</em>) – Plane. Either “x” or “y”.</p></li>
+<li><p><strong>delta</strong> (<em>float</em>) – Momentum deviation to account for dispersive orbit.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Tuple of normalized coordinates</dt><dd><p>(X, Px) in (m^(1/2), m^(1/2))</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="xplt.util.smooth">
+<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">smooth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.9.1/xplt/util.py#L225-L239"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.smooth" title="Link to this definition">#</a></dt>
+<dd><p>Smooth the data over n consecutive bins</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>*data</strong> (<em>np.array</em>) – The data</p></li>
+<li><p><strong>n</strong> (<em>int</em>) – Number of items to smooth over</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Returns</dt><dd><dl class="simple">
+<dt>(np.array | list[np.array]): The smooth array(s) with same shape as the original data</dt><dd><p>(but first and last n/2 values will be np.nan).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="xplt.util.val">
+<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">val</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.9.1/xplt/util.py#L54-L58"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.val" title="Link to this definition">#</a></dt>
+<dd><p>Return the value if this is an array of size 1, object otherwise</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="xplt.util.virtual_sextupole">
+<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">virtual_sextupole</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">particle_ref</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.9.1/xplt/util.py#L399-L456"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.util.virtual_sextupole" title="Link to this definition">#</a></dt>
+<dd><p>Determine virtual sextupole strength from twiss data</p>
+<p>The normalized strenght is defined as S = -1/2 * betx^(3/2) * k2l</p>
+<p>The implementation considers only normal sextupole components.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>line</strong> (<a class="reference external" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.Line" title="(in Xsuite v0.0.0)"><em>xtrack.Line</em></a>) – Line with element_dict and twiss method</p></li>
+<li><p><strong>particle_ref</strong> (<em>xpart.Particles</em>) – Reference particle. Defaults to reference particle of tracker.</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em>) – If True, print information on sextupoles</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>Tuple (S, mu)</dt><dd><p>with normalized strength in m^(-1/2) and phase in rad/2pi</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="xplt.util.c0">
+<span class="sig-prename descclassname"><span class="pre">xplt.util.</span></span><span class="sig-name descname"><span class="pre">c0</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">299792458</span></em><a class="headerlink" href="#xplt.util.c0" title="Link to this definition">#</a></dt>
+<dd><p>Speed of light in m/s</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../twiss/index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">xplt.twiss</p>
+      </div>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#attributes">Attributes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#classes">Classes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions">Functions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-contents">Module Contents</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.util.AttrDict"><code class="docutils literal notranslate"><span class="pre">AttrDict</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.util.AttrDict.clear"><code class="docutils literal notranslate"><span class="pre">AttrDict.clear()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.util.AttrDict.copy"><code class="docutils literal notranslate"><span class="pre">AttrDict.copy()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.util.AttrDict.get"><code class="docutils literal notranslate"><span class="pre">AttrDict.get()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.util.AttrDict.items"><code class="docutils literal notranslate"><span class="pre">AttrDict.items()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.util.AttrDict.keys"><code class="docutils literal notranslate"><span class="pre">AttrDict.keys()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.util.AttrDict.pop"><code class="docutils literal notranslate"><span class="pre">AttrDict.pop()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.util.AttrDict.popitem"><code class="docutils literal notranslate"><span class="pre">AttrDict.popitem()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.util.AttrDict.setdefault"><code class="docutils literal notranslate"><span class="pre">AttrDict.setdefault()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.util.AttrDict.update"><code class="docutils literal notranslate"><span class="pre">AttrDict.update()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.util.AttrDict.values"><code class="docutils literal notranslate"><span class="pre">AttrDict.values()</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.util.average"><code class="docutils literal notranslate"><span class="pre">average()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.util.binned_data"><code class="docutils literal notranslate"><span class="pre">binned_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.util.defaults"><code class="docutils literal notranslate"><span class="pre">defaults()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.util.defaults_for"><code class="docutils literal notranslate"><span class="pre">defaults_for()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.util.denormalized_coordinates"><code class="docutils literal notranslate"><span class="pre">denormalized_coordinates()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.util.evaluate_expression_wrapper"><code class="docutils literal notranslate"><span class="pre">evaluate_expression_wrapper()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.util.flattened"><code class="docutils literal notranslate"><span class="pre">flattened()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.util.fmt"><code class="docutils literal notranslate"><span class="pre">fmt()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.util.get"><code class="docutils literal notranslate"><span class="pre">get()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.util.hamiltonian_kobayashi"><code class="docutils literal notranslate"><span class="pre">hamiltonian_kobayashi()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.util.ieee_mod"><code class="docutils literal notranslate"><span class="pre">ieee_mod()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.util.normalized_coordinates"><code class="docutils literal notranslate"><span class="pre">normalized_coordinates()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.util.smooth"><code class="docutils literal notranslate"><span class="pre">smooth()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.util.val"><code class="docutils literal notranslate"><span class="pre">val()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.util.virtual_sextupole"><code class="docutils literal notranslate"><span class="pre">virtual_sextupole()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.util.c0"><code class="docutils literal notranslate"><span class="pre">c0</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2024, Philipp Niedermayer (github.com/eltos).
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.0.2.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
