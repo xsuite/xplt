@@ -1,5 +1,6 @@
 
 numpy==1.23.3 # see https://github.com/xsuite/xsuite/issues/399
+Pint==0.23
 xdeps==0.4.2
 xfields==0.13.1
 xobjects==0.2.8

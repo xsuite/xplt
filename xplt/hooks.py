@@ -63,6 +63,7 @@ def register_pint_options():
         )
         return formatted.replace("[", "{").replace("]", "}").replace("^{0.5}", "^{1/2}")
 
+    # pint<0.24
     pint.formatting._FORMATTERS["L"] = format_latex
     pint.formatting.format_default = "L"
 
