@@ -42,15 +42,7 @@ class TimeVariationScalePlot(SpillQualityTimescalePlot):
 
 from . import hooks as _hooks
 
-try:
-    _hooks.register_matplotlib_options()
-except:
-    pass
-
-try:
-    _hooks.register_pint_options()
-except:
-    pass
+_hooks.try_register_hooks()
 
 import matplotlib.style as _mpl_style
 

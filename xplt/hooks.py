@@ -10,6 +10,7 @@ __contact__ = "eltos@outlook.de"
 __date__ = "2022-09-06"
 
 import types
+import warnings
 from xplt.colors import (
     cmap_petroff,
     cmap_petroff_gradient,
@@ -17,6 +18,20 @@ from xplt.colors import (
     cmap_petroff_cyclic,
     petroff_colors,
 )
+
+
+def try_register_hooks():
+    try:
+        register_matplotlib_options()
+    except Exception as e:
+        warnings.warn(f"Failed to register color names with matplotlib: {e}")
+        pass
+
+    try:
+        register_pint_options()
+    except Exception as e:
+        warnings.warn(f"Failed to register formatters with pint: {e}")
+        pass
 
 
 def register_matplotlib_options():
