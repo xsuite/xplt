@@ -1,3 +1,4 @@
+numpy==1.23.3
 astroid==3.2.4
 ipython==8.12.3
 matplotlib==3.9.2
@@ -19,4 +20,3 @@ sphinxcontrib-jsmath==1.0.1
 sphinxcontrib-napoleon==0.7
 sphinxcontrib-qthelp==2.0.0
 sphinxcontrib-serializinghtml==2.0.0
-
