@@ -10,6 +10,7 @@ __contact__ = "eltos@outlook.de"
 __date__ = "2022-09-06"
 
 import types
+import warnings
 from xplt.colors import (
     cmap_petroff,
     cmap_petroff_gradient,
@@ -17,6 +18,20 @@ from xplt.colors import (
     cmap_petroff_cyclic,
     petroff_colors,
 )
+
+
+def try_register_hooks():
+    try:
+        register_matplotlib_options()
+    except Exception as e:
+        warnings.warn(f"Failed to register color names with matplotlib: {e}", RuntimeWarning)
+        pass
+
+    try:
+        register_pint_options()
+    except Exception as e:
+        warnings.warn(f"Failed to register formatters with pint: {e}", RuntimeWarning)
+        pass
 
 
 def register_matplotlib_options():
@@ -45,7 +60,7 @@ def register_pint_options():
     """Register default options for pint"""
     import pint
 
-    # @pint.register_unit_format("l")
+    @pint.register_unit_format("X")
     def format_latex(unit, registry, **options):
         """Slightly modified latex formatter"""
         preprocessed = {
@@ -53,7 +68,8 @@ def register_pint_options():
         }
         formatted = pint.formatter(
             preprocessed.items(),
-            as_ratio=False,
+            {},
+            as_ratio=False,  # changed
             single_denominator=True,
             product_fmt=r" \cdot ",
             division_fmt=r"\frac[{}][{}]",
@@ -62,10 +78,6 @@ def register_pint_options():
             **options,
         )
         return formatted.replace("[", "{").replace("]", "}").replace("^{0.5}", "^{1/2}")
-
-    # pint<0.24
-    pint.formatting._FORMATTERS["L"] = format_latex
-    pint.formatting.format_default = "L"
 
 
 ## Restrict star imports to local namespace

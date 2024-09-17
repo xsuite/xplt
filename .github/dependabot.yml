@@ -1,0 +1,33 @@
+version: 2
+updates:
+
+- package-ecosystem: "pip"
+  directories:
+    - "/pyproject.toml"
+    - "/examples/requirements.txt"
+  schedule:
+    interval: "weekly"
+  groups:
+    dependencies:
+      patterns:
+        - "*"
+
+- package-ecosystem: "pip"
+  directories:
+    - "/tests/requirements.txt"
+  schedule:
+    interval: "monthly"
+  groups:
+    pytest:
+      patterns:
+        - "*"
+
+- package-ecosystem: "pip"
+  directories:
+    - "/docs/requirements.txt"
+  schedule:
+    interval: "monthly"
+  groups:
+    sphinx:
+      patterns:
+        - "*"
