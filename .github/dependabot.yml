@@ -3,8 +3,8 @@ updates:
 
 - package-ecosystem: "pip"
   directories:
-    - "/pyproject.toml"
-    - "/examples/requirements.txt"
+    - "/"
+    - "/examples/"
   schedule:
     interval: "weekly"
   groups:
@@ -14,7 +14,7 @@ updates:
 
 - package-ecosystem: "pip"
   directories:
-    - "/tests/requirements.txt"
+    - "/tests/"
   schedule:
     interval: "monthly"
   groups:
@@ -24,7 +24,7 @@ updates:
 
 - package-ecosystem: "pip"
   directories:
-    - "/docs/requirements.txt"
+    - "/docs/"
   schedule:
     interval: "monthly"
   groups:
