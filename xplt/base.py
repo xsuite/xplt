@@ -549,7 +549,7 @@ class XPlot:
             else:
                 display_unit = pint.Unit(units[0])  # all have the same unit (see above)
                 if display_unit != pint.Unit("1"):
-                    append = f" / ${display_unit:~L}$"  # see "NIST Guide to the SI"
+                    append = f" / ${display_unit:~X}$"  # see "NIST Guide to the SI"
             if append:
                 # heuristic: if labels contain expressions with + or - then add parentheses
                 if re.findall(r"[-+](?![^(]*\))(?![^{]*\})", label.split("   ")[-1]):
