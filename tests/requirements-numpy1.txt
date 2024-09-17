@@ -1,9 +1,9 @@
 # Overwrites specific versions for additionally testing numpy 1.* support
-numpy==1.23.3
-xdeps==0.4.2
-xfields==0.13.1
-xobjects==0.2.8
-xpart==0.15.3
-xtrack==0.42.0
-jupyterlab==4.0.11
-pandas==2.0.3
+numpy==2.1.1
+xdeps==0.6.5
+xfields==0.21.0
+xobjects==0.4.4
+xpart==0.19.0
+xtrack==0.67.0
+jupyterlab==4.2.5
+pandas==2.2.2
