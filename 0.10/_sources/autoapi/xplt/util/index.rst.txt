@@ -1,0 +1,310 @@
+xplt.util
+=========
+
+.. py:module:: xplt.util
+
+.. autoapi-nested-parse::
+
+   Utility methods for accelerator physics
+
+
+
+Attributes
+----------
+
+.. autoapisummary::
+
+   xplt.util.c0
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   xplt.util.AttrDict
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   xplt.util.average
+   xplt.util.binned_data
+   xplt.util.defaults
+   xplt.util.defaults_for
+   xplt.util.denormalized_coordinates
+   xplt.util.evaluate_expression_wrapper
+   xplt.util.flattened
+   xplt.util.fmt
+   xplt.util.get
+   xplt.util.hamiltonian_kobayashi
+   xplt.util.ieee_mod
+   xplt.util.normalized_coordinates
+   xplt.util.smooth
+   xplt.util.val
+   xplt.util.virtual_sextupole
+
+
+Module Contents
+---------------
+
+.. py:class:: AttrDict(*args, **kwargs)
+
+   Bases: :py:obj:`dict`
+
+
+   Dict which allows accessing values via key attributes
+
+   Initialize self.  See help(type(self)) for accurate signature.
+
+
+.. py:function:: average(*data, n=100, function=np.mean, logspace=False, keepdim=False)
+
+   Average the data
+
+   Applies the function to n subsequent points of the data (along last axis) to yield one point in the output
+
+   :param data: the data to average over
+   :type data: np.ndarray
+   :param n: number of subsequent datapoints of intput to average into one point in the output.
+             If the input size is not a multiple of n, the data will be clipped.
+             In case of logspace scaling, this can be a flost (usually 1 < n < 2 gives good results)
+   :type n: int | floor
+   :param function: averaging function to apply to last axis of input data. Defaults to np.mean
+   :type function: function
+   :param logspace: If true, average N subsequent points where N is adjusted along the data to yield equal window sizes on a log scale
+   :type logspace: bool
+   :param keepdim: If true, repeat averaged data to keep the diemension of the input array
+   :type keepdim: bool
+
+   :returns: averaged data
+
+
+.. py:function:: binned_data(values, *, what=None, n=None, dv=None, v_range=None, moments=1, make_n_power_of_two=False)
+
+   Get histogrammed data with equally spaced bins
+
+   From the non-equally distributed values, a histogram or timeseries with equally
+   spaced bins is derived. The parameter ``what`` determines what is returned for the timeseries.
+   By default (what=None), the number of particles for each bin is returned.
+   Alternatively, a particle property can be passed as array, in which case that property is averaged
+   over all particles of the respective bin (or 0 if no particles are within a bin).
+   It is also possible to specify the moments to return, i.e. the power to which the property is raised
+   before averaging. This allows to determine mean (1st moment, default) and variance (difference between
+   2nd and 1st moment) etc. To disable averaging, pass None as the moment
+
+   :param values: Array of particle data, e.g. timestamps.
+   :type values: np.ndarray
+   :param n: Number of bins. Must not be used together with `dv`.
+   :type n: int | None
+   :param dv: Bin width. Must not be used together with n.
+   :type dv: float | None
+   :param v_range: Tuple of (min, max) values to consider.
+                   If None, the range is determined from the data.
+   :type v_range: tuple[float] | None
+   :param what: Array of associated data or None. Must have same shape as values. See above.
+   :type what: np.ndarray | None
+   :param moments: The moment(s) to return for associated data if what is not None. See above.
+   :type moments: int | list[int | None] | None
+   :param make_n_power_of_two: If true, ensure that the number of bins is a power of two by rounding up.
+                               Useful to increase performance of calculating FFTs on the timeseries data.
+   :type make_n_power_of_two: bool
+
+   :returns:
+
+             The histogram or timeseries as tuple
+                 ``(v_min, dv, *counts_or_what)`` where
+                 ``v_min`` is the start value of the histogram or timeseries data,
+                 ``dv`` is the bin width and
+                 ``*counts_or_what`` are the values of the histogram or timeseries as an array of length n
+                 for each moment requested.
+   :rtype: tuple
+
+
+.. py:function:: defaults(kwargs, /, **default_kwargs)
+
+   Return keyword arguments with defaults
+
+   Returns a union of keyword arguments, where `kwargs` take precedence over `default_kwargs`.
+
+   :param kwargs: keyword arguments (overwrite defaults)
+   :type kwargs: dict | None
+   :param default_kwargs: default keyword arguments
+
+
+.. py:function:: defaults_for(alias_provider, kwargs, /, **default_kwargs)
+
+   Return normalized keyword arguments with defaults
+
+   Returns a union of keyword arguments, where `kwargs` take precedence over `default_kwargs`.
+   All keyword arguments are normalized beforehand via :meth:`matplotlib.cbook.normalize_kwargs`.
+
+   :param alias_provider: alias provider for :meth:`matplotlib.cbook.normalize_kwargs`
+   :type alias_provider: str | dict | class | artist
+   :param kwargs: keyword arguments (overwrite defaults)
+   :type kwargs: dict | None
+   :param default_kwargs: default keyword arguments
+
+
+.. py:function:: denormalized_coordinates(X, Px, twiss, xy, delta=0)
+
+   Convert normalized to physical coordinates
+
+   :param X: Normalized X-coordinate in m^(1/2)
+   :type X: float
+   :param Px: Normalized Px-coordinate in m^(1/2)
+   :type Px: float
+   :param twiss: Object or dict with local twiss information in m and rad
+   :type twiss: Any
+   :param xy: Plane. Either "x" or "y".
+   :type xy: str
+   :param delta: Momentum deviation to account for dispersive orbit.
+   :type delta: float
+
+   :returns:
+
+             Tuple of physical coordinates
+                 (x, px) in (m, rad)
+   :rtype: tuple
+
+
+.. py:function:: evaluate_expression_wrapper(expression, key, data)
+
+   Evaluate the expression wrapper
+
+
+.. py:function:: flattened(lists)
+
+   Flatten a list of nested lists recursively
+
+
+.. py:function:: fmt(t, unit='s')
+
+   Human-readable representation of value in unit (latex syntax)
+
+
+.. py:function:: get(obj, value, default=VOID)
+
+   Get value from object
+
+   Tries to get the value using attributes and indices,
+   and handles special objects like pandas data frames.
+
+   :param obj: Object to get data from
+   :type obj: Any
+   :param value: Name of attribute, index, column etc. to get
+   :type value: str
+   :param default: Default value to return. By default an exception is raised
+   :type default: Any
+
+   :returns: Value of the object
+   :rtype: Any
+
+   :raises AttributeError: if object does not provide the value and no default was specified
+
+
+.. py:function:: hamiltonian_kobayashi(X, Px, S, mu, twiss, xy='x', delta=0, *, normalized=False)
+
+   Calculate the kobayashi hamiltonian
+
+   :param X: Normalized X-coordinate in m^(1/2)
+   :type X: float
+   :param Px: Normalized Px-coordinate in m^(1/2)
+   :type Px: float
+   :param S: Normalized sextupole strength in m^(-1/2)
+   :type S: float
+   :param mu: Sextupole phase in rad/2pi
+   :type mu: float
+   :param twiss: Object or dict with local twiss information in m and rad
+   :type twiss: Any
+   :param xy: Plane. Either "x" or "y".
+   :type xy: str
+   :param delta: Momentum deviation to account for dispersive orbit.
+   :type delta: float
+   :param normalized: If true, return value of hamiltonian divided by value at separatrix.
+   :type normalized: bool
+
+   :returns:
+
+             Value of the hamiltonian
+                 (possibly normalized)
+   :rtype: float
+
+
+.. py:function:: ieee_mod(values, m)
+
+   Return the IEEE remainder (in range -x/2 .. x/2)
+
+
+.. py:function:: normalized_coordinates(x, px, twiss, xy, delta=0)
+
+   Convert physical to normalized coordinates
+
+   :param x: Physical x-coordinate in m
+   :type x: float
+   :param px: Physical px-coordinate in rad
+   :type px: float
+   :param twiss: Object or dict with twiss information in m and rad
+   :type twiss: Any
+   :param xy: Plane. Either "x" or "y".
+   :type xy: str
+   :param delta: Momentum deviation to account for dispersive orbit.
+   :type delta: float
+
+   :returns:
+
+             Tuple of normalized coordinates
+                 (X, Px) in (m^(1/2), m^(1/2))
+   :rtype: tuple
+
+
+.. py:function:: smooth(*data, n)
+
+   Smooth the data over n consecutive bins
+
+   :param \*data: The data
+   :type \*data: np.array
+   :param n: Number of items to smooth over
+   :type n: int
+
+   Returns
+        (np.array | list[np.array]): The smooth array(s) with same shape as the original data
+            (but first and last n/2 values will be np.nan).
+
+
+
+.. py:function:: val(obj)
+
+   Return the value if this is an array of size 1, object otherwise
+
+
+.. py:function:: virtual_sextupole(line, particle_ref=None, *, verbose=False)
+
+   Determine virtual sextupole strength from twiss data
+
+   The normalized strenght is defined as S = -1/2 * betx^(3/2) * k2l
+
+   The implementation considers only normal sextupole components.
+
+   :param line: Line with element_dict and twiss method
+   :type line: xtrack.Line
+   :param particle_ref: Reference particle. Defaults to reference particle of tracker.
+   :type particle_ref: xpart.Particles
+   :param verbose: If True, print information on sextupoles
+   :type verbose: bool
+
+   :returns:
+
+             Tuple (S, mu)
+                 with normalized strength in m^(-1/2) and phase in rad/2pi
+   :rtype: tuple
+
+
+.. py:data:: c0
+   :value: 299792458
+
+
+   Speed of light in m/s
+

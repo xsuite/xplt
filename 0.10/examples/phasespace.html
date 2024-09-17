@@ -1,0 +1,687 @@
+
+<!DOCTYPE html>
+
+<html data-content_root="../" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Phasespace — Xplt 0.10.0 documentation</title>
+<script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+<!-- Loaded before other Sphinx assets -->
+<link href="../_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet"/>
+<link href="../_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet"/>
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet"/>
+<link href="../_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet"/>
+<link as="font" crossorigin="" href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="" href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" rel="preload" type="font/woff2"/>
+<link as="font" crossorigin="" href="../_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" rel="preload" type="font/woff2"/>
+<link href="../_static/pygments.css?v=a746c00c" rel="stylesheet" type="text/css"/>
+<link href="../_static/graphviz.css?v=fd3f3429" rel="stylesheet" type="text/css"/>
+<link href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/sphinx-codeautolink.css?v=125d5c1c" rel="stylesheet" type="text/css"/>
+<link href="../_static/custom.css?v=603c5a11" rel="stylesheet" type="text/css"/>
+<!-- Pre-loaded scripts that we'll load fully later -->
+<link as="script" href="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" rel="preload"/>
+<link as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" rel="preload"/>
+<script src="../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/documentation_options.js?v=82662543"></script>
+<script src="../_static/doctools.js?v=9a2dae69"></script>
+<script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+<script>DOCUMENTATION_OPTIONS.pagename = 'examples/phasespace';</script>
+<script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.15.4';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://xsuite.github.io/xplt/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.10';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
+        </script>
+<link href="../genindex.html" rel="index" title="Index"/>
+<link href="../search.html" rel="search" title="Search"/>
+<link href="hamiltonians.html" rel="next" title="Hamiltonians"/>
+<link href="twiss.html" rel="prev" title="Twiss"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="en" name="docsearch:language"/>
+</head>
+<body data-bs-root-margin="0px 0px -60%" data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-default-mode="" data-offset="180">
+<div class="skip-link d-print-none" id="pst-skip-link"><a href="#main-content">Skip to main content</a></div>
+<div id="pst-scroll-pixel-helper"></div>
+<button class="btn rounded-pill" id="pst-back-to-top" type="button">
+<i class="fa-solid fa-arrow-up"></i>Back to top</button>
+<input class="sidebar-toggle" id="pst-primary-sidebar-checkbox" type="checkbox"/>
+<label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+<input class="sidebar-toggle" id="pst-secondary-sidebar-checkbox" type="checkbox"/>
+<label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+<div class="search-button__wrapper">
+<div class="search-button__overlay"></div>
+<div class="search-button__search-container">
+<form action="../search.html" class="bd-search d-flex align-items-center" method="get">
+<i class="fa-solid fa-magnifying-glass"></i>
+<input aria-label="Search the docs ..." autocapitalize="off" autocomplete="off" autocorrect="off" class="form-control" id="search-input" name="q" placeholder="Search the docs ..." spellcheck="false" type="search"/>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form></div>
+</div>
+<div class="pst-async-banner-revealer d-none">
+<aside aria-label="Version warning" class="d-none d-print-none" id="bd-header-version-warning"></aside>
+</div>
+<header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+<button aria-label="Site navigation" class="pst-navbar-icon sidebar-toggle primary-toggle">
+<span class="fa-solid fa-bars"></span>
+</button>
+<div class="col-lg-3 navbar-header-items__start">
+<div class="navbar-item">
+<a class="navbar-brand logo" href="../index.html">
+<p class="title logo__title">Xplt 0.10.0 documentation</p>
+</a></div>
+</div>
+<div class="col-lg-9 navbar-header-items">
+<div class="me-auto navbar-header-items__center">
+<div class="navbar-item">
+<nav>
+<ul class="bd-navbar-elements navbar-nav">
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../quickstart.html">
+    Quickstart
+  </a>
+</li>
+<li class="nav-item current active">
+<a class="nav-link nav-internal" href="../usage.html">
+    User guide
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../api.html">
+    API documentation
+  </a>
+</li>
+</ul>
+</nav></div>
+</div>
+<div class="navbar-header-items__end">
+<div class="navbar-item navbar-persistent--container">
+<script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+</div>
+<div class="navbar-item">
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+<div class="navbar-item"><ul aria-label="Icon Links" class="navbar-icon-links">
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://github.com/xsuite/xplt" rel="noopener" target="_blank" title="GitHub"><i aria-hidden="true" class="fa-brands fa-square-github fa-lg"></i>
+<span class="sr-only">GitHub</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://pypi.org/project/xplt" rel="noopener" target="_blank" title="PyPI"><i aria-hidden="true" class="fa-solid fa-cube fa-lg"></i>
+<span class="sr-only">PyPI</span></a>
+</li>
+</ul></div>
+<div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="pst-version-switcher-button-2"
+      type="button"
+      class="version-switcher__button btn btn-sm dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-haspopup="listbox"
+      aria-controls="pst-version-switcher-list-2"
+      aria-label="Version switcher list"
+    >
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="pst-version-switcher-list-2"
+      class="version-switcher__menu dropdown-menu list-group-flush py-0"
+      role="listbox" aria-labelledby="pst-version-switcher-button-2">
+      <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+</div>
+</div>
+<div class="navbar-persistent--mobile">
+<script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
+</div>
+<button aria-label="On this page" class="pst-navbar-icon sidebar-toggle secondary-toggle">
+<span class="fa-solid fa-outdent"></span>
+</button>
+</div>
+</header>
+<div class="bd-container">
+<div class="bd-container__inner bd-page-width">
+<div class="bd-sidebar-primary bd-sidebar">
+<div class="sidebar-header-items sidebar-primary__section">
+<div class="sidebar-header-items__center">
+<div class="navbar-item">
+<nav>
+<ul class="bd-navbar-elements navbar-nav">
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../quickstart.html">
+    Quickstart
+  </a>
+</li>
+<li class="nav-item current active">
+<a class="nav-link nav-internal" href="../usage.html">
+    User guide
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../api.html">
+    API documentation
+  </a>
+</li>
+</ul>
+</nav></div>
+</div>
+<div class="sidebar-header-items__end">
+<div class="navbar-item">
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
+<div class="navbar-item"><ul aria-label="Icon Links" class="navbar-icon-links">
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://github.com/xsuite/xplt" rel="noopener" target="_blank" title="GitHub"><i aria-hidden="true" class="fa-brands fa-square-github fa-lg"></i>
+<span class="sr-only">GitHub</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://pypi.org/project/xplt" rel="noopener" target="_blank" title="PyPI"><i aria-hidden="true" class="fa-solid fa-cube fa-lg"></i>
+<span class="sr-only">PyPI</span></a>
+</li>
+</ul></div>
+<div class="navbar-item">
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="pst-version-switcher-button-3"
+      type="button"
+      class="version-switcher__button btn btn-sm dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-haspopup="listbox"
+      aria-controls="pst-version-switcher-list-3"
+      aria-label="Version switcher list"
+    >
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="pst-version-switcher-list-3"
+      class="version-switcher__menu dropdown-menu list-group-flush py-0"
+      role="listbox" aria-labelledby="pst-version-switcher-button-3">
+      <!-- dropdown will be populated by javascript on page load -->
+    </div>
+  </div>
+`);
+</script></div>
+</div>
+</div>
+<div class="sidebar-primary-items__start sidebar-primary__section">
+<div class="sidebar-primary-item">
+<nav aria-label="Section Navigation" class="bd-docs-nav bd-links">
+<p aria-level="1" class="bd-links__title" role="heading">Section Navigation</p>
+<div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="concepts.html">Common concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="line.html">Beamline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="twiss.html">Twiss</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Phasespace</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hamiltonians.html">Hamiltonians</a></li>
+<li class="toctree-l1"><a class="reference internal" href="timestructure.html">Timestructure (Spill, Schottky)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="colors.html">Colors</a></li>
+</ul>
+</div>
+</nav></div>
+</div>
+<div class="sidebar-primary-items__end sidebar-primary__section">
+</div>
+<div id="rtd-footer-container"></div>
+</div>
+<main class="bd-main" id="main-content" role="main">
+<div class="bd-content">
+<div class="bd-article-container">
+<div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+<div class="header-article-items__start">
+<div class="header-article-item">
+<nav aria-label="Breadcrumb" class="d-print-none">
+<ul class="bd-breadcrumbs">
+<li class="breadcrumb-item breadcrumb-home">
+<a aria-label="Home" class="nav-link" href="../index.html">
+<i class="fa-solid fa-home"></i>
+</a>
+</li>
+<li class="breadcrumb-item"><a class="nav-link" href="../usage.html">User guide</a></li>
+<li aria-current="page" class="breadcrumb-item active">Phasespace</li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+</div>
+<div id="searchbox"></div>
+<article class="bd-article">
+<section class="tex2jax_ignore mathjax_ignore" id="phasespace">
+<h1>Phasespace<a class="headerlink" href="#phasespace" title="Link to this heading">#</a></h1>
+<p>This is an example of plotting phase space distributions.
+First, create a simple line, a tracker and a particle set:</p>
+<div class="cell tag_hide-cell docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show imports</span>
+<span class="expanded">Hide code cell content</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">load_ext</span> autoreload
+<span class="o">%</span><span class="k">autoreload</span> 2
+
+<span class="kn">import</span> <span class="nn">xtrack</span> <span class="k">as</span> <span class="nn">xt</span>
+<span class="kn">import</span> <span class="nn">xpart</span> <span class="k">as</span> <span class="nn">xp</span>
+<span class="kn">import</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/index.html#module-xplt" title="xplt"><span class="nn">xplt</span></a>
+<span class="kn">import</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/index.html#module-numpy" title="numpy"><span class="nn">numpy</span></a> <span class="k">as</span> <span class="nn">np</span>
+
+<a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.seed.html#numpy.random.seed" title="numpy.random.seed"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span></a><span class="p">(</span><span class="mi">43543557</span><span class="p">)</span>
+
+<a class="sphinx-codeautolink-a" href="../autoapi/xplt/index.html#xplt.apply_style" title="xplt.apply_style"><span class="n">xplt</span><span class="o">.</span><span class="n">apply_style</span></a><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell tag_remove-output tag_hide-cell docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show line generation code</span>
+<span class="expanded">Hide code cell content</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## Generate a simple 6-fold symmetric FODO lattice</span>
+
+<span class="n">n</span> <span class="o">=</span> <span class="mi">6</span>  <span class="c1"># number of sections</span>
+<span class="n">elements</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"QF"</span><span class="p">:</span> <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.Multipole" title="xtrack.beam_elements.elements.Multipole"><span class="n">xt</span><span class="o">.</span><span class="n">Multipole</span></a><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">knl</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">+</span><span class="mf">0.63</span><span class="p">]),</span>
+    <span class="s2">"QD"</span><span class="p">:</span> <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.Multipole" title="xtrack.beam_elements.elements.Multipole"><span class="n">xt</span><span class="o">.</span><span class="n">Multipole</span></a><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">knl</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.48</span><span class="p">]),</span>
+    <span class="s2">"MU"</span><span class="p">:</span> <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.Multipole" title="xtrack.beam_elements.elements.Multipole"><span class="n">xt</span><span class="o">.</span><span class="n">Multipole</span></a><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">knl</span><span class="o">=</span><span class="p">[</span><a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/constants.html#numpy.pi" title="numpy.pi"><span class="n">np</span><span class="o">.</span><span class="n">pi</span></a> <span class="o">/</span> <span class="n">n</span><span class="p">],</span> <span class="n">hxl</span><span class="o">=</span><span class="p">[</span><a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/constants.html#numpy.pi" title="numpy.pi"><span class="n">np</span><span class="o">.</span><span class="n">pi</span></a> <span class="o">/</span> <span class="n">n</span><span class="p">]),</span>
+<span class="p">}</span>
+<span class="n">parts</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"a"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mf">0.7</span><span class="p">,</span> <span class="s2">"QF"</span><span class="p">),</span>
+        <span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mf">1.4</span><span class="p">,</span> <span class="s2">"MU"</span><span class="p">),</span>
+        <span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mf">2.1</span><span class="p">,</span> <span class="s2">"QD"</span><span class="p">),</span>
+        <span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mf">2.8</span><span class="p">,</span> <span class="s2">"MU"</span><span class="p">),</span>
+    <span class="p">],</span>
+    <span class="s2">"b"</span><span class="p">:</span> <span class="p">[</span>
+        <span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mf">2.2</span><span class="p">,</span> <span class="s2">"MU"</span><span class="p">),</span>
+        <span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mf">2.9</span><span class="p">,</span> <span class="s2">"QD"</span><span class="p">),</span>
+        <span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mf">3.6</span><span class="p">,</span> <span class="s2">"MU"</span><span class="p">),</span>
+        <span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mf">4.3</span><span class="p">,</span> <span class="s2">"QF"</span><span class="p">),</span>
+    <span class="p">],</span>
+<span class="p">}</span>
+<span class="n">nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mf">5.0</span> <span class="o">*</span> <span class="n">i</span><span class="p">,</span> <span class="s2">"a"</span> <span class="k">if</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">2</span> <span class="k">else</span> <span class="s2">"b"</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">"S</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)]</span>
+
+<span class="n">line</span> <span class="o">=</span> <span class="n">xt</span><span class="o">.</span><span class="n">Line</span><span class="o">.</span><span class="n">from_sequence</span><span class="p">(</span>
+    <span class="n">nodes</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mf">5.0</span> <span class="o">*</span> <span class="n">n</span><span class="p">,</span> <span class="n">sequences</span><span class="o">=</span><span class="n">parts</span><span class="p">,</span> <span class="n">elements</span><span class="o">=</span><span class="n">elements</span><span class="p">,</span> <span class="n">auto_reorder</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+<span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">cycle</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">line</span><span class="o">.</span><span class="n">particle_ref</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.Particles" title="xtrack.particles.particles.Particles"><span class="n">xp</span><span class="o">.</span><span class="n">Particles</span></a><span class="p">()</span>
+<span class="n">line</span><span class="o">.</span><span class="n">build_tracker</span><span class="p">();</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell tag_hide-cell docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show particle generation code</span>
+<span class="expanded">Hide code cell content</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">## Generate particles</span>
+<span class="n">nparticles</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="mf">1e4</span><span class="p">)</span>
+
+<span class="c1"># Transverse distribution (gaussian)</span>
+<span class="n">norm_emitt_x</span> <span class="o">=</span> <span class="mf">4e-6</span>  <span class="c1"># normalized 1-sigma emittance in m*rad (=beta*gamma*emitt_x)</span>
+<span class="n">norm_emitt_y</span> <span class="o">=</span> <span class="mf">1e-6</span>  <span class="c1"># normalized 1-sigma emittance in m*rad (=beta*gamma*emitt_y)</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">px</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xpart.generate_2D_gaussian" title="xpart.generate_2D_gaussian"><span class="n">xp</span><span class="o">.</span><span class="n">generate_2D_gaussian</span></a><span class="p">(</span><span class="n">nparticles</span><span class="p">)</span>
+<span class="n">y</span><span class="p">,</span> <span class="n">py</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xpart.generate_2D_gaussian" title="xpart.generate_2D_gaussian"><span class="n">xp</span><span class="o">.</span><span class="n">generate_2D_gaussian</span></a><span class="p">(</span><span class="n">nparticles</span><span class="p">)</span>
+
+<span class="c1"># Longitudinal distribution (coasting beam)</span>
+<span class="n">rel_momentum_spread</span> <span class="o">=</span> <span class="mf">1e-4</span>  <span class="c1"># relative momentum spread ( P/p0 - 1 )</span>
+<span class="n">zeta</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">get_length</span><span class="p">()</span> <span class="o">*</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.uniform.html#numpy.random.uniform" title="numpy.random.uniform"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span></a><span class="p">(</span><span class="o">-</span><span class="mf">0.5</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">nparticles</span><span class="p">)</span>
+<span class="n">delta</span> <span class="o">=</span> <span class="n">rel_momentum_spread</span> <span class="o">*</span> <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xpart.generate_2D_gaussian" title="xpart.generate_2D_gaussian"><span class="n">xp</span><span class="o">.</span><span class="n">generate_2D_gaussian</span></a><span class="p">(</span><span class="n">nparticles</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="n">particles</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">build_particles</span><span class="p">(</span>
+    <span class="n">x_norm</span><span class="o">=</span><span class="n">x</span><span class="p">,</span>
+    <span class="n">px_norm</span><span class="o">=</span><span class="n">px</span><span class="p">,</span>
+    <span class="n">nemitt_x</span><span class="o">=</span><span class="n">norm_emitt_x</span><span class="p">,</span>
+    <span class="n">y_norm</span><span class="o">=</span><span class="n">y</span><span class="p">,</span>
+    <span class="n">py_norm</span><span class="o">=</span><span class="n">py</span><span class="p">,</span>
+    <span class="n">nemitt_y</span><span class="o">=</span><span class="n">norm_emitt_y</span><span class="p">,</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">"4d"</span><span class="p">,</span>  <span class="c1"># for twiss (default is 6d, won't work without a cavity)</span>
+    <span class="n">zeta</span><span class="o">=</span><span class="n">zeta</span><span class="p">,</span>
+    <span class="n">delta</span><span class="o">=</span><span class="n">delta</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Compiling ContextCpu kernels...
+Done compiling ContextCpu kernels.
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<section id="default-phasespace-plot">
+<h2>Default phasespace plot<a class="headerlink" href="#default-phasespace-plot" title="Link to this heading">#</a></h2>
+<p>Create a default <a class="reference internal" href="../autoapi/xplt/phasespace/index.html#xplt.phasespace.PhaseSpacePlot" title="xplt.phasespace.PhaseSpacePlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhasespacePlot</span></code></a>:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/phasespace/index.html#xplt.phasespace.PhaseSpacePlot" title="xplt.phasespace.PhaseSpacePlot"><span class="n">plot</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/phasespace/index.html#xplt.phasespace.PhaseSpacePlot" title="xplt.phasespace.PhaseSpacePlot"><span class="n">xplt</span><span class="o">.</span><span class="n">PhaseSpacePlot</span></a><span class="p">(</span><span class="n">particles</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/fba6168f12239ddda7ce63396c916beb7b9d18fa3bc58711b5e7c6b31f2ff08d.png" src="../_images/fba6168f12239ddda7ce63396c916beb7b9d18fa3bc58711b5e7c6b31f2ff08d.png"/>
+</div>
+</div>
+<p>1D Histograms can also be plotted using <a class="reference internal" href="../autoapi/xplt/particles/index.html#xplt.particles.ParticleHistogramPlot" title="xplt.particles.ParticleHistogramPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParticleHistogramPlot</span></code></a>.<br/>
+By default the particle count per bin is plotted, here we use <code class="docutils literal notranslate"><span class="pre">kind=</span></code> to plot the charge instead:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/particles/index.html#xplt.particles.ParticleHistogramPlot" title="xplt.particles.ParticleHistogramPlot"><span class="n">plot</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/particles/index.html#xplt.particles.ParticleHistogramPlot" title="xplt.particles.ParticleHistogramPlot"><span class="n">xplt</span><span class="o">.</span><span class="n">ParticleHistogramPlot</span></a><span class="p">(</span>
+    <span class="s2">"x"</span><span class="p">,</span> <span class="n">particles</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">"charge"</span><span class="p">,</span> <span class="n">bin_width</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="p">)</span>  <span class="c1"># bin_width is in data units (m)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/da6c84f6c54d4b1b9a5c8f84e99d4d390e6cb454fe8cfd4588aafcbb8d62bdaf.png" src="../_images/da6c84f6c54d4b1b9a5c8f84e99d4d390e6cb454fe8cfd4588aafcbb8d62bdaf.png"/>
+</div>
+</div>
+</section>
+<section id="customisation">
+<h2>Customisation<a class="headerlink" href="#customisation" title="Link to this heading">#</a></h2>
+<p>Use the parameter <code class="docutils literal notranslate"><span class="pre">kind</span></code> to specify what is plotted as a comma separated list of pairs <code class="docutils literal notranslate"><span class="pre">a-b</span></code>.
+The properties <code class="docutils literal notranslate"><span class="pre">a</span></code> and <code class="docutils literal notranslate"><span class="pre">b</span></code> can be any property of a particle such as <code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">px</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>, <code class="docutils literal notranslate"><span class="pre">delta</span></code>, <code class="docutils literal notranslate"><span class="pre">zeta</span></code>, <code class="docutils literal notranslate"><span class="pre">Jx</span></code>, <code class="docutils literal notranslate"><span class="pre">Θy</span></code> etc. Note that <code class="docutils literal notranslate"><span class="pre">zeta</span></code> is the absolute value, while <code class="docutils literal notranslate"><span class="pre">zeta_wrapped</span></code> is the wrapped value in range (-circumference/2 ; +circumference/2).
+See <a class="reference internal" href="concepts.html#default-properties"><span class="std std-ref">Default properties</span></a> for a complete list of default properties and refer to <a class="reference internal" href="concepts.html#adding-custom-data-properties"><span class="std std-ref">Adding custom data properties</span></a> for an explanation of how to add custom ones.</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">kind=</span></code> parameter accepts abbreviations for common pairs, e.g. <code class="docutils literal notranslate"><span class="pre">x</span></code> for <code class="docutils literal notranslate"><span class="pre">x-px</span></code>, <code class="docutils literal notranslate"><span class="pre">z</span></code> for <code class="docutils literal notranslate"><span class="pre">zeta-delta</span></code> or <code class="docutils literal notranslate"><span class="pre">Y</span></code> for <code class="docutils literal notranslate"><span class="pre">Y-Py</span></code></p>
+</div>
+<p>Here we also add some ellipses to indicate standard deviation and percentiles, disable the default projections, and use a scatter plot with some transparency.
+See <a class="reference internal" href="../autoapi/xplt/phasespace/index.html#xplt.phasespace.PhaseSpacePlot" title="xplt.phasespace.PhaseSpacePlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhasespacePlot</span></code></a> for details.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/phasespace/index.html#xplt.phasespace.PhaseSpacePlot" title="xplt.phasespace.PhaseSpacePlot"><span class="n">plot</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/phasespace/index.html#xplt.phasespace.PhaseSpacePlot" title="xplt.phasespace.PhaseSpacePlot"><span class="n">xplt</span><span class="o">.</span><span class="n">PhaseSpacePlot</span></a><span class="p">(</span>
+    <span class="n">particles</span><span class="p">,</span>
+    <span class="n">mask</span><span class="o">=</span><span class="n">particles</span><span class="o">.</span><span class="n">particle_id</span> <span class="o">&lt;</span> <span class="mf">1e4</span><span class="p">,</span>
+    <span class="n">kind</span><span class="o">=</span><span class="s2">"x,y,x-y"</span><span class="p">,</span>
+    <span class="n">plot</span><span class="o">=</span><span class="s2">"scatter"</span><span class="p">,</span>  <span class="c1"># using a scatter plot instead of a 2D histogram</span>
+    <span class="n">scatter_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.2</span><span class="p">),</span>  <span class="c1"># scatter plot with semi-transparent color</span>
+    <span class="n">projections</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># No projections onto axes</span>
+    <span class="n">display_units</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="s2">"urad"</span><span class="p">),</span>  <span class="c1"># p as shorthand for px and py</span>
+    <span class="n">mean</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>  <span class="c1"># show mean cross for all</span>
+    <span class="n">std</span><span class="o">=</span><span class="p">[</span><span class="kc">True</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">True</span><span class="p">],</span>  <span class="c1"># show std ellipse for first and last</span>
+    <span class="n">percentiles</span><span class="o">=</span><span class="p">[[</span><span class="mi">90</span><span class="p">],</span> <span class="p">[</span><span class="mi">70</span><span class="p">,</span> <span class="mi">80</span><span class="p">,</span> <span class="mi">90</span><span class="p">],</span> <span class="kc">None</span><span class="p">],</span>  <span class="c1"># show some percentile ellipses</span>
+<span class="p">)</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">ax</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">"Transverse profile"</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/a5618a0eaf8d6bc61a887d79f78ec54bf120c287cae1053345c99e825470e398.png" src="../_images/a5618a0eaf8d6bc61a887d79f78ec54bf120c287cae1053345c99e825470e398.png"/>
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>Most parameters accept a list of values to specify different values for each subplot</p>
+</div>
+</section>
+<section id="normalized-coordinates">
+<h2>Normalized coordinates<a class="headerlink" href="#normalized-coordinates" title="Link to this heading">#</a></h2>
+<p>Calculate twiss parameters for normalization:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tw</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">twiss</span><span class="p">(</span>
+    <span class="n">method</span><span class="o">=</span><span class="s2">"4d"</span><span class="p">,</span>
+    <span class="n">at_elements</span><span class="o">=</span><a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/generated/numpy.unique.html#numpy.unique" title="numpy.unique"><span class="n">np</span><span class="o">.</span><span class="n">unique</span></a><span class="p">(</span><span class="n">particles</span><span class="o">.</span><span class="n">at_element</span><span class="p">),</span>  <span class="c1"># twiss at location of particles</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Use uppercase letters for normalized coordinates (<code class="docutils literal notranslate"><span class="pre">X</span></code> is the shorthand for <code class="docutils literal notranslate"><span class="pre">X-Px</span></code>):</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/phasespace/index.html#xplt.phasespace.PhaseSpacePlot" title="xplt.phasespace.PhaseSpacePlot"><span class="n">plot</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/phasespace/index.html#xplt.phasespace.PhaseSpacePlot" title="xplt.phasespace.PhaseSpacePlot"><span class="n">xplt</span><span class="o">.</span><span class="n">PhaseSpacePlot</span></a><span class="p">(</span><span class="n">particles</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s2">"X,Y-Py"</span><span class="p">,</span> <span class="n">twiss</span><span class="o">=</span><span class="n">tw</span><span class="p">,</span> <span class="n">std</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/ee33ac28d7798e52b998a813e4b590cc703db1152a59ce979b34715430906f15.png" src="../_images/ee33ac28d7798e52b998a813e4b590cc703db1152a59ce979b34715430906f15.png"/>
+</div>
+</div>
+</section>
+<section id="color-by-3rd-coordinate">
+<h2>Color by 3rd coordinate<a class="headerlink" href="#color-by-3rd-coordinate" title="Link to this heading">#</a></h2>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/phasespace/index.html#xplt.phasespace.PhaseSpacePlot" title="xplt.phasespace.PhaseSpacePlot"><span class="n">plot</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/phasespace/index.html#xplt.phasespace.PhaseSpacePlot" title="xplt.phasespace.PhaseSpacePlot"><span class="n">xplt</span><span class="o">.</span><span class="n">PhaseSpacePlot</span></a><span class="p">(</span>
+    <span class="n">particles</span><span class="p">,</span>
+    <span class="s2">"x,y,zeta_wrapped-delta"</span><span class="p">,</span>
+    <span class="n">color</span><span class="o">=</span><span class="s2">"Θx,Jy,t"</span><span class="p">,</span>  <span class="c1"># &lt;-- color by value</span>
+    <span class="n">cmap</span><span class="o">=</span><span class="s2">"petroff_cyclic"</span><span class="p">,</span>
+    <span class="n">cbar_loc</span><span class="o">=</span><span class="s2">"inside upper right"</span><span class="p">,</span>
+    <span class="n">twiss</span><span class="o">=</span><span class="n">tw</span><span class="p">,</span>
+    <span class="n">grid</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/a015aab58a1877c2e4e2fbba86503633edc6e5628c2bc0aa1851f2170eac78f7.png" src="../_images/a015aab58a1877c2e4e2fbba86503633edc6e5628c2bc0aa1851f2170eac78f7.png"/>
+</div>
+</div>
+</section>
+<section id="monitor-data">
+<h2>Monitor data<a class="headerlink" href="#monitor-data" title="Link to this heading">#</a></h2>
+<p>Track the particle for a couple of turns:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">line</span><span class="o">.</span><span class="n">track</span><span class="p">(</span><span class="n">particles</span><span class="p">,</span> <span class="n">num_turns</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">turn_by_turn_monitor</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Use <code class="docutils literal notranslate"><span class="pre">mask=</span></code> to select a subset of the data to plot, e.g. a single turn:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/phasespace/index.html#xplt.phasespace.PhaseSpacePlot" title="xplt.phasespace.PhaseSpacePlot"><span class="n">plot</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/phasespace/index.html#xplt.phasespace.PhaseSpacePlot" title="xplt.phasespace.PhaseSpacePlot"><span class="n">xplt</span><span class="o">.</span><span class="n">PhaseSpacePlot</span></a><span class="p">(</span>
+    <span class="n">line</span><span class="o">.</span><span class="n">record_last_track</span><span class="p">,</span>
+    <span class="n">mask</span><span class="o">=</span><span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">),</span> <span class="mi">83</span><span class="p">),</span>  <span class="c1"># select all particles and turn 83</span>
+    <span class="n">mean</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+    <span class="n">std</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+<span class="p">)</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">"Particle distribution for a single turn"</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/24b9ad5c6fefab88b40edb462cae20135ef65b25e843fb51b369a27cb906d482.png" src="../_images/24b9ad5c6fefab88b40edb462cae20135ef65b25e843fb51b369a27cb906d482.png"/>
+</div>
+</div>
+<p>Use <code class="docutils literal notranslate"><span class="pre">masks=</span></code> to set a different mask for each subplot:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/phasespace/index.html#xplt.phasespace.PhaseSpacePlot" title="xplt.phasespace.PhaseSpacePlot"><span class="n">plot</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/phasespace/index.html#xplt.phasespace.PhaseSpacePlot" title="xplt.phasespace.PhaseSpacePlot"><span class="n">xplt</span><span class="o">.</span><span class="n">PhaseSpacePlot</span></a><span class="p">(</span>
+    <span class="n">line</span><span class="o">.</span><span class="n">record_last_track</span><span class="p">,</span>
+    <span class="n">kind</span><span class="o">=</span><span class="s2">"y,y"</span><span class="p">,</span>
+    <span class="n">titles</span><span class="o">=</span><span class="p">(</span><span class="s2">"First turn"</span><span class="p">,</span> <span class="s2">"Last turn"</span><span class="p">),</span>
+    <span class="n">sharex</span><span class="o">=</span><span class="s2">"all"</span><span class="p">,</span>
+    <span class="n">sharey</span><span class="o">=</span><span class="s2">"all"</span><span class="p">,</span>
+    <span class="n">masks</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="mi">500</span><span class="p">),</span> <span class="mi">0</span><span class="p">),</span>
+        <span class="p">(</span><span class="nb">slice</span><span class="p">(</span><span class="mi">500</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+    <span class="p">],</span>  <span class="c1"># select 500 particles at first and last turn</span>
+    <span class="n">projections</span><span class="o">=</span><span class="s2">"x"</span><span class="p">,</span>
+    <span class="n">mean</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">std</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">ylabel</span><span class="o">=</span><span class="kc">None</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/8a4afe6f2018b0fc39992c7ecacf9c235d87ef2a6c5fb2c861fb2aebc1df6dc8.png" src="../_images/8a4afe6f2018b0fc39992c7ecacf9c235d87ef2a6c5fb2c861fb2aebc1df6dc8.png"/>
+</div>
+</div>
+<p>Plot the trace of some particles:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/phasespace/index.html#xplt.phasespace.PhaseSpacePlot" title="xplt.phasespace.PhaseSpacePlot"><span class="n">plot</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/phasespace/index.html#xplt.phasespace.PhaseSpacePlot" title="xplt.phasespace.PhaseSpacePlot"><span class="n">xplt</span><span class="o">.</span><span class="n">PhaseSpacePlot</span></a><span class="p">(</span>
+    <span class="n">line</span><span class="o">.</span><span class="n">record_last_track</span><span class="p">,</span>
+    <span class="n">mask</span><span class="o">=</span><span class="p">([</span><span class="mi">17</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">21</span><span class="p">],</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)),</span>  <span class="c1"># select particles 17,18,21 and all turns</span>
+    <span class="n">projections</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/30133dc3798b93daa1a15b20d9ee307e5c5238d9dc5d7d661f16da8c592784b8.png" src="../_images/30133dc3798b93daa1a15b20d9ee307e5c5238d9dc5d7d661f16da8c592784b8.png"/>
+</div>
+</div>
+<p>Plot the trace of some particles as distinct plots on the same axis:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ax</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="k">for</span> <span class="n">particle_i</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="mi">21</span><span class="p">):</span>
+    <a class="sphinx-codeautolink-a" href="../autoapi/xplt/phasespace/index.html#xplt.phasespace.PhaseSpacePlot" title="xplt.phasespace.PhaseSpacePlot"><span class="n">plot</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/phasespace/index.html#xplt.phasespace.PhaseSpacePlot" title="xplt.phasespace.PhaseSpacePlot"><span class="n">xplt</span><span class="o">.</span><span class="n">PhaseSpacePlot</span></a><span class="p">(</span>
+        <span class="n">line</span><span class="o">.</span><span class="n">record_last_track</span><span class="p">,</span>
+        <span class="n">mask</span><span class="o">=</span><span class="p">(</span><span class="n">particle_i</span><span class="p">,</span> <span class="nb">slice</span><span class="p">(</span><span class="kc">None</span><span class="p">)),</span>  <span class="c1"># select particle i and all turns</span>
+        <span class="n">scatter_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">"#</span><span class="si">{</span><span class="n">particle_i</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>
+        <span class="n">kind</span><span class="o">=</span><span class="s2">"X"</span><span class="p">,</span>
+        <span class="n">twiss</span><span class="o">=</span><span class="n">tw</span><span class="p">,</span>
+        <span class="n">titles</span><span class="o">=</span><span class="p">(</span><span class="s2">"Trace of single particles"</span><span class="p">,),</span>
+        <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span>  <span class="c1"># draw on same plot as before</span>
+    <span class="p">)</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">plot</span><span class="o">.</span><span class="n">ax</span>
+
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s2">"Particle"</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/88db309a35a7588a6b8d530077d9f6dd3842cbfdcaaf2ccdb7879977c8c07c22.png" src="../_images/88db309a35a7588a6b8d530077d9f6dd3842cbfdcaaf2ccdb7879977c8c07c22.png"/>
+</div>
+</div>
+<hr class="docutils"/>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../autoapi/xplt/phasespace/index.html#module-xplt.phasespace" title="xplt.phasespace"><code class="xref py py-class docutils literal notranslate"><span class="pre">xplt.phasespace</span></code></a></p></li>
+</ul>
+</div>
+</section>
+</section>
+</article>
+<footer class="prev-next-footer d-print-none">
+<div class="prev-next-area">
+<a class="left-prev" href="twiss.html" title="previous page">
+<i class="fa-solid fa-angle-left"></i>
+<div class="prev-next-info">
+<p class="prev-next-subtitle">previous</p>
+<p class="prev-next-title">Twiss</p>
+</div>
+</a>
+<a class="right-next" href="hamiltonians.html" title="next page">
+<div class="prev-next-info">
+<p class="prev-next-subtitle">next</p>
+<p class="prev-next-title">Hamiltonians</p>
+</div>
+<i class="fa-solid fa-angle-right"></i>
+</a>
+</div>
+</footer>
+</div>
+<div class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+<div class="sidebar-secondary-item">
+<div class="page-toc tocsection onthispage" id="pst-page-navigation-heading-2">
+<i class="fa-solid fa-list"></i> On this page
+  </div>
+<nav aria-labelledby="pst-page-navigation-heading-2" class="bd-toc-nav page-toc">
+<ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#default-phasespace-plot">Default phasespace plot</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#customisation">Customisation</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#normalized-coordinates">Normalized coordinates</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#color-by-3rd-coordinate">Color by 3rd coordinate</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#monitor-data">Monitor data</a></li>
+</ul>
+</nav></div>
+</div></div>
+</div>
+<footer class="bd-footer-content">
+</footer>
+</main>
+</div>
+</div>
+<!-- Scripts loaded after <body> so the DOM is not blocked -->
+<script src="../_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
+<footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+<div class="footer-items__start">
+<div class="footer-item">
+<p class="copyright">
+    
+      © Copyright 2022-2024, Philipp Niedermayer (github.com/eltos).
+      <br/>
+</p>
+</div>
+</div>
+<div class="footer-items__end">
+<div class="footer-item">
+<p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.0.2.
+    <br/>
+</p>
+</div>
+<div class="footer-item">
+<p class="theme-version">
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
+</p></div>
+</div>
+</div>
+</footer>
+</body>
+</html>
