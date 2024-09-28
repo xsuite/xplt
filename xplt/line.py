@@ -382,6 +382,8 @@ class FloorPlot(XPlot):
             legend_entries = []
             for i, (x, y, rt, name, arc) in enumerate(zip(X, Y, R, NAME, BEND)):
 
+                name = name.split("::")[0] # for repeated elements
+
                 drift_length = get(survey, "drift_length", None)
 
                 if line is not None:
