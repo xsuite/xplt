@@ -1,0 +1,12 @@
+myst-nb
+pydata-sphinx-theme
+sphinx
+sphinx-autoapi
+sphinx-autodoc-typehints
+sphinx-codeautolink
+sphinx-gallery
+sphinx-jinja2-compat
+sphinx-prompt
+sphinx-tabs
+sphinx-toolbox
+sphinxcontrib-napoleon

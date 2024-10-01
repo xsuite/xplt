@@ -8,10 +8,10 @@ jobs:
     strategy:
       matrix:
         python-version: [ '3.9', '3.10', '3.11', '3.12' ]
-        dep-versions: [ '', '-numpy1' ]
+        dep-versions: [ '', 'numpy1' ]
         exclude:
           - python-version: '3.12'
-            dep-versions: '-numpy1'
+            dep-versions: 'numpy1'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -19,9 +19,11 @@ jobs:
           python-version: ${{ matrix.python-version }}
       - name: Install dependencies
         run: |
+          pip install -r requirements/tests-requirements-py${{ matrix.python-version }}.txt
+          if [[ -n "${{ matrix.dep-versions }}" ]]; then
+            pip install -r requirements/tests-requirements-var-${{ matrix.dep-versions }}.txt
+          fi
           pip install -e .
-          pip install -r tests/requirements.txt
-          pip install -r tests/requirements${{ matrix.dep-versions }}.txt
       - name: Pytest
         run: |
           cd tests
@@ -36,8 +38,8 @@ jobs:
           python-version: '3.12'
       - name: Install dependencies
         run: |
+          pip install -r requirements/docs-requirements.txt
           pip install -e .
-          pip install -r docs/requirements.txt
       - name: Sphinx build
         run: |
           sphinx-build docs _build/html
