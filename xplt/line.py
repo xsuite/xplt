@@ -403,9 +403,9 @@ class FloorPlot(XPlot):
                     if not length:
                         length = get(element, "length", None)
 
-                is_thick = line is not None and name in line.element_dict and line[name].isthick
-                if drift_length is not None and drift_length[i] > 0 and not is_thick:
-                    continue  # skip drift spaces
+                # ignored elements
+                if drift_length > 0 and not is_thick or type(element).__name__ == "Drift":
+                    continue  # always skip drift spaces
                 if self.ignore is not None:
                     if np.any([re.match(pattern, name) is not None for pattern in self.ignore]):
                         continue  # skip ignored
