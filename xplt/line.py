@@ -44,34 +44,35 @@ def element_strength(element, n):
     return 0
 
 
-def element_order(element):
+def nominal_order(element):
+    """Get nominal element order (even if coefficients might be zero)"""
+    if type(element).__name__ == "Bend":  # Treat combined function magnets as bend
+        return 0
+    if hasattr(element, "length"):
+        for n in range(10, -1, -1):
+            if hasattr(element, f"k{n}"):
+                return n
+    if hasattr(element, "order"):
+        return element.order
+    if hasattr(element, "knl"):
+        return len(element.knl)
+    return -1
+
+
+def effective_order(element):
     """Get effective order of element (ignoring zero strength)"""
     if hasattr(element, "knl"):
-        return max(np.argwhere(element.knl != 0), -1)
+        return max(np.argwhere(element.knl != 0), default=-1)
     if hasattr(element, "length") and element.length > 0:
-        n, order = 0, -1
-        while hasattr(element, f"k{n}"):
-            if getattr(element, f"k{n}") != 0:
-                order = n
-            n += 1
-            if n > 100:
-                raise RuntimeError("Heuristic element order determination failed")
-        return order
+        for n in range(10, -1, -1):
+            if hasattr(element, f"k{n}") and getattr(element, f"k{n}") != 0:
+                return n
     return -1
 
 
 def order(knl):
     """Get order of knl string as int"""
     return int(re.match(r"k(\d+)l", knl).group(1))
-
-
-# Known class names from xtrack and their order
-ORDER_NAMED_ELEMENTS = {
-    "Bend": 0,
-    "Quadrupole": 1,
-    "Sextupole": 2,
-    "Octupole": 3,
-}
 
 
 def tanc(x):
@@ -108,7 +109,7 @@ class KnlPlot(XManifoldPlot):
         if knl is None:
             if line is None:
                 raise ValueError("Either line or knl parameter must not be None")
-            knl = int(max([element_order(e) for e in line.elements]))
+            knl = int(max([effective_order(e) for e in line.elements]))
         if isinstance(knl, int):
             knl = range(knl + 1)
         if not isinstance(knl, str):
@@ -381,14 +382,26 @@ class FloorPlot(XPlot):
             helicity = 1
             legend_entries = []
             for i, (x, y, rt, name, arc) in enumerate(zip(X, Y, R, NAME, BEND)):
+                helicity = np.sign(arc) or helicity
+                # rt = angle of tangential direction in data coords
+                # rr = angle of radial direction (outward) in axis coords
+                rr = ang(rt - arc / 2 + helicity * np.pi / 2)
 
-                drift_length = get(survey, "drift_length", None)
+                drift_length = get(get(survey, "drift_length", []), i, -1)
+                order = get(get(survey, "order", []), i, -1)
+                length = get(get(survey, "length", []), i, 0)
+                is_thick = False
+                element = None
 
-                if line is not None:
-                    if name == "_end_point":
-                        continue
-                    if line[name].__class__.__name__ == "Replica":
+                if line is not None and name in line.element_dict:
+                    element = line[name]
+                    is_thick = element.isthick
+                    if type(element).__name__ == "Replica":
                         name = line[name].resolve(line, get_name=True)
+                    if order < 0:
+                        order = nominal_order(element)
+                    if not length:
+                        length = get(element, "length", None)
 
                 is_thick = line is not None and name in line.element_dict and line[name].isthick
                 if drift_length is not None and drift_length[i] > 0 and not is_thick:
@@ -396,22 +409,8 @@ class FloorPlot(XPlot):
                 if self.ignore is not None:
                     if np.any([re.match(pattern, name) is not None for pattern in self.ignore]):
                         continue  # skip ignored
-
-                helicity = np.sign(arc) or helicity
-                # rt = angle of tangential direction in data coords
-                # rr = angle of radial direction (outward) in axis coords
-                rr = ang(rt - arc / 2 + helicity * np.pi / 2)
-
-                element = line.element_dict.get(name) if line is not None else None
-                order = get(element, "order", None)
-                order = get(survey, "order", {i: order})[i]
-                if line is not None and name in line.element_dict:
-                    order = ORDER_NAMED_ELEMENTS.get(line[name].__class__.__name__, order)
-
-                length = get(element, "length", None)
-                length = get(survey, "length", {i: length})[i]
-                if length is not None:
-                    length = length * scale
+                if name == "_end_point":
+                    continue
 
                 # box
                 ######
