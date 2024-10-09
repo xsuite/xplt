@@ -390,8 +390,12 @@ class FloorPlot(XPlot):
                     if line[name].__class__.__name__ == "Replica":
                         name = line[name].resolve(line, get_name=True)
 
+                # ignored elements
                 is_thick = line is not None and name in line.element_dict and line[name].isthick
                 if drift_length is not None and drift_length[i] > 0 and not is_thick:
+                    continue  # skip drift spaces
+                element = line.element_dict.get(name) if line is not None else None
+                if type(element).__name__ == "Drift":
                     continue  # skip drift spaces
                 if self.ignore is not None:
                     if np.any([re.match(pattern, name) is not None for pattern in self.ignore]):
@@ -402,7 +406,6 @@ class FloorPlot(XPlot):
                 # rr = angle of radial direction (outward) in axis coords
                 rr = ang(rt - arc / 2 + helicity * np.pi / 2)
 
-                element = line.element_dict.get(name) if line is not None else None
                 order = get(element, "order", None)
                 order = get(survey, "order", {i: order})[i]
                 if line is not None and name in line.element_dict:
