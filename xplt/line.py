@@ -525,7 +525,11 @@ class FloorPlot(XPlot):
                     changed.append(label)
 
             # autoscale
-            self._autoscale(self.ax, autoscale, artists=self.artists_boxes + self.artists_labels)
+            self._autoscale(
+                self.ax,
+                autoscale,
+                artists=self.artists_boxes + self.artists_labels + [self.artist_beamline],
+            )
 
         return changed
 
