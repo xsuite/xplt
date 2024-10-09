@@ -1,6 +1,7 @@
 name: Dependencies
 
 on:
+  # Warning: this workflow must not be triggered by push or pull_request to avoid infinite loops!
   workflow_dispatch:
   schedule:
     - cron: '47 8 19 * *'
