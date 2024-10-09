@@ -234,6 +234,7 @@ class FloorPlot(XPlot):
         line=None,
         projection="ZX",
         *,
+        default_boxes=None,
         boxes=None,
         labels=False,
         ignore=None,
@@ -250,6 +251,7 @@ class FloorPlot(XPlot):
             boxes (None | bool | str | iterable | dict): Config option for showing colored boxes for elements. See below.
                 Detailed options can be "length" and all options suitable for a patch,
                 such as "color", "alpha", etc.
+            default_boxes (bool): Whether to keep the default boxes even if custom box options are specified.
             labels (None | bool | str | iterable | dict): Config option for showing labels for elements. See below.
                 Detailed options can be "text" (e.g. "Dipole {name}" where name will be
                 replaced with the element name) and all options suitable for an annotation,
@@ -286,6 +288,7 @@ class FloorPlot(XPlot):
 
         self.projection = projection
         self.boxes = boxes
+        self.default_boxes = default_boxes if default_boxes is not None else (boxes is not False)
         self.labels = labels
         self.ignore = [ignore] if isinstance(ignore, str) else ignore
         self.element_width = element_width
@@ -415,28 +418,28 @@ class FloorPlot(XPlot):
                 # box
                 ######
 
-                box_style = {}
-                if order is not None:
-                    box_style["color"] = f"C{order}"
-                if length is not None:
-                    box_style["length"] = length
-
-                # legend label
-                box_style["label"] = {
-                    0: "Bending magnet" if arc else None,
-                    1: "Quadrupole magnet",
-                    2: "Sextupole magnet",
-                    3: "Octupole magnet",
-                }.get(order)
+                # default style
+                default_box_style = dict(
+                    color=f"C{order}" if order >= 0 else "k",
+                    length=length or 0,
+                    label={
+                        0: "Bending magnet" if arc else None,
+                        1: "Quadrupole magnet",
+                        2: "Sextupole magnet",
+                        3: "Octupole magnet",
+                    }.get(order),
+                )
 
                 boxes = self.boxes
                 if boxes is None:
-                    boxes = line is None or order is not None
-                box_style = self._get_config(boxes, name, **box_style)
+                    boxes = line is None or order >= 0
+                box_style = self._get_config(boxes, name, **default_box_style)
+                if box_style is None and self.default_boxes and (line is None or order >= 0):
+                    box_style = default_box_style
 
                 if box_style is not None:
-                    width = box_style.pop("width", self.element_width * scale)
-                    length = box_style.pop("length", 0)
+                    width = box_style.pop("width", self.element_width) * scale
+                    length = box_style.pop("length", 0) * scale
                     if box_style.get("label") in legend_entries:
                         box_style.pop("label")  # prevent duplicate legend entries
                     else:
@@ -495,7 +498,7 @@ class FloorPlot(XPlot):
 
                 labels = self.labels
                 if labels is None:
-                    labels = line is not None and order is not None
+                    labels = line is not None and order >= 0
                 label_style = self._get_config(labels, name, text=name)
 
                 if label_style is not None:
