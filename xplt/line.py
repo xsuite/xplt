@@ -482,7 +482,7 @@ class FloorPlot(XPlot):
                                 box_style,
                                 xy=(x - width / 2, y - length / 2),
                                 width=width,
-                                height=length or (0.1 * scale),
+                                height=length,
                                 angle=np.rad2deg(ang(rt - arc / 2)) - 90,
                                 rotation_point="center",
                                 alpha=0.5,
