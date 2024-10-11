@@ -50,10 +50,10 @@ def nominal_order(element):
         return 0
     if hasattr(element, "length"):
         for n in range(10, -1, -1):
-            if hasattr(element, f"k{n}"):
+            if hasattr(element, f"k{n}") or hasattr(element, f"k{n}s"):
                 return n
     if hasattr(element, "order"):
-        return element.order
+        return int(element.order)
     if hasattr(element, "knl"):
         return len(element.knl)
     return -1
@@ -61,13 +61,15 @@ def nominal_order(element):
 
 def effective_order(element):
     """Get effective order of element (ignoring zero strength)"""
-    if hasattr(element, "knl"):
-        return max(np.argwhere(element.knl != 0), default=-1)
+    order = {-1}
     if hasattr(element, "length") and element.length > 0:
         for n in range(10, -1, -1):
-            if hasattr(element, f"k{n}") and getattr(element, f"k{n}") != 0:
-                return n
-    return -1
+            if get(element, f"k{n}", 0) or get(element, f"k{n}s", 0):
+                order.add(n)
+    for knl in ("knl", "ksl"):
+        if hasattr(element, knl):
+            order.add(int(np.max(np.nonzero(getattr(element, knl)), initial=-1)))
+    return max(order)
 
 
 def order(knl):
@@ -249,14 +251,15 @@ class FloorPlot(XPlot):
                 Use this to have colored boxes of correct size etc.
             projection (str): The projection to use: A pair of coordinates ('XZ', 'ZY' etc.)
             boxes (None | bool | str | iterable | dict): Config option for showing colored boxes for elements. See below.
-                Detailed options can be "length" and all options suitable for a patch,
-                such as "color", "alpha", etc.
+                Detailed options can be "length" and all options suitable for a patch, such as "color", "alpha", etc.
+                By default, all elements with a multipole order are shown, or if line is None then all element.
             default_boxes (bool): Whether to keep the default boxes even if custom box options are specified.
             labels (None | bool | str | iterable | dict): Config option for showing labels for elements. See below.
                 Detailed options can be "text" (e.g. "Dipole {name}" where name will be
                 replaced with the element name) and all options suitable for an annotation,
                 such as "color", "alpha", etc.
             ignore (None | str | list[str]): Optional patter or list of patterns to ignore elements with matching names.
+                Note that drift spaces are always ignored.
             element_width (float): Width of element boxes.
             kwargs: See :class:`~.base.XPlot` for additional arguments
 
