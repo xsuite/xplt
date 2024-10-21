@@ -61,7 +61,9 @@ def val(obj):
 def fmt(t, unit="s"):
     """Human-readable representation of value in unit (latex syntax)"""
     t = float(f"{t:g}")  # to handle corner cases like 9.999999e-07
-    return f"{pint.Quantity(t, unit):#~.4gX}".rstrip("\\")
+    s = f"{pint.Quantity(t, unit):#~.4gX}".rstrip("\\")
+    s = s.replace(" ", "\\ ", 1)
+    return s
 
 
 #

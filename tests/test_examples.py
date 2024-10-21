@@ -1,46 +1,162 @@
 import os
+import shutil
+import base64
+import re
+from unittest import TestCase
+from copy import deepcopy
+from tempfile import NamedTemporaryFile
+
+import pytest
 from testbook import testbook
+from matplotlib.testing.compare import compare_images
 
 dir = "examples"
 if not os.path.exists(dir):
     dir = os.path.join("..", dir)
 
 
-@testbook(f"{dir}/animations.ipynb")
-def test_animations(tb):
-    tb.execute()  # just confirm that the notebook runs
+class NotebookTester:
+    def __init__(self, nb):
+        self.nb = nb
+
+    def execute(self, *, check_outputs=False):
+        with testbook(self.nb) as tb:
+            for i, cell in enumerate(tb.cells):
+                tags = cell.get("metadata", {}).get("tags", [])
+                ref_cell = deepcopy(cell)
+
+                # execute
+                cell = tb.execute_cell(i)
+
+                if check_outputs:
+                    try:
+                        self.compare_cell_outputs(ref_cell, cell)
+                    except:
+                        print(
+                            f"\nError in {self.nb} cell [{ref_cell.get('execution_count')}] (ID:{ref_cell.get('id')}): Output not reproduced."
+                        )
+                        print(
+                            "Cell source:\n    "
+                            + "\n    ".join(ref_cell.get("source", "").split("\n"))
+                        )
+                        raise
+
+                # yield i, tags, ref_cell, cell, tb
+
+    @classmethod
+    def compare_cell_outputs(cls, reference_cell, actual_cell):
+        """Compare cell outputs unless remove-tags exist"""
+
+        # filter output according to remove-tags
+        tags = reference_cell.get("metadata", {}).get("tags", [])
+        if "remove-output" in tags:
+            return True  # skip completely
+
+        def keep(out):
+            return out.get("output_type") == "stream" and f"remove-{out.get('name')}" in tags
+
+        reference_outputs = filter(keep, reference_cell.get("outputs", []))
+        actual_outputs = list(filter(keep, actual_cell.get("outputs", [])))
+
+        # compare the filtered outputs
+        for i, ref_out in enumerate(reference_outputs):
+            output_type = ref_out.get("output_type")
+
+            if output_type == "stream":
+                if f"remove-{ref_out.get('name')}" in tags:
+                    continue  # skip removed output (remove-stderr or remove-stdout tags)
+
+            try:
+                act_out = actual_outputs[i]
+            except IndexError:
+                raise ValueError(
+                    f"Expected {len(reference_outputs)} cell outputs, but only {len(actual_outputs)} found"
+                )
+
+            if output_type == "stream":  # compare plain text
+                cls.compare_outputs_text(ref_out.get("text"), act_out.get("text"))
+
+            else:
+                output_data = ref_out.get("data", {})
+
+                for mime, rule in {
+                    "image/png": cls.compare_outputs_image,
+                    "text/markdown": cls.compare_outputs_markup,
+                }.items():
+                    if mime in output_data:
+                        rule(output_data.get(mime), act_out.get("data", {}).get(mime))
+                        break
+                else:  # unknown output type
+                    raise NotImplementedError(
+                        f"No rule to compare output type '{ref_out.get('output_type')}' with data '{ref_out.get('data', {}).keys()}'"
+                    )
+
+    @classmethod
+    def compare_outputs_text(cls, reference_text, actual_text):
+        """Plain text comparison"""
+        test = TestCase()
+        test.assertEqual(reference_text, actual_text)
+
+    @classmethod
+    def compare_outputs_markup(cls, ref_str, act_str):
+        """Markup text comparison (ignoring whitespace changes)"""
+        ref_str, act_str = [re.sub(r"\s+", " ", _) for _ in (ref_str, act_str)]
+        TestCase().assertEqual(ref_str, act_str)
+
+    @classmethod
+    def compare_outputs_image(cls, ref_img, act_img, *, tol=2):
+        """Compare two base64 encoded images"""
+        assert act_img, f"Expected image/png cell output, but {act_img} found"
+
+        # save to temp file and compare
+        with NamedTemporaryFile(suffix=".png") as rf, NamedTemporaryFile(suffix=".png") as af:
+            rf.write(base64.b64decode(ref_img)) and rf.flush()
+            af.write(base64.b64decode(act_img)) and af.flush()
+
+            if diff := compare_images(rf.name, af.name, tol, True):
+                os.makedirs("tests/output/", exist_ok=True)
+                diff_image = shutil.copy(diff["diff"], "tests/output/")
+                raise ValueError(
+                    f"Image output differs from excpected output: RMS value {diff['rms']:g} > {diff['tol']:g} exceeds tolerance."
+                    f"Diff image written to {diff_image}."
+                )
 
 
-@testbook(f"{dir}/colors.ipynb")
-def test_colors(tb):
-    tb.execute()  # just confirm that the notebook runs
+def test_animations():
+    t = NotebookTester(f"{dir}/animations.ipynb")
+    t.execute(check_outputs=False)  # no good way of checking animation result
 
 
-@testbook(f"{dir}/hamiltonians.ipynb")
-def test_hamiltonians(tb):
-    tb.execute()  # just confirm that the notebook runs
+def test_colors():
+    t = NotebookTester(f"{dir}/colors.ipynb")
+    t.execute(check_outputs=True)
 
 
-@testbook(f"{dir}/line.ipynb")
-def test_line(tb):
-    tb.execute()  # just confirm that the notebook runs
+def test_hamiltonians():
+    t = NotebookTester(f"{dir}/hamiltonians.ipynb")
+    t.execute(check_outputs=True)
 
 
-@testbook(f"{dir}/phasespace.ipynb")
-def test_phasespace(tb):
-    tb.execute()  # just confirm that the notebook runs
+def test_line():
+    t = NotebookTester(f"{dir}/line.ipynb")
+    t.execute(check_outputs=True)
 
 
-@testbook(f"{dir}/concepts.ipynb")
-def test_units(tb):
-    tb.execute()  # just confirm that the notebook runs
+def test_phasespace():
+    t = NotebookTester(f"{dir}/phasespace.ipynb")
+    t.execute(check_outputs=True)
 
 
-@testbook(f"{dir}/timestructure.ipynb")
-def test_timestructure(tb):
-    tb.execute()  # just confirm that the notebook runs
+def test_concepts():
+    t = NotebookTester(f"{dir}/concepts.ipynb")
+    t.execute(check_outputs=True)
 
 
-@testbook(f"{dir}/twiss.ipynb")
-def test_twiss(tb):
-    tb.execute()  # just confirm that the notebook runs
+def test_timestructure():
+    t = NotebookTester(f"{dir}/timestructure.ipynb")
+    t.execute(check_outputs=True)
+
+
+def test_twiss():
+    t = NotebookTester(f"{dir}/twiss.ipynb")
+    t.execute(check_outputs=True)
