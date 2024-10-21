@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>xplt.properties &#8212; Xplt 0.10.0 documentation</title>
+    <title>xplt.properties &#8212; Xplt 0.10.1 documentation</title>
   
   
   
@@ -39,7 +39,7 @@
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
   <script src="../../../_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="../../../_static/documentation_options.js?v=82662543"></script>
+    <script src="../../../_static/documentation_options.js?v=261ea15a"></script>
     <script src="../../../_static/doctools.js?v=9a2dae69"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'autoapi/xplt/properties/index';</script>
@@ -128,7 +128,7 @@
   
   
   
-    <p class="title logo__title">Xplt 0.10.0 documentation</p>
+    <p class="title logo__title">Xplt 0.10.1 documentation</p>
   
 </a></div>
     
@@ -519,7 +519,7 @@ document.write(`
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">#</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="xplt.properties.DataProperty">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xplt.properties.</span></span><span class="sig-name descname"><span class="pre">DataProperty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symbol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.10.0/xplt/properties.py#L82-L148"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.properties.DataProperty" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xplt.properties.</span></span><span class="sig-name descname"><span class="pre">DataProperty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symbol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.10.1/xplt/properties.py#L82-L148"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.properties.DataProperty" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#xplt.properties.Property" title="xplt.properties.Property"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Property</span></code></a></p>
 <p>Class for property which can directly be accessed from data</p>
 <dl class="field-list simple">
@@ -536,7 +536,7 @@ If None, defaults to the key.</p></li>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="xplt.properties.DataProperty.prop">
-<span class="sig-name descname"><span class="pre">prop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.10.0/xplt/properties.py#L52-L62"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.properties.DataProperty.prop" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">prop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.10.1/xplt/properties.py#L52-L62"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.properties.DataProperty.prop" title="Link to this definition">#</a></dt>
 <dd><p>Find a property by name</p>
 <p>This method is overwritten by plots which provide custom properties</p>
 <dl class="field-list simple">
@@ -551,7 +551,7 @@ If None, defaults to the key.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xplt.properties.DataProperty.values">
-<span class="sig-name descname"><span class="pre">values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.10.0/xplt/properties.py#L102-L148"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.properties.DataProperty.values" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.10.1/xplt/properties.py#L102-L148"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.properties.DataProperty.values" title="Link to this definition">#</a></dt>
 <dd><p>Get masked data for this property</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -577,7 +577,7 @@ callback to retrieve particle properties in their respective data units.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xplt.properties.DataProperty.with_property_resolver">
-<span class="sig-name descname"><span class="pre">with_property_resolver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resolver</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.10.0/xplt/properties.py#L97-L100"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.properties.DataProperty.with_property_resolver" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">with_property_resolver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resolver</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.10.1/xplt/properties.py#L97-L100"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.properties.DataProperty.with_property_resolver" title="Link to this definition">#</a></dt>
 <dd><p>Create a new property with a custom property resolver</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -610,7 +610,7 @@ callback to retrieve particle properties in their respective data units.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="xplt.properties.DerivedProperty">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xplt.properties.</span></span><span class="sig-name descname"><span class="pre">DerivedProperty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">symbol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">evaluate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.10.0/xplt/properties.py#L151-L197"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.properties.DerivedProperty" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xplt.properties.</span></span><span class="sig-name descname"><span class="pre">DerivedProperty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">symbol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">evaluate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.10.1/xplt/properties.py#L151-L197"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.properties.DerivedProperty" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#xplt.properties.Property" title="xplt.properties.Property"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Property</span></code></a></p>
 <p>Class for property which is derived from other properties</p>
 <dl class="field-list simple">
@@ -626,7 +626,7 @@ be names of other properties, which will be provided to the function.</p></li>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="xplt.properties.DerivedProperty.prop">
-<span class="sig-name descname"><span class="pre">prop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.10.0/xplt/properties.py#L52-L62"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.properties.DerivedProperty.prop" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">prop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.10.1/xplt/properties.py#L52-L62"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.properties.DerivedProperty.prop" title="Link to this definition">#</a></dt>
 <dd><p>Find a property by name</p>
 <p>This method is overwritten by plots which provide custom properties</p>
 <dl class="field-list simple">
@@ -641,7 +641,7 @@ be names of other properties, which will be provided to the function.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xplt.properties.DerivedProperty.values">
-<span class="sig-name descname"><span class="pre">values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.10.0/xplt/properties.py#L170-L197"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.properties.DerivedProperty.values" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.10.1/xplt/properties.py#L170-L197"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.properties.DerivedProperty.values" title="Link to this definition">#</a></dt>
 <dd><p>Get masked data for this property</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -652,7 +652,7 @@ be names of other properties, which will be provided to the function.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xplt.properties.DerivedProperty.with_property_resolver">
-<span class="sig-name descname"><span class="pre">with_property_resolver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resolver</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.10.0/xplt/properties.py#L165-L168"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.properties.DerivedProperty.with_property_resolver" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">with_property_resolver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resolver</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.10.1/xplt/properties.py#L165-L168"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.properties.DerivedProperty.with_property_resolver" title="Link to this definition">#</a></dt>
 <dd><p>Create a new property with a custom property resolver</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -685,7 +685,7 @@ be names of other properties, which will be provided to the function.</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="xplt.properties.Property">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xplt.properties.</span></span><span class="sig-name descname"><span class="pre">Property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">symbol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.10.0/xplt/properties.py#L26-L79"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.properties.Property" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xplt.properties.</span></span><span class="sig-name descname"><span class="pre">Property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">symbol</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.10.1/xplt/properties.py#L26-L79"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.properties.Property" title="Link to this definition">#</a></dt>
 <dd><p>Class holding generic property information</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -698,7 +698,7 @@ be names of other properties, which will be provided to the function.</p></li>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="xplt.properties.Property.prop">
-<span class="sig-name descname"><span class="pre">prop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.10.0/xplt/properties.py#L52-L62"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.properties.Property.prop" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">prop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.10.1/xplt/properties.py#L52-L62"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.properties.Property.prop" title="Link to this definition">#</a></dt>
 <dd><p>Find a property by name</p>
 <p>This method is overwritten by plots which provide custom properties</p>
 <dl class="field-list simple">
@@ -713,7 +713,7 @@ be names of other properties, which will be provided to the function.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xplt.properties.Property.values">
-<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.10.0/xplt/properties.py#L41-L50"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.properties.Property.values" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.10.1/xplt/properties.py#L41-L50"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.properties.Property.values" title="Link to this definition">#</a></dt>
 <dd><p>Get masked data for this property</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -728,7 +728,7 @@ be names of other properties, which will be provided to the function.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xplt.properties.Property.with_property_resolver">
-<span class="sig-name descname"><span class="pre">with_property_resolver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resolver</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.10.0/xplt/properties.py#L64-L72"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.properties.Property.with_property_resolver" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">with_property_resolver</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">resolver</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.10.1/xplt/properties.py#L64-L72"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.properties.Property.with_property_resolver" title="Link to this definition">#</a></dt>
 <dd><p>Create a new property with a custom property resolver</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -756,7 +756,7 @@ be names of other properties, which will be provided to the function.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="xplt.properties.find_property">
-<span class="sig-prename descclassname"><span class="pre">xplt.properties.</span></span><span class="sig-name descname"><span class="pre">find_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_user_properties</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_default_properties</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.10.0/xplt/properties.py#L204-L229"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.properties.find_property" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">xplt.properties.</span></span><span class="sig-name descname"><span class="pre">find_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_user_properties</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra_default_properties</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.10.1/xplt/properties.py#L204-L229"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.properties.find_property" title="Link to this definition">#</a></dt>
 <dd><p>Find a Property by name</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -780,7 +780,7 @@ be names of other properties, which will be provided to the function.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="xplt.properties.register_data_property">
-<span class="sig-prename descclassname"><span class="pre">xplt.properties.</span></span><span class="sig-name descname"><span class="pre">register_data_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symbol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.10.0/xplt/properties.py#L245-L254"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.properties.register_data_property" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">xplt.properties.</span></span><span class="sig-name descname"><span class="pre">register_data_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symbol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.10.1/xplt/properties.py#L245-L254"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.properties.register_data_property" title="Link to this definition">#</a></dt>
 <dd><p>Register a user defined data property</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -796,7 +796,7 @@ be names of other properties, which will be provided to the function.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="xplt.properties.register_derived_property">
-<span class="sig-prename descclassname"><span class="pre">xplt.properties.</span></span><span class="sig-name descname"><span class="pre">register_derived_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symbol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.10.0/xplt/properties.py#L257-L273"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.properties.register_derived_property" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">xplt.properties.</span></span><span class="sig-name descname"><span class="pre">register_derived_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symbol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.10.1/xplt/properties.py#L257-L273"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.properties.register_derived_property" title="Link to this definition">#</a></dt>
 <dd><p>Register a user defined derived property</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -814,7 +814,7 @@ If None, the unit is determined from the function return value.</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="xplt.properties.register_property">
-<span class="sig-prename descclassname"><span class="pre">xplt.properties.</span></span><span class="sig-name descname"><span class="pre">register_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">property</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.10.0/xplt/properties.py#L232-L239"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.properties.register_property" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">xplt.properties.</span></span><span class="sig-name descname"><span class="pre">register_property</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">property</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.10.1/xplt/properties.py#L232-L239"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.properties.register_property" title="Link to this definition">#</a></dt>
 <dd><p>Register a user defined property</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
