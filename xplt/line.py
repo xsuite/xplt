@@ -237,6 +237,7 @@ class FloorPlot(XPlot):
         labels=False,
         ignore=None,
         element_width=1,
+        axis='equal',
         **kwargs,
     ):
         """
@@ -298,7 +299,7 @@ class FloorPlot(XPlot):
         self.ax.set(
             xlabel=self.label_for(self.projection[0]), ylabel=self.label_for(self.projection[1])
         )
-        self.ax.axis("equal")
+        self.ax.axis(axis)
 
         # create plot elements
         (self.artist_beamline,) = self.ax.plot([], [], "k-")
@@ -352,6 +353,9 @@ class FloorPlot(XPlot):
             elif self.projection == "XZ":
                 R = get(survey, "theta")
                 ang = lambda a: np.pi / 2 - a
+            elif self.projection == 'ZY':
+                R = get(survey, "theta")
+                ang = lambda a: a
             else:
                 ...
                 raise NotImplementedError()
