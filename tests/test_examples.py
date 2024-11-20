@@ -2,6 +2,7 @@ import os
 import shutil
 import base64
 import re
+import warnings
 from unittest import TestCase
 from copy import deepcopy
 from tempfile import NamedTemporaryFile
@@ -47,13 +48,20 @@ class NotebookTester:
     def compare_cell_outputs(cls, reference_cell, actual_cell):
         """Compare cell outputs unless remove-tags exist"""
 
-        # filter output according to remove-tags
+        # ignore cells with remove-output tag
         tags = reference_cell.get("metadata", {}).get("tags", [])
         if "remove-output" in tags:
             return True  # skip completely
 
+        # ignore stderr/stdout cell outputs if cell tagged with remove-stderr or remove-stdout
         def keep(out):
-            return out.get("output_type") == "stream" and f"remove-{out.get('name')}" in tags
+            if out.get("output_type") == "stream" and f"remove-{out.get('name')}" in tags:
+                warnings.warn(
+                    f"Not checking {out.get('name')} output of cell [{reference_cell.get('execution_count')}]"
+                    f" tagged with remove-{out.get('name')}."
+                )
+                return False
+            return True
 
         reference_outputs = filter(keep, reference_cell.get("outputs", []))
         actual_outputs = list(filter(keep, actual_cell.get("outputs", [])))
@@ -61,10 +69,6 @@ class NotebookTester:
         # compare the filtered outputs
         for i, ref_out in enumerate(reference_outputs):
             output_type = ref_out.get("output_type")
-
-            if output_type == "stream":
-                if f"remove-{ref_out.get('name')}" in tags:
-                    continue  # skip removed output (remove-stderr or remove-stdout tags)
 
             try:
                 act_out = actual_outputs[i]
