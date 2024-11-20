@@ -50,7 +50,7 @@ class NotebookTester:
 
         # ignore cells with remove-output tag
         tags = reference_cell.get("metadata", {}).get("tags", [])
-        if "remove-output" in tags:
+        if "remove-output" in tags or "skip-test" in tags:
             return True  # skip completely
 
         # ignore stderr/stdout cell outputs if cell tagged with remove-stderr or remove-stdout
