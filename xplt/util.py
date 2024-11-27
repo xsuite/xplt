@@ -79,7 +79,7 @@ def get(obj, value, default=VOID):
     and handles special objects like pandas data frames.
 
     Args:
-        obj (Any): Object to get data from
+        obj (Any): Object to get data from. Can also be a tuple of objects.
         value (str): Name of attribute, index, column etc. to get
         default (Any): Default value to return. By default an exception is raised
 
@@ -91,6 +91,10 @@ def get(obj, value, default=VOID):
     """
     if pd and isinstance(obj, pd.DataFrame):
         return val(obj[value].values)
+    if type(obj) == tuple:
+        for o in obj:
+            if (v := get(o, value, None)) is not None:
+                return v
     try:
         return val(getattr(obj, value))
     except:

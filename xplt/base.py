@@ -551,8 +551,8 @@ class XPlot:
                 if display_unit != pint.Unit("1"):
                     append = f" / ${display_unit:~X}$"  # see "NIST Guide to the SI"
             if append:
-                # heuristic: if labels contain expressions with + or - then add parentheses
-                if re.findall(r"[-+](?![^(]*\))(?![^{]*\})", label.split("   ")[-1]):
+                # heuristic: if labels contain expressions with +, - or ± then add parentheses
+                if re.findall(r"([-+±]|\\pm)(?![^(]*\))(?![^{]*\})", label.split("   ")[-1]):
                     label = f"({label})"
                 label += append
 
@@ -1161,11 +1161,11 @@ class XManifoldPlot(XPlot):
 
         def savesplit(string, sep):
             """Split the string at sep except inside parantheses"""
-            return re.split(f"\\{sep}\\s*(?![^()]*\\))", string)
+            return re.split(f"\\s*\\{sep}\\s*(?![^()]*\\))", string)
 
         if type(list_string) is str:
             elements = []
-            for element in savesplit(list_string, separators[0]):
+            for element in savesplit(list_string.strip(), separators[0]):
                 element = subs.get(element, element)
                 # split again in case subs contains a separator
                 elements.extend(savesplit(element, separators[0]))
