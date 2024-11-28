@@ -736,7 +736,7 @@ class XManifoldPlot(XPlot):
 
     @property
     def on_y_unique(self):
-        return np.unique([p for ppp in self.on_y for pp in ppp for p in pp])
+        return np.unique([p for ppp in self.on_y for pp in ppp for p in pp if p is not None])
 
     def _create_artists(self, callback, dataset_id=None):
         """Helper method to create artists for subplots and twin axes

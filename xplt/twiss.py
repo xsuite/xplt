@@ -85,6 +85,11 @@ class TwissPlot(XManifoldPlot):
             envelope3_y=DerivedProperty(
                 "$y\\pm3\\sigma_y$", "m", lambda y, sigma_y: (y + 3 * sigma_y, y - 3 * sigma_y)
             ),
+            # apertures
+            min_x=DataProperty("min_x", "m", "$x_\\mathrm{min}$"),
+            max_x=DataProperty("max_x", "m", "$x_\\mathrm{max}$"),
+            min_y=DataProperty("min_y", "m", "$y_\\mathrm{min}$"),
+            max_y=DataProperty("max_y", "m", "$y_\\mathrm{max}$"),
         )
 
         super().__init__(
@@ -110,7 +115,9 @@ class TwissPlot(XManifoldPlot):
             if p.startswith("envelope"):
                 kwargs = dict(alpha=0.5, label=label, lw=0, zorder=1.6)
                 artist = a.fill_between([], [], **kwargs)
-                artist._constructor_kwargs = dict(kwargs, color=artist.get_facecolor())
+                artist._constructor_kwargs = defaults_for(
+                    "fill_between", kwargs, color=artist.get_facecolor()
+                )
                 return artist
             else:
                 return a.plot([], [], label=label)[0]
@@ -179,6 +186,44 @@ class TwissPlot(XManifoldPlot):
                 self._autoscale(a, autoscale, tight="x")
 
         return changed
+
+    def plot_apertures(self, data, which=None, **kwargs):
+        """Plot apertures onto the relevant axes
+
+        Args:
+            data (Any): The aperture data: a dict, table or something which provides arrays for the keys "s", "min_x",
+              "max_x", "min_y", "max_y". Use :meth:`~.util.apertures` to get such data from a :class:`xtrack.Line`.
+            which (str | None | list | set): Name(s) of properties for which to plot apertures on the corresponding axis.
+              If None (default), plot for all relevant properties (x, y, sigma, envelope)
+            kwargs: Keyword arguments passed to :meth:`matplotlib.axes.Axes.vlines`
+        """
+
+        if which is None:
+            props = "{}", "sigma_{}", "envelope_{}", "envelope3_{}"
+            which = {p.format(xy) for xy in "xy" for p in props}
+            which.intersection_update(self.on_y_unique)
+
+        kwargs = defaults_for("vlines", kwargs, colors="k", lw=1, zorder=999)
+
+        axes = {}
+        for p in which:
+            if "x" in p and "y" not in p:
+                axes[self.axis(p)] = (p, "x")
+            elif "y" in p and "x" not in p:
+                axes[self.axis(p)] = (p, "y")
+            else:
+                raise ValueError(
+                    f"Apertures not supported for property {p}. Cannot identify if {p} is x or y plane."
+                )
+
+        s = self.prop("s").values(data, unit=self.display_unit_for("s"))
+        for ax, (p, xy) in axes.items():
+            axlim = ax.get_ylim()
+            for key, lim in zip((f"min_{xy}", f"max_{xy}"), axlim):
+                v = self.prop(key).values(data, unit=self.display_unit_for(p))
+                visible = (axlim[0] < v) & (v < axlim[1])
+                if np.any(visible):
+                    ax.vlines(s[visible], v[visible], lim, **kwargs)
 
 
 __all__ = PUBLIC_SECTION_END()

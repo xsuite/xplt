@@ -17,6 +17,11 @@ import numpy as np
 import pint
 import scipy.signal
 import matplotlib as mpl
+import matplotlib.collections
+import matplotlib.patches
+import matplotlib.cbook
+import matplotlib.text
+import matplotlib.lines
 
 try:
     import pandas as pd
@@ -137,6 +142,7 @@ def defaults_for(alias_provider, kwargs, /, **default_kwargs):
             fill_between=mpl.patches.Polygon,
             scatter=mpl.collections.Collection,
             hexbin=mpl.collections.PolyCollection,
+            vlines=mpl.collections.LineCollection,
         )[alias_provider]
     if alias_provider == mpl.patches.Polygon and kwargs is not None and "c" in kwargs:
         kwargs["color"] = kwargs.pop("c")
@@ -502,13 +508,16 @@ def hamiltonian_kobayashi(X, Px, S, mu, twiss, xy="x", delta=0, *, normalized=Fa
     return H
 
 
-def iter_elements(line, *, s=None):
+def iter_elements(line, *, s=None, mask_nearest=False):
     """Iterate over elements in line
 
     Args:
         line (xtrack.Line): Line of elements.
         s (np.array | None): Optional array of s positions.
           If not None, returns an additional s-position-mask for each element.
+        mask_nearest (bool): If true, zero-length elements will be masked at the nearest s-coordinate of the s array
+          to avoid them being skipped if their location does not coincide exactly with any value in the s-array.
+          If s is None, this has no effect.
 
     Yields:
         (name, element, s_from, s_to, [s_mask]): Name, object, start position,
@@ -527,10 +536,62 @@ def iter_elements(line, *, s=None):
             yield name, el, s0, s1
         else:
             if s0 == s1:
-                # zero-length element -> round to nearest s
-                mask = s == s[np.argmin(np.abs(s - s0))]
+                if mask_nearest:
+                    # zero-length element -> round to nearest s
+                    mask = s == s[np.argmin(np.abs(s - s0))]
+                else:
+                    mask = s == s0 % smax
             elif 0 <= s0 <= smax:
                 mask = (s >= s0) & (s < s1)
             else:  # handle wrap around
                 mask = (s >= s0 % smax) | (s < s1 % smax)
             yield name, el, s0, s1, mask
+
+
+def apertures(line, at_s=None):
+    """Determine aperture
+
+    Args:
+        line (xtrack.Line): Line with element_dict
+        at_s (np.ndarray | None): return apertures for these s locations in m
+
+    """
+
+    if at_s is None:
+        s = np.unique([(s0, s1) for _, _, s0, s1 in iter_elements(line)])
+    else:
+        s = np.array(at_s)
+
+    result = dict(
+        s=s,
+        min_x=np.full_like(s, np.nan),
+        max_x=np.full_like(s, np.nan),
+        min_y=np.full_like(s, np.nan),
+        max_y=np.full_like(s, np.nan),
+    )
+    for name, el, s0, s1, mask in iter_elements(line, s=s):
+        for xy in "xy":
+            # find limits
+            mi = getattr(el, f"min_{xy}", None)
+            ma = getattr(el, f"max_{xy}", None)
+            if mi is None and ma is not None:
+                mi = -ma
+            # handle shift
+            if mi is not None:
+                mi += getattr(el, f"shift_{xy}")
+                result[f"min_{xy}"][
+                    mask & ~(result[f"min_{xy}"] > mi)
+                ] = mi  # comparison inverted to handle NaN
+            if ma is not None:
+                ma += getattr(el, f"shift_{xy}")
+                result[f"max_{xy}"][mask & ~(result[f"max_{xy}"] < ma)] = ma
+
+    if at_s is None:
+        # only return s where there is an aperture
+        mask = np.any(
+            [np.isfinite(result[f"{m}_{xy}"]) for m in ("min", "max") for xy in "xy"], axis=0
+        )
+        for key in result:
+            result[key] = result[key][mask]
+
+    return AttrDict(result)
