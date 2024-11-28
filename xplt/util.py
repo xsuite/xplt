@@ -403,7 +403,7 @@ def denormalized_coordinates(X, Px, twiss, xy, delta=0):
 
 
 def virtual_sextupole(line, particle_ref=None, *, verbose=False):
-    """Determine virtual sextupole strength from twiss data
+    """Determine virtual sextupole strength from the line
 
     The normalized strenght is defined as S = -1/2 * betx^(3/2) * k2l
 
@@ -500,3 +500,37 @@ def hamiltonian_kobayashi(X, Px, S, mu, twiss, xy="x", delta=0, *, normalized=Fa
         H = H / Hsep
 
     return H
+
+
+def iter_elements(line, *, s=None):
+    """Iterate over elements in line
+
+    Args:
+        line (xtrack.Line): Line of elements.
+        s (np.array | None): Optional array of s positions.
+          If not None, returns an additional s-position-mask for each element.
+
+    Yields:
+        (name, element, s_from, s_to, [s_mask]): Name, object, start position,
+          end position and optional position mask for each element. The mask is
+          omitted if s=None (see arguments).
+
+    """
+    el_s0 = line.get_s_elements("upstream")
+    el_s1 = line.get_s_elements("downstream")
+    smax = line.get_length()
+    for name, el, s0, s1 in zip(line.element_names, line.elements, el_s0, el_s1):
+        if s0 == s1:  # thin lense located at element center
+            if hasattr(el, "length"):
+                s0, s1 = (s0 + s1 - el.length) / 2, (s0 + s1 + el.length) / 2
+        if s is None:
+            yield name, el, s0, s1
+        else:
+            if s0 == s1:
+                # zero-length element -> round to nearest s
+                mask = s == s[np.argmin(np.abs(s - s0))]
+            elif 0 <= s0 <= smax:
+                mask = (s >= s0) & (s < s1)
+            else:  # handle wrap around
+                mask = (s >= s0 % smax) | (s < s1 % smax)
+            yield name, el, s0, s1, mask
