@@ -66,6 +66,9 @@ class NotebookTester:
         reference_outputs = filter(keep, reference_cell.get("outputs", []))
         actual_outputs = list(filter(keep, actual_cell.get("outputs", [])))
 
+        print("reference_outputs:", [o.get("output_type") for o in reference_outputs])
+        print("actual_outputs:", [o.get("output_type") for o in actual_outputs])
+
         # compare the filtered outputs
         for i, ref_out in enumerate(reference_outputs):
             output_type = ref_out.get("output_type")
