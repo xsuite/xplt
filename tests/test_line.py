@@ -75,14 +75,12 @@ def test_nominal_and_effective_order():
         (xt.SimpleThinQuadrupole(knl=[0, 1]), 1, 1),
     )
 
+
 def test_repeated_elements_survey():
 
     # https://github.com/xsuite/xplt/issues/31
-    line = xt.Line(
-        elements = {"obm": xt.Bend(length=0.5)},
-        element_names= ["obm","obm"]
-    )
-    #line.replace_all_repeated_elements()
+    line = xt.Line(elements={"obm": xt.Bend(length=0.5)}, element_names=["obm", "obm"])
+    # line.replace_all_repeated_elements()
     print(line.survey())
 
     plot = xplt.FloorPlot(line=line)
