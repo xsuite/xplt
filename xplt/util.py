@@ -578,12 +578,12 @@ def apertures(line, at_s=None):
                 mi = -ma
             # handle shift
             if mi is not None:
-                mi += getattr(el, f"shift_{xy}")
+                mi += getattr(el, f"shift_{xy}", 0)
                 result[f"min_{xy}"][
                     mask & ~(result[f"min_{xy}"] > mi)
                 ] = mi  # comparison inverted to handle NaN
             if ma is not None:
-                ma += getattr(el, f"shift_{xy}")
+                ma += getattr(el, f"shift_{xy}", 0)
                 result[f"max_{xy}"][mask & ~(result[f"max_{xy}"] < ma)] = ma
 
     if at_s is None:
