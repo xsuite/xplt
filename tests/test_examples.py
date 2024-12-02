@@ -66,6 +66,9 @@ class NotebookTester:
         reference_outputs = filter(keep, reference_cell.get("outputs", []))
         actual_outputs = list(filter(keep, actual_cell.get("outputs", [])))
 
+        print("reference_outputs:", [o.get("output_type") for o in reference_outputs])
+        print("actual_outputs:", [o.get("output_type") for o in actual_outputs])
+
         # compare the filtered outputs
         for i, ref_out in enumerate(reference_outputs):
             output_type = ref_out.get("output_type")
@@ -86,13 +89,15 @@ class NotebookTester:
                 for mime, rule in {
                     "image/png": cls.compare_outputs_image,
                     "text/markdown": cls.compare_outputs_markup,
+                    "text/html": cls.compare_outputs_html,
                 }.items():
                     if mime in output_data:
                         rule(output_data.get(mime), act_out.get("data", {}).get(mime))
                         break
                 else:  # unknown output type
                     raise NotImplementedError(
-                        f"No rule to compare output type '{ref_out.get('output_type')}' with data '{ref_out.get('data', {}).keys()}'"
+                        f"No rule to compare output type '{ref_out.get('output_type')}' with data '{ref_out.get('data', {}).keys()}'. \n"
+                        "Currently only 'image/png', 'text/markdown' and 'text/html' are supported."
                     )
 
     @classmethod
@@ -105,6 +110,11 @@ class NotebookTester:
     def compare_outputs_markup(cls, ref_str, act_str):
         """Markup text comparison (ignoring whitespace changes)"""
         ref_str, act_str = [re.sub(r"\s+", " ", _) for _ in (ref_str, act_str)]
+        TestCase().assertEqual(ref_str, act_str)
+
+    @classmethod
+    def compare_outputs_html(cls, ref_str, act_str):
+        """HTML text comparison"""
         TestCase().assertEqual(ref_str, act_str)
 
     @classmethod

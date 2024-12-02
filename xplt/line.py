@@ -9,30 +9,9 @@ __author__ = "Philipp Niedermayer"
 __contact__ = "eltos@outlook.de"
 __date__ = "2022-11-08"
 
-
-import re
 from .util import *
 from .base import XPlot, XManifoldPlot
 from .properties import Property, DataProperty
-
-
-def iter_elements(line):
-    """Iterate over elements in line
-
-    Args:
-        line (xtrack.Line): Line of elements.
-
-    Yields:
-        (name, element, s_from, s_to): Name, element, start and end s position of element.
-
-    """
-    el_s0 = line.get_s_elements("upstream")
-    el_s1 = line.get_s_elements("downstream")
-    for name, el, s0, s1 in zip(line.element_names, line.elements, el_s0, el_s1):
-        if s0 == s1:  # thin lense located at element center
-            if hasattr(el, "length"):
-                s0, s1 = (s0 + s1 - el.length) / 2, (s0 + s1 + el.length) / 2
-        yield name, el, s0, s1
 
 
 def element_strength(element, n):
@@ -156,20 +135,15 @@ class KnlPlot(XManifoldPlot):
             changed artists
         """
         # compute knl as function of s
-        Smax = line.get_length()
         if self.resolution == "auto":
             S = set()
             for name, el, s0, s1 in iter_elements(line):
                 S.update({s0, s1})
             S = np.array(sorted(list(S)))
         else:
-            S = np.linspace(0, Smax, self.resolution)
+            S = np.linspace(0, line.get_length(), self.resolution)
         values = {p: np.zeros_like(S) for p in self.on_y_unique}
-        for name, el, s0, s1 in iter_elements(line):
-            if 0 <= s0 <= Smax:
-                mask = (S >= s0) & (S < s1)
-            else:  # handle wrap around
-                mask = (S >= s0 % Smax) | (S < s1 % Smax)
+        for name, el, s0, s1, mask in iter_elements(line, s=S):
             for knl in self.on_y_unique:
                 n = order(knl)
                 values[knl][mask] += element_strength(el, n)
