@@ -291,18 +291,17 @@ class FloorPlot(XPlot):
         self.artists_labels = []
 
         # set data
-        if survey is None and line is not None:
-            survey = line.survey()
-        if survey is not None:
+        if survey is not None or line is not None:
             self.update(survey, line)
 
-    def update(self, survey, line=None, *, autoscale=None):
+    def update(self, survey=None, line=None, *, autoscale=None):
         """
         Update the survey data this plot shows
 
         Args:
-            survey (Any): Survey data.
-            line (None | xtrack.Line): Line data.
+            survey (Any | None): Survey data. Defaults to `line.survey()`.
+                For convenience, passing line as first argument is also supported.
+            line (None | xtrack.Line): Line object. Defaults to `survey.line` if possible.
             autoscale (str | None | bool): Whether and on which axes to perform autoscaling.
                 One of `"x"`, `"y"`, `"xy"`, `False` or `None`. If `None`, decide based on :meth:`matplotlib.axes.Axes.get_autoscalex_on` and :meth:`matplotlib.axes.Axes.get_autoscaley_on`.
 
@@ -310,6 +309,14 @@ class FloorPlot(XPlot):
             changed artists
 
         """
+
+        # Handle various input types in a smart way
+        if line is None and type(survey).__name__ == "Line":
+            survey, line = None, survey
+        if survey is None and line is not None:
+            survey = line.survey()
+        if line is None and survey is not None:
+            line = getattr(survey, "line", None)
 
         changed = []
 
