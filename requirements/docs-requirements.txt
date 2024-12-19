@@ -12,7 +12,7 @@ apeye-core==1.1.5
 argon2-cffi==23.1.0
 argon2-cffi-bindings==21.2.0
 arrow==1.3.0
-astroid==3.3.5
+astroid==3.3.6
 asttokens==2.4.1
 async-lru==2.0.4
 attrs==24.2.0
@@ -106,7 +106,7 @@ psutil==6.1.0
 ptyprocess==0.7.0
 pure-eval==0.2.3
 pycparser==2.22
-pydata-sphinx-theme==0.16.0
+pydata-sphinx-theme==0.16.1
 pygments==2.18.0
 pyparsing==3.2.0
 python-dateutil==2.9.0.post0
@@ -128,7 +128,7 @@ sniffio==1.3.1
 snowballstemmer==2.2.0
 soupsieve==2.6
 sphinx==8.1.3
-sphinx-autoapi==3.3.3
+sphinx-autoapi==3.4.0
 sphinx-autodoc-typehints==2.5.0
 sphinx-codeautolink==0.15.2
 sphinx-gallery==0.18.0
