@@ -380,15 +380,17 @@ class FloorPlot(XPlot):
                 is_thick = False
                 element = None
 
-                if line is not None and name in line.element_dict:
+                try:
                     element = line[name]
                     is_thick = element.isthick
                     if type(element).__name__ == "Replica":
-                        name = line[name].resolve(line, get_name=True)
+                        name = element.resolve(line, get_name=True)
                     if order < 0:
                         order = nominal_order(element)
                     if not length:
                         length = get(element, "length", None)
+                except (TypeError, KeyError):
+                    pass
 
                 # ignored elements
                 if drift_length > 0 and not is_thick or type(element).__name__ == "Drift":
