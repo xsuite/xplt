@@ -11,13 +11,14 @@ __date__ = "2022-09-06"
 
 import types
 import warnings
-from xplt.colors import (
+from .colors import (
     cmap_petroff,
     cmap_petroff_gradient,
     cmap_petroff_bipolar,
     cmap_petroff_cyclic,
     petroff_colors,
 )
+from .base import DiscontinuousLinearScale
 
 
 def try_register_hooks():
@@ -54,6 +55,9 @@ def register_matplotlib_options():
         cmap_r = cmap.reversed()
         cmap_r.name = cmap.name + "_r"
         mpl.colormaps.register(cmap=cmap_r)
+
+    # register custom scales
+    mpl.scale.register_scale(DiscontinuousLinearScale)
 
 
 def register_pint_options():
