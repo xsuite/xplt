@@ -15,6 +15,10 @@ import types
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import matplotlib.scale
+import matplotlib.transforms
+import matplotlib.patches
+import matplotlib.path
 import numpy as np
 import pint
 
@@ -154,6 +158,99 @@ class TransformedLocator(mpl.ticker.Locator):
         # inverse transform
         ticks = self.inverse(ticks)
         return ticks
+
+
+class DiscontinuousLinearScale(mpl.scale.LinearScale):
+    name = "discontinuous_linear"
+
+    def __init__(self, axis, *, breaks=(), space=0, hide=False):
+        super().__init__(axis)
+        self.breaks = breaks
+        self.space = space
+        self.hide = hide
+
+    def set_default_locators_and_formatters(self, axis):
+        axis.set(major_locator=DiscontinuousLocator(self.breaks, self.space))
+        self.add_discontinuity_markers(axis)
+
+    def get_transform(self):
+        return DiscontinuousTransform(self.breaks, self.space, hide=self.hide)
+
+    def add_discontinuity_markers(self, axis):
+        ax = axis.axes
+        xy = lambda x, y: (x, y) if axis == ax.xaxis else (y, x)
+        trans = mpl.transforms.blended_transform_factory(*xy(ax.transData, ax.transAxes))
+        for br in self.breaks:
+            for i in range(2):
+                x, w, h = np.mean(br), np.diff(br) / 4, 0.02
+                points = list(zip(*xy((x - w, x, x + w, x), (i - h, i + h, i + h, i - h))))
+                kwargs = dict(color="k", lw=0.8, transform=trans, clip_on=False, zorder=9)
+                Path = mpl.path.Path
+                ax.add_artist(mpl.patches.PathPatch(Path(points), ec="none", fc="w", **kwargs))
+                ax.add_artist(
+                    mpl.patches.PathPatch(
+                        Path(points, [Path.MOVETO, Path.LINETO, Path.MOVETO, Path.LINETO]),
+                        **kwargs,
+                    )
+                )
+
+
+class DiscontinuousLocator(mpl.ticker.AutoLocator):
+    def __init__(self, breaks, space, **kwargs):
+        super().__init__(**kwargs)
+        self.breaks = breaks
+        self.space = space
+
+    def set_params(self, **kwargs):
+        if "nbins" in kwargs:
+            self._nbins_real = kwargs.pop("nbins")
+        super().set_params(**kwargs)
+
+    def _raw_ticks(self, vmin, vmax):
+        visible = total = vmax - vmin
+        for br in self.breaks:
+            left, right = np.clip(br, vmin, vmax)
+            visible -= right - left - self.space
+
+        nbins = self._nbins_real
+        if nbins == "auto":
+            if self.axis is not None:
+                nbins = np.clip(self.axis.get_tick_space(), max(1, self._min_n_ticks - 1), 9)
+            else:
+                nbins = 9
+
+        self._nbins = nbins * total / visible
+        ticks = super()._raw_ticks(vmin, vmax)
+
+        for left, right in self.breaks:
+            ticks = ticks[(ticks <= left) | (ticks >= right)]
+
+        return ticks
+
+
+class DiscontinuousTransform(mpl.transforms.Transform):
+    input_dims = output_dims = 1
+
+    def __init__(self, breaks, space, *, hide=True):
+        super().__init__()
+        self.breaks = breaks
+        self.space = space
+        self.hide = hide
+
+    def transform_non_affine(self, values):
+        if len(self.breaks) > 1:
+            raise NotImplementedError("At most a single break is supported currently")
+        a = np.asanyarray(values).copy()
+        for left, right in self.breaks:
+            mask = (a > left) & (a < right)
+            if self.hide:
+                a = np.ma.masked_where(mask, a)
+            a[mask] = left + self.space * (a[mask] - left) / (right - left)
+            a[a >= right] -= right - left - self.space
+        return a
+
+    def with_hide(self, hide):
+        return DiscontinuousTransform(self.breaks, self.space, hide=hide)
 
 
 class XPlot:
