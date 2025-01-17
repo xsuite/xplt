@@ -12,8 +12,14 @@ __date__ = "2022-11-08"
 import re
 import numpy as np
 import matplotlib as mpl
-from .util import (get, iter_elements, defaults, defaults_for,
-                   PUBLIC_SECTION_END, PUBLIC_SECTION_BEGIN)
+from .util import (
+    get,
+    iter_elements,
+    defaults,
+    defaults_for,
+    PUBLIC_SECTION_END,
+    PUBLIC_SECTION_BEGIN,
+)
 from .base import XPlot, XManifoldPlot
 from .properties import Property, DataProperty
 
@@ -342,16 +348,22 @@ class FloorPlot(XPlot):
             # ang: transform angles from data (A-B) to axis (X-Y) coordinate system
             if self.projection == "ZX":
                 R = get(survey, "theta")
+
                 def ang(a):
                     return a
+
             elif self.projection == "XZ":
                 R = get(survey, "theta")
+
                 def ang(a):
                     return np.pi / 2 - a
+
             elif self.projection == "ZY":
                 R = get(survey, "theta")
+
                 def ang(a):
                     return a
+
             else:
                 ...
                 raise NotImplementedError()
