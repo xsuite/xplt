@@ -9,7 +9,17 @@ __author__ = "Philipp Niedermayer"
 __contact__ = "eltos@outlook.de"
 __date__ = "2022-11-08"
 
-from .util import *
+import re
+import numpy as np
+import matplotlib as mpl
+from .util import (
+    get,
+    iter_elements,
+    defaults,
+    defaults_for,
+    PUBLIC_SECTION_END,
+    PUBLIC_SECTION_BEGIN,
+)
 from .base import XPlot, XManifoldPlot
 from .properties import Property, DataProperty
 
@@ -25,7 +35,7 @@ def element_strength(element, n):
 
 def nominal_order(element):
     """Get nominal element order (even if coefficients might be zero)"""
-    if type(element).__name__ == "Bend":  # Treat combined function magnets as bend
+    if element.__class__.__name__ == "Bend":  # avoid using type to support Views
         return 0
     if hasattr(element, "length"):
         for n in range(10, -1, -1):
@@ -58,7 +68,8 @@ def order(knl):
 
 def tanc(x):
     """Tangens cardinalis, i.e. tan(x)/x with limit tanc(0)=1"""
-    return np.sinc(x) / np.cos(x)
+    # Note that np.sinc is sin(pi*x)/(pi*x) and not sin(x)/x !
+    return np.sinc(x / np.pi) / np.cos(x)
 
 
 PUBLIC_SECTION_BEGIN()
@@ -215,6 +226,7 @@ class FloorPlot(XPlot):
         labels=False,
         ignore=None,
         element_width=1,
+        axis="equal",
         **kwargs,
     ):
         """
@@ -235,6 +247,7 @@ class FloorPlot(XPlot):
             ignore (None | str | list[str]): Optional patter or list of patterns to ignore elements with matching names.
                 Note that drift spaces are always ignored.
             element_width (float): Width of element boxes.
+            axis (str): Aspect ratio of the plot. Default is 'equal'.
             kwargs: See :class:`~.base.XPlot` for additional arguments
 
 
@@ -279,7 +292,7 @@ class FloorPlot(XPlot):
         self.ax.set(
             xlabel=self.label_for(self.projection[0]), ylabel=self.label_for(self.projection[1])
         )
-        self.ax.axis("equal")
+        self.ax.axis(axis)
 
         # create plot elements
         (self.artist_beamline,) = self.ax.plot([], [], "k-")
@@ -336,10 +349,22 @@ class FloorPlot(XPlot):
             # ang: transform angles from data (A-B) to axis (X-Y) coordinate system
             if self.projection == "ZX":
                 R = get(survey, "theta")
-                ang = lambda a: a
+
+                def ang(a):
+                    return a
+
             elif self.projection == "XZ":
                 R = get(survey, "theta")
-                ang = lambda a: np.pi / 2 - a
+
+                def ang(a):
+                    return np.pi / 2 - a
+
+            elif self.projection == "ZY":
+                R = get(survey, "theta")
+
+                def ang(a):
+                    return a
+
             else:
                 ...
                 raise NotImplementedError()
@@ -441,25 +466,22 @@ class FloorPlot(XPlot):
                     if length > 0 and arc:
                         # bending elements as wedge
                         rho = length / arc
-                        box = mpl.patches.Wedge(
-                            **defaults_for(
-                                mpl.patches.Wedge,
-                                box_style,
-                                center=(
-                                    x - helicity * rho * np.cos(rr) / np.cos(arc / 2),
-                                    y - helicity * rho * np.sin(rr) / np.cos(arc / 2),
-                                ),
-                                r=rho + width / 2,
-                                width=width,
-                                theta1=np.rad2deg(rr - helicity * arc / 2)
-                                + 90 * (1 - helicity),  # rr - arc/2),
-                                theta2=np.rad2deg(rr + helicity * arc / 2)
-                                + 90 * (1 - helicity),  # rr + arc/2),
-                                alpha=0.5,
-                                zorder=3,
-                            )
+                        x_center = x - helicity * rho * np.cos(rr) / np.cos(arc / 2)
+                        y_center = y - helicity * rho * np.sin(rr) / np.cos(arc / 2)
+                        wedge_kwargs = defaults_for(
+                            mpl.patches.Wedge,
+                            box_style,
+                            center=(x_center, y_center),
+                            r=rho + width / 2,
+                            width=width,
+                            theta1=np.rad2deg(rr - helicity * arc / 2)
+                            + 90 * (1 - helicity),  # rr - arc/2),
+                            theta2=np.rad2deg(rr + helicity * arc / 2)
+                            + 90 * (1 - helicity),  # rr + arc/2),
+                            alpha=0.5,
+                            zorder=3,
                         )
-
+                        box = mpl.patches.Wedge(**wedge_kwargs)
                     else:
                         # other elements as rect
                         box = mpl.patches.Rectangle(
