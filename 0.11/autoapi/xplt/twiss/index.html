@@ -1,0 +1,1049 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>xplt.twiss &#8212; Xplt 0.11.0 documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-codeautolink.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=603c5a11" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../_static/documentation_options.js?v=f3b36f1a"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'autoapi/xplt/twiss/index';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://xsuite.github.io/xplt/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.11';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="xplt.util" href="../util/index.html" />
+    <link rel="prev" title="xplt.timestructure" href="../timestructure/index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.11.0" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">Xplt 0.11.0 documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../quickstart.html">
+    Quickstart
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../usage.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API documentation
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/xsuite/xplt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/xplt" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-cube fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+</ul></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../quickstart.html">
+    Quickstart
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../usage.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../api.html">
+    API documentation
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/xsuite/xplt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://pypi.org/project/xplt" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-cube fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">PyPI</span></a>
+        </li>
+</ul></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html">xplt</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../base/index.html">xplt.base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../colors/index.html">xplt.colors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../hooks/index.html">xplt.hooks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../line/index.html">xplt.line</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../particles/index.html">xplt.particles</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../phasespace/index.html">xplt.phasespace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../properties/index.html">xplt.properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../timestructure/index.html">xplt.timestructure</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">xplt.twiss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../util/index.html">xplt.util</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../../api.html" class="nav-link">API documentation</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">xplt</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">xplt.twiss</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-xplt.twiss">
+<span id="xplt-twiss"></span><h1>xplt.twiss<a class="headerlink" href="#module-xplt.twiss" title="Link to this heading">#</a></h1>
+<p>Methods for plotting twiss</p>
+<section id="classes">
+<h2>Classes<a class="headerlink" href="#classes" title="Link to this heading">#</a></h2>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#xplt.twiss.TwissPlot" title="xplt.twiss.TwissPlot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TwissPlot</span></code></a></p></td>
+<td><p>A plot for twiss parameters and closed orbit</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="xplt.twiss.TwissPlot">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">xplt.twiss.</span></span><span class="sig-name descname"><span class="pre">TwissPlot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">twiss</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'bet-dx,x+y'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.11.0/xplt/twiss.py#L25-L226"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.twiss.TwissPlot" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../base/index.html#xplt.base.XManifoldPlot" title="xplt.base.XManifoldPlot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xplt.base.XManifoldPlot</span></code></a></p>
+<p>A plot for twiss parameters and closed orbit</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>twiss</strong> (<em>Any</em>) – Dictionary or table with twiss information (or tuple thereof)</p></li>
+<li><p><strong>kind</strong> (<em>str</em><em> | </em><em>list</em>) – Defines the properties to plot.
+This is a manifold subplot specification string like <code class="docutils literal notranslate"><span class="pre">&quot;bet-dx,x+y&quot;</span></code>, see <a class="reference internal" href="../base/index.html#xplt.base.XManifoldPlot" title="xplt.base.XManifoldPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">XManifoldPlot</span></code></a> for details.
+In addition, abbreviations for x-y-parameter pairs are supported (e.g. ‘bet’ for ‘betx+bety’).</p></li>
+<li><p><strong>line</strong> (<a class="reference external" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.Line" title="(in Xsuite)"><em>xtrack.Line</em></a>) – Line of elements. If given, adds a line plot to the top.</p></li>
+<li><p><strong>line_kwargs</strong> (<em>dict</em>) – Keyword arguments passed to line plot.</p></li>
+<li><p><strong>kwargs</strong> – See <a class="reference internal" href="../base/index.html#xplt.base.XPlot" title="xplt.base.XPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">XPlot</span></code></a> for additional arguments</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="xplt.twiss.TwissPlot.add_scale">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">add_scale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fontsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'x-small'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.11.0/xplt/base.py#L623-L675"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.twiss.TwissPlot.add_scale" title="Link to this definition">#</a></dt>
+<dd><p>Add a scale patch (a yardstick or ruler)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ax</strong> (<a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="(in Matplotlib v3.10.0)"><em>matplotlib.axes.Axes</em></a>) – The axis to add it to.</p></li>
+<li><p><strong>scale</strong> (<em>float</em>) – The size of the scale in data units.</p></li>
+<li><p><strong>label</strong> (<em>str</em><em> | </em><em>None</em>) – A label for the scale.</p></li>
+<li><p><strong>vertical</strong> (<em>bool</em>) – If true, make a vertical one (default is a horizontal one).</p></li>
+<li><p><strong>width</strong> (<em>float</em>) – The line width of the scale in axis units.</p></li>
+<li><p><strong>padding</strong> (<em>float</em>) – The padding between the scale and the axis.</p></li>
+<li><p><strong>loc</strong> (<em>str</em>) – The location of the scale. Can be any of the usual matplotlib locations,
+e.g. <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;upper</span> <span class="pre">left&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;upper</span> <span class="pre">center&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;upper</span> <span class="pre">right&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;center</span> <span class="pre">left&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;center&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;center</span> <span class="pre">right&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;lower</span> <span class="pre">left&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;lower</span> <span class="pre">center&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;lower</span> <span class="pre">right&quot;</span></code>.</p></li>
+<li><p><strong>color</strong> (<em>str</em><em> | </em><em>tuple</em>) – Color for the patch.</p></li>
+<li><p><strong>fontsize</strong> (<em>str</em>) – Font size of the label.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The artist added</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://matplotlib.org/stable/api/offsetbox_api.html#matplotlib.offsetbox.AnchoredOffsetbox" title="(in Matplotlib v3.10.0)">matplotlib.offsetbox.AnchoredOffsetbox</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xplt.twiss.TwissPlot.annotate">
+<span class="sig-name descname"><span class="pre">annotate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.11.0/xplt/base.py#L343-L345"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.twiss.TwissPlot.annotate" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xplt.twiss.TwissPlot.artist">
+<span class="sig-name descname"><span class="pre">artist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subplot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">twin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.11.0/xplt/base.py#L873-L895"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.twiss.TwissPlot.artist" title="Link to this definition">#</a></dt>
+<dd><p>Return the artist either by name, or by subplot, twin axes and trace index</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em><em> | </em><em>None</em>) – Name of the property the artist is plotting</p></li>
+<li><p><strong>subplot</strong> (<em>int</em><em> | </em><em>None</em>) – Flat subplot index</p></li>
+<li><p><strong>twin</strong> (<em>int</em><em> | </em><em>None</em>) – Twin axis index</p></li>
+<li><p><strong>trace</strong> (<em>int</em><em> | </em><em>None</em>) – Trace index</p></li>
+<li><p><strong>dataset_id</strong> (<em>str</em><em> | </em><em>None</em>) – The dataset identifier if this plot represents multiple datasets</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>First artist that matches the given criteria</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://matplotlib.org/stable/api/artist_api.html#matplotlib.artist.Artist" title="(in Matplotlib v3.10.0)">matplotlib.artist.Artist</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xplt.twiss.TwissPlot.autoscale">
+<span class="sig-name descname"><span class="pre">autoscale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subplot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'xy'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freeze</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.11.0/xplt/base.py#L994-L1016"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.twiss.TwissPlot.autoscale" title="Link to this definition">#</a></dt>
+<dd><p>Autoscale the axes of a subplot</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subplot</strong> (<em>int</em><em> | </em><em>iterable</em><em> | </em><em>str</em>) – Subplot axis index, indices or “all”</p></li>
+<li><p><strong>axis</strong> (<em>str</em><em> | </em><em>None</em><em> | </em><em>bool</em>) – Whether and on which axes to perform autoscaling.
+One of <cite>“x”</cite>, <cite>“y”</cite>, <cite>“xy”</cite>, <cite>False</cite> or <cite>None</cite>. If <cite>None</cite>, decide based on <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.get_autoscalex_on.html#matplotlib.axes.Axes.get_autoscalex_on" title="(in Matplotlib v3.10.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.axes.Axes.get_autoscalex_on()</span></code></a> and <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.get_autoscaley_on.html#matplotlib.axes.Axes.get_autoscaley_on" title="(in Matplotlib v3.10.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.axes.Axes.get_autoscaley_on()</span></code></a>.
+For backwards compatibility, the following aliases are also supported: <cite>“both”</cite>, <cite>True</cite>, <cite>“”</cite>.</p></li>
+<li><p><strong>reset</strong> (<em>bool</em>) – Whether to ignore any data limits already registered.</p></li>
+<li><p><strong>freeze</strong> (<em>bool</em>) – Whether to keep the updated axes limits (True) or enable automatic
+autoscaling on future draws (for all present and new artists).</p></li>
+<li><p><strong>tight</strong> (<em>str</em><em> | </em><em>None</em>) – Enables tight scaling without margins for the specified dimension.
+May be <code class="docutils literal notranslate"><span class="pre">&quot;x&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;y&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;both&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xplt.twiss.TwissPlot.axes">
+<span class="sig-name descname"><span class="pre">axes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subplots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">twins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.11.0/xplt/base.py#L364-L383"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.twiss.TwissPlot.axes" title="Link to this definition">#</a></dt>
+<dd><p>Generator yielding axes for the given flat subplot and twin indices</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subplots</strong> (<em>int</em><em> | </em><em>list</em><em>[</em><em>int</em><em>] </em><em>| </em><em>str</em>) – Flat subplot indices or <code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code></p></li>
+<li><p><strong>twins</strong> (<em>int</em><em> | </em><em>list</em><em>[</em><em>int</em><em>] </em><em>| </em><em>str</em><em> | </em><em>bool</em>) – Twin index or indices or <code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code>.
+<code class="docutils literal notranslate"><span class="pre">True</span></code> as alias for <code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">False</span></code> as alias for <code class="docutils literal notranslate"><span class="pre">0</span></code> are also supported.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Yields<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>matplotlib.axes.Axes</em> – Iterator over the selected axes where</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xplt.twiss.TwissPlot.axis">
+<span class="sig-name descname"><span class="pre">axis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subplot_or_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">twin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subplot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.11.0/xplt/base.py#L897-L929"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.twiss.TwissPlot.axis" title="Link to this definition">#</a></dt>
+<dd><p>Return the axis for a given flat subplot index and twin index, or an artist name</p>
+<p>Either get axis by index <code class="docutils literal notranslate"><span class="pre">axis(subplot,</span> <span class="pre">twin)</span></code> or by property name <code class="docutils literal notranslate"><span class="pre">axis(name)</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subplot_or_name</strong> (<em>int</em><em> | </em><em>str</em>) – Flat subplot index or property name</p></li>
+<li><p><strong>subplot</strong> (<em>int</em>) – Flat subplot index</p></li>
+<li><p><strong>twin</strong> (<em>int</em>) – Twin index</p></li>
+<li><p><strong>name</strong> (<em>str</em><em> | </em><em>None</em>) – Name of the property the axis is plotting. If this is not None, subplot and twin are ignored.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Axis for the given subplot and twin index</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="(in Matplotlib v3.10.0)">matplotlib.axes.Axes</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xplt.twiss.TwissPlot.axline">
+<span class="sig-name descname"><span class="pre">axline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kind</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.11.0/xplt/base.py#L1018-L1027"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.twiss.TwissPlot.axline" title="Link to this definition">#</a></dt>
+<dd><p>Plot a vertical or horizontal line for a given coordinate</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>kind</strong> (<em>str</em>) – property at which to place the line (e.g. “s”, “x”, “betx”, etc.)</p></li>
+<li><p><strong>val</strong> (<em>float</em>) – Value of property.</p></li>
+<li><p><strong>kwargs</strong> – See <a class="reference internal" href="../base/index.html#xplt.base.XManifoldPlot.axspan" title="xplt.base.XManifoldPlot.axspan"><code class="xref py py-meth docutils literal notranslate"><span class="pre">axspan()</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xplt.twiss.TwissPlot.axspan">
+<span class="sig-name descname"><span class="pre">axspan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kind</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_to</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subplots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotation_loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotation_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.11.0/xplt/base.py#L1029-L1130"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.twiss.TwissPlot.axspan" title="Link to this definition">#</a></dt>
+<dd><p>Plot a vertical or horizontal span (or line) for a given coordinate</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>kind</strong> (<em>str</em>) – property at which to place the line (e.g. “s”, “x”, “betx”, etc.).</p></li>
+<li><p><strong>val</strong> (<em>float</em>) – Value of property.</p></li>
+<li><p><strong>val_to</strong> (<em>float</em><em> | </em><em>None</em>) – Second value of property to plot a span. If this is <cite>None</cite>, plot a line instead of a span.</p></li>
+<li><p><strong>subplots</strong> (<em>list</em><em>[</em><em>int</em><em>]</em>) – Subplots to plot line onto. Defaults to all with matching coordinates.</p></li>
+<li><p><strong>annotation</strong> (<em>string</em><em> | </em><em>None</em>) – Optional text annotation for the line or span. Use this to place
+text on the axes. To put text in the legend, use <cite>label=…</cite>.</p></li>
+<li><p><strong>annotation_loc</strong> (<em>float</em><em>, </em><em>string</em>) – Location of annotation along line or span as fraction between 0 and 1,
+or a string <code class="docutils literal notranslate"><span class="pre">&quot;lower&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;bottom&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">left&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;upper&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;top&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;right&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">center</span></code>.
+For vertical lines or spans extending over multiple subplots, 0 is the bottom of the lowermost
+and 1 the top of the uppermost subplot.</p></li>
+<li><p><strong>annotation_kwargs</strong> (<em>dict</em><em> | </em><em>None</em>) – Arguments for <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.text.html#matplotlib.axes.Axes.text" title="(in Matplotlib v3.10.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.axes.Axes.text()</span></code></a>.</p></li>
+<li><p><strong>kwargs</strong> – Arguments passed to <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.axvspan.html#matplotlib.axes.Axes.axvspan" title="(in Matplotlib v3.10.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.axes.Axes.axvspan()</span></code></a> or <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.axhspan.html#matplotlib.axes.Axes.axhspan" title="(in Matplotlib v3.10.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.axes.Axes.axhspan()</span></code></a>
+(or <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.axvline.html#matplotlib.axes.Axes.axvline" title="(in Matplotlib v3.10.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.axes.Axes.axvline()</span></code></a> or <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.axhline.html#matplotlib.axes.Axes.axhline" title="(in Matplotlib v3.10.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.axes.Axes.axhline()</span></code></a> if <cite>val_to</cite> is <cite>None</cite>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xplt.twiss.TwissPlot.display_unit_for">
+<span class="sig-name descname"><span class="pre">display_unit_for</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.11.0/xplt/base.py#L414-L433"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.twiss.TwissPlot.display_unit_for" title="Link to this definition">#</a></dt>
+<dd><p>Return display unit for parameter</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>p</strong> (<em>str</em>) – Property name</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Display unit</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xplt.twiss.TwissPlot.factor_for">
+<span class="sig-name descname"><span class="pre">factor_for</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.11.0/xplt/base.py#L403-L412"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.twiss.TwissPlot.factor_for" title="Link to this definition">#</a></dt>
+<dd><p>Return factor to convert parameter into display unit</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>p</strong> (<em>str</em>) – Property name</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Factor to convert parameter into display unit</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xplt.twiss.TwissPlot.label_for">
+<span class="sig-name descname"><span class="pre">label_for</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">pp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.11.0/xplt/base.py#L494-L559"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.twiss.TwissPlot.label_for" title="Link to this definition">#</a></dt>
+<dd><p>Return axis label for list of properties, joining where possible</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pp</strong> – Property names</p></li>
+<li><p><strong>unit</strong> (<em>bool</em>) – Whether to include unit</p></li>
+<li><p><strong>description</strong> (<em>bool</em>) – Whether to include description</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Axis label</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xplt.twiss.TwissPlot.legend">
+<span class="sig-name descname"><span class="pre">legend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subplot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.11.0/xplt/base.py#L951-L992"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.twiss.TwissPlot.legend" title="Link to this definition">#</a></dt>
+<dd><p>Add, update or remove legend for a subplot</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>subplot</strong> (<em>int</em><em> | </em><em>list</em><em> | </em><em>str</em>) – Subplot axis index or indices</p></li>
+<li><p><strong>show</strong> (<em>bool</em><em> | </em><em>str</em>) – If True, show the legend. If “auto”, show
+legend for subplots with more than one trace, or if subplot is specified explicitly.</p></li>
+<li><p><strong>kwargs</strong> – Keyword arguments passed to <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.legend.html#matplotlib.axes.Axes.legend" title="(in Matplotlib v3.10.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.axes.Axes.legend()</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xplt.twiss.TwissPlot.parse_nested_list_string">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">parse_nested_list_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">separators</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">',-+'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strip_off_methods</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.11.0/xplt/base.py#L1132-L1191"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.twiss.TwissPlot.parse_nested_list_string" title="Link to this definition">#</a></dt>
+<dd><p>Parse a separated string or nested list or a mixture of both</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>list_string</strong> (<em>str</em><em> or </em><em>list</em>) – The string or nested list or a mixture of both to parse.</p></li>
+<li><p><strong>separators</strong> (<em>str</em>) – The characters that separate the elements. The number of characters
+determines the depth of the returned list.</p></li>
+<li><p><strong>subs</strong> (<em>dict</em>) – A dictionary of substitutions to apply to the elements during parsing.
+May introduce additional separators of equal or deeper level.</p></li>
+<li><p><strong>strip_off_methods</strong> (<em>bool</em>) – If true, each element can be a name <cite>name</cite> or an expression
+in the form <cite>method(name, …)</cite>. The methods are stripped off, and returned separately.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>nested list of names in the string,
+nested list of expressions in the string (only if strip_off_methods is True)</p>
+</dd>
+</dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">XManifoldPlot</span><span class="o">.</span><span class="n">parse_nested_list_string</span><span class="p">(</span><span class="s2">&quot;a+b, c-d,fun(e,2)&quot;</span><span class="p">)</span>
+<span class="go">[[[&#39;a&#39;, &#39;b&#39;]], [[&#39;c&#39;], [&#39;d&#39;]], [[&#39;fun(e,2)&#39;]]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">XManifoldPlot</span><span class="o">.</span><span class="n">parse_nested_list_string</span><span class="p">(</span><span class="s2">&quot;a+b, c-d,fun(e,2)&quot;</span><span class="p">,</span> <span class="n">strip_off_methods</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="go">([[[&#39;a&#39;, &#39;b&#39;]], [[&#39;c&#39;], [&#39;d&#39;]], [[&#39;e&#39;]]],</span>
+<span class="go"> [[[None, None]], [[None], [None]], [[&#39;fun(e,2)&#39;]]])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xplt.twiss.TwissPlot.plot_apertures">
+<span class="sig-name descname"><span class="pre">plot_apertures</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">which</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.11.0/xplt/twiss.py#L190-L226"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.twiss.TwissPlot.plot_apertures" title="Link to this definition">#</a></dt>
+<dd><p>Plot apertures onto the relevant axes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>Any</em>) – The aperture data: a dict, table or something which provides arrays for the keys “s”, “min_x”,
+“max_x”, “min_y”, “max_y”. Use <code class="xref py py-meth docutils literal notranslate"><span class="pre">apertures()</span></code> to get such data from a <a class="reference external" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.Line" title="(in Xsuite)"><code class="xref py py-class docutils literal notranslate"><span class="pre">xtrack.Line</span></code></a>.</p></li>
+<li><p><strong>which</strong> (<em>str</em><em> | </em><em>None</em><em> | </em><em>list</em><em> | </em><em>set</em>) – Name(s) of properties for which to plot apertures on the corresponding axis.
+If None (default), plot for all relevant properties (x, y, sigma, envelope)</p></li>
+<li><p><strong>kwargs</strong> – Keyword arguments passed to <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.vlines.html#matplotlib.axes.Axes.vlines" title="(in Matplotlib v3.10.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.axes.Axes.vlines()</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xplt.twiss.TwissPlot.plot_harmonics">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">plot_harmonics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">plot_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.11.0/xplt/base.py#L578-L621"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.twiss.TwissPlot.plot_harmonics" title="Link to this definition">#</a></dt>
+<dd><p>Add vertical lines or spans indicating the location of values or spans and their harmonics</p>
+<dl class="simple">
+<dt>Indicates the bands at the h-th harmonics (h = 1, 2, …, n) at</dt><dd><ul class="simple">
+<li><p>h * (v ± dv/2)      if scale_width and not inverse (default)</p></li>
+<li><p>h * v ± dv/2        if not scale_width and not inverse</p></li>
+<li><p>h / (v ± dv/2)      if inverse and scale_width</p></li>
+<li><p>1 / ( v/h ± dv/2 )  if inverse and not scale_width</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ax</strong> (<a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="(in Matplotlib v3.10.0)"><em>matplotlib.axes.Axes</em></a>) – Axes to plot onto.</p></li>
+<li><p><strong>v</strong> (<em>float</em><em> | </em><em>list</em><em>[</em><em>float</em><em>]</em>) – Value or list of values.</p></li>
+<li><p><strong>dv</strong> (<em>float</em><em> | </em><em>list</em><em>[</em><em>float</em><em>]</em>) – Width or list of widths centered around value(s).</p></li>
+<li><p><strong>n</strong> (<em>int</em>) – Number of harmonics to plot.</p></li>
+<li><p><strong>scale_width</strong> (<em>bool</em>) – Whether to scale the width for higher harmonics or keep it constant.</p></li>
+<li><p><strong>vertical</strong> (<em>bool</em>) – Plot vertical lines if true, horizontal otherweise.</p></li>
+<li><p><strong>inverse</strong> (<em>bool</em>) – If true, plot harmonics of n/(v±dv) instead of n*(v±dv).
+Useful to plot frequency harmonics in time domain and vice-versa.</p></li>
+<li><p><strong>plot_kwargs</strong> – Keyword arguments to be passed to plotting method</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xplt.twiss.TwissPlot.prop">
+<span class="sig-name descname"><span class="pre">prop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.11.0/xplt/base.py#L435-L448"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.twiss.TwissPlot.prop" title="Link to this definition">#</a></dt>
+<dd><p>Get property by key</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Key</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The property</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="../properties/index.html#xplt.properties.Property" title="xplt.properties.Property">Property</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xplt.twiss.TwissPlot.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.11.0/xplt/base.py#L385-L392"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.twiss.TwissPlot.save" title="Link to this definition">#</a></dt>
+<dd><p>Save the figure with sensible default options</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fname</strong> (<em>str</em>) – Filename</p></li>
+<li><p><strong>kwargs</strong> – Keyword arguments passed to <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.savefig.html#matplotlib.figure.Figure.savefig" title="(in Matplotlib v3.10.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.figure.Figure.savefig()</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xplt.twiss.TwissPlot.title">
+<span class="sig-name descname"><span class="pre">title</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.11.0/xplt/base.py#L394-L401"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.twiss.TwissPlot.title" title="Link to this definition">#</a></dt>
+<dd><p>Set figure title</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>title</strong> (<em>str</em>) – Title</p></li>
+<li><p><strong>kwargs</strong> – Keyword arguments passed to <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.suptitle.html#matplotlib.figure.Figure.suptitle" title="(in Matplotlib v3.10.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.figure.Figure.suptitle()</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="xplt.twiss.TwissPlot.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">twiss</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">autoscale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.11.0/xplt/twiss.py#L137-L188"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.twiss.TwissPlot.update" title="Link to this definition">#</a></dt>
+<dd><p>Update the twiss data this plot shows</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>twiss</strong> (<em>Any</em>) – Dictionary or table with twiss information (or tuple thereof)</p></li>
+<li><p><strong>autoscale</strong> (<em>str</em><em> | </em><em>None</em><em> | </em><em>bool</em>) – Whether and on which axes to perform autoscaling.
+One of <cite>“x”</cite>, <cite>“y”</cite>, <cite>“xy”</cite>, <cite>False</cite> or <cite>None</cite>. If <cite>None</cite>, decide based on <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.get_autoscalex_on.html#matplotlib.axes.Axes.get_autoscalex_on" title="(in Matplotlib v3.10.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.axes.Axes.get_autoscalex_on()</span></code></a> and <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.get_autoscaley_on.html#matplotlib.axes.Axes.get_autoscaley_on" title="(in Matplotlib v3.10.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.axes.Axes.get_autoscaley_on()</span></code></a>.</p></li>
+<li><p><strong>line</strong> (<em>xtack.Line</em>) – Line of elements.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>changed artists</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="xplt.twiss.TwissPlot.artists">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">artists</span></span><a class="headerlink" href="#xplt.twiss.TwissPlot.artists" title="Link to this definition">#</a></dt>
+<dd><p>Convenient access to artist</p>
+<p>The index can be an (optional) dataset identifier, followed by the subplot, axis and trace index.
+If the dataset identifier is missing, traces are concatenated for all datasets
+Examples: <cite>self.artists[i][j][k]</cite>, <cite>self.artists[i,j,k]</cite>, <cite>self.artists[dataset_id,i,j,k]</cite></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="xplt.twiss.TwissPlot.ax">
+<span class="sig-name descname"><span class="pre">ax</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#xplt.twiss.TwissPlot.ax" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="xplt.twiss.TwissPlot.axflat">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">axflat</span></span><a class="headerlink" href="#xplt.twiss.TwissPlot.axflat" title="Link to this definition">#</a></dt>
+<dd><p>Return a flat list of all primary axes</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="xplt.twiss.TwissPlot.axflat_twin">
+<span class="sig-name descname"><span class="pre">axflat_twin</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#xplt.twiss.TwissPlot.axflat_twin" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="xplt.twiss.TwissPlot.fig">
+<span class="sig-name descname"><span class="pre">fig</span></span><a class="headerlink" href="#xplt.twiss.TwissPlot.fig" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="xplt.twiss.TwissPlot.lineplot">
+<span class="sig-name descname"><span class="pre">lineplot</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#xplt.twiss.TwissPlot.lineplot" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="xplt.twiss.TwissPlot.on_x">
+<span class="sig-name descname"><span class="pre">on_x</span></span><a class="headerlink" href="#xplt.twiss.TwissPlot.on_x" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="xplt.twiss.TwissPlot.on_y_unique">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">on_y_unique</span></span><a class="headerlink" href="#xplt.twiss.TwissPlot.on_y_unique" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="../timestructure/index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">xplt.timestructure</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="../util/index.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">xplt.util</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#classes">Classes</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-contents">Module Contents</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.twiss.TwissPlot"><code class="docutils literal notranslate"><span class="pre">TwissPlot</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.twiss.TwissPlot.add_scale"><code class="docutils literal notranslate"><span class="pre">TwissPlot.add_scale()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.twiss.TwissPlot.annotate"><code class="docutils literal notranslate"><span class="pre">TwissPlot.annotate()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.twiss.TwissPlot.artist"><code class="docutils literal notranslate"><span class="pre">TwissPlot.artist()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.twiss.TwissPlot.autoscale"><code class="docutils literal notranslate"><span class="pre">TwissPlot.autoscale()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.twiss.TwissPlot.axes"><code class="docutils literal notranslate"><span class="pre">TwissPlot.axes()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.twiss.TwissPlot.axis"><code class="docutils literal notranslate"><span class="pre">TwissPlot.axis()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.twiss.TwissPlot.axline"><code class="docutils literal notranslate"><span class="pre">TwissPlot.axline()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.twiss.TwissPlot.axspan"><code class="docutils literal notranslate"><span class="pre">TwissPlot.axspan()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.twiss.TwissPlot.display_unit_for"><code class="docutils literal notranslate"><span class="pre">TwissPlot.display_unit_for()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.twiss.TwissPlot.factor_for"><code class="docutils literal notranslate"><span class="pre">TwissPlot.factor_for()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.twiss.TwissPlot.label_for"><code class="docutils literal notranslate"><span class="pre">TwissPlot.label_for()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.twiss.TwissPlot.legend"><code class="docutils literal notranslate"><span class="pre">TwissPlot.legend()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.twiss.TwissPlot.parse_nested_list_string"><code class="docutils literal notranslate"><span class="pre">TwissPlot.parse_nested_list_string()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.twiss.TwissPlot.plot_apertures"><code class="docutils literal notranslate"><span class="pre">TwissPlot.plot_apertures()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.twiss.TwissPlot.plot_harmonics"><code class="docutils literal notranslate"><span class="pre">TwissPlot.plot_harmonics()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.twiss.TwissPlot.prop"><code class="docutils literal notranslate"><span class="pre">TwissPlot.prop()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.twiss.TwissPlot.save"><code class="docutils literal notranslate"><span class="pre">TwissPlot.save()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.twiss.TwissPlot.title"><code class="docutils literal notranslate"><span class="pre">TwissPlot.title()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.twiss.TwissPlot.update"><code class="docutils literal notranslate"><span class="pre">TwissPlot.update()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.twiss.TwissPlot.artists"><code class="docutils literal notranslate"><span class="pre">TwissPlot.artists</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.twiss.TwissPlot.ax"><code class="docutils literal notranslate"><span class="pre">TwissPlot.ax</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.twiss.TwissPlot.axflat"><code class="docutils literal notranslate"><span class="pre">TwissPlot.axflat</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.twiss.TwissPlot.axflat_twin"><code class="docutils literal notranslate"><span class="pre">TwissPlot.axflat_twin</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.twiss.TwissPlot.fig"><code class="docutils literal notranslate"><span class="pre">TwissPlot.fig</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.twiss.TwissPlot.lineplot"><code class="docutils literal notranslate"><span class="pre">TwissPlot.lineplot</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.twiss.TwissPlot.on_x"><code class="docutils literal notranslate"><span class="pre">TwissPlot.on_x</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#xplt.twiss.TwissPlot.on_y_unique"><code class="docutils literal notranslate"><span class="pre">TwissPlot.on_y_unique</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2022-2024, Philipp Niedermayer (github.com/eltos).
+      <br/>
+    
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

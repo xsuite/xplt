@@ -1,0 +1,1300 @@
+
+<!DOCTYPE html>
+
+<html data-content_root="../" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Common concepts — Xplt 0.11.0 documentation</title>
+<script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+<!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+<noscript>
+<style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+</noscript>
+<!-- Loaded before other Sphinx assets -->
+<link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet"/>
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet"/>
+<link href="../_static/pygments.css?v=8f2a1f02" rel="stylesheet" type="text/css"/>
+<link href="../_static/graphviz.css?v=4ae1632d" rel="stylesheet" type="text/css"/>
+<link href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/sphinx-codeautolink.css" rel="stylesheet" type="text/css"/>
+<link href="../_static/custom.css?v=603c5a11" rel="stylesheet" type="text/css"/>
+<!-- So that users can add custom icons -->
+<script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+<!-- Pre-loaded scripts that we'll load fully later -->
+<link as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" rel="preload"/>
+<link as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" rel="preload"/>
+<script src="../_static/documentation_options.js?v=f3b36f1a"></script>
+<script src="../_static/doctools.js?v=9bcbadda"></script>
+<script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+<script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+<script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<script>DOCUMENTATION_OPTIONS.pagename = 'examples/concepts';</script>
+<script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://xsuite.github.io/xplt/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.11';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+<link href="../genindex.html" rel="index" title="Index"/>
+<link href="../search.html" rel="search" title="Search"/>
+<link href="line.html" rel="next" title="Beamline"/>
+<link href="../usage.html" rel="prev" title="User guide"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<meta content="en" name="docsearch:language"/>
+<meta content="0.11.0" name="docsearch:version"/>
+</head>
+<body data-bs-root-margin="0px 0px -60%" data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-default-mode="" data-offset="180">
+<div class="skip-link d-print-none" id="pst-skip-link"><a href="#main-content">Skip to main content</a></div>
+<div id="pst-scroll-pixel-helper"></div>
+<button class="btn rounded-pill" id="pst-back-to-top" type="button">
+<i class="fa-solid fa-arrow-up"></i>Back to top</button>
+<dialog id="pst-search-dialog">
+<form action="../search.html" class="bd-search d-flex align-items-center" method="get">
+<i class="fa-solid fa-magnifying-glass"></i>
+<input aria-label="Search the docs ..." autocapitalize="off" autocomplete="off" autocorrect="off" class="form-control" name="q" placeholder="Search the docs ..." spellcheck="false" type="search"/>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+</dialog>
+<div class="pst-async-banner-revealer d-none">
+<aside aria-label="Version warning" class="d-none d-print-none" id="bd-header-version-warning"></aside>
+</div>
+<header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+<button aria-label="Site navigation" class="pst-navbar-icon sidebar-toggle primary-toggle">
+<span class="fa-solid fa-bars"></span>
+</button>
+<div class="col-lg-3 navbar-header-items__start">
+<div class="navbar-item">
+<a class="navbar-brand logo" href="../index.html">
+<p class="title logo__title">Xplt 0.11.0 documentation</p>
+</a></div>
+</div>
+<div class="col-lg-9 navbar-header-items">
+<div class="me-auto navbar-header-items__center">
+<div class="navbar-item">
+<nav>
+<ul class="bd-navbar-elements navbar-nav">
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../quickstart.html">
+    Quickstart
+  </a>
+</li>
+<li class="nav-item current active">
+<a class="nav-link nav-internal" href="../usage.html">
+    User guide
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../api.html">
+    API documentation
+  </a>
+</li>
+</ul>
+</nav></div>
+</div>
+<div class="navbar-header-items__end">
+<div class="navbar-item navbar-persistent--container">
+<button aria-label="Search" class="btn search-button-field search-button__button pst-js-only" data-bs-placement="bottom" data-bs-toggle="tooltip" title="Search">
+<i class="fa-solid fa-magnifying-glass"></i>
+<span class="search-button__default-text">Search</span>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+</div>
+<div class="navbar-item">
+<button aria-label="Color mode" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" data-bs-placement="bottom" data-bs-title="Color mode" data-bs-toggle="tooltip">
+<i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+<i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+<i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
+</button></div>
+<div class="navbar-item"><ul aria-label="Icon Links" class="navbar-icon-links">
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://github.com/xsuite/xplt" rel="noopener" target="_blank" title="GitHub"><i aria-hidden="true" class="fa-brands fa-square-github fa-lg"></i>
+<span class="sr-only">GitHub</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://pypi.org/project/xplt" rel="noopener" target="_blank" title="PyPI"><i aria-hidden="true" class="fa-solid fa-cube fa-lg"></i>
+<span class="sr-only">PyPI</span></a>
+</li>
+</ul></div>
+<div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+<button aria-controls="pst-version-switcher-list-2" aria-haspopup="listbox" aria-label="Version switcher list" class="version-switcher__button btn btn-sm dropdown-toggle" data-bs-toggle="dropdown" id="pst-version-switcher-button-2" type="button">
+    Choose version  <!-- this text may get changed later by javascript -->
+<span class="caret"></span>
+</button>
+<div aria-labelledby="pst-version-switcher-button-2" class="version-switcher__menu dropdown-menu list-group-flush py-0" id="pst-version-switcher-list-2" role="listbox">
+<!-- dropdown will be populated by javascript on page load -->
+</div>
+</div></div>
+</div>
+</div>
+<div class="navbar-persistent--mobile">
+<button aria-label="Search" class="btn search-button-field search-button__button pst-js-only" data-bs-placement="bottom" data-bs-toggle="tooltip" title="Search">
+<i class="fa-solid fa-magnifying-glass"></i>
+<span class="search-button__default-text">Search</span>
+<span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+</div>
+<button aria-label="On this page" class="pst-navbar-icon sidebar-toggle secondary-toggle">
+<span class="fa-solid fa-outdent"></span>
+</button>
+</div>
+</header>
+<div class="bd-container">
+<div class="bd-container__inner bd-page-width">
+<dialog id="pst-primary-sidebar-modal"></dialog>
+<div class="bd-sidebar-primary bd-sidebar" id="pst-primary-sidebar">
+<div class="sidebar-header-items sidebar-primary__section">
+<div class="sidebar-header-items__center">
+<div class="navbar-item">
+<nav>
+<ul class="bd-navbar-elements navbar-nav">
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../quickstart.html">
+    Quickstart
+  </a>
+</li>
+<li class="nav-item current active">
+<a class="nav-link nav-internal" href="../usage.html">
+    User guide
+  </a>
+</li>
+<li class="nav-item">
+<a class="nav-link nav-internal" href="../api.html">
+    API documentation
+  </a>
+</li>
+</ul>
+</nav></div>
+</div>
+<div class="sidebar-header-items__end">
+<div class="navbar-item">
+<button aria-label="Color mode" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" data-bs-placement="bottom" data-bs-title="Color mode" data-bs-toggle="tooltip">
+<i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
+<i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
+<i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
+</button></div>
+<div class="navbar-item"><ul aria-label="Icon Links" class="navbar-icon-links">
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://github.com/xsuite/xplt" rel="noopener" target="_blank" title="GitHub"><i aria-hidden="true" class="fa-brands fa-square-github fa-lg"></i>
+<span class="sr-only">GitHub</span></a>
+</li>
+<li class="nav-item">
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://pypi.org/project/xplt" rel="noopener" target="_blank" title="PyPI"><i aria-hidden="true" class="fa-solid fa-cube fa-lg"></i>
+<span class="sr-only">PyPI</span></a>
+</li>
+</ul></div>
+<div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+<button aria-controls="pst-version-switcher-list-3" aria-haspopup="listbox" aria-label="Version switcher list" class="version-switcher__button btn btn-sm dropdown-toggle" data-bs-toggle="dropdown" id="pst-version-switcher-button-3" type="button">
+    Choose version  <!-- this text may get changed later by javascript -->
+<span class="caret"></span>
+</button>
+<div aria-labelledby="pst-version-switcher-button-3" class="version-switcher__menu dropdown-menu list-group-flush py-0" id="pst-version-switcher-list-3" role="listbox">
+<!-- dropdown will be populated by javascript on page load -->
+</div>
+</div></div>
+</div>
+</div>
+<div class="sidebar-primary-items__start sidebar-primary__section">
+<div class="sidebar-primary-item">
+<nav aria-label="Section Navigation" class="bd-docs-nav bd-links">
+<p aria-level="1" class="bd-links__title" role="heading">Section Navigation</p>
+<div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Common concepts</a></li>
+<li class="toctree-l1"><a class="reference internal" href="line.html">Beamline</a></li>
+<li class="toctree-l1"><a class="reference internal" href="twiss.html">Twiss</a></li>
+<li class="toctree-l1"><a class="reference internal" href="phasespace.html">Phasespace</a></li>
+<li class="toctree-l1"><a class="reference internal" href="hamiltonians.html">Hamiltonians</a></li>
+<li class="toctree-l1"><a class="reference internal" href="timestructure.html">Timestructure (Spill, Schottky)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="colors.html">Colors</a></li>
+</ul>
+</div>
+</nav></div>
+</div>
+<div class="sidebar-primary-items__end sidebar-primary__section">
+<div class="sidebar-primary-item">
+<div class="flat" data-ea-manual="true" data-ea-publisher="readthedocs" data-ea-type="readthedocs-sidebar" id="ethical-ad-placement">
+</div></div>
+</div>
+</div>
+<main class="bd-main" id="main-content" role="main">
+<div class="bd-content">
+<div class="bd-article-container">
+<div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+<div class="header-article-items__start">
+<div class="header-article-item">
+<nav aria-label="Breadcrumb" class="d-print-none">
+<ul class="bd-breadcrumbs">
+<li class="breadcrumb-item breadcrumb-home">
+<a aria-label="Home" class="nav-link" href="../index.html">
+<i class="fa-solid fa-home"></i>
+</a>
+</li>
+<li class="breadcrumb-item"><a class="nav-link" href="../usage.html">User guide</a></li>
+<li aria-current="page" class="breadcrumb-item active"><span class="ellipsis">Common concepts</span></li>
+</ul>
+</nav>
+</div>
+</div>
+</div>
+</div>
+<div id="searchbox"></div>
+<article class="bd-article">
+<section class="tex2jax_ignore mathjax_ignore" id="common-concepts">
+<h1>Common concepts<a class="headerlink" href="#common-concepts" title="Link to this heading">#</a></h1>
+<div class="cell tag_hide-cell docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell content</span>
+<span class="expanded">Hide code cell content</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">load_ext</span> autoreload
+<span class="o">%</span><span class="k">autoreload</span> 2
+
+<span class="kn">from</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="https://matplotlib.org/stable/index.html#module-matplotlib" title="matplotlib"><span class="nn">matplotlib</span></a><span class="w"> </span><span class="kn">import</span> <a class="sphinx-codeautolink-a" href="https://matplotlib.org/stable/api/pyplot_summary.html#module-matplotlib.pyplot" title="matplotlib.pyplot"><span class="n">pyplot</span></a> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">import</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/index.html#module-numpy" title="numpy"><span class="nn">numpy</span></a><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/index.html#module-xplt" title="xplt"><span class="nn">xplt</span></a>
+
+<a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.seed.html#numpy.random.seed" title="numpy.random.seed"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">seed</span></a><span class="p">(</span><span class="mi">4873153</span><span class="p">)</span>
+
+<a class="sphinx-codeautolink-a" href="../autoapi/xplt/index.html#xplt.apply_style" title="xplt.apply_style"><span class="n">xplt</span><span class="o">.</span><span class="n">apply_style</span></a><span class="p">()</span>
+
+<span class="n">xplt</span><span class="o">.</span><span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">"figure.figsize"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<div class="cell tag_hide-cell docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell content</span>
+<span class="expanded">Hide code cell content</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/util/index.html#xplt.util.AttrDict" title="xplt.util.AttrDict"><span class="n">data</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/util/index.html#xplt.util.AttrDict" title="xplt.util.AttrDict"><span class="n">xplt</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">AttrDict</span></a><span class="p">(</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">"Data A"</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="mf">1e-3</span> <span class="o">*</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.normal.html#numpy.random.normal" title="numpy.random.normal"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span></a><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">10000</span><span class="p">),</span>
+    <span class="n">y</span><span class="o">=</span><span class="mf">2e-3</span> <span class="o">*</span> <span class="p">(</span><span class="mf">0.5</span> <span class="o">+</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.normal.html#numpy.random.normal" title="numpy.random.normal"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span></a><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">10000</span><span class="p">)),</span>
+<span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="../autoapi/xplt/util/index.html#xplt.util.AttrDict" title="xplt.util.AttrDict"><span class="n">data2</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/util/index.html#xplt.util.AttrDict" title="xplt.util.AttrDict"><span class="n">xplt</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">AttrDict</span></a><span class="p">(</span>
+    <span class="n">label</span><span class="o">=</span><span class="s2">"Data B"</span><span class="p">,</span>
+    <span class="n">x</span><span class="o">=</span><span class="mf">2e-3</span> <span class="o">+</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">data</span><span class="o">.</span><span class="n">x</span><span class="p">,</span>
+    <span class="n">y</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">y</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">-</span> <span class="mf">3e-3</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+</div>
+<section id="creating-plots">
+<h2>Creating plots<a class="headerlink" href="#creating-plots" title="Link to this heading">#</a></h2>
+<p>All plotting classes share a common API as they are derived either from the base class <a class="reference internal" href="../autoapi/xplt/base/index.html#xplt.base.XPlot" title="xplt.base.XPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">XPlot</span></code></a> or <a class="reference internal" href="../autoapi/xplt/base/index.html#xplt.base.XManifoldPlot" title="xplt.base.XManifoldPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">XManifoldPlot</span></code></a>. In the following we will use the <a class="reference internal" href="../autoapi/xplt/particles/index.html#xplt.particles.ParticleHistogramPlot" title="xplt.particles.ParticleHistogramPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParticleHistogramPlot</span></code></a> to demonstrate the common concepts.</p>
+<p>To quickly create a plot, simply instanciate it and provide the data:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/particles/index.html#xplt.particles.ParticleHistogramPlot" title="xplt.particles.ParticleHistogramPlot"><span class="n">plot</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/particles/index.html#xplt.particles.ParticleHistogramPlot" title="xplt.particles.ParticleHistogramPlot"><span class="n">xplt</span><span class="o">.</span><span class="n">ParticleHistogramPlot</span></a><span class="p">(</span><span class="s2">"x"</span><span class="p">,</span> <span class="n">particles</span><span class="o">=</span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/util/index.html#xplt.util.AttrDict" title="xplt.util.AttrDict"><span class="n">data</span></a><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/a1f9db1da2161b23460b73f9ec82a73249ee1551902644b4a35b79ea9511cae9.png" src="../_images/a1f9db1da2161b23460b73f9ec82a73249ee1551902644b4a35b79ea9511cae9.png"/>
+</div>
+</div>
+<p>The only mandatory parameter is the property to be plotted (<code class="docutils literal notranslate"><span class="pre">"x"</span></code>). Most plots also accept a <code class="docutils literal notranslate"><span class="pre">kind=</span></code> parameter to plot different properties on subplots or twin axes.
+The data provided must contain or be suited to derive the requested properties. See below for a detailed description of properties, units and labels.</p>
+<p>Most plots allso accept a <code class="docutils literal notranslate"><span class="pre">mask=</span></code> parameter to consider only a subset of the data:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/particles/index.html#xplt.particles.ParticleHistogramPlot" title="xplt.particles.ParticleHistogramPlot"><span class="n">plot</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/particles/index.html#xplt.particles.ParticleHistogramPlot" title="xplt.particles.ParticleHistogramPlot"><span class="n">xplt</span><span class="o">.</span><span class="n">ParticleHistogramPlot</span></a><span class="p">(</span><span class="s2">"x"</span><span class="p">,</span> <span class="n">particles</span><span class="o">=</span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/util/index.html#xplt.util.AttrDict" title="xplt.util.AttrDict"><span class="n">data</span></a><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">x</span> <span class="o">&lt;</span> <span class="mf">1e-3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/21ad0a0955cd9fc61993bad579a3dc5ced6754cb187c7b6a606cae01ace77f77.png" src="../_images/21ad0a0955cd9fc61993bad579a3dc5ced6754cb187c7b6a606cae01ace77f77.png"/>
+</div>
+</div>
+<section id="updating-plot-data">
+<h3>Updating plot data<a class="headerlink" href="#updating-plot-data" title="Link to this heading">#</a></h3>
+<p>Plots can also be created blank, and the data updated later. This is very useful to create animations (see <a class="reference internal" href="animations.html"><span class="doc">Animations</span></a>):</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/particles/index.html#xplt.particles.ParticleHistogramPlot" title="xplt.particles.ParticleHistogramPlot"><span class="n">plot</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/particles/index.html#xplt.particles.ParticleHistogramPlot" title="xplt.particles.ParticleHistogramPlot"><span class="n">xplt</span><span class="o">.</span><span class="n">ParticleHistogramPlot</span></a><span class="p">(</span>
+    <span class="s2">"x"</span><span class="p">,</span> <span class="n">bin_width</span><span class="o">=</span><span class="mf">1e-4</span><span class="p">,</span> <span class="n">plot_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">"Data A"</span><span class="p">)</span>
+<span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="../autoapi/xplt/particles/index.html#xplt.particles.ParticleHistogramPlot.update" title="xplt.particles.ParticleHistogramPlot.update"><span class="n">plot</span><span class="o">.</span><span class="n">update</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/util/index.html#xplt.util.AttrDict" title="xplt.util.AttrDict"><span class="n">data</span></a><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/2e6c53615a7e1e136294206772211ad7694bbe278ef08382af80abb319529d46.png" src="../_images/2e6c53615a7e1e136294206772211ad7694bbe278ef08382af80abb319529d46.png"/>
+</div>
+</div>
+<p>The parameter <code class="docutils literal notranslate"><span class="pre">plot_kwargs=</span></code> always allows to customize the artist.
+You can add more datasets:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/particles/index.html#xplt.particles.ParticleHistogramPlot.add_dataset" title="xplt.particles.ParticleHistogramPlot.add_dataset"><span class="n">plot</span><span class="o">.</span><span class="n">add_dataset</span></a><span class="p">(</span>
+    <span class="s2">"ref"</span><span class="p">,</span>
+    <span class="n">particles</span><span class="o">=</span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/util/index.html#xplt.util.AttrDict" title="xplt.util.AttrDict"><span class="n">data2</span></a><span class="p">,</span>
+    <span class="n">plot_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">"Data B"</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">"C2"</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+    <span class="n">autoscale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">fig</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/9e57f65f5e586d5f594a2c6aa0573a5892d7aa08a2741bb299e730566756d16a.png" src="../_images/9e57f65f5e586d5f594a2c6aa0573a5892d7aa08a2741bb299e730566756d16a.png"/>
+</div>
+</div>
+<p>…and update them as needed:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/particles/index.html#xplt.particles.ParticleHistogramPlot.update" title="xplt.particles.ParticleHistogramPlot.update"><span class="n">plot</span><span class="o">.</span><span class="n">update</span></a><span class="p">(</span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/util/index.html#xplt.util.AttrDict" title="xplt.util.AttrDict"><span class="n">data2</span></a><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">data2</span><span class="o">.</span><span class="n">x</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="n">dataset_id</span><span class="o">=</span><span class="s2">"ref"</span><span class="p">)</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">fig</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/5f848f9850160fc31587470e06fc5ef0c3df9e875e1df04a95e54324b17cac24.png" src="../_images/5f848f9850160fc31587470e06fc5ef0c3df9e875e1df04a95e54324b17cac24.png"/>
+</div>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>To add multiple datasets in a loop, pass <code class="docutils literal notranslate"><span class="pre">add_default_dataset=False</span></code> to the constructor to avoid the default artists from being created for you.</p>
+</div>
+<p>The parameter <code class="docutils literal notranslate"><span class="pre">autoscale=</span></code> of the <code class="xref py py-meth docutils literal notranslate"><span class="pre">xplt.ParticleHistogramPlot.add_dataset()</span></code> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">xplt.ParticleHistogramPlot.update()</span></code> methods allows to specify the autoscale behaviour. By default, autoscaling is only performed on the first time data is supplied to the plot.<br/>
+You can also manually autoscale the plot anytime:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/particles/index.html#xplt.particles.ParticleHistogramPlot.autoscale" title="xplt.particles.ParticleHistogramPlot.autoscale"><span class="n">plot</span><span class="o">.</span><span class="n">autoscale</span></a><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">"x"</span><span class="p">,</span> <span class="n">tight</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">plot</span><span class="o">.</span><span class="n">fig</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/204c025a13d4212a630cbc8e77f4a891419ff3f6bc9769927b453afc62e79c2c.png" src="../_images/204c025a13d4212a630cbc8e77f4a891419ff3f6bc9769927b453afc62e79c2c.png"/>
+</div>
+</div>
+</section>
+<section id="composing-plots">
+<h3>Composing plots<a class="headerlink" href="#composing-plots" title="Link to this heading">#</a></h3>
+<p>By passing an existing axis to the constructor, it is possible to create composed plots (the axis shape must match the one otherwise created by the plot):</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">xplt</span><span class="o">.</span><span class="n">mpl</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">"figure.figsize"</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mf">6.4</span><span class="p">,</span> <span class="mf">4.8</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span> <span class="n">axs</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots"><span class="n">plt</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="s2">"col"</span><span class="p">,</span> <span class="n">sharey</span><span class="o">=</span><span class="s2">"row"</span><span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">"A composed plot"</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="s2">"xy"</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">dat</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">((</span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/util/index.html#xplt.util.AttrDict" title="xplt.util.AttrDict"><span class="n">data</span></a><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/util/index.html#xplt.util.AttrDict" title="xplt.util.AttrDict"><span class="n">data2</span></a><span class="p">)):</span>
+        <a class="sphinx-codeautolink-a" href="../autoapi/xplt/particles/index.html#xplt.particles.ParticleHistogramPlot" title="xplt.particles.ParticleHistogramPlot"><span class="n">plot</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/particles/index.html#xplt.particles.ParticleHistogramPlot" title="xplt.particles.ParticleHistogramPlot"><span class="n">xplt</span><span class="o">.</span><span class="n">ParticleHistogramPlot</span></a><span class="p">(</span>
+            <span class="n">p</span><span class="p">,</span>
+            <span class="n">dat</span><span class="p">,</span>
+            <span class="s2">"count,cumulative"</span><span class="p">,</span>
+            <span class="n">ax</span><span class="o">=</span><span class="n">axs</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span>
+            <span class="n">plot_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="n">dat</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">ls</span><span class="o">=</span><span class="sa">f</span><span class="s2">"-</span><span class="si">{</span><span class="n">j</span><span class="si">}</span><span class="s2">"</span><span class="p">),</span>  <span class="c1"># customization</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">break</span>
+
+<span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">axs</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]:</span>
+    <span class="n">a</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">ylabel</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/4128dd39eeab985945189f8142495da718ba95d14daccf183d61405324095137.png" src="../_images/4128dd39eeab985945189f8142495da718ba95d14daccf183d61405324095137.png"/>
+</div>
+</div>
+</section>
+</section>
+<section id="properties-units-and-labels">
+<h2>Properties, Units and Labels<a class="headerlink" href="#properties-units-and-labels" title="Link to this heading">#</a></h2>
+<p>Properties are what makes this library easy to use while still very flexible.</p>
+<p>A property is anything that we can “get” from a dataset, either as an attribute <code class="docutils literal notranslate"><span class="pre">data.xyz</span></code>, an index <code class="docutils literal notranslate"><span class="pre">data["xyz"]</span></code> or even a column in a pandas dataframe.<br/>
+For brevity, consider the following arbitrary dataset in the following:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># custom data</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">10000</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"h"</span><span class="p">:</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/generated/numpy.linspace.html#numpy.linspace" title="numpy.linspace"><span class="n">np</span><span class="o">.</span><span class="n">linspace</span></a><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="n">N</span><span class="p">),</span>
+    <span class="s2">"w"</span><span class="p">:</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.normal.html#numpy.random.normal" title="numpy.random.normal"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span></a><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">N</span><span class="p">),</span>
+    <span class="s2">"x"</span><span class="p">:</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.normal.html#numpy.random.normal" title="numpy.random.normal"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span></a><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">N</span><span class="p">),</span>
+    <span class="s2">"y"</span><span class="p">:</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/random/generated/numpy.random.normal.html#numpy.random.normal" title="numpy.random.normal"><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">normal</span></a><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">N</span><span class="p">),</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now we can plot the x-y-phasespace simply by specifying exactly that:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/phasespace/index.html#xplt.phasespace.PhaseSpacePlot" title="xplt.phasespace.PhaseSpacePlot"><span class="n">plot</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/phasespace/index.html#xplt.phasespace.PhaseSpacePlot" title="xplt.phasespace.PhaseSpacePlot"><span class="n">xplt</span><span class="o">.</span><span class="n">PhaseSpacePlot</span></a><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">"x-y"</span><span class="p">,</span> <span class="n">display_units</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">y</span><span class="o">=</span><span class="s2">"m"</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/4bb7e704d53f83105759bbe96c02f4a748c9c84e0a20662231c8d4636eb55e61.png" src="../_images/4bb7e704d53f83105759bbe96c02f4a748c9c84e0a20662231c8d4636eb55e61.png"/>
+</div>
+</div>
+<p>This works, because both <code class="docutils literal notranslate"><span class="pre">x</span></code> and <code class="docutils literal notranslate"><span class="pre">y</span></code> are standard properties which are defined in the library with default settings for units, labels and symbols.
+Here specifically, the assumption is that <code class="docutils literal notranslate"><span class="pre">x</span></code> is provided in meters since that is the SI unit used by <a class="reference external" href="https://xsuite.readthedocs.io">Xsuite</a>, and that the default display unit for <code class="docutils literal notranslate"><span class="pre">x</span></code> should be millimeters. You can specify a display unit, and the data is automatically converted accordingly.</p>
+<p>See below for a list of predefined properties and the default assumed. You can add or change properties and their respective units, labels and symbols if required.
+Futher, derived properties can easily be defined building on the already existing ones.</p>
+<section id="adding-custom-data-properties">
+<h3>Adding custom data properties<a class="headerlink" href="#adding-custom-data-properties" title="Link to this heading">#</a></h3>
+<p>To define or overwrite properties of a data object with a certain unit or meaning, you can either register them globally:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># our data["w"] is the width in km</span>
+<a class="sphinx-codeautolink-a" href="../autoapi/xplt/properties/index.html#xplt.properties.register_data_property" title="xplt.properties.register_data_property"><span class="n">xplt</span><span class="o">.</span><span class="n">register_data_property</span></a><span class="p">(</span><span class="s2">"w"</span><span class="p">,</span> <span class="n">data_unit</span><span class="o">=</span><span class="s2">"km"</span><span class="p">,</span> <span class="n">symbol</span><span class="o">=</span><span class="s2">"$w_x$"</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Width"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Or on-the-fly for a single plot with the <code class="docutils literal notranslate"><span class="pre">data_units</span></code> parameter.
+Both enable automatic axes and legend labeling, as well as the use of the <code class="docutils literal notranslate"><span class="pre">display_units</span></code> parameter:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># our data["h"] is in mm, but we want to convert it to cm</span>
+<a class="sphinx-codeautolink-a" href="../autoapi/xplt/phasespace/index.html#xplt.phasespace.PhaseSpacePlot" title="xplt.phasespace.PhaseSpacePlot"><span class="n">plot</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/phasespace/index.html#xplt.phasespace.PhaseSpacePlot" title="xplt.phasespace.PhaseSpacePlot"><span class="n">xplt</span><span class="o">.</span><span class="n">PhaseSpacePlot</span></a><span class="p">(</span>
+    <span class="n">data</span><span class="p">,</span> <span class="s2">"w-h"</span><span class="p">,</span> <span class="n">data_units</span><span class="o">=</span><span class="p">{</span><span class="s2">"h"</span><span class="p">:</span> <span class="s2">"mm"</span><span class="p">},</span> <span class="n">display_units</span><span class="o">=</span><span class="p">{</span><span class="s2">"h"</span><span class="p">:</span> <span class="s2">"cm"</span><span class="p">}</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/e5c913dd56d0050af565ab3eed89afa5ea3e92759c437985af41199dda12915d.png" src="../_images/e5c913dd56d0050af565ab3eed89afa5ea3e92759c437985af41199dda12915d.png"/>
+</div>
+</div>
+</section>
+<section id="derived-properties">
+<h3>Derived properties<a class="headerlink" href="#derived-properties" title="Link to this heading">#</a></h3>
+<p>It is often useful to add properties that depend on already existing ones,
+e.g. if you simply want to plot the squareroot of a parameter, or have a complex expression.
+The function parameters must be valid property names, such that the data and units can be inferred automatically.
+It is also possible to specify the unit explicitly where necessary.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># since both x and y are know properties (in meter), A is known to be in square meter</span>
+<a class="sphinx-codeautolink-a" href="../autoapi/xplt/properties/index.html#xplt.properties.register_derived_property" title="xplt.properties.register_derived_property"><span class="n">xplt</span><span class="o">.</span><span class="n">register_derived_property</span></a><span class="p">(</span><span class="s2">"A"</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s2">"Area"</span><span class="p">)</span>
+<span class="c1"># since the unit of `6` can not be inferred, we declare B to be in square meter too</span>
+<a class="sphinx-codeautolink-a" href="../autoapi/xplt/properties/index.html#xplt.properties.register_derived_property" title="xplt.properties.register_derived_property"><span class="n">xplt</span><span class="o">.</span><span class="n">register_derived_property</span></a><span class="p">(</span><span class="s2">"B"</span><span class="p">,</span> <span class="k">lambda</span> <span class="n">A</span><span class="p">:</span> <span class="n">A</span> <span class="o">+</span> <span class="mi">6</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">"m^2"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/phasespace/index.html#xplt.phasespace.PhaseSpacePlot" title="xplt.phasespace.PhaseSpacePlot"><span class="n">plot</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/phasespace/index.html#xplt.phasespace.PhaseSpacePlot" title="xplt.phasespace.PhaseSpacePlot"><span class="n">xplt</span><span class="o">.</span><span class="n">PhaseSpacePlot</span></a><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s2">"A-w"</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/c75be35b27d8a4d4df1ecc8f507c712c2f92dc12ff31844b25051b331ba1f669.png" src="../_images/c75be35b27d8a4d4df1ecc8f507c712c2f92dc12ff31844b25051b331ba1f669.png"/>
+</div>
+</div>
+</section>
+<section id="default-properties">
+<h3>Default properties<a class="headerlink" href="#default-properties" title="Link to this heading">#</a></h3>
+<p>Global default properties applicable to all plots:</p>
+<div class="cell tag_hide-input docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">IPython.display</span><span class="w"> </span><span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Markdown</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pint</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_subclass_names</span><span class="p">(</span><span class="n">classname</span><span class="p">):</span>
+    <span class="nb">all</span> <span class="o">=</span> <span class="p">{</span><span class="n">classname</span><span class="o">.</span><span class="vm">__name__</span><span class="p">:</span> <span class="n">classname</span><span class="p">}</span>
+    <span class="k">for</span> <span class="n">subclassname</span> <span class="ow">in</span> <span class="n">classname</span><span class="o">.</span><span class="n">__subclasses__</span><span class="p">():</span>
+        <span class="nb">all</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">get_subclass_names</span><span class="p">(</span><span class="n">subclassname</span><span class="p">))</span>
+    <span class="k">return</span> <span class="nb">all</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">display_class_info</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="n">md</span> <span class="o">=</span> <span class="s2">"Additional default properties applicable only to:"</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">get_subclass_names</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+        <span class="k">if</span> <span class="n">name</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">"Plot"</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="s2">".. deprecated::"</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">:</span>
+            <span class="n">md</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">" </span><span class="se">{{</span><span class="s2">class</span><span class="se">}}</span><span class="s2">`</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> &lt;</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="vm">__module__</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">c</span><span class="o">.</span><span class="vm">__qualname__</span><span class="si">}</span><span class="s2">&gt;`</span><span class="se">\n</span><span class="s2">"</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">Markdown</span><span class="p">(</span><span class="n">md</span><span class="p">))</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">display_property_info</span><span class="p">(</span><span class="n">properties</span><span class="p">):</span>
+    <span class="n">der</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/generated/numpy.any.html#numpy.any" title="numpy.any"><span class="n">np</span><span class="o">.</span><span class="n">any</span></a><span class="p">(</span>
+        <span class="p">[</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/properties/index.html#xplt.properties.DerivedProperty" title="xplt.properties.DerivedProperty"><span class="n">xplt</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">DerivedProperty</span></a><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">properties</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+    <span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"Unit"</span><span class="p">,</span> <span class="s2">"Symbol"</span><span class="p">,</span> <span class="s2">"Description"</span><span class="p">,</span> <span class="s2">"Derived from"</span><span class="p">])</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">"Property"</span>
+    <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">prop</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">properties</span><span class="o">.</span><span class="n">items</span><span class="p">()):</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="sa">f</span><span class="s2">"`</span><span class="si">{</span><span class="n">p</span><span class="si">}</span><span class="s2">`"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="sa">f</span><span class="s2">"$ </span><span class="si">{</span><span class="n">pint</span><span class="o">.</span><span class="n">Unit</span><span class="p">(</span><span class="n">prop</span><span class="o">.</span><span class="n">unit</span><span class="p">)</span><span class="si">:</span><span class="s2">~#L</span><span class="si">}</span><span class="s2"> $"</span><span class="p">,</span>
+            <span class="n">prop</span><span class="o">.</span><span class="n">symbol</span><span class="p">,</span>
+            <span class="n">prop</span><span class="o">.</span><span class="n">description</span> <span class="ow">or</span> <span class="s2">""</span><span class="p">,</span>
+            <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"`</span><span class="si">{</span><span class="s1">'` `'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">prop</span><span class="o">.</span><span class="n">evaluate</span><span class="o">.</span><span class="vm">__code__</span><span class="o">.</span><span class="n">co_varnames</span><span class="p">)</span><span class="si">}</span><span class="s2">`"</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/properties/index.html#xplt.properties.DerivedProperty" title="xplt.properties.DerivedProperty"><span class="n">xplt</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">DerivedProperty</span></a><span class="p">)</span>
+                <span class="k">else</span> <span class="s2">""</span>
+            <span class="p">),</span>
+        <span class="p">]</span>
+    <span class="c1"># https://github.com/jupyter-book/jupyter-book/issues/1501#issuecomment-2301641068</span>
+    <span class="n">display</span><span class="p">(</span><span class="n">Markdown</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">to_markdown</span><span class="p">()))</span>
+
+
+<span class="n">display_property_info</span><span class="p">(</span><span class="n">xplt</span><span class="o">.</span><span class="n">properties</span><span class="o">.</span><span class="n">_default_properties</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Property</p></th>
+<th class="head text-left"><p>Unit</p></th>
+<th class="head text-left"><p>Symbol</p></th>
+<th class="head text-left"><p>Description</p></th>
+<th class="head text-left"><p>Derived from</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">at_turn</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(  \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(n\)</span></p></td>
+<td class="text-left"><p>Turn</p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">charge_ratio</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(  \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(q/q_\mathrm{ref}\)</span></p></td>
+<td class="text-left"><p>Charge ratio</p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">chi</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(  \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\((q/q_\mathrm{ref})/(m/m_\mathrm{ref})\)</span></p></td>
+<td class="text-left"><p>Charge-over-rest-mass ratio</p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">count</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(  \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(N\)</span></p></td>
+<td class="text-left"><p>Count</p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">delta</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(  \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(\delta\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">energy</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{eV} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(E\)</span></p></td>
+<td class="text-left"><p>Total energy</p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">m</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \frac{\mathrm{eV}}{\mathrm{c}^{2}} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(m\)</span></p></td>
+<td class="text-left"><p>Rest mass</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">chi</span></code> <code class="docutils literal notranslate"><span class="pre">charge_ratio</span></code> <code class="docutils literal notranslate"><span class="pre">mass0</span></code></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">mass0</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \frac{\mathrm{eV}}{\mathrm{c}^{2}} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(m_\mathrm{ref}\)</span></p></td>
+<td class="text-left"><p>Reference rest mass</p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">ptau</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(  \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(p_\tau\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">px</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(  \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(x'\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">py</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(  \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(y'\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">pzeta</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(  \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(p_\zeta\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">q</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{e} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(q\)</span></p></td>
+<td class="text-left"><p>Charge</p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">q0</span></code> <code class="docutils literal notranslate"><span class="pre">charge_ratio</span></code></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">q0</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{e} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(q_\mathrm{ref}\)</span></p></td>
+<td class="text-left"><p>Reference charge</p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">s</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{m} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(s\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">tau</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{m} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(\tau\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">x</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{m} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(x\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">x_mean</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{m} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(\langle x \rangle\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">x_std</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{m} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(\sigma_x\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">y</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{m} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(y\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">y_mean</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{m} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(\langle y \rangle\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">y_std</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{m} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(\sigma_y\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">zeta</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{m} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(\zeta\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<section id="particle-plots">
+<h4>Particle plots<a class="headerlink" href="#particle-plots" title="Link to this heading">#</a></h4>
+<p>These plots support normalized coordinates and action-angle-variables.</p>
+<p>See <a class="reference internal" href="phasespace.html"><span class="doc">Phasespace</span></a> for usage examples</p>
+<div class="cell tag_hide-input docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">display_class_info</span><span class="p">(</span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/particles/index.html#xplt.particles.ParticlePlotMixin" title="xplt.particles.ParticlePlotMixin"><span class="n">xplt</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">ParticlePlotMixin</span></a><span class="p">)</span>
+<span class="n">display_property_info</span><span class="p">(</span>
+    <a class="sphinx-codeautolink-a" href="../autoapi/xplt/particles/index.html#xplt.particles.ParticlePlotMixin" title="xplt.particles.ParticlePlotMixin"><span class="n">xplt</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">ParticlePlotMixin</span></a><span class="p">()</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/particles/index.html#xplt.particles.ParticlePlotMixin._init_particle_mixin" title="xplt.particles.ParticlePlotMixin._init_particle_mixin"><span class="n">_init_particle_mixin</span></a><span class="p">()[</span><span class="s2">"_properties"</span><span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<p>Additional default properties applicable only to: <a class="reference internal" href="../autoapi/xplt/particles/index.html#xplt.particles.ParticleHistogramPlot" title="xplt.particles.ParticleHistogramPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParticleHistogramPlot</span></code></a>
+<a class="reference internal" href="../autoapi/xplt/particles/index.html#xplt.particles.ParticlesPlot" title="xplt.particles.ParticlesPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParticlesPlot</span></code></a>
+<a class="reference internal" href="../autoapi/xplt/phasespace/index.html#xplt.phasespace.PhaseSpacePlot" title="xplt.phasespace.PhaseSpacePlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">PhaseSpacePlot</span></code></a>
+<a class="reference internal" href="../autoapi/xplt/timestructure/index.html#xplt.timestructure.SpillQualityPlot" title="xplt.timestructure.SpillQualityPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpillQualityPlot</span></code></a>
+<a class="reference internal" href="../autoapi/xplt/timestructure/index.html#xplt.timestructure.SpillQualityTimescalePlot" title="xplt.timestructure.SpillQualityTimescalePlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpillQualityTimescalePlot</span></code></a>
+<a class="reference internal" href="../autoapi/xplt/timestructure/index.html#xplt.timestructure.TimeBinPlot" title="xplt.timestructure.TimeBinPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeBinPlot</span></code></a>
+<a class="reference internal" href="../autoapi/xplt/timestructure/index.html#xplt.timestructure.TimeFFTPlot" title="xplt.timestructure.TimeFFTPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeFFTPlot</span></code></a>
+<a class="reference internal" href="../autoapi/xplt/timestructure/index.html#xplt.timestructure.TimeIntervalPlot" title="xplt.timestructure.TimeIntervalPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeIntervalPlot</span></code></a>
+<a class="reference internal" href="../autoapi/xplt/timestructure/index.html#xplt.timestructure.TimePlot" title="xplt.timestructure.TimePlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimePlot</span></code></a></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Property</p></th>
+<th class="head text-left"><p>Unit</p></th>
+<th class="head text-left"><p>Symbol</p></th>
+<th class="head text-left"><p>Description</p></th>
+<th class="head text-left"><p>Derived from</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">Jx</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{m} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(J_x\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">X</span></code> <code class="docutils literal notranslate"><span class="pre">Px</span></code></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">Jy</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{m} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(J_y\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">Y</span></code> <code class="docutils literal notranslate"><span class="pre">Py</span></code></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">Px</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{m}^{0.5} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(X'\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">x</span></code> <code class="docutils literal notranslate"><span class="pre">px</span></code> <code class="docutils literal notranslate"><span class="pre">delta</span></code></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">Py</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{m}^{0.5} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(Y'\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">y</span></code> <code class="docutils literal notranslate"><span class="pre">py</span></code> <code class="docutils literal notranslate"><span class="pre">delta</span></code></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">X</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{m}^{0.5} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(X\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">x</span></code> <code class="docutils literal notranslate"><span class="pre">px</span></code> <code class="docutils literal notranslate"><span class="pre">delta</span></code></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">Y</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{m}^{0.5} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(Y\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">y</span></code> <code class="docutils literal notranslate"><span class="pre">py</span></code> <code class="docutils literal notranslate"><span class="pre">delta</span></code></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">t</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{s} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(t\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">_data</span></code> <code class="docutils literal notranslate"><span class="pre">at_turn</span></code> <code class="docutils literal notranslate"><span class="pre">zeta</span></code></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">zeta_wrapped</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{m} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(\zeta\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">zeta</span></code></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">Θx</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{rad} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(Θ_x\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">X</span></code> <code class="docutils literal notranslate"><span class="pre">Px</span></code></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">Θy</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{rad} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(Θ_y\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">Y</span></code> <code class="docutils literal notranslate"><span class="pre">Py</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="histogram-plots">
+<h4>Histogram plots<a class="headerlink" href="#histogram-plots" title="Link to this heading">#</a></h4>
+<div class="cell tag_hide-input docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">display_class_info</span><span class="p">(</span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/particles/index.html#xplt.particles.ParticleHistogramPlotMixin" title="xplt.particles.ParticleHistogramPlotMixin"><span class="n">xplt</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">ParticleHistogramPlotMixin</span></a><span class="p">)</span>
+<span class="n">display_property_info</span><span class="p">(</span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/particles/index.html#xplt.particles.ParticleHistogramPlotMixin" title="xplt.particles.ParticleHistogramPlotMixin"><span class="n">xplt</span><span class="o">.</span><span class="n">particles</span><span class="o">.</span><span class="n">ParticleHistogramPlotMixin</span></a><span class="p">()</span><span class="o">.</span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/particles/index.html#xplt.particles.ParticleHistogramPlotMixin._init_particle_histogram_mixin" title="xplt.particles.ParticleHistogramPlotMixin._init_particle_histogram_mixin"><span class="n">_init_particle_histogram_mixin</span></a><span class="p">()[</span><span class="s2">"_properties"</span><span class="p">])</span>  <span class="c1"># fmt: skip</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<p>Additional default properties applicable only to: <a class="reference internal" href="../autoapi/xplt/particles/index.html#xplt.particles.ParticleHistogramPlot" title="xplt.particles.ParticleHistogramPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">ParticleHistogramPlot</span></code></a>
+<a class="reference internal" href="../autoapi/xplt/timestructure/index.html#xplt.timestructure.TimeBinPlot" title="xplt.timestructure.TimeBinPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeBinPlot</span></code></a>
+<a class="reference internal" href="../autoapi/xplt/timestructure/index.html#xplt.timestructure.TimeFFTPlot" title="xplt.timestructure.TimeFFTPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeFFTPlot</span></code></a>
+<a class="reference internal" href="../autoapi/xplt/timestructure/index.html#xplt.timestructure.TimeIntervalPlot" title="xplt.timestructure.TimeIntervalPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeIntervalPlot</span></code></a></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Property</p></th>
+<th class="head text-left"><p>Unit</p></th>
+<th class="head text-left"><p>Symbol</p></th>
+<th class="head text-left"><p>Description</p></th>
+<th class="head text-left"><p>Derived from</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">charge</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{e} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(Q\)</span></p></td>
+<td class="text-left"><p>Charge per bin</p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">count</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(  \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(N\)</span></p></td>
+<td class="text-left"><p>Particles per bin</p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">cumulative</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(  \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(N\)</span></p></td>
+<td class="text-left"><p>Particles (cumulative)</p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">current</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \frac{\mathrm{e}}{\mathrm{s}} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(I\)</span></p></td>
+<td class="text-left"><p>Current</p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">rate</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \frac{1}{\mathrm{s}} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(\dot{N}\)</span></p></td>
+<td class="text-left"><p>Particle rate</p></td>
+<td class="text-left"><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="spill-quality-plots">
+<h4>Spill quality plots<a class="headerlink" href="#spill-quality-plots" title="Link to this heading">#</a></h4>
+<div class="cell tag_hide-input docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">display_class_info</span><span class="p">(</span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/timestructure/index.html#xplt.timestructure.MetricesMixin" title="xplt.timestructure.MetricesMixin"><span class="n">xplt</span><span class="o">.</span><span class="n">timestructure</span><span class="o">.</span><span class="n">MetricesMixin</span></a><span class="p">)</span>
+<span class="n">display_property_info</span><span class="p">(</span><span class="n">xplt</span><span class="o">.</span><span class="n">timestructure</span><span class="o">.</span><span class="n">MetricesMixin</span><span class="o">.</span><span class="n">_metric_properties</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<p>Additional default properties applicable only to: <a class="reference internal" href="../autoapi/xplt/timestructure/index.html#xplt.timestructure.SpillQualityPlot" title="xplt.timestructure.SpillQualityPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpillQualityPlot</span></code></a>
+<a class="reference internal" href="../autoapi/xplt/timestructure/index.html#xplt.timestructure.SpillQualityTimescalePlot" title="xplt.timestructure.SpillQualityTimescalePlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">SpillQualityTimescalePlot</span></code></a></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Property</p></th>
+<th class="head text-left"><p>Unit</p></th>
+<th class="head text-left"><p>Symbol</p></th>
+<th class="head text-left"><p>Description</p></th>
+<th class="head text-left"><p>Derived from</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">cv</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(  \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(c_\mathrm{v}=\sigma/\mu\)</span></p></td>
+<td class="text-left"><p>Coefficient of variation</p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">duty</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(  \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(F=\langle N \rangle^2/\langle N^2 \rangle\)</span></p></td>
+<td class="text-left"><p>Spill duty factor</p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">maxmean</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(  \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(M=\hat{N}/\langle N \rangle\)</span></p></td>
+<td class="text-left"><p>Max-to-mean ratio</p></td>
+<td class="text-left"><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="floor-plot">
+<h4>Floor plot<a class="headerlink" href="#floor-plot" title="Link to this heading">#</a></h4>
+<p>See <a class="reference internal" href="line.html"><span class="doc">Beamline</span></a> for usage examples</p>
+<div class="cell tag_hide-input docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">display_class_info</span><span class="p">(</span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/line/index.html#xplt.line.FloorPlot" title="xplt.line.FloorPlot"><span class="n">xplt</span><span class="o">.</span><span class="n">line</span><span class="o">.</span><span class="n">FloorPlot</span></a><span class="p">)</span>
+<span class="n">display_property_info</span><span class="p">(</span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/line/index.html#xplt.line.FloorPlot" title="xplt.line.FloorPlot"><span class="n">xplt</span><span class="o">.</span><span class="n">line</span><span class="o">.</span><span class="n">FloorPlot</span></a><span class="p">()</span><span class="o">.</span><span class="n">_default_properties</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.close.html#matplotlib.pyplot.close" title="matplotlib.pyplot.close"><span class="n">xplt</span><span class="o">.</span><span class="n">mpl</span><span class="o">.</span><span class="n">pyplot</span><span class="o">.</span><span class="n">close</span></a><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<p>Additional default properties applicable only to: <a class="reference internal" href="../autoapi/xplt/line/index.html#xplt.line.FloorPlot" title="xplt.line.FloorPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">FloorPlot</span></code></a></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Property</p></th>
+<th class="head text-left"><p>Unit</p></th>
+<th class="head text-left"><p>Symbol</p></th>
+<th class="head text-left"><p>Description</p></th>
+<th class="head text-left"><p>Derived from</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">X</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{m} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(X\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">Y</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{m} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(Y\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">Z</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{m} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(Z\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">phi</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{rad} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(\Phi\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">psi</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{rad} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(\Psi\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">theta</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{rad} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(\Theta\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="twiss-plot">
+<h4>Twiss plot<a class="headerlink" href="#twiss-plot" title="Link to this heading">#</a></h4>
+<p>See <a class="reference internal" href="twiss.html"><span class="doc">Twiss</span></a> for usage examples</p>
+<div class="cell tag_hide-input docutils container">
+<details class="hide above-input">
+<summary aria-label="Toggle hidden content">
+<span class="collapsed">Show code cell source</span>
+<span class="expanded">Hide code cell source</span>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">display_class_info</span><span class="p">(</span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/twiss/index.html#xplt.twiss.TwissPlot" title="xplt.twiss.TwissPlot"><span class="n">xplt</span><span class="o">.</span><span class="n">twiss</span><span class="o">.</span><span class="n">TwissPlot</span></a><span class="p">)</span>
+<span class="n">display_property_info</span><span class="p">(</span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/twiss/index.html#xplt.twiss.TwissPlot" title="xplt.twiss.TwissPlot"><span class="n">xplt</span><span class="o">.</span><span class="n">twiss</span><span class="o">.</span><span class="n">TwissPlot</span></a><span class="p">()</span><span class="o">.</span><span class="n">_default_properties</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.close.html#matplotlib.pyplot.close" title="matplotlib.pyplot.close"><span class="n">xplt</span><span class="o">.</span><span class="n">mpl</span><span class="o">.</span><span class="n">pyplot</span><span class="o">.</span><span class="n">close</span></a><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<p>Additional default properties applicable only to: <a class="reference internal" href="../autoapi/xplt/twiss/index.html#xplt.twiss.TwissPlot" title="xplt.twiss.TwissPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">TwissPlot</span></code></a></p>
+<div class="pst-scrollable-table-container"><table class="table">
+<thead>
+<tr class="row-odd"><th class="head text-left"><p>Property</p></th>
+<th class="head text-left"><p>Unit</p></th>
+<th class="head text-left"><p>Symbol</p></th>
+<th class="head text-left"><p>Description</p></th>
+<th class="head text-left"><p>Derived from</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">alfx</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(  \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(\alpha_x\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">alfy</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(  \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(\alpha_y\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">betx</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{m} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(\beta_x\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">bety</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{m} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(\beta_y\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">dpx</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(  \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(D_{x'}\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">dpy</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(  \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(D_{y'}\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">dx</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{m} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(D_x\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">dy</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{m} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(D_y\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">envelope3_x</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{m} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(x\pm3\sigma_x\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">x</span></code> <code class="docutils literal notranslate"><span class="pre">sigma_x</span></code></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">envelope3_y</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{m} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(y\pm3\sigma_y\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">y</span></code> <code class="docutils literal notranslate"><span class="pre">sigma_y</span></code></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">envelope_x</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{m} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(x\pm\sigma_x\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">x</span></code> <code class="docutils literal notranslate"><span class="pre">sigma_x</span></code></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">envelope_y</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{m} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(y\pm\sigma_y\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">y</span></code> <code class="docutils literal notranslate"><span class="pre">sigma_y</span></code></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">gamx</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \frac{1}{\mathrm{m}} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(\gamma_x\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">gamy</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \frac{1}{\mathrm{m}} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(\gamma_y\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">max_x</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{m} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(x_\mathrm{max}\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">max_y</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{m} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(y_\mathrm{max}\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">min_x</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{m} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(x_\mathrm{min}\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">min_y</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{m} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(y_\mathrm{min}\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">mux</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(  \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(\mu_x\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">muy</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(  \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(\mu_y\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">sigma_px</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(  \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(\sigma_{x'}\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">sigma_py</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(  \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(\sigma_{y'}\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">sigma_pzeta</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(  \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(\sigma_{p_\zeta}\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">sigma_x</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{m} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(\sigma_x\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-even"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">sigma_y</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{m} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(\sigma_y\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+<tr class="row-odd"><td class="text-left"><p><code class="docutils literal notranslate"><span class="pre">sigma_zeta</span></code></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\( \mathrm{m} \)</span></p></td>
+<td class="text-left"><p><span class="math notranslate nohighlight">\(\sigma_\zeta\)</span></p></td>
+<td class="text-left"><p></p></td>
+<td class="text-left"><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+</section>
+</article>
+<footer class="prev-next-footer d-print-none">
+<div class="prev-next-area">
+<a class="left-prev" href="../usage.html" title="previous page">
+<i class="fa-solid fa-angle-left"></i>
+<div class="prev-next-info">
+<p class="prev-next-subtitle">previous</p>
+<p class="prev-next-title">User guide</p>
+</div>
+</a>
+<a class="right-next" href="line.html" title="next page">
+<div class="prev-next-info">
+<p class="prev-next-subtitle">next</p>
+<p class="prev-next-title">Beamline</p>
+</div>
+<i class="fa-solid fa-angle-right"></i>
+</a>
+</div>
+</footer>
+</div>
+<dialog id="pst-secondary-sidebar-modal"></dialog>
+<div class="bd-sidebar-secondary bd-toc" id="pst-secondary-sidebar"><div class="sidebar-secondary-items sidebar-secondary__inner">
+<div class="sidebar-secondary-item">
+<div class="page-toc tocsection onthispage" id="pst-page-navigation-heading-2">
+<i class="fa-solid fa-list"></i> On this page
+  </div>
+<nav aria-labelledby="pst-page-navigation-heading-2" class="bd-toc-nav page-toc">
+<ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-plots">Creating plots</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#updating-plot-data">Updating plot data</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#composing-plots">Composing plots</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#properties-units-and-labels">Properties, Units and Labels</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#adding-custom-data-properties">Adding custom data properties</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#derived-properties">Derived properties</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#default-properties">Default properties</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#particle-plots">Particle plots</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#histogram-plots">Histogram plots</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#spill-quality-plots">Spill quality plots</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#floor-plot">Floor plot</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#twiss-plot">Twiss plot</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav></div>
+</div></div>
+</div>
+<footer class="bd-footer-content">
+</footer>
+</main>
+</div>
+</div>
+<!-- Scripts loaded after <body> so the DOM is not blocked -->
+<script defer="" src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer="" src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+<footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+<div class="footer-items__start">
+<div class="footer-item">
+<p class="copyright">
+    
+      © Copyright 2022-2024, Philipp Niedermayer (github.com/eltos).
+      <br/>
+</p>
+</div>
+</div>
+<div class="footer-items__end">
+<div class="footer-item">
+<p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+</p>
+</div>
+<div class="footer-item">
+<p class="theme-version">
+<!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+</div>
+</div>
+</footer>
+</body>
+</html>
