@@ -30,7 +30,6 @@ Functions
 
 .. autoapisummary::
 
-   xplt.util.apertures
    xplt.util.average
    xplt.util.binned_data
    xplt.util.defaults
@@ -42,7 +41,6 @@ Functions
    xplt.util.get
    xplt.util.hamiltonian_kobayashi
    xplt.util.ieee_mod
-   xplt.util.iter_elements
    xplt.util.normalized_coordinates
    xplt.util.smooth
    xplt.util.val
@@ -60,16 +58,6 @@ Module Contents
    Dict which allows accessing values via key attributes
 
    Initialize self.  See help(type(self)) for accurate signature.
-
-
-.. py:function:: apertures(line, at_s=None)
-
-   Determine aperture
-
-   :param line: Line with element_dict
-   :type line: xtrack.Line
-   :param at_s: return apertures for these s locations in m
-   :type at_s: np.ndarray | None
 
 
 .. py:function:: average(*data, n=100, function=np.mean, logspace=False, keepdim=False)
@@ -204,7 +192,7 @@ Module Contents
    Tries to get the value using attributes and indices,
    and handles special objects like pandas data frames.
 
-   :param obj: Object to get data from. Can also be a tuple of objects.
+   :param obj: Object to get data from
    :type obj: Any
    :param value: Name of attribute, index, column etc. to get
    :type value: str
@@ -248,27 +236,6 @@ Module Contents
 .. py:function:: ieee_mod(values, m)
 
    Return the IEEE remainder (in range -x/2 .. x/2)
-
-
-.. py:function:: iter_elements(line, *, s=None, mask_nearest=False)
-
-   Iterate over elements in line
-
-   :param line: Line of elements.
-   :type line: xtrack.Line
-   :param s: Optional array of s positions.
-             If not None, returns an additional s-position-mask for each element.
-   :type s: np.array | None
-   :param mask_nearest: If true, zero-length elements will be masked at the nearest s-coordinate of the s array
-                        to avoid them being skipped if their location does not coincide exactly with any value in the s-array.
-                        If s is None, this has no effect.
-   :type mask_nearest: bool
-
-   :Yields: *(name, element, s_from, s_to, [s_mask])* --
-
-            Name, object, start position,
-              end position and optional position mask for each element. The mask is
-              omitted if s=None (see arguments).
 
 
 .. py:function:: normalized_coordinates(x, px, twiss, xy, delta=0)
@@ -315,7 +282,7 @@ Module Contents
 
 .. py:function:: virtual_sextupole(line, particle_ref=None, *, verbose=False)
 
-   Determine virtual sextupole strength from the line
+   Determine virtual sextupole strength from twiss data
 
    The normalized strenght is defined as S = -1/2 * betx^(3/2) * k2l
 

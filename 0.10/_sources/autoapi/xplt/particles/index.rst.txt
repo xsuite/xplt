@@ -426,7 +426,6 @@ Module Contents
 
 
    .. py:property:: artists
-
       Convenient access to artist
 
       The index can be an (optional) dataset identifier, followed by the subplot, axis and trace index.
@@ -435,12 +434,9 @@ Module Contents
 
 
    .. py:attribute:: ax
-      :value: None
-
 
 
    .. py:property:: axflat
-
       Return a flat list of all primary axes
 
 
@@ -450,26 +446,22 @@ Module Contents
 
 
    .. py:attribute:: bin_count
-      :value: None
-
 
 
    .. py:attribute:: bin_width
-      :value: None
-
 
 
    .. py:property:: circumference
-
       Circumference of circular accelerator
 
 
    .. py:attribute:: fig
 
 
-   .. py:attribute:: moment
-      :value: 1
+   .. py:attribute:: kwargs
 
+
+   .. py:attribute:: moment
 
 
    .. py:attribute:: on_x
@@ -479,13 +471,9 @@ Module Contents
 
 
    .. py:attribute:: range
-      :value: None
-
 
 
    .. py:attribute:: relative
-      :value: False
-
 
 
 .. py:class:: ParticleHistogramPlotMixin
@@ -527,7 +515,6 @@ Module Contents
 
 
    .. py:property:: circumference
-
       Circumference of circular accelerator
 
 
@@ -914,7 +901,6 @@ Module Contents
 
 
    .. py:property:: artists
-
       Convenient access to artist
 
       The index can be an (optional) dataset identifier, followed by the subplot, axis and trace index.
@@ -923,12 +909,9 @@ Module Contents
 
 
    .. py:attribute:: ax
-      :value: None
-
 
 
    .. py:property:: axflat
-
       Return a flat list of all primary axes
 
 
@@ -938,11 +921,13 @@ Module Contents
 
 
    .. py:property:: circumference
-
       Circumference of circular accelerator
 
 
    .. py:attribute:: fig
+
+
+   .. py:attribute:: kwargs
 
 
    .. py:attribute:: on_x
@@ -952,7 +937,5 @@ Module Contents
 
 
    .. py:attribute:: sort_by
-      :value: None
-
 
 

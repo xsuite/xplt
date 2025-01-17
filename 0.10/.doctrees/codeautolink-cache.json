@@ -30,7 +30,7 @@
           "Module Contents"
         ]
       },
-      "doc_lineno": 573
+      "doc_lineno": 551
     }
   ],
   "autoapi/xplt/particles/index": [
@@ -58,7 +58,7 @@
           "Module Contents"
         ]
       },
-      "doc_lineno": 831
+      "doc_lineno": 818
     }
   ],
   "autoapi/xplt/phasespace/index": [],
@@ -102,7 +102,7 @@
           "Module Contents"
         ]
       },
-      "doc_lineno": 845
+      "doc_lineno": 839
     },
     {
       "source": "def mask_callback(mask, get):\n    mask &= get(\"t\") < 1e-3  # all particles with time < 1 ms\n    return mask",
@@ -115,7 +115,7 @@
           "Module Contents"
         ]
       },
-      "doc_lineno": 1026
+      "doc_lineno": 1015
     },
     {
       "source": ">>> XManifoldPlot.parse_nested_list_string(\"a+b, c-d,fun(e,2)\")\n[[['a', 'b']], [['c'], ['d']], [['fun(e,2)']]]\n>>> XManifoldPlot.parse_nested_list_string(\"a+b, c-d,fun(e,2)\", strip_off_methods=True)\n([[['a', 'b']], [['c'], ['d']], [['e']]],\n [[[None, None]], [[None], [None]], [['fun(e,2)']]])",
@@ -128,7 +128,7 @@
           "Module Contents"
         ]
       },
-      "doc_lineno": 1405
+      "doc_lineno": 1393
     },
     {
       "source": ">>> XManifoldPlot.parse_nested_list_string(\"a+b, c-d,fun(e,2)\")\n[[['a', 'b']], [['c'], ['d']], [['fun(e,2)']]]\n>>> XManifoldPlot.parse_nested_list_string(\"a+b, c-d,fun(e,2)\", strip_off_methods=True)\n([[['a', 'b']], [['c'], ['d']], [['e']]],\n [[[None, None]], [[None], [None]], [['fun(e,2)']]])",
@@ -141,7 +141,7 @@
           "Module Contents"
         ]
       },
-      "doc_lineno": 1911
+      "doc_lineno": 1886
     },
     {
       "source": ">>> XManifoldPlot.parse_nested_list_string(\"a+b, c-d,fun(e,2)\")\n[[['a', 'b']], [['c'], ['d']], [['fun(e,2)']]]\n>>> XManifoldPlot.parse_nested_list_string(\"a+b, c-d,fun(e,2)\", strip_off_methods=True)\n([[['a', 'b']], [['c'], ['d']], [['e']]],\n [[[None, None]], [[None], [None]], [['fun(e,2)']]])",
@@ -154,7 +154,7 @@
           "Module Contents"
         ]
       },
-      "doc_lineno": 2360
+      "doc_lineno": 2327
     },
     {
       "source": ">>> XManifoldPlot.parse_nested_list_string(\"a+b, c-d,fun(e,2)\")\n[[['a', 'b']], [['c'], ['d']], [['fun(e,2)']]]\n>>> XManifoldPlot.parse_nested_list_string(\"a+b, c-d,fun(e,2)\", strip_off_methods=True)\n([[['a', 'b']], [['c'], ['d']], [['e']]],\n [[[None, None]], [[None], [None]], [['fun(e,2)']]])",
@@ -167,7 +167,7 @@
           "Module Contents"
         ]
       },
-      "doc_lineno": 2767
+      "doc_lineno": 2730
     }
   ],
   "autoapi/xplt/twiss/index": [
@@ -2480,7 +2480,7 @@
       "doc_lineno": 40002
     },
     {
-      "source": "plot = xplt.FloorPlot(line, labels=[\"S.Q.\", \"S1SX\"])\nplot.legend()",
+      "source": "plot = xplt.FloorPlot(line=line, labels=\"S.Q.\")\nplot.legend()",
       "names": [
         {
           "import_components": [
@@ -2530,7 +2530,7 @@
       "doc_lineno": 70002
     },
     {
-      "source": "plot = xplt.FloorPlot(\n    line.survey(X0=4.5),\n    projection=\"XZ\",\n    #\n    # Adjust box style for element names matching regex\n    #\n    # default_boxes=False,  # use this to show *only* the boxes defined below (hiding the default elements)\n    boxes={\n        \"S.QF\": dict(color=\"limegreen\"),\n        \"S.QD\": True,  # default style for defocussing quads\n        \"S.SX\": dict(width=0.5),\n    },\n    #\n    # Adjust labels for element names matching regex\n    #\n    labels={\n        \"S.Q.\": True,  # default labels\n        \"S4MU1\": dict(\n            text=(\n                \"A bending magnet\\n\"\n                \"name: {name}\\n\"\n                \"l = {element.length} m\\n\"\n                \"k0l = {element.knl[0]:g} rad\"\n            ),\n            xytext=(-3, -4),\n            bbox={\"fc\": \"white\"},\n            font=\"monospace\",\n            c=\"red\",\n        ),\n    },\n)\nplot.add_scale()\nplot.legend(loc=\"upper left\")",
+      "source": "survey = line.survey(X0=4.5)\nplot = xplt.FloorPlot(\n    survey,\n    line,\n    projection=\"XZ\",\n    boxes={  # adjust box style for element names matching regex\n        \"S.QF\": dict(color=\"green\"),\n        \"S.SX\": dict(width=0.5),\n        \"S...\": True,  # default style for other elements\n    },\n    labels={  # adjust labels for element names matching regex\n        \"S.Q.\": True,  # default labels\n        \"S4MU1\": dict(\n            text=(\n                \"A bending magnet\\n\"\n                \"name: {name}\\n\"\n                \"l = {element.length} m\\n\"\n                \"k0l = {element.knl[0]:g} rad\"\n            ),\n            xytext=(-3, -4),\n            bbox={\"fc\": \"white\"},\n            font=\"monospace\",\n            c=\"red\",\n        ),\n    },\n)\nplot.add_scale()\nplot.legend(loc=\"upper left\")",
       "names": [
         {
           "import_components": [
@@ -2538,8 +2538,8 @@
             "FloorPlot"
           ],
           "code_str": "xplt.FloorPlot",
-          "lineno": 1,
-          "end_lineno": 1,
+          "lineno": 2,
+          "end_lineno": 2,
           "context": "none",
           "resolved_location": "xplt.line.FloorPlot"
         },
@@ -2550,8 +2550,8 @@
             "()"
           ],
           "code_str": "plot",
-          "lineno": 1,
-          "end_lineno": 1,
+          "lineno": 2,
+          "end_lineno": 2,
           "context": "none",
           "resolved_location": "xplt.line.FloorPlot"
         },
@@ -2563,8 +2563,8 @@
             "add_scale"
           ],
           "code_str": "plot.add_scale",
-          "lineno": 32,
-          "end_lineno": 32,
+          "lineno": 27,
+          "end_lineno": 27,
           "context": "none",
           "resolved_location": "xplt.line.FloorPlot.add_scale"
         },
@@ -2576,8 +2576,8 @@
             "legend"
           ],
           "code_str": "plot.legend",
-          "lineno": 33,
-          "end_lineno": 33,
+          "lineno": 28,
+          "end_lineno": 28,
           "context": "none",
           "resolved_location": "xplt.line.FloorPlot.legend"
         }
@@ -4347,15 +4347,15 @@
   ],
   "examples/twiss": [
     {
-      "source": "%load_ext autoreload\n%autoreload 2\n\nimport xtrack as xt\nimport xdeps as xd\nimport xpart as xp\nimport xplt\nimport numpy as np\n\nxplt.apply_style()",
+      "source": "%load_ext autoreload\n%autoreload 2\n\nimport xtrack as xt\nimport xpart as xp\nimport xplt\nimport numpy as np\n\nxplt.apply_style()",
       "names": [
         {
           "import_components": [
             "xplt"
           ],
           "code_str": "xplt",
-          "lineno": 7,
-          "end_lineno": 7,
+          "lineno": 6,
+          "end_lineno": 6,
           "context": "import_target",
           "resolved_location": "xplt"
         },
@@ -4364,8 +4364,8 @@
             "numpy"
           ],
           "code_str": "numpy",
-          "lineno": 8,
-          "end_lineno": 8,
+          "lineno": 7,
+          "end_lineno": 7,
           "context": "import_target",
           "resolved_location": "numpy"
         },
@@ -4375,8 +4375,8 @@
             "apply_style"
           ],
           "code_str": "xplt.apply_style",
-          "lineno": 10,
-          "end_lineno": 10,
+          "lineno": 9,
+          "end_lineno": 9,
           "context": "none",
           "resolved_location": "xplt.apply_style"
         }
@@ -4391,7 +4391,7 @@
       "doc_lineno": 30002
     },
     {
-      "source": "## Generate a simple 6-fold symmetric FODO lattice\n\nn = 6  # number of sections\nelements = {\n    \"QF\": xt.Multipole(length=0.3, knl=[0, +0.63]),\n    \"QD\": xt.Multipole(length=0.3, knl=[0, -0.48]),\n    \"MU\": xt.Multipole(length=0.5, knl=[np.pi / n], hxl=[np.pi / n]),\n}\nparts = {\n    \"a\": [\n        xt.Node(0.7, \"QF\"),\n        xt.Node(1.4, \"MU\"),\n        xt.Node(2.1, \"QD\"),\n        xt.Node(2.8, \"MU\"),\n    ],\n    \"b\": [\n        xt.Node(2.2, \"MU\"),\n        xt.Node(2.9, \"QD\"),\n        xt.Node(3.6, \"MU\"),\n        xt.Node(4.3, \"QF\"),\n    ],\n}\nnodes = [xt.Node(5.0 * i, \"a\" if i % 2 else \"b\", name=f\"S{i+1}\") for i in range(n)]\n\n# sextupoles\nfor i in range(n):\n    sx = xt.Multipole(length=0.2, knl=[0, 0, 0.5 * np.sin(2 * np.pi * (i / n))])\n    nodes.append(xt.Node(0.2, sx, from_=f\"S{i+1}\", name=f\"S{i+1}SX\"))\n\n# apertures\nnodes.append(xt.Node(5, xt.LimitRect(min_x=-5e-3, max_x=3e-3, max_y=3e-3)))\nnodes.append(xt.Node(10, xt.LimitRectEllipse(max_x=6e-3, max_y=1)))\n\nline = xt.Line.from_sequence(\n    nodes, length=5.0 * n, sequences=parts, elements=elements, auto_reorder=True\n)\nline.particle_ref = xp.Particles()\nline.build_tracker();",
+      "source": "## Generate a simple 6-fold symmetric FODO lattice\n\nn = 6  # number of sections\nelements = {\n    \"QF\": xt.Multipole(length=0.3, knl=[0, +0.63]),\n    \"QD\": xt.Multipole(length=0.3, knl=[0, -0.48]),\n    \"MU\": xt.Multipole(length=0.5, knl=[np.pi / n], hxl=[np.pi / n]),\n}\nparts = {\n    \"a\": [\n        xt.Node(0.7, \"QF\"),\n        xt.Node(1.4, \"MU\"),\n        xt.Node(2.1, \"QD\"),\n        xt.Node(2.8, \"MU\"),\n    ],\n    \"b\": [\n        xt.Node(2.2, \"MU\"),\n        xt.Node(2.9, \"QD\"),\n        xt.Node(3.6, \"MU\"),\n        xt.Node(4.3, \"QF\"),\n    ],\n}\nnodes = [xt.Node(5.0 * i, \"a\" if i % 2 else \"b\", name=f\"S{i+1}\") for i in range(n)]\n\n# sextupoles\nfor i in range(n):\n    sx = xt.Multipole(length=0.2, knl=[0, 0, 0.5 * np.sin(2 * np.pi * (i / n))])\n    nodes.append(xt.Node(0.2, sx, from_=f\"S{i+1}\", name=f\"S{i+1}SX\"))\n\nline = xt.Line.from_sequence(\n    nodes, length=5.0 * n, sequences=parts, elements=elements, auto_reorder=True\n)\nline.particle_ref = xp.Particles()\nline.build_tracker();",
       "names": [
         {
           "import_components": [
@@ -4507,34 +4507,12 @@
         },
         {
           "import_components": [
-            "xtrack",
-            "LimitRect"
-          ],
-          "code_str": "xt.LimitRect",
-          "lineno": 31,
-          "end_lineno": 31,
-          "context": "none",
-          "resolved_location": "xtrack.beam_elements.apertures.LimitRect"
-        },
-        {
-          "import_components": [
-            "xtrack",
-            "LimitRectEllipse"
-          ],
-          "code_str": "xt.LimitRectEllipse",
-          "lineno": 32,
-          "end_lineno": 32,
-          "context": "none",
-          "resolved_location": "xtrack.beam_elements.apertures.LimitRectEllipse"
-        },
-        {
-          "import_components": [
             "xpart",
             "Particles"
           ],
           "code_str": "xp.Particles",
-          "lineno": 37,
-          "end_lineno": 37,
+          "lineno": 33,
+          "end_lineno": 33,
           "context": "none",
           "resolved_location": "xtrack.particles.particles.Particles"
         }
@@ -4610,107 +4588,17 @@
       "doc_lineno": 90002
     },
     {
-      "source": "# Normalized emittance in m*rad\ncv = tw.get_betatron_sigmas(nemitt_x=1e-6, nemitt_y=1e-6)",
+      "source": "# list available properties\nprint(\", \".join(sorted(tw.keys(), key=lambda a: a.lower())))",
       "names": [],
       "example": {
         "document": "examples/twiss",
-        "ref_id": "beam-size-plot",
+        "ref_id": "customisation",
         "headings": [
           "Twiss",
-          "Beam size plot"
+          "Customisation"
         ]
       },
       "doc_lineno": 120002
-    },
-    {
-      "source": "plot = xplt.TwissPlot((tw, cv), \"envelope3_x, sigma, y + envelope_y\")",
-      "names": [
-        {
-          "import_components": [
-            "xplt",
-            "TwissPlot"
-          ],
-          "code_str": "xplt.TwissPlot",
-          "lineno": 1,
-          "end_lineno": 1,
-          "context": "none",
-          "resolved_location": "xplt.twiss.TwissPlot"
-        },
-        {
-          "import_components": [
-            "xplt",
-            "TwissPlot",
-            "()"
-          ],
-          "code_str": "plot",
-          "lineno": 1,
-          "end_lineno": 1,
-          "context": "none",
-          "resolved_location": "xplt.twiss.TwissPlot"
-        }
-      ],
-      "example": {
-        "document": "examples/twiss",
-        "ref_id": "beam-size-plot",
-        "headings": [
-          "Twiss",
-          "Beam size plot"
-        ]
-      },
-      "doc_lineno": 130002
-    },
-    {
-      "source": "ap = xplt.util.apertures(line)\nxd.Table(ap, index=\"s\").to_pandas()",
-      "names": [
-        {
-          "import_components": [
-            "xplt",
-            "util",
-            "apertures"
-          ],
-          "code_str": "xplt.util.apertures",
-          "lineno": 1,
-          "end_lineno": 1,
-          "context": "none",
-          "resolved_location": "xplt.util.apertures"
-        }
-      ],
-      "example": {
-        "document": "examples/twiss",
-        "ref_id": "apertures",
-        "headings": [
-          "Twiss",
-          "Apertures"
-        ]
-      },
-      "doc_lineno": 160002
-    },
-    {
-      "source": "plot.plot_apertures(ap, lw=2, color=\"r\")\nplot.fig",
-      "names": [
-        {
-          "import_components": [
-            "xplt",
-            "TwissPlot",
-            "()",
-            "plot_apertures"
-          ],
-          "code_str": "plot.plot_apertures",
-          "lineno": 1,
-          "end_lineno": 1,
-          "context": "none",
-          "resolved_location": "xplt.twiss.TwissPlot.plot_apertures"
-        }
-      ],
-      "example": {
-        "document": "examples/twiss",
-        "ref_id": "apertures",
-        "headings": [
-          "Twiss",
-          "Apertures"
-        ]
-      },
-      "doc_lineno": 170002
     },
     {
       "source": "plot = xplt.TwissPlot(\n    tw,\n    kind=\"bet,mux+muy,dx\",  # 3 subplots: plot beta functions (\"bet\"=\"betx+bety\") on the first,\n    #                                     phase advances on the second, and dispersion on the third\n    display_units=dict(d=\"dm\"),  # dispersion in deci-meter (\"d=\" for \"dx\" and \"dy\")\n    figsize=(6, 5),\n)\n\n# add some annotations\nplot.axline(\"s\", line.get_s_position(\"S6QF\"), annotation=\"S6QF\")\nplot.axspan(\"s\", 9, 11, label=\"Section 42\")\nplot.axline(\"muy\", tw.qy, annotation=f\"$Q_y={tw.qy:g}$\", annotation_loc=1)\n\n# adjust some axes\nplot.axis(0).set(title=\"Twiss plot example\", ylim=(0, 14))\nplot.axis(\"mux\").set(ylim=(0, tw.qx))\n\n# adjust line layout\nplot.artist(\"mux\").set(ls=\"--\")\nplot.artist(subplot=2).set(c=\"pet2\")\n\n# legend is shown by default for subplots with more than 1 trace\nplot.legend(1, loc=\"upper left\")  # call it manually to reflect updated line layout\n# plot.legend() # uncomment this to show legends on all subplots",
@@ -4851,7 +4739,7 @@
           "Customisation"
         ]
       },
-      "doc_lineno": 210002
+      "doc_lineno": 140002
     }
   ],
   "index": [],

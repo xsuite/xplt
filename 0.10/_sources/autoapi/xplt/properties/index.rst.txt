@@ -101,8 +101,6 @@ Module Contents
 
 
    .. py:attribute:: description
-      :value: None
-
 
 
    .. py:attribute:: key
@@ -164,8 +162,6 @@ Module Contents
 
 
    .. py:attribute:: description
-      :value: None
-
 
 
    .. py:attribute:: evaluate
@@ -228,8 +224,6 @@ Module Contents
 
 
    .. py:attribute:: description
-      :value: None
-
 
 
    .. py:attribute:: symbol

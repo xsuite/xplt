@@ -456,7 +456,6 @@ Module Contents
 
 
    .. py:property:: artists
-
       Convenient access to artist
 
       The index can be an (optional) dataset identifier, followed by the subplot, axis and trace index.
@@ -465,12 +464,9 @@ Module Contents
 
 
    .. py:attribute:: ax
-      :value: None
-
 
 
    .. py:property:: axflat
-
       Return a flat list of all primary axes
 
 
@@ -480,21 +476,19 @@ Module Contents
 
 
    .. py:property:: circumference
-
       Circumference of circular accelerator
 
 
    .. py:attribute:: counting_dt
-      :value: None
-
 
 
    .. py:attribute:: evaluate_dt
-      :value: None
-
 
 
    .. py:attribute:: fig
+
+
+   .. py:attribute:: kwargs
 
 
    .. py:attribute:: on_x
@@ -933,7 +927,6 @@ Module Contents
 
 
    .. py:property:: artists
-
       Convenient access to artist
 
       The index can be an (optional) dataset identifier, followed by the subplot, axis and trace index.
@@ -942,12 +935,9 @@ Module Contents
 
 
    .. py:attribute:: ax
-      :value: None
-
 
 
    .. py:property:: axflat
-
       Return a flat list of all primary axes
 
 
@@ -957,32 +947,31 @@ Module Contents
 
 
    .. py:property:: circumference
-
       Circumference of circular accelerator
 
 
    .. py:attribute:: counting_bins_per_evaluation
-      :value: 50
-
 
 
    .. py:attribute:: counting_dt_max
-      :value: None
-
 
 
    .. py:attribute:: counting_dt_min
-      :value: None
-
 
 
    .. py:attribute:: fig
+
+
+   .. py:attribute:: kwargs
 
 
    .. py:attribute:: on_x
 
 
    .. py:property:: on_y_unique
+
+
+   .. py:attribute:: std
 
 
 .. py:class:: TimeBinMetricHelper(*, twiss=None, beta=None, frev=None, circumference=None)
@@ -1085,7 +1074,6 @@ Module Contents
 
 
    .. py:property:: circumference
-
       Circumference of circular accelerator
 
 
@@ -1478,7 +1466,6 @@ Module Contents
 
 
    .. py:property:: artists
-
       Convenient access to artist
 
       The index can be an (optional) dataset identifier, followed by the subplot, axis and trace index.
@@ -1487,12 +1474,9 @@ Module Contents
 
 
    .. py:attribute:: ax
-      :value: None
-
 
 
    .. py:property:: axflat
-
       Return a flat list of all primary axes
 
 
@@ -1502,31 +1486,26 @@ Module Contents
 
 
    .. py:attribute:: bin_count
-      :value: None
-
 
 
    .. py:property:: bin_time
-
       Time bin width in s
 
 
    .. py:attribute:: bin_width
-      :value: None
-
 
 
    .. py:property:: circumference
-
       Circumference of circular accelerator
 
 
    .. py:attribute:: fig
 
 
-   .. py:attribute:: moment
-      :value: 1
+   .. py:attribute:: kwargs
 
+
+   .. py:attribute:: moment
 
 
    .. py:attribute:: on_x
@@ -1536,13 +1515,9 @@ Module Contents
 
 
    .. py:attribute:: range
-      :value: None
-
 
 
    .. py:attribute:: relative
-      :value: False
-
 
 
 .. py:class:: TimeFFTPlot(particles=None, kind='count', *, fmax=None, fsamp=None, fsamp_exact=False, relative=False, scaling=None, welch=None, mask=None, timeseries=None, time_range=None, plot_kwargs=None, averaging=None, averaging_shadow=True, averaging_shadow_kwargs=None, add_default_dataset=True, **kwargs)
@@ -1984,7 +1959,6 @@ Module Contents
 
 
    .. py:property:: artists
-
       Convenient access to artist
 
       The index can be an (optional) dataset identifier, followed by the subplot, axis and trace index.
@@ -1993,17 +1967,12 @@ Module Contents
 
 
    .. py:attribute:: averaging
-      :value: None
-
 
 
    .. py:attribute:: ax
-      :value: None
-
 
 
    .. py:property:: axflat
-
       Return a flat list of all primary axes
 
 
@@ -2013,11 +1982,13 @@ Module Contents
 
 
    .. py:property:: circumference
-
       Circumference of circular accelerator
 
 
    .. py:attribute:: fig
+
+
+   .. py:attribute:: kwargs
 
 
    .. py:attribute:: on_x
@@ -2027,13 +1998,9 @@ Module Contents
 
 
    .. py:attribute:: relative
-      :value: False
-
 
 
    .. py:attribute:: welch
-      :value: None
-
 
 
 .. py:class:: TimeIntervalPlot(particles=None, kind='count', *, dt_max, bin_time=None, bin_count=None, exact_bin_time=True, relative=False, poisson=False, mask=None, time_range=None, plot_kwargs=None, poisson_kwargs=None, add_default_dataset=True, **kwargs)
@@ -2422,7 +2389,6 @@ Module Contents
 
 
    .. py:property:: artists
-
       Convenient access to artist
 
       The index can be an (optional) dataset identifier, followed by the subplot, axis and trace index.
@@ -2431,12 +2397,9 @@ Module Contents
 
 
    .. py:attribute:: ax
-      :value: None
-
 
 
    .. py:property:: axflat
-
       Return a flat list of all primary axes
 
 
@@ -2452,7 +2415,6 @@ Module Contents
 
 
    .. py:property:: circumference
-
       Circumference of circular accelerator
 
 
@@ -2462,6 +2424,9 @@ Module Contents
    .. py:attribute:: fig
 
 
+   .. py:attribute:: kwargs
+
+
    .. py:attribute:: on_x
 
 
@@ -2469,8 +2434,6 @@ Module Contents
 
 
    .. py:attribute:: relative
-      :value: False
-
 
 
 .. py:class:: TimePlot(particles=None, kind='x+y', **kwargs)
@@ -2850,7 +2813,6 @@ Module Contents
 
 
    .. py:property:: artists
-
       Convenient access to artist
 
       The index can be an (optional) dataset identifier, followed by the subplot, axis and trace index.
@@ -2859,12 +2821,9 @@ Module Contents
 
 
    .. py:attribute:: ax
-      :value: None
-
 
 
    .. py:property:: axflat
-
       Return a flat list of all primary axes
 
 
@@ -2874,11 +2833,13 @@ Module Contents
 
 
    .. py:property:: circumference
-
       Circumference of circular accelerator
 
 
    .. py:attribute:: fig
+
+
+   .. py:attribute:: kwargs
 
 
    .. py:attribute:: on_x
@@ -2888,8 +2849,6 @@ Module Contents
 
 
    .. py:attribute:: sort_by
-      :value: None
-
 
 
 .. py:class:: TimePlotMixin
@@ -2963,12 +2922,10 @@ Module Contents
 
 
    .. py:property:: duration
-
       The length of the timeseries in seconds
 
 
    .. py:property:: fs
-
       Sampling frequency
 
 

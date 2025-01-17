@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Index &#8212; Xplt 0.10.2 documentation</title>
+    <title>Index &#8212; Xplt 0.10.5 documentation</title>
   
   
   
@@ -15,48 +15,43 @@
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
   </script>
-  <!--
-    this give us a css class that will be invisible only if js is disabled
-  -->
-  <noscript>
-    <style>
-      .pst-js-only { display: none !important; }
-
-    </style>
-  </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/bootstrap.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+
+  
+  <link href="_static/vendor/fontawesome/6.5.2/css/all.min.css?digest=dfe6caa3a7d634c4db9b" rel="stylesheet" />
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-solid-900.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-brands-400.woff2" />
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.5.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
-    <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=fd3f3429" />
     <link rel="stylesheet" type="text/css" href="_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
-    <link rel="stylesheet" type="text/css" href="_static/sphinx-codeautolink.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-codeautolink.css?v=125d5c1c" />
     <link rel="stylesheet" type="text/css" href="_static/custom.css?v=603c5a11" />
   
-  <!-- So that users can add custom icons -->
-  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b" />
+  <script src="_static/vendor/fontawesome/6.5.2/js/all.min.js?digest=dfe6caa3a7d634c4db9b"></script>
 
-    <script src="_static/documentation_options.js?v=11e62b30"></script>
-    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/documentation_options.js?v=da6fbbfd"></script>
+    <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'genindex';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_version = '0.15.4';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://xsuite.github.io/xplt/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.10';
-        DOCUMENTATION_OPTIONS.show_version_warning_banner =
-            false;
+        DOCUMENTATION_OPTIONS.show_version_warning_banner = false;
         </script>
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.10.2" />
   </head>
   
   
@@ -72,8 +67,19 @@
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
   
-  <dialog id="pst-search-dialog">
-    
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-primary-sidebar-checkbox"/>
+  <label class="overlay overlay-primary" for="pst-primary-sidebar-checkbox"></label>
+  
+  <input type="checkbox"
+          class="sidebar-toggle"
+          id="pst-secondary-sidebar-checkbox"/>
+  <label class="overlay overlay-secondary" for="pst-secondary-sidebar-checkbox"></label>
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
 <form class="bd-search d-flex align-items-center"
       action="search.html"
       method="get">
@@ -81,6 +87,7 @@
   <input type="search"
          class="form-control"
          name="q"
+         id="search-input"
          placeholder="Search the docs ..."
          aria-label="Search the docs ..."
          autocomplete="off"
@@ -88,8 +95,8 @@
          autocapitalize="off"
          spellcheck="false"/>
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
-</form>
-  </dialog>
+</form></div>
+  </div>
 
   <div class="pst-async-banner-revealer d-none">
   <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
@@ -118,7 +125,7 @@
   
   
   
-    <p class="title logo__title">Xplt 0.10.2 documentation</p>
+    <p class="title logo__title">Xplt 0.10.5 documentation</p>
   
 </a></div>
     
@@ -163,21 +170,29 @@
         <div class="navbar-item navbar-persistent--container">
           
 
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
- <i class="fa-solid fa-magnifying-glass"></i>
- <span class="search-button__default-text">Search</span>
- <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-</button>
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
         </div>
       
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -208,24 +223,28 @@
 </ul></div>
       
         <div class="navbar-item">
-<div class="version-switcher__container dropdown pst-js-only">
-  <button id="pst-version-switcher-button-2"
-    type="button"
-    class="version-switcher__button btn btn-sm dropdown-toggle"
-    data-bs-toggle="dropdown"
-    aria-haspopup="listbox"
-    aria-controls="pst-version-switcher-list-2"
-    aria-label="Version switcher list"
-  >
-    Choose version  <!-- this text may get changed later by javascript -->
-    <span class="caret"></span>
-  </button>
-  <div id="pst-version-switcher-list-2"
-    class="version-switcher__menu dropdown-menu list-group-flush py-0"
-    role="listbox" aria-labelledby="pst-version-switcher-button-2">
-    <!-- dropdown will be populated by javascript on page load -->
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="pst-version-switcher-button-2"
+      type="button"
+      class="version-switcher__button btn btn-sm dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-haspopup="listbox"
+      aria-controls="pst-version-switcher-list-2"
+      aria-label="Version switcher list"
+    >
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="pst-version-switcher-list-2"
+      class="version-switcher__menu dropdown-menu list-group-flush py-0"
+      role="listbox" aria-labelledby="pst-version-switcher-button-2">
+      <!-- dropdown will be populated by javascript on page load -->
+    </div>
   </div>
-</div></div>
+`);
+</script></div>
       
     </div>
     
@@ -234,11 +253,15 @@
   
     <div class="navbar-persistent--mobile">
 
-<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
- <i class="fa-solid fa-magnifying-glass"></i>
- <span class="search-button__default-text">Search</span>
- <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
-</button>
+ <script>
+ document.write(`
+   <button class="btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
     </div>
   
 
@@ -255,8 +278,7 @@
       
         
       
-      <dialog id="pst-primary-sidebar-modal"></dialog>
-      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
         
 
   
@@ -303,11 +325,15 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<script>
+document.write(`
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"></i>
+  </button>
+`);
+</script></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -338,24 +364,28 @@
 </ul></div>
         
           <div class="navbar-item">
-<div class="version-switcher__container dropdown pst-js-only">
-  <button id="pst-version-switcher-button-3"
-    type="button"
-    class="version-switcher__button btn btn-sm dropdown-toggle"
-    data-bs-toggle="dropdown"
-    aria-haspopup="listbox"
-    aria-controls="pst-version-switcher-list-3"
-    aria-label="Version switcher list"
-  >
-    Choose version  <!-- this text may get changed later by javascript -->
-    <span class="caret"></span>
-  </button>
-  <div id="pst-version-switcher-list-3"
-    class="version-switcher__menu dropdown-menu list-group-flush py-0"
-    role="listbox" aria-labelledby="pst-version-switcher-button-3">
-    <!-- dropdown will be populated by javascript on page load -->
+<script>
+document.write(`
+  <div class="version-switcher__container dropdown">
+    <button id="pst-version-switcher-button-3"
+      type="button"
+      class="version-switcher__button btn btn-sm dropdown-toggle"
+      data-bs-toggle="dropdown"
+      aria-haspopup="listbox"
+      aria-controls="pst-version-switcher-list-3"
+      aria-label="Version switcher list"
+    >
+      Choose version  <!-- this text may get changed later by javascript -->
+      <span class="caret"></span>
+    </button>
+    <div id="pst-version-switcher-list-3"
+      class="version-switcher__menu dropdown-menu list-group-flush py-0"
+      role="listbox" aria-labelledby="pst-version-switcher-button-3">
+      <!-- dropdown will be populated by javascript on page load -->
+    </div>
   </div>
-</div></div>
+`);
+</script></div>
         
       </div>
     
@@ -363,14 +393,9 @@
   
   
   <div class="sidebar-primary-items__end sidebar-primary__section">
-      <div class="sidebar-primary-item">
-<div id="ethical-ad-placement"
-      class="flat"
-      data-ea-publisher="readthedocs"
-      data-ea-type="readthedocs-sidebar"
-      data-ea-manual="true">
-</div></div>
   </div>
+  
+  <div id="rtd-footer-container"></div>
 
 
       </div>
@@ -435,6 +460,8 @@
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="autoapi/xplt/phasespace/index.html#xplt.phasespace.PhaseSpacePlot.abbreviations">abbreviations (xplt.phasespace.PhaseSpacePlot attribute)</a>
+</li>
       <li><a href="autoapi/xplt/particles/index.html#xplt.particles.ParticleHistogramPlot.add_dataset">add_dataset() (xplt.particles.ParticleHistogramPlot method)</a>
 
       <ul>
@@ -515,8 +542,6 @@
         <li><a href="autoapi/xplt/twiss/index.html#xplt.twiss.TwissPlot.annotate">(xplt.twiss.TwissPlot method)</a>
 </li>
       </ul></li>
-      <li><a href="autoapi/xplt/util/index.html#xplt.util.apertures">apertures() (in module xplt.util)</a>
-</li>
       <li><a href="autoapi/xplt/index.html#xplt.apply_style">apply_style() (in module xplt)</a>
 </li>
       <li><a href="autoapi/xplt/base/index.html#xplt.base.XManifoldPlot.artist">artist() (xplt.base.XManifoldPlot method)</a>
@@ -969,8 +994,6 @@
 </li>
       <li><a href="autoapi/xplt/properties/index.html#xplt.properties.DataProperty">DataProperty (class in xplt.properties)</a>
 </li>
-      <li><a href="autoapi/xplt/line/index.html#xplt.line.FloorPlot.default_boxes">default_boxes (xplt.line.FloorPlot attribute)</a>
-</li>
       <li><a href="autoapi/xplt/base/index.html#xplt.base.AngleLocator.default_params">default_params (xplt.base.AngleLocator attribute)</a>
 
       <ul>
@@ -1037,7 +1060,7 @@
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="autoapi/xplt/line/index.html#xplt.line.effective_order">effective_order() (in module xplt.line)</a>
+      <li><a href="autoapi/xplt/line/index.html#xplt.line.element_order">element_order() (in module xplt.line)</a>
 </li>
       <li><a href="autoapi/xplt/line/index.html#xplt.line.element_strength">element_strength() (in module xplt.line)</a>
 </li>
@@ -1233,7 +1256,7 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="autoapi/xplt/base/index.html#xplt.base.TransformedLocator.inverse">inverse (xplt.base.TransformedLocator attribute)</a>
 </li>
-      <li><a href="autoapi/xplt/util/index.html#xplt.util.iter_elements">iter_elements() (in module xplt.util)</a>
+      <li><a href="autoapi/xplt/line/index.html#xplt.line.iter_elements">iter_elements() (in module xplt.line)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -1243,12 +1266,30 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="autoapi/xplt/properties/index.html#xplt.properties.DataProperty.key">key (xplt.properties.DataProperty attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="autoapi/xplt/phasespace/index.html#xplt.phasespace.PhaseSpacePlot.kind">kind (xplt.phasespace.PhaseSpacePlot attribute)</a>
 </li>
       <li><a href="autoapi/xplt/line/index.html#xplt.line.KnlPlot">KnlPlot (class in xplt.line)</a>
 </li>
+      <li><a href="autoapi/xplt/particles/index.html#xplt.particles.ParticleHistogramPlot.kwargs">kwargs (xplt.particles.ParticleHistogramPlot attribute)</a>
+
+      <ul>
+        <li><a href="autoapi/xplt/particles/index.html#xplt.particles.ParticlesPlot.kwargs">(xplt.particles.ParticlesPlot attribute)</a>
+</li>
+        <li><a href="autoapi/xplt/phasespace/index.html#xplt.phasespace.PhaseSpacePlot.kwargs">(xplt.phasespace.PhaseSpacePlot attribute)</a>
+</li>
+        <li><a href="autoapi/xplt/timestructure/index.html#xplt.timestructure.SpillQualityPlot.kwargs">(xplt.timestructure.SpillQualityPlot attribute)</a>
+</li>
+        <li><a href="autoapi/xplt/timestructure/index.html#xplt.timestructure.SpillQualityTimescalePlot.kwargs">(xplt.timestructure.SpillQualityTimescalePlot attribute)</a>
+</li>
+        <li><a href="autoapi/xplt/timestructure/index.html#xplt.timestructure.TimeBinPlot.kwargs">(xplt.timestructure.TimeBinPlot attribute)</a>
+</li>
+        <li><a href="autoapi/xplt/timestructure/index.html#xplt.timestructure.TimeFFTPlot.kwargs">(xplt.timestructure.TimeFFTPlot attribute)</a>
+</li>
+        <li><a href="autoapi/xplt/timestructure/index.html#xplt.timestructure.TimeIntervalPlot.kwargs">(xplt.timestructure.TimeIntervalPlot attribute)</a>
+</li>
+        <li><a href="autoapi/xplt/timestructure/index.html#xplt.timestructure.TimePlot.kwargs">(xplt.timestructure.TimePlot attribute)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -1384,6 +1425,8 @@
         <li><a href="autoapi/xplt/timestructure/index.html#xplt.timestructure.TimeBinPlot.moment">(xplt.timestructure.TimeBinPlot attribute)</a>
 </li>
       </ul></li>
+      <li><a href="autoapi/xplt/base/index.html#xplt.base.AngleLocator.multiples">multiples (xplt.base.AngleLocator attribute)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -1395,9 +1438,9 @@
       <ul>
         <li><a href="autoapi/xplt/base/index.html#xplt.base.ManifoldMultipleLocator.n">(xplt.base.ManifoldMultipleLocator attribute)</a>
 </li>
-      </ul></li>
-      <li><a href="autoapi/xplt/line/index.html#xplt.line.nominal_order">nominal_order() (in module xplt.line)</a>
+        <li><a href="autoapi/xplt/phasespace/index.html#xplt.phasespace.PhaseSpacePlot.n">(xplt.phasespace.PhaseSpacePlot attribute)</a>
 </li>
+      </ul></li>
       <li><a href="autoapi/xplt/base/index.html#xplt.base.AngleLocator.nonsingular">nonsingular() (xplt.base.AngleLocator method)</a>
 
       <ul>
@@ -1515,8 +1558,6 @@
       <li><a href="autoapi/xplt/phasespace/index.html#xplt.phasespace.PhaseSpacePlot">PhaseSpacePlot (class in xplt.phasespace)</a>
 </li>
       <li><a href="autoapi/xplt/phasespace/index.html#xplt.phasespace.PhaseSpacePlot.plot">plot (xplt.phasespace.PhaseSpacePlot attribute)</a>
-</li>
-      <li><a href="autoapi/xplt/twiss/index.html#xplt.twiss.TwissPlot.plot_apertures">plot_apertures() (xplt.twiss.TwissPlot method)</a>
 </li>
       <li><a href="autoapi/xplt/phasespace/index.html#xplt.phasespace.PhaseSpacePlot.plot_hamiltonian_kobayashi">plot_hamiltonian_kobayashi() (xplt.phasespace.PhaseSpacePlot method)</a>
 </li>
@@ -1719,6 +1760,12 @@
       <li><a href="autoapi/xplt/timestructure/index.html#xplt.timestructure.SpillQualityPlot">SpillQualityPlot (class in xplt.timestructure)</a>
 </li>
       <li><a href="autoapi/xplt/timestructure/index.html#xplt.timestructure.SpillQualityTimescalePlot">SpillQualityTimescalePlot (class in xplt.timestructure)</a>
+</li>
+      <li><a href="autoapi/xplt/timestructure/index.html#xplt.timestructure.SpillQualityTimescalePlot.std">std (xplt.timestructure.SpillQualityTimescalePlot attribute)</a>
+</li>
+      <li><a href="autoapi/xplt/base/index.html#xplt.base.AngleLocator.subdivide">subdivide (xplt.base.AngleLocator attribute)</a>
+</li>
+      <li><a href="autoapi/xplt/twiss/index.html#xplt.twiss.TwissPlot.subs">subs (xplt.twiss.TwissPlot attribute)</a>
 </li>
       <li><a href="autoapi/xplt/properties/index.html#xplt.properties.DataProperty.symbol">symbol (xplt.properties.DataProperty attribute)</a>
 
@@ -2025,8 +2072,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script src="_static/scripts/bootstrap.js?digest=dfe6caa3a7d634c4db9b"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=dfe6caa3a7d634c4db9b"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -2052,15 +2099,14 @@
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.0.2.
     <br/>
   </p>
 </div>
       
         <div class="footer-item">
 <p class="theme-version">
-  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.15.4.
 </p></div>
       
     </div>

@@ -27,7 +27,7 @@ Module Contents
 
    A plot for twiss parameters and closed orbit
 
-   :param twiss: Dictionary or table with twiss information (or tuple thereof)
+   :param twiss: Dictionary with twiss information
    :type twiss: Any
    :param kind: Defines the properties to plot.
                 This is a manifold subplot specification string like ``"bet-dx,x+y"``, see :class:`~.base.XManifoldPlot` for details.
@@ -276,20 +276,6 @@ Module Contents
 
 
 
-   .. py:method:: plot_apertures(data, which=None, **kwargs)
-
-      Plot apertures onto the relevant axes
-
-      :param data: The aperture data: a dict, table or something which provides arrays for the keys "s", "min_x",
-                   "max_x", "min_y", "max_y". Use :meth:`~.util.apertures` to get such data from a :class:`xtrack.Line`.
-      :type data: Any
-      :param which: Name(s) of properties for which to plot apertures on the corresponding axis.
-                    If None (default), plot for all relevant properties (x, y, sigma, envelope)
-      :type which: str | None | list | set
-      :param kwargs: Keyword arguments passed to :meth:`matplotlib.axes.Axes.vlines`
-
-
-
    .. py:method:: plot_harmonics(ax, v, dv=0, *, n=20, scale_width=True, vertical=True, inverse=False, **plot_kwargs)
       :staticmethod:
 
@@ -357,7 +343,7 @@ Module Contents
 
       Update the twiss data this plot shows
 
-      :param twiss: Dictionary or table with twiss information (or tuple thereof)
+      :param twiss: Dictionary with twiss information
       :type twiss: Any
       :param autoscale: Whether and on which axes to perform autoscaling.
                         One of `"x"`, `"y"`, `"xy"`, `False` or `None`. If `None`, decide based on :meth:`matplotlib.axes.Axes.get_autoscalex_on` and :meth:`matplotlib.axes.Axes.get_autoscaley_on`.
@@ -370,7 +356,6 @@ Module Contents
 
 
    .. py:property:: artists
-
       Convenient access to artist
 
       The index can be an (optional) dataset identifier, followed by the subplot, axis and trace index.
@@ -379,12 +364,9 @@ Module Contents
 
 
    .. py:attribute:: ax
-      :value: None
-
 
 
    .. py:property:: axflat
-
       Return a flat list of all primary axes
 
 
@@ -405,5 +387,8 @@ Module Contents
 
 
    .. py:property:: on_y_unique
+
+
+   .. py:attribute:: subs
 
 
