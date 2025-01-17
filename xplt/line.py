@@ -238,7 +238,7 @@ class FloorPlot(XPlot):
         labels=False,
         ignore=None,
         element_width=1,
-        axis='equal',
+        axis="equal",
         **kwargs,
     ):
         """
@@ -354,7 +354,7 @@ class FloorPlot(XPlot):
             elif self.projection == "XZ":
                 R = get(survey, "theta")
                 ang = lambda a: np.pi / 2 - a
-            elif self.projection == 'ZY':
+            elif self.projection == "ZY":
                 R = get(survey, "theta")
                 ang = lambda a: a
             else:
