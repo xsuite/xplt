@@ -76,7 +76,7 @@ ORDER_NAMED_ELEMENTS = {
 
 def tanc(x):
     """Tangens cardinalis, i.e. tan(x)/x with limit tanc(0)=1"""
-    return np.sinc(x) / np.cos(x)
+    return np.sinc(x / np.pi) / np.cos(x)
 
 
 PUBLIC_SECTION_BEGIN()
