@@ -9,30 +9,9 @@ __author__ = "Philipp Niedermayer"
 __contact__ = "eltos@outlook.de"
 __date__ = "2022-11-08"
 
-
-import re
 from .util import *
 from .base import XPlot, XManifoldPlot
 from .properties import Property, DataProperty
-
-
-def iter_elements(line):
-    """Iterate over elements in line
-
-    Args:
-        line (xtrack.Line): Line of elements.
-
-    Yields:
-        (name, element, s_from, s_to): Name, element, start and end s position of element.
-
-    """
-    el_s0 = line.get_s_elements("upstream")
-    el_s1 = line.get_s_elements("downstream")
-    for name, el, s0, s1 in zip(line.element_names, line.elements, el_s0, el_s1):
-        if s0 == s1:  # thin lense located at element center
-            if hasattr(el, "length"):
-                s0, s1 = (s0 + s1 - el.length) / 2, (s0 + s1 + el.length) / 2
-        yield name, el, s0, s1
 
 
 def element_strength(element, n):
@@ -44,34 +23,37 @@ def element_strength(element, n):
     return 0
 
 
-def element_order(element):
-    """Get effective order of element (ignoring zero strength)"""
+def nominal_order(element):
+    """Get nominal element order (even if coefficients might be zero)"""
+    if type(element).__name__ == "Bend":  # Treat combined function magnets as bend
+        return 0
+    if hasattr(element, "length"):
+        for n in range(10, -1, -1):
+            if hasattr(element, f"k{n}") or hasattr(element, f"k{n}s"):
+                return n
+    if hasattr(element, "order"):
+        return int(element.order)
     if hasattr(element, "knl"):
-        return max(np.argwhere(element.knl != 0), -1)
-    if hasattr(element, "length") and element.length > 0:
-        n, order = 0, -1
-        while hasattr(element, f"k{n}"):
-            if getattr(element, f"k{n}") != 0:
-                order = n
-            n += 1
-            if n > 100:
-                raise RuntimeError("Heuristic element order determination failed")
-        return order
+        return len(element.knl)
     return -1
+
+
+def effective_order(element):
+    """Get effective order of element (ignoring zero strength)"""
+    order = {-1}
+    if hasattr(element, "length") and element.length > 0:
+        for n in range(10, -1, -1):
+            if get(element, f"k{n}", 0) or get(element, f"k{n}s", 0):
+                order.add(n)
+    for knl in ("knl", "ksl"):
+        if hasattr(element, knl):
+            order.add(int(np.max(np.nonzero(getattr(element, knl)), initial=-1)))
+    return max(order)
 
 
 def order(knl):
     """Get order of knl string as int"""
     return int(re.match(r"k(\d+)l", knl).group(1))
-
-
-# Known class names from xtrack and their order
-ORDER_NAMED_ELEMENTS = {
-    "Bend": 0,
-    "Quadrupole": 1,
-    "Sextupole": 2,
-    "Octupole": 3,
-}
 
 
 def tanc(x):
@@ -109,7 +91,7 @@ class KnlPlot(XManifoldPlot):
         if knl is None:
             if line is None:
                 raise ValueError("Either line or knl parameter must not be None")
-            knl = int(max([element_order(e) for e in line.elements]))
+            knl = int(max([effective_order(e) for e in line.elements]))
         if isinstance(knl, int):
             knl = range(knl + 1)
         if not isinstance(knl, str):
@@ -154,20 +136,15 @@ class KnlPlot(XManifoldPlot):
             changed artists
         """
         # compute knl as function of s
-        Smax = line.get_length()
         if self.resolution == "auto":
             S = set()
             for name, el, s0, s1 in iter_elements(line):
                 S.update({s0, s1})
             S = np.array(sorted(list(S)))
         else:
-            S = np.linspace(0, Smax, self.resolution)
+            S = np.linspace(0, line.get_length(), self.resolution)
         values = {p: np.zeros_like(S) for p in self.on_y_unique}
-        for name, el, s0, s1 in iter_elements(line):
-            if 0 <= s0 <= Smax:
-                mask = (S >= s0) & (S < s1)
-            else:  # handle wrap around
-                mask = (S >= s0 % Smax) | (S < s1 % Smax)
+        for name, el, s0, s1, mask in iter_elements(line, s=S):
             for knl in self.on_y_unique:
                 n = order(knl)
                 values[knl][mask] += element_strength(el, n)
@@ -234,6 +211,7 @@ class FloorPlot(XPlot):
         line=None,
         projection="ZX",
         *,
+        default_boxes=None,
         boxes=None,
         labels=False,
         ignore=None,
@@ -249,13 +227,15 @@ class FloorPlot(XPlot):
                 Use this to have colored boxes of correct size etc.
             projection (str): The projection to use: A pair of coordinates ('XZ', 'ZY' etc.)
             boxes (None | bool | str | iterable | dict): Config option for showing colored boxes for elements. See below.
-                Detailed options can be "length" and all options suitable for a patch,
-                such as "color", "alpha", etc.
+                Detailed options can be "length" and all options suitable for a patch, such as "color", "alpha", etc.
+                By default, all elements with a multipole order are shown, or if line is None then all element.
+            default_boxes (bool): Whether to keep the default boxes even if custom box options are specified.
             labels (None | bool | str | iterable | dict): Config option for showing labels for elements. See below.
                 Detailed options can be "text" (e.g. "Dipole {name}" where name will be
                 replaced with the element name) and all options suitable for an annotation,
                 such as "color", "alpha", etc.
             ignore (None | str | list[str]): Optional patter or list of patterns to ignore elements with matching names.
+                Note that drift spaces are always ignored.
             element_width (float): Width of element boxes.
             kwargs: See :class:`~.base.XPlot` for additional arguments
 
@@ -287,6 +267,7 @@ class FloorPlot(XPlot):
 
         self.projection = projection
         self.boxes = boxes
+        self.default_boxes = default_boxes if default_boxes is not None else (boxes is not False)
         self.labels = labels
         self.ignore = [ignore] if isinstance(ignore, str) else ignore
         self.element_width = element_width
@@ -312,18 +293,17 @@ class FloorPlot(XPlot):
         self.artists_labels = []
 
         # set data
-        if survey is None and line is not None:
-            survey = line.survey()
-        if survey is not None:
+        if survey is not None or line is not None:
             self.update(survey, line)
 
-    def update(self, survey, line=None, *, autoscale=None):
+    def update(self, survey=None, line=None, *, autoscale=None):
         """
         Update the survey data this plot shows
 
         Args:
-            survey (Any): Survey data.
-            line (None | xtrack.Line): Line data.
+            survey (Any | None): Survey data. Defaults to `line.survey()`.
+                For convenience, passing line as first argument is also supported.
+            line (None | xtrack.Line): Line object. Defaults to `survey.line` if possible.
             autoscale (str | None | bool): Whether and on which axes to perform autoscaling.
                 One of `"x"`, `"y"`, `"xy"`, `False` or `None`. If `None`, decide based on :meth:`matplotlib.axes.Axes.get_autoscalex_on` and :meth:`matplotlib.axes.Axes.get_autoscaley_on`.
 
@@ -331,6 +311,14 @@ class FloorPlot(XPlot):
             changed artists
 
         """
+
+        # Handle various input types in a smart way
+        if line is None and type(survey).__name__ == "Line":
+            survey, line = None, survey
+        if survey is None and line is not None:
+            survey = line.survey()
+        if line is None and survey is not None:
+            line = getattr(survey, "line", None)
 
         changed = []
 
@@ -386,63 +374,63 @@ class FloorPlot(XPlot):
             helicity = 1
             legend_entries = []
             for i, (x, y, rt, name, arc) in enumerate(zip(X, Y, R, NAME, BEND)):
-
-                drift_length = get(survey, "drift_length", None)
-
-                if line is not None:
-                    if name == "_end_point":
-                        continue
-                    if line[name].__class__.__name__ == "Replica":
-                        name = line[name].resolve(line, get_name=True)
-
-                is_thick = line is not None and name in line.element_dict and line[name].isthick
-                if drift_length is not None and drift_length[i] > 0 and not is_thick:
-                    continue  # skip drift spaces
-                if self.ignore is not None:
-                    if np.any([re.match(pattern, name) is not None for pattern in self.ignore]):
-                        continue  # skip ignored
-
                 helicity = np.sign(arc) or helicity
                 # rt = angle of tangential direction in data coords
                 # rr = angle of radial direction (outward) in axis coords
                 rr = ang(rt - arc / 2 + helicity * np.pi / 2)
 
-                element = line.element_dict.get(name) if line is not None else None
-                order = get(element, "order", None)
-                order = get(survey, "order", {i: order})[i]
-                if line is not None and name in line.element_dict:
-                    order = ORDER_NAMED_ELEMENTS.get(line[name].__class__.__name__, order)
+                drift_length = get(get(survey, "drift_length", []), i, -1)
+                order = get(get(survey, "order", []), i, -1)
+                length = get(get(survey, "length", []), i, 0)
+                is_thick = False
+                element = None
 
-                length = get(element, "length", None)
-                length = get(survey, "length", {i: length})[i]
-                if length is not None:
-                    length = length * scale
+                try:
+                    element = line[name]
+                    is_thick = element.isthick
+                    if type(element).__name__ == "Replica":
+                        name = element.resolve(line, get_name=True)
+                    if order < 0:
+                        order = nominal_order(element)
+                    if not length:
+                        length = get(element, "length", None)
+                except (TypeError, KeyError):
+                    pass
+
+                # ignored elements
+                if drift_length > 0 and not is_thick or type(element).__name__ == "Drift":
+                    continue  # always skip drift spaces
+                if self.ignore is not None:
+                    if np.any([re.match(pattern, name) is not None for pattern in self.ignore]):
+                        continue  # skip ignored
+                if name == "_end_point":
+                    continue
 
                 # box
                 ######
 
-                box_style = {}
-                if order is not None:
-                    box_style["color"] = f"C{order}"
-                if length is not None:
-                    box_style["length"] = length
-
-                # legend label
-                box_style["label"] = {
-                    0: "Bending magnet" if arc else None,
-                    1: "Quadrupole magnet",
-                    2: "Sextupole magnet",
-                    3: "Octupole magnet",
-                }.get(order)
+                # default style
+                default_box_style = dict(
+                    color=f"C{order}" if order >= 0 else "k",
+                    length=length or 0,
+                    label={
+                        0: "Bending magnet" if arc else None,
+                        1: "Quadrupole magnet",
+                        2: "Sextupole magnet",
+                        3: "Octupole magnet",
+                    }.get(order),
+                )
 
                 boxes = self.boxes
                 if boxes is None:
-                    boxes = line is None or order is not None
-                box_style = self._get_config(boxes, name, **box_style)
+                    boxes = line is None or order >= 0
+                box_style = self._get_config(boxes, name, **default_box_style)
+                if box_style is None and self.default_boxes and (line is None or order >= 0):
+                    box_style = default_box_style
 
                 if box_style is not None:
-                    width = box_style.pop("width", self.element_width * scale)
-                    length = box_style.pop("length", 0)
+                    width = box_style.pop("width", self.element_width) * scale
+                    length = box_style.pop("length", 0) * scale
                     if box_style.get("label") in legend_entries:
                         box_style.pop("label")  # prevent duplicate legend entries
                     else:
@@ -483,7 +471,7 @@ class FloorPlot(XPlot):
                                 box_style,
                                 xy=(x - width / 2, y - length / 2),
                                 width=width,
-                                height=length or (0.1 * scale),
+                                height=length,
                                 angle=np.rad2deg(ang(rt - arc / 2)) - 90,
                                 rotation_point="center",
                                 alpha=0.5,
@@ -499,7 +487,7 @@ class FloorPlot(XPlot):
 
                 labels = self.labels
                 if labels is None:
-                    labels = line is not None and order is not None
+                    labels = line is not None and order >= 0
                 label_style = self._get_config(labels, name, text=name)
 
                 if label_style is not None:
@@ -526,7 +514,11 @@ class FloorPlot(XPlot):
                     changed.append(label)
 
             # autoscale
-            self._autoscale(self.ax, autoscale, artists=self.artists_boxes + self.artists_labels)
+            self._autoscale(
+                self.ax,
+                autoscale,
+                artists=self.artists_boxes + self.artists_labels + [self.artist_beamline],
+            )
 
         return changed
 

@@ -8,7 +8,8 @@ import xplt.util
 @pytest.fixture(scope="function")
 def benchmark_ref(request):
     # See https://github.com/ionelmc/pytest-benchmark/issues/166
-    return pytest_benchmark.plugin.benchmark.__pytest_wrapped__.obj(request)
+    bm = pytest_benchmark.plugin.benchmark.__pytest_wrapped__.obj(request)
+    return next(bm) if hasattr(bm, "__next__") else bm
 
 
 @pytest.mark.parametrize(
@@ -16,7 +17,7 @@ def benchmark_ref(request):
     [
         (1_000, 2**17, 1 / 2),
         (1_000, 2**20, 1 / 4),
-        (1_000_000, 2**20, 1 / 4),
+        (1_000_000, 2**20, 1 / 3),
         (1_000_000, 2**23, 1 / 10),
         (1_000_000, 2**27, 1 / 32),
     ],

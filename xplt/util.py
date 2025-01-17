@@ -17,6 +17,11 @@ import numpy as np
 import pint
 import scipy.signal
 import matplotlib as mpl
+import matplotlib.collections
+import matplotlib.patches
+import matplotlib.cbook
+import matplotlib.text
+import matplotlib.lines
 
 try:
     import pandas as pd
@@ -61,7 +66,9 @@ def val(obj):
 def fmt(t, unit="s"):
     """Human-readable representation of value in unit (latex syntax)"""
     t = float(f"{t:g}")  # to handle corner cases like 9.999999e-07
-    return f"{pint.Quantity(t, unit):#~.4gX}".rstrip("\\")
+    s = f"{pint.Quantity(t, unit):#~.4gX}".rstrip("\\")
+    s = s.replace(" ", "\\ ", 1)
+    return s
 
 
 #
@@ -77,7 +84,7 @@ def get(obj, value, default=VOID):
     and handles special objects like pandas data frames.
 
     Args:
-        obj (Any): Object to get data from
+        obj (Any): Object to get data from. Can also be a tuple of objects.
         value (str): Name of attribute, index, column etc. to get
         default (Any): Default value to return. By default an exception is raised
 
@@ -89,6 +96,10 @@ def get(obj, value, default=VOID):
     """
     if pd and isinstance(obj, pd.DataFrame):
         return val(obj[value].values)
+    if type(obj) == tuple:
+        for o in obj:
+            if (v := get(o, value, None)) is not None:
+                return v
     try:
         return val(getattr(obj, value))
     except:
@@ -131,6 +142,7 @@ def defaults_for(alias_provider, kwargs, /, **default_kwargs):
             fill_between=mpl.patches.Polygon,
             scatter=mpl.collections.Collection,
             hexbin=mpl.collections.PolyCollection,
+            vlines=mpl.collections.LineCollection,
         )[alias_provider]
     if alias_provider == mpl.patches.Polygon and kwargs is not None and "c" in kwargs:
         kwargs["color"] = kwargs.pop("c")
@@ -397,7 +409,7 @@ def denormalized_coordinates(X, Px, twiss, xy, delta=0):
 
 
 def virtual_sextupole(line, particle_ref=None, *, verbose=False):
-    """Determine virtual sextupole strength from twiss data
+    """Determine virtual sextupole strength from the line
 
     The normalized strenght is defined as S = -1/2 * betx^(3/2) * k2l
 
@@ -494,3 +506,92 @@ def hamiltonian_kobayashi(X, Px, S, mu, twiss, xy="x", delta=0, *, normalized=Fa
         H = H / Hsep
 
     return H
+
+
+def iter_elements(line, *, s=None, mask_nearest=False):
+    """Iterate over elements in line
+
+    Args:
+        line (xtrack.Line): Line of elements.
+        s (np.array | None): Optional array of s positions.
+          If not None, returns an additional s-position-mask for each element.
+        mask_nearest (bool): If true, zero-length elements will be masked at the nearest s-coordinate of the s array
+          to avoid them being skipped if their location does not coincide exactly with any value in the s-array.
+          If s is None, this has no effect.
+
+    Yields:
+        (name, element, s_from, s_to, [s_mask]): Name, object, start position,
+          end position and optional position mask for each element. The mask is
+          omitted if s=None (see arguments).
+
+    """
+    el_s0 = line.get_s_elements("upstream")
+    el_s1 = line.get_s_elements("downstream")
+    smax = line.get_length()
+    for name, el, s0, s1 in zip(line.element_names, line.elements, el_s0, el_s1):
+        if s0 == s1:  # thin lense located at element center
+            if hasattr(el, "length"):
+                s0, s1 = (s0 + s1 - el.length) / 2, (s0 + s1 + el.length) / 2
+        if s is None:
+            yield name, el, s0, s1
+        else:
+            if s0 == s1:
+                if mask_nearest:
+                    # zero-length element -> round to nearest s
+                    mask = s == s[np.argmin(np.abs(s - s0))]
+                else:
+                    mask = s == s0 % smax
+            elif 0 <= s0 <= smax:
+                mask = (s >= s0) & (s < s1)
+            else:  # handle wrap around
+                mask = (s >= s0 % smax) | (s < s1 % smax)
+            yield name, el, s0, s1, mask
+
+
+def apertures(line, at_s=None):
+    """Determine aperture
+
+    Args:
+        line (xtrack.Line): Line with element_dict
+        at_s (np.ndarray | None): return apertures for these s locations in m
+
+    """
+
+    if at_s is None:
+        s = np.unique([(s0, s1) for _, _, s0, s1 in iter_elements(line)])
+    else:
+        s = np.array(at_s)
+
+    result = dict(
+        s=s,
+        min_x=np.full_like(s, np.nan),
+        max_x=np.full_like(s, np.nan),
+        min_y=np.full_like(s, np.nan),
+        max_y=np.full_like(s, np.nan),
+    )
+    for name, el, s0, s1, mask in iter_elements(line, s=s):
+        for xy in "xy":
+            # find limits
+            mi = getattr(el, f"min_{xy}", None)
+            ma = getattr(el, f"max_{xy}", None)
+            if mi is None and ma is not None:
+                mi = -ma
+            # handle shift
+            if mi is not None:
+                mi += getattr(el, f"shift_{xy}", 0)
+                result[f"min_{xy}"][
+                    mask & ~(result[f"min_{xy}"] > mi)
+                ] = mi  # comparison inverted to handle NaN
+            if ma is not None:
+                ma += getattr(el, f"shift_{xy}", 0)
+                result[f"max_{xy}"][mask & ~(result[f"max_{xy}"] < ma)] = ma
+
+    if at_s is None:
+        # only return s where there is an aperture
+        mask = np.any(
+            [np.isfinite(result[f"{m}_{xy}"]) for m in ("min", "max") for xy in "xy"], axis=0
+        )
+        for key in result:
+            result[key] = result[key][mask]
+
+    return AttrDict(result)

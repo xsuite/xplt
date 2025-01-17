@@ -1,6 +1,0 @@
-# Base requirement file for testing
-pytest==8.3.3
-pytest-cov==5.0.0
-pytest-benchmark==4.0.0
-testbook==0.4.2
--r ../examples/requirements.txt

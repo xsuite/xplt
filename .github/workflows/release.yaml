@@ -73,8 +73,8 @@ jobs:
           python-version: '3.12'
       - name: Install dependencies
         run: |
+          pip install -r requirements/docs-requirements.txt
           pip install -e .
-          pip install -r docs/requirements.txt
       - name: Sphinx build
         run: |
           sphinx-build docs _build/html
