@@ -170,7 +170,10 @@ class DiscontinuousLinearScale(mpl.scale.LinearScale):
         self.hide = hide
 
     def set_default_locators_and_formatters(self, axis):
-        axis.set(major_locator=DiscontinuousLocator(self.breaks, self.space))
+        axis.set(
+            major_locator=DiscontinuousLocator(self.breaks, self.space),
+            major_formatter=DiscontinuousFormatter(self.breaks),
+        )
         self.add_discontinuity_markers(axis)
 
     def get_transform(self):
@@ -180,19 +183,33 @@ class DiscontinuousLinearScale(mpl.scale.LinearScale):
         ax = axis.axes
         xy = lambda x, y: (x, y) if axis == ax.xaxis else (y, x)
         trans = mpl.transforms.blended_transform_factory(*xy(ax.transData, ax.transAxes))
+        kwargs = dict(color="k", linewidth=0.8, transform=trans, clip_on=False, zorder=9)
         for br in self.breaks:
-            for i in range(2):
-                x, w, h = np.mean(br), np.diff(br) / 4, 0.02
-                points = list(zip(*xy((x - w, x, x + w, x), (i - h, i + h, i + h, i - h))))
-                kwargs = dict(color="k", lw=0.8, transform=trans, clip_on=False, zorder=9)
-                Path = mpl.path.Path
-                ax.add_artist(mpl.patches.PathPatch(Path(points), ec="none", fc="w", **kwargs))
+            if self.hide:
                 ax.add_artist(
-                    mpl.patches.PathPatch(
-                        Path(points, [Path.MOVETO, Path.LINETO, Path.MOVETO, Path.LINETO]),
-                        **kwargs,
-                    )
+                    mpl.patches.Rectangle(xy(br[0], 0), *xy(br[1] - br[0], 1), fc="w", **kwargs)
                 )
+            else:
+                for i in range(2):
+                    x, w, h = np.mean(br), np.diff(br).item() / 4, 0.02
+                    points = list(zip(*xy((x - w, x, x + w, x), (i - h, i + h, i + h, i - h))))
+                    ax.add_artist(
+                        mpl.patches.PathPatch(mpl.path.Path(points), ec="none", fc="w", **kwargs)
+                    )
+                    ax.add_artist(
+                        mpl.patches.PathPatch(
+                            mpl.path.Path(
+                                points,
+                                [
+                                    mpl.path.Path.MOVETO,
+                                    mpl.path.Path.LINETO,
+                                    mpl.path.Path.MOVETO,
+                                    mpl.path.Path.LINETO,
+                                ],
+                            ),
+                            **kwargs,
+                        )
+                    )
 
 
 class DiscontinuousLocator(mpl.ticker.AutoLocator):
@@ -222,10 +239,24 @@ class DiscontinuousLocator(mpl.ticker.AutoLocator):
         self._nbins = nbins * total / visible
         ticks = super()._raw_ticks(vmin, vmax)
 
-        for left, right in self.breaks:
-            ticks = ticks[(ticks <= left) | (ticks >= right)]
+        # Remove ticks inside breaks
+        # for left, right in self.breaks:
+        #    ticks = ticks[(ticks <= left) | (ticks >= right)]
 
         return ticks
+
+
+class DiscontinuousFormatter(mpl.ticker.ScalarFormatter):
+    def __init__(self, breaks, **kwargs):
+        super().__init__(**kwargs)
+        self.breaks = breaks
+
+    def __call__(self, x, pos=None):
+        """Return the format for tick value *x* at position *pos*."""
+        for left, right in self.breaks:
+            if left < x < right:
+                return None
+        return super().__call__(x, pos)
 
 
 class DiscontinuousTransform(mpl.transforms.Transform):
@@ -234,23 +265,28 @@ class DiscontinuousTransform(mpl.transforms.Transform):
     def __init__(self, breaks, space, *, hide=True):
         super().__init__()
         self.breaks = breaks
-        self.space = space
+        self.spaces = space * (np.ones(len(breaks)) if np.isscalar(space) else 1)
         self.hide = hide
 
     def transform_non_affine(self, values):
-        if len(self.breaks) > 1:
-            raise NotImplementedError("At most a single break is supported currently")
-        a = np.asanyarray(values).copy()
-        for left, right in self.breaks:
-            mask = (a > left) & (a < right)
-            if self.hide:
-                a = np.ma.masked_where(mask, a)
-            a[mask] = left + self.space * (a[mask] - left) / (right - left)
-            a[a >= right] -= right - left - self.space
+        a = np.asanyarray(values, dtype="float").copy()
+        breaks = np.asanyarray(self.breaks, dtype="float").copy()
+        spaces = np.asanyarray(self.spaces, dtype="float")
+        m = np.zeros_like(a)
+        for (l, r), s in zip(breaks, spaces):
+            gap, over = (a > l) & (a < r), a >= r
+            m[gap] = 1
+            a[gap] = l + s * (a[gap] - l) / (r - l)
+            a[over] -= r - l - s
+            breaks[breaks >= r] -= r - l - s
+        if self.hide:
+            a = np.ma.masked_where(m, a)
         return a
 
-    def with_hide(self, hide):
-        return DiscontinuousTransform(self.breaks, self.space, hide=hide)
+    def inverted(self):
+        spaces = np.diff(self.breaks, axis=1)[:, 0]
+        breaks = self.transform_non_affine(self.breaks)
+        return DiscontinuousTransform(breaks, spaces, hide=False)
 
 
 class XPlot:
