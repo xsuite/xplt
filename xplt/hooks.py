@@ -18,7 +18,6 @@ from .colors import (
     cmap_petroff_cyclic,
     petroff_colors,
 )
-from .base import DiscontinuousLinearScale
 
 
 def try_register_hooks():
@@ -57,6 +56,8 @@ def register_matplotlib_options():
         mpl.colormaps.register(cmap=cmap_r)
 
     # register custom scales
+    from .base import DiscontinuousLinearScale
+
     mpl.scale.register_scale(DiscontinuousLinearScale)
 
 
