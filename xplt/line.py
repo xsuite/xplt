@@ -25,7 +25,7 @@ def element_strength(element, n):
 
 def nominal_order(element):
     """Get nominal element order (even if coefficients might be zero)"""
-    if type(element).__name__ == "Bend":  # Treat combined function magnets as bend
+    if element.__class__.__name__ == "Bend":  # avoid using type to support Views
         return 0
     if hasattr(element, "length"):
         for n in range(10, -1, -1):
@@ -448,8 +448,7 @@ class FloorPlot(XPlot):
                         rho = length / arc
                         x_center = x - helicity * rho * np.cos(rr) / np.cos(arc / 2)
                         y_center = y - helicity * rho * np.sin(rr) / np.cos(arc / 2)
-                        box = mpl.patches.Wedge(
-                            **defaults_for(
+                        wedge_kwargs = defaults_for(
                                 mpl.patches.Wedge,
                                 box_style,
                                 center=(x_center, y_center),
@@ -460,9 +459,8 @@ class FloorPlot(XPlot):
                                 theta2=np.rad2deg(rr + helicity * arc / 2)
                                 + 90 * (1 - helicity),  # rr + arc/2),
                                 alpha=0.5,
-                                zorder=3,
-                            )
-                        )
+                                zorder=3)
+                        box = mpl.patches.Wedge(**wedge_kwargs)
                     else:
                         # other elements as rect
                         box = mpl.patches.Rectangle(
