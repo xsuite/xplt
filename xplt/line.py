@@ -76,7 +76,8 @@ ORDER_NAMED_ELEMENTS = {
 
 def tanc(x):
     """Tangens cardinalis, i.e. tan(x)/x with limit tanc(0)=1"""
-    return np.sinc(x) / np.cos(x)
+    # Note that np.sinc is sin(pi*x)/(pi*x) and not sin(x)/x !
+    return np.sinc(x / np.pi) / np.cos(x)
 
 
 PUBLIC_SECTION_BEGIN()
@@ -457,14 +458,13 @@ class FloorPlot(XPlot):
                     if length > 0 and arc:
                         # bending elements as wedge
                         rho = length / arc
+                        x_center = x - helicity * rho * np.cos(rr) / np.cos(arc / 2)
+                        y_center = y - helicity * rho * np.sin(rr) / np.cos(arc / 2)
                         box = mpl.patches.Wedge(
                             **defaults_for(
                                 mpl.patches.Wedge,
                                 box_style,
-                                center=(
-                                    x - helicity * rho * np.cos(rr) / np.cos(arc / 2),
-                                    y - helicity * rho * np.sin(rr) / np.cos(arc / 2),
-                                ),
+                                center=(x_center, y_center),
                                 r=rho + width / 2,
                                 width=width,
                                 theta1=np.rad2deg(rr - helicity * arc / 2)
@@ -475,7 +475,6 @@ class FloorPlot(XPlot):
                                 zorder=3,
                             )
                         )
-
                     else:
                         # other elements as rect
                         box = mpl.patches.Rectangle(
