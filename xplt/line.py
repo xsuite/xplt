@@ -247,6 +247,7 @@ class FloorPlot(XPlot):
             ignore (None | str | list[str]): Optional patter or list of patterns to ignore elements with matching names.
                 Note that drift spaces are always ignored.
             element_width (float): Width of element boxes.
+            axis (str): Aspect ratio of the plot. Default is 'equal'.
             kwargs: See :class:`~.base.XPlot` for additional arguments
 
 
