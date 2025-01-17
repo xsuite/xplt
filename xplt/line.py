@@ -456,17 +456,18 @@ class FloorPlot(XPlot):
                         x_center = x - helicity * rho * np.cos(rr) / np.cos(arc / 2)
                         y_center = y - helicity * rho * np.sin(rr) / np.cos(arc / 2)
                         wedge_kwargs = defaults_for(
-                                mpl.patches.Wedge,
-                                box_style,
-                                center=(x_center, y_center),
-                                r=rho + width / 2,
-                                width=width,
-                                theta1=np.rad2deg(rr - helicity * arc / 2)
-                                + 90 * (1 - helicity),  # rr - arc/2),
-                                theta2=np.rad2deg(rr + helicity * arc / 2)
-                                + 90 * (1 - helicity),  # rr + arc/2),
-                                alpha=0.5,
-                                zorder=3)
+                            mpl.patches.Wedge,
+                            box_style,
+                            center=(x_center, y_center),
+                            r=rho + width / 2,
+                            width=width,
+                            theta1=np.rad2deg(rr - helicity * arc / 2)
+                            + 90 * (1 - helicity),  # rr - arc/2),
+                            theta2=np.rad2deg(rr + helicity * arc / 2)
+                            + 90 * (1 - helicity),  # rr + arc/2),
+                            alpha=0.5,
+                            zorder=3,
+                        )
                         box = mpl.patches.Wedge(**wedge_kwargs)
                     else:
                         # other elements as rect
