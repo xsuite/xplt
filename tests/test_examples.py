@@ -174,3 +174,8 @@ def test_timestructure():
 def test_twiss():
     t = NotebookTester(f"{dir}/twiss.ipynb")
     t.execute(check_outputs=True)
+
+
+def test_utilities():
+    t = NotebookTester(f"{dir}/utilities.ipynb")
+    t.execute(check_outputs=True)
