@@ -344,9 +344,6 @@ Module Contents
 
 
 
-   .. py:attribute:: abbreviations
-
-
    .. py:attribute:: artists_hamiltonian
 
 
@@ -369,12 +366,15 @@ Module Contents
 
 
    .. py:attribute:: ax
+      :value: None
+
 
 
    .. py:attribute:: ax_twin
 
 
    .. py:property:: axflat
+
       Return a flat list of all primary axes
 
 
@@ -384,30 +384,35 @@ Module Contents
 
 
    .. py:property:: circumference
+
       Circumference of circular accelerator
 
 
    .. py:attribute:: color
+      :value: None
+
 
 
    .. py:attribute:: fig
 
 
    .. py:attribute:: kind
+      :value: []
 
-
-   .. py:attribute:: kwargs
-
-
-   .. py:attribute:: n
 
 
    .. py:attribute:: percentiles
+      :value: None
+
 
 
    .. py:attribute:: plot
+      :value: 'auto'
+
 
 
    .. py:attribute:: projections
+      :value: 'auto'
+
 
 

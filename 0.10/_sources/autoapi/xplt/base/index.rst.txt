@@ -140,18 +140,12 @@ Module Contents
 
 
    .. py:attribute:: minor_n
-
-
-   .. py:attribute:: multiples
-      :value: (5, 15, 30, 45, 60, 90, 120, 180, 360)
+      :value: None
 
 
 
    .. py:attribute:: n
-
-
-   .. py:attribute:: subdivide
-      :value: (5, 3, 3, 3, 4, 3, 4, 4, 4)
+      :value: 5
 
 
 
@@ -274,9 +268,13 @@ Module Contents
 
 
    .. py:attribute:: minor_n
+      :value: None
+
 
 
    .. py:attribute:: n
+      :value: 5
+
 
 
 .. py:class:: RadiansFormatter
@@ -570,6 +568,8 @@ Module Contents
 
 
    .. py:attribute:: granularity
+      :value: 1
+
 
 
    .. py:attribute:: this2twin
@@ -911,6 +911,7 @@ Module Contents
 
 
    .. py:property:: artists
+
       Convenient access to artist
 
       The index can be an (optional) dataset identifier, followed by the subplot, axis and trace index.
@@ -919,9 +920,12 @@ Module Contents
 
 
    .. py:attribute:: ax
+      :value: None
+
 
 
    .. py:property:: axflat
+
       Return a flat list of all primary axes
 
 
@@ -1130,9 +1134,12 @@ Module Contents
 
 
    .. py:attribute:: ax
+      :value: None
+
 
 
    .. py:property:: axflat
+
       Return a flat list of all primary axes
 
 

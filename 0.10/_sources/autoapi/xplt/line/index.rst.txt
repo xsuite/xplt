@@ -23,9 +23,9 @@ Functions
 
 .. autoapisummary::
 
-   xplt.line.element_order
+   xplt.line.effective_order
    xplt.line.element_strength
-   xplt.line.iter_elements
+   xplt.line.nominal_order
    xplt.line.order
    xplt.line.tanc
 
@@ -33,7 +33,7 @@ Functions
 Module Contents
 ---------------
 
-.. py:class:: FloorPlot(survey=None, line=None, projection='ZX', *, boxes=None, labels=False, ignore=None, element_width=1, **kwargs)
+.. py:class:: FloorPlot(survey=None, line=None, projection='ZX', *, default_boxes=None, boxes=None, labels=False, ignore=None, element_width=1, axis='equal', **kwargs)
 
    Bases: :py:obj:`xplt.base.XPlot`
 
@@ -48,18 +48,23 @@ Module Contents
    :param projection: The projection to use: A pair of coordinates ('XZ', 'ZY' etc.)
    :type projection: str
    :param boxes: Config option for showing colored boxes for elements. See below.
-                 Detailed options can be "length" and all options suitable for a patch,
-                 such as "color", "alpha", etc.
+                 Detailed options can be "length" and all options suitable for a patch, such as "color", "alpha", etc.
+                 By default, all elements with a multipole order are shown, or if line is None then all element.
    :type boxes: None | bool | str | iterable | dict
+   :param default_boxes: Whether to keep the default boxes even if custom box options are specified.
+   :type default_boxes: bool
    :param labels: Config option for showing labels for elements. See below.
                   Detailed options can be "text" (e.g. "Dipole {name}" where name will be
                   replaced with the element name) and all options suitable for an annotation,
                   such as "color", "alpha", etc.
    :type labels: None | bool | str | iterable | dict
    :param ignore: Optional patter or list of patterns to ignore elements with matching names.
+                  Note that drift spaces are always ignored.
    :type ignore: None | str | list[str]
    :param element_width: Width of element boxes.
    :type element_width: float
+   :param axis: Aspect ratio of the plot. Default is 'equal'.
+   :type axis: str
    :param kwargs: See :class:`~.base.XPlot` for additional arguments
 
    The config options passed to boxes and labels can be:
@@ -230,13 +235,14 @@ Module Contents
 
 
 
-   .. py:method:: update(survey, line=None, *, autoscale=None)
+   .. py:method:: update(survey=None, line=None, *, autoscale=None)
 
       Update the survey data this plot shows
 
-      :param survey: Survey data.
-      :type survey: Any
-      :param line: Line data.
+      :param survey: Survey data. Defaults to `line.survey()`.
+                     For convenience, passing line as first argument is also supported.
+      :type survey: Any | None
+      :param line: Line object. Defaults to `survey.line` if possible.
       :type line: None | xtrack.Line
       :param autoscale: Whether and on which axes to perform autoscaling.
                         One of `"x"`, `"y"`, `"xy"`, `False` or `None`. If `None`, decide based on :meth:`matplotlib.axes.Axes.get_autoscalex_on` and :meth:`matplotlib.axes.Axes.get_autoscaley_on`.
@@ -260,9 +266,12 @@ Module Contents
 
 
    .. py:attribute:: ax
+      :value: None
+
 
 
    .. py:property:: axflat
+
       Return a flat list of all primary axes
 
 
@@ -272,9 +281,18 @@ Module Contents
 
 
    .. py:attribute:: boxes
+      :value: None
+
+
+
+   .. py:attribute:: default_boxes
+      :value: None
+
 
 
    .. py:attribute:: element_width
+      :value: 1
+
 
 
    .. py:attribute:: fig
@@ -284,9 +302,13 @@ Module Contents
 
 
    .. py:attribute:: labels
+      :value: False
+
 
 
    .. py:attribute:: projection
+      :value: 'ZX'
+
 
 
 .. py:class:: KnlPlot(line=None, *, knl=None, filled=True, resolution='auto', **kwargs)
@@ -630,6 +652,7 @@ Module Contents
 
 
    .. py:property:: artists
+
       Convenient access to artist
 
       The index can be an (optional) dataset identifier, followed by the subplot, axis and trace index.
@@ -638,9 +661,12 @@ Module Contents
 
 
    .. py:attribute:: ax
+      :value: None
+
 
 
    .. py:property:: axflat
+
       Return a flat list of all primary axes
 
 
@@ -653,6 +679,8 @@ Module Contents
 
 
    .. py:attribute:: filled
+      :value: True
+
 
 
    .. py:attribute:: on_x
@@ -662,9 +690,11 @@ Module Contents
 
 
    .. py:attribute:: resolution
+      :value: 'auto'
 
 
-.. py:function:: element_order(element)
+
+.. py:function:: effective_order(element)
 
    Get effective order of element (ignoring zero strength)
 
@@ -674,14 +704,9 @@ Module Contents
    Get knl strength of element
 
 
-.. py:function:: iter_elements(line)
+.. py:function:: nominal_order(element)
 
-   Iterate over elements in line
-
-   :param line: Line of elements.
-   :type line: xtrack.Line
-
-   :Yields: *(name, element, s_from, s_to)* -- Name, element, start and end s position of element.
+   Get nominal element order (even if coefficients might be zero)
 
 
 .. py:function:: order(knl)
