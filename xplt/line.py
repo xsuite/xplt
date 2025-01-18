@@ -337,24 +337,21 @@ class FloorPlot(XPlot):
 
             X = get(survey, A) * scale
             Y = get(survey, B) * scale
+
             # ang: transform angles from data (A-B) to axis (X-Y) coordinate system
             if self.projection == "ZX":
-                R = get(survey, "theta")
                 def ang(a):
                     return a
             elif self.projection == "XZ":
-                R = get(survey, "theta")
                 def ang(a):
                     return np.pi / 2 - a
             elif self.projection == "ZY":
-                R = get(survey, "phi")
                 def ang(a):
                     return a
             else:
-                raise NotImplementedError()
+                raise ValueError(f"Unknown projection {self.projection}")
 
             NAME = get(survey, "name")
-            BEND = get(survey, "angle")
 
             # beam line
             ############
@@ -378,31 +375,22 @@ class FloorPlot(XPlot):
 
             helicity = 1
             legend_entries = []
-            for i, (x, y, rt, name, arc) in enumerate(zip(X, Y, R, NAME, BEND)):
+            for i, (x, y, name) in enumerate(zip(X, Y, NAME)):
 
                 if name == "_end_point":
                     break
 
-                # rt = angle of tangential direction in data coords
-                # rr = angle of radial direction (outward) in axis coords
-
-                if self.projection == "ZX":
+                if self.projection == "ZX" or self.projection == "XZ":
                     rt = survey["theta"][i]
                     arc = -(survey["theta"][i + 1] - rt)
-                    helicity = np.sign(arc) or helicity
-                    rr = rt - arc / 2 + helicity * np.pi / 2
                 elif self.projection == "ZY":
                     rt = survey["phi"][i]
                     arc = -(survey["phi"][i + 1] - rt)
-                    helicity = np.sign(arc) or helicity
-                    rr = rt - arc / 2 + helicity * np.pi / 2
-                elif self.projection == "XZ":
-                    rt = survey["theta"][i]
-                    arc = -(survey["theta"][i + 1] - rt)
-                    helicity = np.sign(arc) or helicity
-                    rr = np.pi / 2 - (rt - arc / 2 + helicity * np.pi / 2)
+                else:
+                    raise ValueError(f"Unknown projection {self.projection}")
 
-                # rr = ang(rt - arc / 2 + helicity * np.pi / 2)
+                helicity = np.sign(arc) or helicity
+                rr = ang(rt - arc / 2 + helicity * np.pi / 2)
 
                 drift_length = get(get(survey, "drift_length", []), i, -1)
                 length = get(get(survey, "length", []), i, 0)
