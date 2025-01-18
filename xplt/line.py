@@ -360,7 +360,7 @@ class FloorPlot(XPlot):
                     return np.pi / 2 - a
 
             elif self.projection == "ZY":
-                R = get(survey, "theta")
+                R = get(survey, "phi")
 
                 def ang(a):
                     return a
