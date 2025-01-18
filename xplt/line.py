@@ -340,14 +340,20 @@ class FloorPlot(XPlot):
 
             # ang: transform angles from data (A-B) to axis (X-Y) coordinate system
             if self.projection == "ZX":
+
                 def ang(a):
                     return a
+
             elif self.projection == "XZ":
+
                 def ang(a):
                     return np.pi / 2 - a
+
             elif self.projection == "ZY":
+
                 def ang(a):
                     return a
+
             else:
                 raise ValueError(f"Unknown projection {self.projection}")
 
@@ -359,8 +365,7 @@ class FloorPlot(XPlot):
             changed.append(self.artist_beamline)
             # start point arrow
             i = np.argmax((X > X[0]) | (Y > Y[0]))
-            self.artist_startpoint.set_positions(
-                (2 * X[0] - X[i], 2 * Y[0] - Y[i]), (X[0], Y[0]))
+            self.artist_startpoint.set_positions((2 * X[0] - X[i], 2 * Y[0] - Y[i]), (X[0], Y[0]))
             changed.append(self.artist_startpoint)
 
             # elements
@@ -395,17 +400,18 @@ class FloorPlot(XPlot):
                 drift_length = get(get(survey, "drift_length", []), i, -1)
                 length = get(get(survey, "length", []), i, 0)
                 is_thick = False
-                if 'element_type' in survey.keys():
+                if "element_type" in survey.keys():
                     # is an xtrack survey
                     is_xtrack = True
-                    order = {'Bend': 0,
-                             'Quadrupole': 1,
-                             'Sextupole': 2,
-                             'Octupole': 3,
-                             'Multipole': 999
-                             }.get(survey['element_type'][i], -1)
-                    is_thick = survey['isthick'][i]
-                    length = survey['length'][i]
+                    order = {
+                        "Bend": 0,
+                        "Quadrupole": 1,
+                        "Sextupole": 2,
+                        "Octupole": 3,
+                        "Multipole": 999,
+                    }.get(survey["element_type"][i], -1)
+                    is_thick = survey["isthick"][i]
+                    length = survey["length"][i]
                 else:
                     # probably a MAD-X survey
                     order = get(get(survey, "order", []), i, -1)
@@ -440,9 +446,9 @@ class FloorPlot(XPlot):
 
                 boxes = self.boxes
                 if boxes is None:
-                    boxes = not(is_xtrack) or order >= 0
+                    boxes = not (is_xtrack) or order >= 0
                 box_style = self._get_config(boxes, name, **default_box_style)
-                if box_style is None and self.default_boxes and (not(is_xtrack) or order >= 0):
+                if box_style is None and self.default_boxes and (not (is_xtrack) or order >= 0):
                     box_style = default_box_style
 
                 if box_style is not None:
