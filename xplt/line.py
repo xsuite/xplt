@@ -340,24 +340,17 @@ class FloorPlot(XPlot):
             # ang: transform angles from data (A-B) to axis (X-Y) coordinate system
             if self.projection == "ZX":
                 R = get(survey, "theta")
-
                 def ang(a):
                     return a
-
             elif self.projection == "XZ":
                 R = get(survey, "theta")
-
                 def ang(a):
                     return np.pi / 2 - a
-
             elif self.projection == "ZY":
                 R = get(survey, "phi")
-
                 def ang(a):
                     return a
-
             else:
-                ...
                 raise NotImplementedError()
 
             NAME = get(survey, "name")
@@ -369,7 +362,8 @@ class FloorPlot(XPlot):
             changed.append(self.artist_beamline)
             # start point arrow
             i = np.argmax((X > X[0]) | (Y > Y[0]))
-            self.artist_startpoint.set_positions((2 * X[0] - X[i], 2 * Y[0] - Y[i]), (X[0], Y[0]))
+            self.artist_startpoint.set_positions(
+                (2 * X[0] - X[i], 2 * Y[0] - Y[i]), (X[0], Y[0]))
             changed.append(self.artist_startpoint)
 
             # elements
@@ -385,10 +379,22 @@ class FloorPlot(XPlot):
             helicity = 1
             legend_entries = []
             for i, (x, y, rt, name, arc) in enumerate(zip(X, Y, R, NAME, BEND)):
-                helicity = np.sign(arc) or helicity
+
+                if name == "_end_point":
+                    break
+
                 # rt = angle of tangential direction in data coords
                 # rr = angle of radial direction (outward) in axis coords
-                rr = ang(rt - arc / 2 + helicity * np.pi / 2)
+
+                if self.projection == "ZX":
+                    rt = survey["theta"][i]
+                    arc = -(survey["theta"][i + 1] - rt)
+                    helicity = np.sign(arc) or helicity
+                    rr = rt - arc / 2 + helicity * np.pi / 2
+                elif self.projection == "XZ":
+                    prrrr
+
+                # rr = ang(rt - arc / 2 + helicity * np.pi / 2)
 
                 drift_length = get(get(survey, "drift_length", []), i, -1)
                 length = get(get(survey, "length", []), i, 0)
