@@ -400,11 +400,24 @@ class FloorPlot(XPlot):
                 rr = ang(rt - arc / 2 + helicity * np.pi / 2)
 
                 drift_length = get(get(survey, "drift_length", []), i, -1)
-                order = get(get(survey, "order", []), i, -1)
                 length = get(get(survey, "length", []), i, 0)
                 is_thick = False
-                element = None
+                if 'element_type' in survey.keys():
+                    # is an xtrack survey
+                    order = {'Bend': 0,
+                             'Quadrupole': 1,
+                             'Sextupole': 2,
+                             'Octupole': 3,
+                             'Multipole': 999
+                             }.get(survey['element_type'][i], -1)
+                    is_thick = survey['isthick'][i]
+                    length = survey['length'][i]
+                else:
+                    # probably a MAD-X survey
+                    order = get(get(survey, "order", []), i, -1)
 
+
+                element = None
                 try:
                     element = line[name]
                     is_thick = element.isthick
@@ -438,6 +451,7 @@ class FloorPlot(XPlot):
                         1: "Quadrupole magnet",
                         2: "Sextupole magnet",
                         3: "Octupole magnet",
+                        999: "Multipole magnet",
                     }.get(order),
                 )
 
