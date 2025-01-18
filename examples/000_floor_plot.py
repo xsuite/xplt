@@ -14,6 +14,7 @@ l1 =env.new_line(components=[
 
 sv1 = l1.survey()
 sv1.plot()
+sv1.plot(projection='XZ')
 
 
 l2 = env.new_line(components=[
@@ -32,4 +33,4 @@ l3 =env.new_line(components=[
     env.new('ev', 'Marker', at=15)
 ])
 sv3 = l3.survey()
-sv3.plot()
+sv3.plot(projection='ZY')

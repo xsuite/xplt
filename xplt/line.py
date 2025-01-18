@@ -391,8 +391,16 @@ class FloorPlot(XPlot):
                     arc = -(survey["theta"][i + 1] - rt)
                     helicity = np.sign(arc) or helicity
                     rr = rt - arc / 2 + helicity * np.pi / 2
+                elif self.projection == "ZY":
+                    rt = survey["phi"][i]
+                    arc = -(survey["phi"][i + 1] - rt)
+                    helicity = np.sign(arc) or helicity
+                    rr = rt - arc / 2 + helicity * np.pi / 2
                 elif self.projection == "XZ":
-                    prrrr
+                    rt = survey["theta"][i]
+                    arc = -(survey["theta"][i + 1] - rt)
+                    helicity = np.sign(arc) or helicity
+                    rr = np.pi / 2 - (rt - arc / 2 + helicity * np.pi / 2)
 
                 # rr = ang(rt - arc / 2 + helicity * np.pi / 2)
 
