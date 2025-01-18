@@ -24,3 +24,12 @@ l2 = env.new_line(components=[
 
 sv2 = l2.survey()
 sv2.plot()
+
+env.new('bend_v', 'Bend', rot_s_rad=np.pi/2)
+l3 =env.new_line(components=[
+    env.new('mbv1', 'bend_v', angle=np.pi/4, length=1, at=5),
+    env.new('mbv2', 'bend_v', angle=-np.pi/4, length=1, at=10),
+    env.new('ev', 'Marker', at=15)
+])
+sv3 = l3.survey()
+sv3.plot()
