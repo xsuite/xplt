@@ -34,3 +34,13 @@ l3 =env.new_line(components=[
 ])
 sv3 = l3.survey()
 sv3.plot(projection='ZY')
+
+l4 = env.new_line(components=[
+    env.new('mv1', 'Multipole', knl=[np.pi/4], hxl=np.pi/4, rot_s_rad=np.pi/2,
+            length=1, at=5),
+    env.new('mv2', 'Multipole', knl=[-np.pi/4], hxl=-np.pi/4, rot_s_rad=np.pi/2,
+            length=1, at=10),
+    env.new('eev', 'Marker', at=15)
+])
+sv4 = l4.survey()
+sv4.plot(projection='ZY')
