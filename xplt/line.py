@@ -411,11 +411,6 @@ class FloorPlot(XPlot):
                     order = get(get(survey, "order", []), i, -1)
                     is_xtrack = False
 
-                element = None
-
-                # ignored elements
-                if drift_length > 0 and not is_thick or type(element).__name__ == "Drift":
-                    continue  # always skip drift spaces
                 if self.ignore is not None:
                     if np.any([re.match(pattern, name) is not None for pattern in self.ignore]):
                         continue  # skip ignored
