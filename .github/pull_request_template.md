@@ -1,3 +1,10 @@
+<!--
+
+Important: Before opening a PR, make sure to read https://github.com/xsuite/xplt/wiki/Contributing
+
+-->
+
+
 ## Description
 <!-- Describe why you are making the changes you do
  including code snippets and/or screenshots where applicable
