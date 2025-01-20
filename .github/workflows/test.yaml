@@ -55,3 +55,24 @@ jobs:
         with:
           extra_args: --all-files --hook-stage=manual
 
+  versioning:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: |
+          # Determine version
+          pip install -e .
+          VERSION=$(python3 -c "from xplt import __version__;print('v' + __version__)")
+          echo "Xplt version: $VERSION"
+          # Ensure it is unique
+          TAG=$(git tag -l $VERSION)
+          echo "Matching git tag: $TAG"
+          if [[ $TAG ]]; then
+            echo "Version is not unique. Please update it in 'xplt/__init__.py'"
+            exit 1
+          fi
