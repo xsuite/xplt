@@ -50,7 +50,7 @@ httpcore==1.0.7
 httpx==0.28.1
 idna==3.10
 imagesize==1.4.1
-importlib-metadata==8.5.0
+importlib-metadata==8.6.1
 ipykernel==6.29.5
 ipython==8.31.0
 isoduration==20.11.0
@@ -101,7 +101,7 @@ pint==0.24.4
 platformdirs==4.3.6
 pockets==0.9.1
 prometheus-client==0.21.1
-prompt-toolkit==3.0.49
+prompt-toolkit==3.0.50
 psutil==6.1.1
 ptyprocess==0.7.0
 pure-eval==0.2.3
