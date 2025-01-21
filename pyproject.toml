@@ -26,7 +26,6 @@ dependencies = [
     "matplotlib>=3.6",
     "numpy>=1.17.0",
     "scipy>=1.2.0",
-    "pint>=0.24.1",
 ]
 dynamic = ["version"]
 
@@ -36,7 +35,10 @@ documentation = "https://xsuite.github.io/xplt"
 repository = "https://github.com/xsuite/xplt"
 
 [project.optional-dependencies]
-all = ["pandas"]
+full = [
+    "pandas",
+    "pint>=0.24.1",
+]
 
 
 # Build tools
