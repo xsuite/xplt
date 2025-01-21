@@ -63,7 +63,8 @@ class NotebookTester:
                 return False
             return True
 
-        reference_outputs = filter(keep, reference_cell.get("outputs", []))
+        # Make sure these are lists, since filter object can be iterated over only once!
+        reference_outputs = list(filter(keep, reference_cell.get("outputs", [])))
         actual_outputs = list(filter(keep, actual_cell.get("outputs", [])))
 
         print("reference_outputs:", [o.get("output_type") for o in reference_outputs])
