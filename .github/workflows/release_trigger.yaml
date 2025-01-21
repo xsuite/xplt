@@ -1,10 +1,13 @@
 name: Release trigger
 
+# This workflow creates a tag matching the version, which subsequently triggers a release
+
 on:
-  push:
-    branches:
-      - main
-      - main-*
+  workflow_dispatch:
+  #push:
+  #  branches:
+  #    - main
+  #    - main-*
 
 permissions:
   repository-projects: write
