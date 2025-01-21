@@ -21,10 +21,17 @@ import matplotlib.transforms
 import matplotlib.patches
 import matplotlib.path
 import numpy as np
-import pint
 
 from .util import defaults, flattened, defaults_for, AUTO
-from .properties import Property, find_property, DataProperty, arb_unit
+from .properties import (
+    Property,
+    find_property,
+    DataProperty,
+    arb_unit,
+    _convert_value_to_unit,
+    _fmt_qty,
+    _has_pint,
+)
 
 
 class ManifoldMultipleLocator(mpl.ticker.MaxNLocator):
@@ -329,7 +336,9 @@ class XPlot:
                 self._user_properties[name] = (
                     DataProperty(name, arg) if isinstance(arg, str) else arg
                 )
-        self._display_units = defaults(display_units, s="m", x="mm", y="mm", p="mrad")
+        self._display_units = defaults(
+            display_units, **dict(s="m", x="mm", y="mm", p="mrad") if _has_pint() else {}
+        )
 
         if annotation is None:
             annotation = ax is None
@@ -543,7 +552,7 @@ class XPlot:
         Returns:
             float: Factor to convert parameter into display unit
         """
-        return pint.Quantity(1, self.prop(p).unit).to(self.display_unit_for(p)).m
+        return _convert_value_to_unit(1, self.prop(p).unit, self.display_unit_for(p))
 
     def display_unit_for(self, p):
         """Return display unit for parameter
@@ -681,9 +690,9 @@ class XPlot:
             if units[0] == arb_unit:  # arbitrary unit
                 append = " / " + arb_unit
             else:
-                display_unit = pint.Unit(units[0])  # all have the same unit (see above)
-                if display_unit != pint.Unit("1"):
-                    append = f" / ${display_unit:~X}$"  # see "NIST Guide to the SI"
+                display_unit = units[0]  # all have the same unit (see above)
+                if display_unit and display_unit != "1":
+                    append = f" / ${_fmt_qty(None, display_unit)}$"  # see "NIST Guide to the SI"
             if append:
                 # heuristic: if labels contain expressions with +, - or ± then add parentheses
                 if re.findall(r"([-+±]|\\pm)(?![^(]*\))(?![^{]*\})", label.split("   ")[-1]):

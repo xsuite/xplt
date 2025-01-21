@@ -46,10 +46,10 @@ from . import hooks as _hooks
 _hooks.try_register_hooks()
 
 import matplotlib.style as _mpl_style
-import pint.formatting as _pint_formatting
 
 
 def apply_style():
     """Apply xplt's matplotlib style sheet and update rcParams"""
     _mpl_style.use("xplt.xplt")
+    # import pint.formatting as _pint_formatting
     # _pint_formatting.format_default = "X"  # use explicit format instead!

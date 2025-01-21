@@ -10,17 +10,60 @@ __contact__ = "eltos@outlook.de"
 __date__ = "2023-11-11"
 
 
-import pint
-
-try:
-    import pandas as pd
-except ImportError:
-    # pandas is an optional dependency
-    pd = None
 from .util import *
 
 
 arb_unit = "arb. unit"
+
+
+def _import_pint_or_raise(info: str = ""):
+    try:
+        import pint
+    except ImportError as e:
+        raise ImportError(
+            f"The pint package is required {info}. Install it with 'pip install xplt[full]'."
+        ) from e
+    return pint
+
+
+def _has_pint():
+    try:
+        _import_pint_or_raise()
+        return True
+    except ImportError:
+        return False
+
+
+def _convert_value_to_unit(value, unit: str, to_unit: str):
+    if unit == to_unit:
+        return value
+    pint = _import_pint_or_raise(f"to convert units (from '{unit}' to '{to_unit}')")
+    return value * pint.Quantity(1, unit).to(to_unit).magnitude
+
+
+def _deduce_derived_unit(function, input_units: dict) -> str:
+    """Deduce the output unit of function, given the units for each input parameter"""
+    pint = _import_pint_or_raise(f"to automatically deduce units for '{function}'")
+    return function(**{p: pint.Quantity(1, u) for p, u in input_units.items()}).units
+
+
+def _fmt_qty(t, unit):
+    """Human-readable representation of value in unit (latex syntax)
+
+    Args:
+        t (float | None): the value
+        unit (str | None): the unit
+    Returns:
+        str: Formatted string in latex syntax without '$', e.g. "5.27\\ \\mathrm{mm}"
+    """
+    if t is not None:
+        t = float(f"{t:g}")  # to handle corner cases like 9.999999e-07
+    try:
+        pint = _import_pint_or_raise(f"to format the value '{t}' in units of '{unit}'")
+        s = f"{pint.Unit(unit) if t is None else pint.Quantity(t, unit):#~.4gX}"
+        return s.rstrip("\\").replace(" ", "\\ ", 1)
+    except ImportError:
+        return ("" if t is None else f"{t:g}\\ ") + f"\\mathrm{{{unit}}}"
 
 
 class Property:
@@ -35,8 +78,6 @@ class Property:
         self.symbol = symbol
         self.unit = unit
         self.description = description
-
-        pint.Unit(self.unit)  # to raise an error if not a valid unit
 
     def values(self, data, mask=None, *, unit=None):
         """Get masked data for this property
@@ -142,8 +183,7 @@ class DataProperty(Property):
 
         # convert to unit
         if unit is not None:
-            factor = pint.Quantity(1, self.unit).to(unit).magnitude
-            v *= factor
+            v = _convert_value_to_unit(v, self.unit, unit)
 
         return v
 
@@ -191,8 +231,7 @@ class DerivedProperty(Property):
 
         # convert to unit
         if unit is not None:
-            factor = pint.Quantity(1, self.unit).to(unit).magnitude
-            v *= factor
+            v = _convert_value_to_unit(v, self.unit, unit)
 
         return v
 
@@ -268,8 +307,9 @@ def register_derived_property(name, function, unit=None, symbol=None, descriptio
     if unit is None:
         # determine unit from function return value
         inputs = inspect.signature(function).parameters.keys()
-        inputs = {p: pint.Quantity(1, find_property(p).unit) for p in inputs}
-        unit = function(**inputs).units
+        input_units = {p: find_property(p).unit for p in inputs}
+        unit = _deduce_derived_unit(function, input_units)
+
     register_property(name, DerivedProperty(symbol or f"${name}$", unit, function, description))
 
 

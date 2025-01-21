@@ -14,7 +14,6 @@ import inspect
 import re
 
 import numpy as np
-import pint
 import scipy.signal
 import matplotlib as mpl
 import matplotlib.collections
@@ -62,14 +61,6 @@ def val(obj):
     if np.size(obj) == 1:
         return np.array(obj).item()
     return obj
-
-
-def fmt(t, unit="s"):
-    """Human-readable representation of value in unit (latex syntax)"""
-    t = float(f"{t:g}")  # to handle corner cases like 9.999999e-07
-    s = f"{pint.Quantity(t, unit):#~.4gX}".rstrip("\\")
-    s = s.replace(" ", "\\ ", 1)
-    return s
 
 
 #

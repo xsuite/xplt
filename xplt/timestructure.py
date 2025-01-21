@@ -12,7 +12,9 @@ __date__ = "2022-11-24"
 import warnings
 from dataclasses import dataclass
 import scipy.signal
+
 from .util import *
+from .properties import _fmt_qty
 from .base import XManifoldPlot, TwinFunctionLocator, TransformedLocator
 from .particles import (
     ParticlePlotMixin,
@@ -868,9 +870,9 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
         if len(fs) == 1:
             if self.relative:
                 f = fs[0] / self.frev(particles)
-                self.annotate(f"$f_\\mathrm{{samp}} = {fmt(f, '1')}\\, f_\\mathrm{{rev}}$")
+                self.annotate(f"$f_\\mathrm{{samp}} = {_fmt_qty(f, '1')}\\, f_\\mathrm{{rev}}$")
             else:
-                self.annotate(f"$f_\\mathrm{{samp}} = {fmt(fs[ 0 ], 'Hz')}$")
+                self.annotate(f"$f_\\mathrm{{samp}} = {_fmt_qty(fs[ 0], 'Hz')}$")
         else:
             self.annotate("")
 
@@ -1092,7 +1094,7 @@ class TimeIntervalPlot(
         times = self._apply_time_range(times)
         delay = self.factor_for("t") * np.diff(sorted(times))
 
-        self.annotate(f"$\\Delta t_\\mathrm{{bin}} = {fmt(self.bin_time)}$")
+        self.annotate(f"$\\Delta t_\\mathrm{{bin}} = {_fmt_qty(self.bin_time, 's')}$")
 
         # update plots
         changed = []
@@ -1342,8 +1344,8 @@ class SpillQualityPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, Metrices
 
         # annotate plot
         self.annotate(
-            f"$\\Delta t_\\mathrm{{count}} = {fmt(timeseries.dt)}$\n"
-            f"$\\Delta t_\\mathrm{{evaluate}} = {fmt(timeseries.dt * nebins)}$"
+            f"$\\Delta t_\\mathrm{{count}} = {_fmt_qty(timeseries.dt, 's')}$\n"
+            f"$\\Delta t_\\mathrm{{evaluate}} = {_fmt_qty(timeseries.dt * nebins, 's')}$"
         )
 
         # display units
@@ -1670,7 +1672,7 @@ class SpillQualityTimescalePlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin,
             + (
                 f"{self.counting_bins_per_evaluation:g}\\,\\Delta t_\\mathrm{{count}}$"
                 if self.counting_bins_per_evaluation
-                else f"{fmt(duration)}$"
+                else f"{_fmt_qty(duration, 's')}$"
             )
         )
 
