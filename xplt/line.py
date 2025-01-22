@@ -218,6 +218,7 @@ class FloorPlot(XPlot):
     def __init__(
         self,
         survey=None,
+        line=None,
         projection="ZX",
         *,
         default_boxes=None,
@@ -232,6 +233,7 @@ class FloorPlot(XPlot):
 
         Args:
             survey (Any | None): Survey data from MAD-X or Xsuite.
+            line (xtrack.Line): Xsuite line object (optional).
             projection (str): The projection to use: A pair of coordinates ('XZ', 'ZY' etc.)
             boxes (None | bool | str | iterable | dict): Config option for showing colored boxes for elements. See below.
                 Detailed options can be "length" and all options suitable for a patch, such as "color", "alpha", etc.
@@ -273,6 +275,7 @@ class FloorPlot(XPlot):
         if projection == "3D":
             raise NotImplementedError()
 
+        self.line = line
         self.projection = projection
         self.boxes = boxes
         self.default_boxes = default_boxes if default_boxes is not None else (boxes is not False)
@@ -397,7 +400,6 @@ class FloorPlot(XPlot):
                 helicity = np.sign(arc) or helicity
                 rr = ang(rt - arc / 2 + helicity * np.pi / 2)
 
-                drift_length = get(get(survey, "drift_length", []), i, -1)
                 length = get(get(survey, "length", []), i, 0)
                 is_thick = False
                 if "element_type" in survey.keys():
@@ -416,6 +418,13 @@ class FloorPlot(XPlot):
                     # probably a MAD-X survey
                     order = get(get(survey, "order", []), i, -1)
                     is_xtrack = False
+
+                # For multipoles extract the order from the knl values
+                if order == 999 and self.line is not None:
+                    knl = self.line.get(name).knl
+                    non_zero = np.where(knl != 0)[0]
+                    if len(non_zero) > 0:
+                        order = non_zero[0]
 
                 if self.ignore is not None:
                     if np.any([re.match(pattern, name) is not None for pattern in self.ignore]):
