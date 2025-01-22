@@ -1,0 +1,33 @@
+name: Release trigger
+
+# This workflow creates a tag matching the version, which subsequently triggers a release
+
+on:
+  workflow_dispatch:
+  #push:
+  #  branches:
+  #    - main
+  #    - main-*
+
+permissions:
+  repository-projects: write
+
+jobs:
+  create-version-tag:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ssh-key: ${{ secrets.RELEASE_TRIGGER_WORKFLOW_KEY }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: |
+          # Determine version
+          pip install -e .
+          VERSION=$(python3 -c "from xplt import __version__;print('v' + __version__)")
+          echo "Xplt version: $VERSION"
+          # Create tag
+          git tag $VERSION
+          git push origin $VERSION

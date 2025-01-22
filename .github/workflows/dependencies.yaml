@@ -5,6 +5,12 @@ on:
   workflow_dispatch:
   schedule:
     - cron: '47 8 19 * *'
+  push:
+    branches:
+      - dev
+    paths:
+      - '.github/workflows/dependencies.yaml'
+      - 'requirements/*.in'
 
 permissions:
   pull-requests: write
@@ -13,60 +19,46 @@ permissions:
 concurrency:
   group: ${{ github.workflow }}
 
+env:
+  PYTHON_VERSIONS: |
+    3.9
+    3.10
+    3.11
+    3.12
+
 jobs:
   update-dependencies:
     runs-on: ubuntu-24.04
-    strategy:
-      matrix:
-        python-version: [ '3.9', '3.10', '3.11', '3.12' ]
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: dev  # force checkout dev branch since schedule runs on main by default
           ssh-key: ${{ secrets.DEPENDENCY_WORKFLOW_KEY }}
       - uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
-      - run: pip install pip-tools==7.4.1
-      - name: Update dependencies
-        run: |
-          cd requirements
-          pip-compile --upgrade --no-annotate -o examples-requirements-py${{ matrix.python-version }}.txt --all-extras ../pyproject.toml examples.in
-          pip-compile --upgrade --no-annotate -o tests-requirements-py${{ matrix.python-version }}.txt examples-requirements-py${{ matrix.python-version }}.txt tests.in
-      - name: Open PR
-        uses: peter-evans/create-pull-request@v7.0.5
-        with:
-          commit-message: Dependency updates for Python ${{ matrix.python-version }}
-          author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
-          branch: deps/py${{ matrix.python-version }}
-          delete-branch: true
-          title: Dependency updates for Python ${{ matrix.python-version }}
-          labels: |
-              dependencies
-          body: |
-            Dependency updates by pip-compile
+          python-version: ${{ env.PYTHON_VERSIONS }}
 
-  update-dependencies-docs:
-    runs-on: ubuntu-24.04
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ssh-key: ${{ secrets.DEPENDENCY_WORKFLOW_KEY }}
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - run: pip install pip-tools==7.4.1
       - name: Update dependencies
         run: |
           cd requirements
-          pip-compile --upgrade --no-annotate -o docs-requirements.txt examples-requirements-py3.12.txt docs.in
+          for VER in $PYTHON_VERSIONS
+          do
+            python$VER -m pip install pip-tools==7.4.1
+            python$VER -m piptools compile --upgrade --no-annotate -o examples-requirements-py$VER.txt --all-extras ../pyproject.toml examples.in
+            python$VER -m piptools compile --upgrade --no-annotate -o tests-requirements-py$VER.txt examples-requirements-py$VER.txt tests.in
+          done
+          # use last version for docs 
+          python$VER -m piptools compile --upgrade --no-annotate -o docs-requirements.txt examples-requirements-py$VER.txt docs.in
+
       - name: Open PR
         uses: peter-evans/create-pull-request@v7.0.5
         with:
-          commit-message: Dependency updates for docs
+          commit-message: Dependency updates
           author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
-          branch: deps/docs
+          branch: deps/dependency-updates
+          base: dev
           delete-branch: true
-          title: Dependency updates for docs
+          title: Dependency updates
           labels: |
               dependencies
           body: |
