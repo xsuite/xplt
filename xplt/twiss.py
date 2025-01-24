@@ -14,7 +14,7 @@ from matplotlib.lines import Line2D
 from .util import *
 from .base import XManifoldPlot
 from .line import KnlPlot
-from .properties import Property, DataProperty, DerivedProperty
+from .properties import Property, DataProperty, DerivedProperty, _has_pint
 
 from matplotlib.collections import PolyCollection
 from numpy.testing import assert_equal
@@ -92,18 +92,22 @@ class TwissPlot(XManifoldPlot):
             max_y=DataProperty("max_y", "m", "$y_\\mathrm{max}$"),
         )
 
-        super().__init__(
-            on_x="s",
-            on_y=kind,
-            on_y_subs=subs,
-            display_units=defaults(
-                kwargs.pop("display_units", None),
+        display_units = kwargs.pop("display_units", None)
+        if _has_pint():
+            display_units = defaults(
+                display_units,
                 bet="m",
                 d="m",
                 sigma_="mm",
                 envelope_="mm",
                 envelope3_="mm",
-            ),
+            )
+
+        super().__init__(
+            on_x="s",
+            on_y=kind,
+            on_y_subs=subs,
+            display_units=display_units,
             **kwargs,
         )
 

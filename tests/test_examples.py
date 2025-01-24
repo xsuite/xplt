@@ -67,39 +67,50 @@ class NotebookTester:
         reference_outputs = list(filter(keep, reference_cell.get("outputs", [])))
         actual_outputs = list(filter(keep, actual_cell.get("outputs", [])))
 
-        print("reference_outputs:", [o.get("output_type") for o in reference_outputs])
-        print("actual_outputs:", [o.get("output_type") for o in actual_outputs])
+        try:
+            # compare the filtered outputs
+            for i, ref_out in enumerate(reference_outputs):
+                output_type = ref_out.get("output_type")
 
-        # compare the filtered outputs
-        for i, ref_out in enumerate(reference_outputs):
-            output_type = ref_out.get("output_type")
-
-            try:
-                act_out = actual_outputs[i]
-            except IndexError:
-                raise ValueError(
-                    f"Expected {len(reference_outputs)} cell outputs, but only {len(actual_outputs)} found"
-                )
-
-            if output_type == "stream":  # compare plain text
-                cls.compare_outputs_text(ref_out.get("text"), act_out.get("text"))
-
-            else:
-                output_data = ref_out.get("data", {})
-
-                for mime, rule in {
-                    "image/png": cls.compare_outputs_image,
-                    "text/markdown": cls.compare_outputs_markup,
-                    "text/html": cls.compare_outputs_html,
-                }.items():
-                    if mime in output_data:
-                        rule(output_data.get(mime), act_out.get("data", {}).get(mime))
-                        break
-                else:  # unknown output type
-                    raise NotImplementedError(
-                        f"No rule to compare output type '{ref_out.get('output_type')}' with data '{ref_out.get('data', {}).keys()}'. \n"
-                        "Currently only 'image/png', 'text/markdown' and 'text/html' are supported."
+                try:
+                    act_out = actual_outputs[i]
+                except IndexError:
+                    raise ValueError(
+                        f"Expected {len(reference_outputs)} cell outputs, but only {len(actual_outputs)} found"
                     )
+
+                if output_type == "stream":  # compare plain text
+                    cls.compare_outputs_text(ref_out.get("text"), act_out.get("text"))
+
+                else:
+                    output_data = ref_out.get("data", {})
+
+                    for mime, rule in {
+                        "image/png": cls.compare_outputs_image,
+                        "text/markdown": cls.compare_outputs_markup,
+                        "text/html": cls.compare_outputs_html,
+                    }.items():
+                        if mime in output_data:
+                            rule(output_data.get(mime), act_out.get("data", {}).get(mime))
+                            break
+                    else:  # unknown output type
+                        raise NotImplementedError(
+                            f"No rule to compare output type '{ref_out.get('output_type')}' with data '{ref_out.get('data', {}).keys()}'. \n"
+                            "Currently only 'image/png', 'text/markdown' and 'text/html' are supported."
+                        )
+
+        except:
+            for label, outputs in (
+                ("Reference outputs:", reference_outputs),
+                ("Actual outputs:", actual_outputs),
+            ):
+                print(label)
+                for o in outputs:
+                    print(o.get("output_type"))
+                    print(o.get("text", ""))
+                    print()
+
+            raise
 
     @classmethod
     def compare_outputs_text(cls, reference_text, actual_text):

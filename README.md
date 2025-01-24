@@ -12,7 +12,7 @@ A plotting library for [Xsuite](https://github.com/xsuite) and simmilar accelera
 ## Usage
 
 ```bash
-pip install xplt
+pip install xplt[full]
 ```
 
 Read the docs at https://xsuite.github.io/xplt
