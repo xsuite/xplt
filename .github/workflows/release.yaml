@@ -52,7 +52,7 @@ jobs:
       - run: |
           VERSION=$(git describe --tags)
           echo "Version: $VERSION"
-          if [[ $VERSION =~ v[0-9]+(\.[0-9]+)*$ ]] ; then
+          if [[ $VERSION =~ v[0-9]+\.[0-9]+\.[0-9]+(-rc[0-9]+)?$ ]] ; then
             echo "Ready for publication"
           else
             echo "Not publishing dirty versions"
@@ -80,6 +80,8 @@ jobs:
           sphinx-build docs _build/html
           VERSION=$(python -c "from docs.conf import version;print('.'.join(version.split('.')[:2]))")
           echo "VERSION=$VERSION" >> $GITHUB_ENV
+          IS_CLEAN=$(python -c "from docs.conf import version;import re;print(1 if re.fullmatch('\d+(.\d+(.\d+)?)?',version) else 0)")
+          echo "IS_CLEAN=$IS_CLEAN" >> $GITHUB_ENV
       - name: Deploy docs
         run: |
           git config user.name "GitHub Actions"
@@ -88,6 +90,9 @@ jobs:
           # Copy to version folder
           rm -rf $VERSION
           cp -r _build/html $VERSION
+          if [[ "$IS_CLEAN" != "1" ]] ; then
+            touch $VERSION/.pre-release
+          fi
           # Update docs
           ./update.py
           cat versions.json
