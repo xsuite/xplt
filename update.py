@@ -12,18 +12,21 @@ if __name__ == "__main__":
 
     # Collect versions
     versions = []
+    pre_releases = []
     for dir in os.listdir():
         if re.match(r"^\d+(\.\d+)*$", dir):
             versions.append(dir)
+            if os.path.exists(os.path.join(dir, ".pre-release")):
+                pre_releases.append(dir)
     versions.sort(key=packaging.version.parse, reverse=True)
-    latest = versions[0]
+    latest = list(filter(lambda v: v not in pre_releases, versions))[0]
 
     # Generate versions file
     versions_json = []
     for ver in versions:
         versions_json.append(
             {
-                "name": f"{ver}" + (" (latest)" if ver == latest else ""),
+                "name": f"{ver}" + (" (latest)" if ver == latest else " (pre-release)" if ver in pre_releases else ""),
                 "version": ver,
                 "url": URL.format(ver),
             }
