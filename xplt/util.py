@@ -49,6 +49,7 @@ def PUBLIC_SECTION_END():
 
 
 VOID = object()
+AUTO = object()
 
 
 c0 = 299792458
