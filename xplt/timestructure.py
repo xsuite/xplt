@@ -451,7 +451,9 @@ class TimeBinPlot(ParticleHistogramPlot, TimePlotMixin):
         """Time bin width in s"""
         return self.bin_width
 
-    def add_dataset(self, id, *, plot_kwargs=None, particles=None, timeseries=None, **kwargs):
+    def add_dataset(
+        self, id=None, *, plot_kwargs=None, particles=None, timeseries=None, **kwargs
+    ):
         """Create artists for a new dataset to the plot and optionally update their values
 
         See :meth:`~.particles.ParticleHistogramPlot.add_dataset`.
@@ -616,7 +618,7 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
 
     def add_dataset(
         self,
-        id,
+        id=None,
         *,
         plot_kwargs=None,
         averaging_shadow=True,
@@ -626,7 +628,7 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
         """Create artists for a new dataset to the plot and optionally update their values
 
         Args:
-            id (str): An arbitrary dataset identifier unique for this plot
+            id (str): An arbitrary dataset identifier unique for this plot. Defaults to a randomly generated UUID.
             plot_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.plot`.
             averaging_shadow (bool): Use this to en-/disable the shadow in case of averaging.
                 See averaging parameter of :class:`~.particles.ParticleHistogramPlot` constructor.
@@ -659,7 +661,7 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
             else:
                 return plot
 
-        self._create_artists(create_artists, dataset_id=id)
+        id = self._create_artists(create_artists, dataset_id=id)
 
         # set data
         if kwargs.get("particles") is not None or kwargs.get("timeseries") is not None:
@@ -1010,11 +1012,13 @@ class TimeIntervalPlot(
                 poisson_kwargs=poisson_kwargs,
             )
 
-    def add_dataset(self, id, *, plot_kwargs=None, poisson=False, poisson_kwargs=None, **kwargs):
+    def add_dataset(
+        self, id=None, *, plot_kwargs=None, poisson=False, poisson_kwargs=None, **kwargs
+    ):
         """Create artists for a new dataset to the plot and optionally update their values
 
         Args:
-            id (str): An arbitrary dataset identifier unique for this plot
+            id (str): An arbitrary dataset identifier unique for this plot. Defaults to a randomly generated UUID.
             plot_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.plot`.
             poisson (bool): If true, indicate ideal poisson distribution.
             poisson_kwargs (dict): Additional keyword arguments passed to the plot function for Poisson limit.
@@ -1053,7 +1057,7 @@ class TimeIntervalPlot(
                 pplot = None
             return plot, pplot
 
-        self._create_artists(create_artists, dataset_id=id)
+        id = self._create_artists(create_artists, dataset_id=id)
 
         # set data
         if kwargs.get("particles") is not None:
@@ -1234,11 +1238,13 @@ class SpillQualityPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, Metrices
                 poisson_kwargs=poisson_kwargs,
             )
 
-    def add_dataset(self, id, *, plot_kwargs=None, poisson=True, poisson_kwargs=None, **kwargs):
+    def add_dataset(
+        self, id=None, *, plot_kwargs=None, poisson=True, poisson_kwargs=None, **kwargs
+    ):
         """Create artists for a new dataset to the plot and optionally update their values
 
         Args:
-            id (str): An arbitrary dataset identifier unique for this plot
+            id (str): An arbitrary dataset identifier unique for this plot. Defaults to a randomly generated UUID.
             plot_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.plot`.
             poisson (bool): If true, indicate ideal poisson distribution.
             poisson_kwargs (dict): Additional keyword arguments passed to the plot function for Poisson limit.
@@ -1270,7 +1276,7 @@ class SpillQualityPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, Metrices
                 pstep = None
             return step, pstep
 
-        self._create_artists(create_artists, dataset_id=id)
+        id = self._create_artists(create_artists, dataset_id=id)
 
         # set data
         if kwargs.get("particles") is not None or kwargs.get("timeseries") is not None:
@@ -1467,7 +1473,7 @@ class SpillQualityTimescalePlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin,
 
     def add_dataset(
         self,
-        id,
+        id=None,
         *,
         plot_kwargs=None,
         std=True,
@@ -1479,7 +1485,7 @@ class SpillQualityTimescalePlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin,
         """Create artists for a new dataset to the plot and optionally update their values
 
         Args:
-            id (str): An arbitrary dataset identifier unique for this plot
+            id (str): An arbitrary dataset identifier unique for this plot. Defaults to a randomly generated UUID.
             plot_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.plot`.
             std (bool): Whether or not to plot standard deviation of variability as errorbar.
                 Only relevant if counting_bins_per_evaluation is not None.
@@ -1517,7 +1523,7 @@ class SpillQualityTimescalePlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin,
                 pstep = None
             return [plot, errorbar, pstep]
 
-        self._create_artists(create_artists, dataset_id=id)
+        id = self._create_artists(create_artists, dataset_id=id)
 
         # set data
         if kwargs.get("particles") or kwargs.get("timeseries") is not None:

@@ -12,6 +12,7 @@ __date__ = "2022-11-08"
 
 import re
 import types
+import uuid
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -879,9 +880,12 @@ class XManifoldPlot(XPlot):
                 Signature: (i, j, k, axis, p) -> artist
                 Where i, j, k are the subplot, twin-axis, trace indices respectively;
                 axis is the axis and the string p is the property to plot.
-            dataset_id (str | None): The dataset identifier if this plot represents multiple datasets
+            dataset_id (str | None): The dataset identifier if this plot represents multiple datasets.
+                If None, and a default dataset already exists, a new UUID is generated.
         """
 
+        if dataset_id is None and None in self._artists:
+            dataset_id = str(uuid.uuid4())
         if dataset_id in self._artists:
             raise ValueError(f"Dataset identifier `{dataset_id}` already exists")
         if dataset_id is not None and not isinstance(dataset_id, str):
@@ -898,6 +902,8 @@ class XManifoldPlot(XPlot):
                     self._artists[dataset_id][i][j].append(artist)
 
         self.legend(show="auto")
+
+        return dataset_id
 
     @property
     def artists(self):
