@@ -307,11 +307,11 @@ class ParticleHistogramPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramP
         if add_default_dataset:
             self.add_dataset(None, particles=particles, mask=mask, plot_kwargs=plot_kwargs)
 
-    def add_dataset(self, id, *, plot_kwargs=None, **kwargs):
+    def add_dataset(self, id=AUTO, *, plot_kwargs=None, **kwargs):
         """Create artists for a new dataset to the plot and optionally update their values
 
         Args:
-            id (str): An arbitrary dataset identifier unique for this plot
+            id (str): An arbitrary dataset identifier unique for this plot. Defaults to a randomly generated UUID.
             plot_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.plot`.
             **kwargs: Arguments passed to :meth:`~.particles.ParticleHistogramPlot.update`.
         """
@@ -325,11 +325,13 @@ class ParticleHistogramPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramP
                 kwargs = defaults_for("plot", kwargs, drawstyle="steps-pre")
             return ax.plot([], [], **kwargs)[0]
 
-        self._create_artists(create_artist, dataset_id=id)
+        id = self._create_artists(create_artist, dataset_id=id)
 
         # set data
         if kwargs.get("particles") is not None:
             self.update(**kwargs, dataset_id=id)
+
+        return id
 
     def _symbol_for(self, p):
         symbol = super()._symbol_for(p)
@@ -491,11 +493,11 @@ class ParticlesPlot(XManifoldPlot, ParticlePlotMixin):
         if add_default_dataset:
             self.add_dataset(None, particles=particles, mask=mask, plot_kwargs=plot_kwargs)
 
-    def add_dataset(self, id, *, plot_kwargs=None, **kwargs):
+    def add_dataset(self, id=AUTO, *, plot_kwargs=None, **kwargs):
         """Create artists for a new dataset to the plot and optionally update their values
 
         Args:
-            id (str): An arbitrary dataset identifier unique for this plot
+            id (str): An arbitrary dataset identifier unique for this plot. Defaults to a randomly generated UUID.
             plot_kwargs (dict): Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.plot`.
             **kwargs: Arguments passed to :meth:`~.particles.ParticleHistogramPlot.update`.
         """
@@ -507,11 +509,13 @@ class ParticlesPlot(XManifoldPlot, ParticlePlotMixin):
             )
             return a.plot([], [], **kwargs)[0]
 
-        self._create_artists(create_artists, dataset_id=id)
+        id = self._create_artists(create_artists, dataset_id=id)
 
         # set data
         if kwargs.get("particles") is not None:
             self.update(**kwargs, dataset_id=id)
+
+        return id
 
     def update(self, particles, mask=None, *, autoscale=None, dataset_id=None):
         """Update plot with new data
