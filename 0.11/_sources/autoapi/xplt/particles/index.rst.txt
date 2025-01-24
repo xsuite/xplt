@@ -71,11 +71,11 @@ Module Contents
                   and :class:`~.base.XManifoldPlot` for additional arguments
 
 
-   .. py:method:: add_dataset(id, *, plot_kwargs=None, **kwargs)
+   .. py:method:: add_dataset(id=AUTO, *, plot_kwargs=None, **kwargs)
 
       Create artists for a new dataset to the plot and optionally update their values
 
-      :param id: An arbitrary dataset identifier unique for this plot
+      :param id: An arbitrary dataset identifier unique for this plot. Defaults to a randomly generated UUID.
       :type id: str
       :param plot_kwargs: Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.plot`.
       :type plot_kwargs: dict
@@ -560,11 +560,11 @@ Module Contents
    :param kwargs: See :class:`~.particles.ParticlePlotMixin` and :class:`~.base.XPlot` for additional arguments
 
 
-   .. py:method:: add_dataset(id, *, plot_kwargs=None, **kwargs)
+   .. py:method:: add_dataset(id=AUTO, *, plot_kwargs=None, **kwargs)
 
       Create artists for a new dataset to the plot and optionally update their values
 
-      :param id: An arbitrary dataset identifier unique for this plot
+      :param id: An arbitrary dataset identifier unique for this plot. Defaults to a randomly generated UUID.
       :type id: str
       :param plot_kwargs: Keyword arguments passed to the plot function, see :meth:`matplotlib.axes.Axes.plot`.
       :type plot_kwargs: dict

@@ -15,6 +15,7 @@ examples/hamiltonians
 examples/timestructure
 examples/animations
 examples/colors
+examples/utilities
 ```
 
 :::{tip}

@@ -15,6 +15,10 @@ Classes
 .. autoapisummary::
 
    xplt.base.AngleLocator
+   xplt.base.DiscontinuousFormatter
+   xplt.base.DiscontinuousLinearScale
+   xplt.base.DiscontinuousLocator
+   xplt.base.DiscontinuousTransform
    xplt.base.ManifoldMultipleLocator
    xplt.base.RadiansFormatter
    xplt.base.TransformedLocator
@@ -147,6 +151,746 @@ Module Contents
    .. py:attribute:: n
       :value: 5
 
+
+
+.. py:class:: DiscontinuousFormatter(breaks, **kwargs)
+
+   Bases: :py:obj:`matplotlib.ticker.ScalarFormatter`
+
+
+   Format tick values as a number.
+
+   :param useOffset: Whether to use offset notation. See `.set_useOffset`.
+   :type useOffset: bool or float, default: :rc:`axes.formatter.useoffset`
+   :param useMathText: Whether to use fancy math formatting. See `.set_useMathText`.
+   :type useMathText: bool, default: :rc:`axes.formatter.use_mathtext`
+   :param useLocale: Whether to use locale settings for decimal sign and positive sign.
+                     See `.set_useLocale`.
+   :type useLocale: bool, default: :rc:`axes.formatter.use_locale`.
+   :param usetex: To enable/disable the use of TeX's math mode for rendering the
+                  numbers in the formatter.
+
+                  .. versionadded:: 3.10
+   :type usetex: bool, default: :rc:`text.usetex`
+
+   .. rubric:: Notes
+
+   In addition to the parameters above, the formatting of scientific vs.
+   floating point representation can be configured via `.set_scientific`
+   and `.set_powerlimits`).
+
+   **Offset notation and scientific notation**
+
+   Offset notation and scientific notation look quite similar at first sight.
+   Both split some information from the formatted tick values and display it
+   at the end of the axis.
+
+   - The scientific notation splits up the order of magnitude, i.e. a
+     multiplicative scaling factor, e.g. ``1e6``.
+
+   - The offset notation separates an additive constant, e.g. ``+1e6``. The
+     offset notation label is always prefixed with a ``+`` or ``-`` sign
+     and is thus distinguishable from the order of magnitude label.
+
+   The following plot with x limits ``1_000_000`` to ``1_000_010`` illustrates
+   the different formatting. Note the labels at the right edge of the x axis.
+
+   .. plot::
+
+       lim = (1_000_000, 1_000_010)
+
+       fig, (ax1, ax2, ax3) = plt.subplots(3, 1, gridspec_kw={'hspace': 2})
+       ax1.set(title='offset notation', xlim=lim)
+       ax2.set(title='scientific notation', xlim=lim)
+       ax2.xaxis.get_major_formatter().set_useOffset(False)
+       ax3.set(title='floating-point notation', xlim=lim)
+       ax3.xaxis.get_major_formatter().set_useOffset(False)
+       ax3.xaxis.get_major_formatter().set_scientific(False)
+
+
+   .. py:method:: create_dummy_axis(**kwargs)
+
+
+   .. py:method:: fix_minus(s)
+      :staticmethod:
+
+
+      Some classes may want to replace a hyphen for minus with the proper
+      Unicode symbol (U+2212) for typographical correctness.  This is a
+      helper method to perform such a replacement when it is enabled via
+      :rc:`axes.unicode_minus`.
+
+
+
+   .. py:method:: format_data(value)
+
+      Return the full string representation of the value with the
+      position unspecified.
+
+
+
+   .. py:method:: format_data_short(value)
+
+      Return a short string version of the tick value.
+
+      Defaults to the position-independent long value.
+
+
+
+   .. py:method:: format_ticks(values)
+
+      Return the tick labels for all the ticks at once.
+
+
+
+   .. py:method:: get_offset()
+
+      Return scientific notation, plus offset.
+
+
+
+   .. py:method:: get_useLocale()
+
+      Return whether locale settings are used for formatting.
+
+      .. seealso:: :obj:`ScalarFormatter.set_useLocale`
+
+
+
+   .. py:method:: get_useMathText()
+
+      Return whether to use fancy math formatting.
+
+      .. seealso:: :obj:`ScalarFormatter.set_useMathText`
+
+
+
+   .. py:method:: get_useOffset()
+
+      Return whether automatic mode for offset notation is active.
+
+      This returns True if ``set_useOffset(True)``; it returns False if an
+      explicit offset was set, e.g. ``set_useOffset(1000)``.
+
+      .. seealso:: :obj:`ScalarFormatter.set_useOffset`
+
+
+
+   .. py:method:: get_usetex()
+
+
+   .. py:method:: set_axis(axis)
+
+
+   .. py:method:: set_locs(locs)
+
+      Set the locations of the ticks.
+
+      This method is called before computing the tick labels because some
+      formatters need to know all tick locations to do so.
+
+
+
+   .. py:method:: set_powerlimits(lims)
+
+      Set size thresholds for scientific notation.
+
+      :param lims: A tuple *(min_exp, max_exp)* containing the powers of 10 that
+                   determine the switchover threshold. For a number representable as
+                   :math:`a \times 10^\mathrm{exp}` with :math:`1 <= |a| < 10`,
+                   scientific notation will be used if ``exp <= min_exp`` or
+                   ``exp >= max_exp``.
+
+                   The default limits are controlled by :rc:`axes.formatter.limits`.
+
+                   In particular numbers with *exp* equal to the thresholds are
+                   written in scientific notation.
+
+                   Typically, *min_exp* will be negative and *max_exp* will be
+                   positive.
+
+                   For example, ``formatter.set_powerlimits((-3, 4))`` will provide
+                   the following formatting:
+                   :math:`1 \times 10^{-3}, 9.9 \times 10^{-3}, 0.01,`
+                   :math:`9999, 1 \times 10^4`.
+      :type lims: (int, int)
+
+      .. seealso:: :obj:`ScalarFormatter.set_scientific`
+
+
+
+   .. py:method:: set_scientific(b)
+
+      Turn scientific notation on or off.
+
+      .. seealso:: :obj:`ScalarFormatter.set_powerlimits`
+
+
+
+   .. py:method:: set_useLocale(val)
+
+      Set whether to use locale settings for decimal sign and positive sign.
+
+      :param val: *None* resets to :rc:`axes.formatter.use_locale`.
+      :type val: bool or None
+
+
+
+   .. py:method:: set_useMathText(val)
+
+      Set whether to use fancy math formatting.
+
+      If active, scientific notation is formatted as :math:`1.2 \times 10^3`.
+
+      :param val: *None* resets to :rc:`axes.formatter.use_mathtext`.
+      :type val: bool or None
+
+
+
+   .. py:method:: set_useOffset(val)
+
+      Set whether to use offset notation.
+
+      When formatting a set numbers whose value is large compared to their
+      range, the formatter can separate an additive constant. This can
+      shorten the formatted numbers so that they are less likely to overlap
+      when drawn on an axis.
+
+      :param val:
+                  - If False, do not use offset notation.
+                  - If True (=automatic mode), use offset notation if it can make
+                    the residual numbers significantly shorter. The exact behavior
+                    is controlled by :rc:`axes.formatter.offset_threshold`.
+                  - If a number, force an offset of the given value.
+      :type val: bool or float
+
+      .. rubric:: Examples
+
+      With active offset notation, the values
+
+      ``100_000, 100_002, 100_004, 100_006, 100_008``
+
+      will be formatted as ``0, 2, 4, 6, 8`` plus an offset ``+1e5``, which
+      is written to the edge of the axis.
+
+
+
+   .. py:method:: set_usetex(val)
+
+
+   .. py:attribute:: axis
+      :value: None
+
+
+
+   .. py:attribute:: breaks
+
+
+   .. py:attribute:: format
+      :value: ''
+
+
+
+   .. py:attribute:: locs
+      :value: []
+
+
+
+   .. py:attribute:: orderOfMagnitude
+      :value: 0
+
+
+
+   .. py:attribute:: useLocale
+
+
+   .. py:attribute:: useMathText
+
+
+   .. py:attribute:: useOffset
+
+
+   .. py:attribute:: usetex
+
+
+.. py:class:: DiscontinuousLinearScale(axis, *, breaks=(), space=0, hide=False)
+
+   Bases: :py:obj:`matplotlib.scale.LinearScale`
+
+
+   The default linear scale.
+
+
+
+
+   .. py:method:: add_discontinuity_markers(axis)
+
+
+   .. py:method:: get_transform()
+
+      Return the transform for linear scaling, which is just the
+      `~matplotlib.transforms.IdentityTransform`.
+
+
+
+   .. py:method:: limit_range_for_scale(vmin, vmax, minpos)
+
+      Return the range *vmin*, *vmax*, restricted to the
+      domain supported by this scale (if any).
+
+      *minpos* should be the minimum positive value in the data.
+      This is used by log scales to determine a minimum value.
+
+
+
+   .. py:method:: set_default_locators_and_formatters(axis)
+
+      Set the locators and formatters of *axis* to instances suitable for
+      this scale.
+
+
+
+   .. py:attribute:: breaks
+      :value: ()
+
+
+
+   .. py:attribute:: hide
+      :value: False
+
+
+
+   .. py:attribute:: name
+      :value: 'discontinuous_linear'
+
+
+
+   .. py:attribute:: space
+      :value: 0
+
+
+
+.. py:class:: DiscontinuousLocator(breaks, space, **kwargs)
+
+   Bases: :py:obj:`matplotlib.ticker.AutoLocator`
+
+
+   Place evenly spaced ticks, with the step size and maximum number of ticks chosen
+   automatically.
+
+   This is a subclass of `~matplotlib.ticker.MaxNLocator`, with parameters
+   *nbins = 'auto'* and *steps = [1, 2, 2.5, 5, 10]*.
+
+   To know the values of the non-public parameters, please have a
+   look to the defaults of `~matplotlib.ticker.MaxNLocator`.
+
+
+   .. py:method:: create_dummy_axis(**kwargs)
+
+
+   .. py:method:: nonsingular(v0, v1)
+
+      Adjust a range as needed to avoid singularities.
+
+      This method gets called during autoscaling, with ``(v0, v1)`` set to
+      the data limits on the Axes if the Axes contains any data, or
+      ``(-inf, +inf)`` if not.
+
+      - If ``v0 == v1`` (possibly up to some floating point slop), this
+        method returns an expanded interval around this value.
+      - If ``(v0, v1) == (-inf, +inf)``, this method returns appropriate
+        default view limits.
+      - Otherwise, ``(v0, v1)`` is returned without modification.
+
+
+
+   .. py:method:: raise_if_exceeds(locs)
+
+      Log at WARNING level if *locs* is longer than `Locator.MAXTICKS`.
+
+      This is intended to be called immediately before returning *locs* from
+      ``__call__`` to inform users in case their Locator returns a huge
+      number of ticks, causing Matplotlib to run out of memory.
+
+      The "strange" name of this method dates back to when it would raise an
+      exception instead of emitting a log.
+
+
+
+   .. py:method:: set_axis(axis)
+
+
+   .. py:method:: set_params(**kwargs)
+
+      Set parameters for this locator.
+
+      :param nbins: see `.MaxNLocator`
+      :type nbins: int or 'auto', optional
+      :param steps: see `.MaxNLocator`
+      :type steps: array-like, optional
+      :param integer: see `.MaxNLocator`
+      :type integer: bool, optional
+      :param symmetric: see `.MaxNLocator`
+      :type symmetric: bool, optional
+      :param prune: see `.MaxNLocator`
+      :type prune: {'lower', 'upper', 'both', None}, optional
+      :param min_n_ticks: see `.MaxNLocator`
+      :type min_n_ticks: int, optional
+
+
+
+   .. py:method:: tick_values(vmin, vmax)
+
+      Return the values of the located ticks given **vmin** and **vmax**.
+
+      .. note::
+          To get tick locations with the vmin and vmax values defined
+          automatically for the associated ``axis`` simply call
+          the Locator instance::
+
+              >>> print(type(loc))
+              <type 'Locator'>
+              >>> print(loc())
+              [1, 2, 3, 4]
+
+
+
+
+   .. py:method:: view_limits(dmin, dmax)
+
+      Select a scale for the range from vmin to vmax.
+
+      Subclasses should override this method to change locator behaviour.
+
+
+
+   .. py:attribute:: MAXTICKS
+      :value: 1000
+
+
+
+   .. py:attribute:: axis
+      :value: None
+
+
+
+   .. py:attribute:: breaks
+
+
+   .. py:attribute:: default_params
+
+
+   .. py:attribute:: space
+
+
+.. py:class:: DiscontinuousTransform(breaks, space, *, hide=True)
+
+   Bases: :py:obj:`matplotlib.transforms.Transform`
+
+
+   The base class of all `TransformNode` instances that
+   actually perform a transformation.
+
+   All non-affine transformations should be subclasses of this class.
+   New affine transformations should be subclasses of `Affine2D`.
+
+   Subclasses of this class should override the following members (at
+   minimum):
+
+   - :attr:`input_dims`
+   - :attr:`output_dims`
+   - :meth:`transform`
+   - :meth:`inverted` (if an inverse exists)
+
+   The following attributes may be overridden if the default is unsuitable:
+
+   - :attr:`is_separable` (defaults to True for 1D -> 1D transforms, False
+     otherwise)
+   - :attr:`has_inverse` (defaults to True if :meth:`inverted` is overridden,
+     False otherwise)
+
+   If the transform needs to do something non-standard with
+   `matplotlib.path.Path` objects, such as adding curves
+   where there were once line segments, it should override:
+
+   - :meth:`transform_path`
+
+   :param shorthand_name: A string representing the "name" of the transform. The name carries
+                          no significance other than to improve the readability of
+                          ``str(transform)`` when DEBUG=True.
+   :type shorthand_name: str
+
+
+   .. py:method:: contains_branch(other)
+
+      Return whether the given transform is a sub-tree of this transform.
+
+      This routine uses transform equality to identify sub-trees, therefore
+      in many situations it is object id which will be used.
+
+      For the case where the given transform represents the whole
+      of this transform, returns True.
+
+
+
+   .. py:method:: contains_branch_seperately(other_transform)
+
+      Return whether the given branch is a sub-tree of this transform on
+      each separate dimension.
+
+      A common use for this method is to identify if a transform is a blended
+      transform containing an Axes' data transform. e.g.::
+
+          x_isdata, y_isdata = trans.contains_branch_seperately(ax.transData)
+
+
+
+
+   .. py:method:: frozen()
+
+      Return a frozen copy of this transform node.  The frozen copy will not
+      be updated when its children change.  Useful for storing a previously
+      known state of a transform where ``copy.deepcopy()`` might normally be
+      used.
+
+
+
+   .. py:method:: get_affine()
+
+      Get the affine part of this transform.
+
+
+
+   .. py:method:: get_matrix()
+
+      Get the matrix for the affine part of this transform.
+
+
+
+   .. py:method:: invalidate()
+
+      Invalidate this `TransformNode` and triggers an invalidation of its
+      ancestors.  Should be called any time the transform changes.
+
+
+
+   .. py:method:: inverted()
+
+      Return the corresponding inverse transformation.
+
+      It holds ``x == self.inverted().transform(self.transform(x))``.
+
+      The return value of this method should be treated as
+      temporary.  An update to *self* does not cause a corresponding
+      update to its inverted copy.
+
+
+
+   .. py:method:: set_children(*children)
+
+      Set the children of the transform, to let the invalidation
+      system know which transforms can invalidate this transform.
+      Should be called from the constructor of any transforms that
+      depend on other transforms.
+
+
+
+   .. py:method:: transform(values)
+
+      Apply this transformation on the given array of *values*.
+
+      :param values: The input values as an array of length :attr:`input_dims` or
+                     shape (N, :attr:`input_dims`).
+      :type values: array-like
+
+      :returns: The output values as an array of length :attr:`output_dims` or
+                shape (N, :attr:`output_dims`), depending on the input.
+      :rtype: array
+
+
+
+   .. py:method:: transform_affine(values)
+
+      Apply only the affine part of this transformation on the
+      given array of values.
+
+      ``transform(values)`` is always equivalent to
+      ``transform_affine(transform_non_affine(values))``.
+
+      In non-affine transformations, this is generally a no-op.  In
+      affine transformations, this is equivalent to
+      ``transform(values)``.
+
+      :param values: The input values as an array of length :attr:`input_dims` or
+                     shape (N, :attr:`input_dims`).
+      :type values: array
+
+      :returns: The output values as an array of length :attr:`output_dims` or
+                shape (N, :attr:`output_dims`), depending on the input.
+      :rtype: array
+
+
+
+   .. py:method:: transform_angles(angles, pts, radians=False, pushoff=1e-05)
+
+      Transform a set of angles anchored at specific locations.
+
+      :param angles: The angles to transform.
+      :type angles: (N,) array-like
+      :param pts: The points where the angles are anchored.
+      :type pts: (N, 2) array-like
+      :param radians: Whether *angles* are radians or degrees.
+      :type radians: bool, default: False
+      :param pushoff: For each point in *pts* and angle in *angles*, the transformed
+                      angle is computed by transforming a segment of length *pushoff*
+                      starting at that point and making that angle relative to the
+                      horizontal axis, and measuring the angle between the horizontal
+                      axis and the transformed segment.
+      :type pushoff: float
+
+      :rtype: (N,) array
+
+
+
+   .. py:method:: transform_bbox(bbox)
+
+      Transform the given bounding box.
+
+      For smarter transforms including caching (a common requirement in
+      Matplotlib), see `TransformedBbox`.
+
+
+
+   .. py:method:: transform_non_affine(values)
+
+      Apply only the non-affine part of this transformation.
+
+      ``transform(values)`` is always equivalent to
+      ``transform_affine(transform_non_affine(values))``.
+
+      In non-affine transformations, this is generally equivalent to
+      ``transform(values)``.  In affine transformations, this is
+      always a no-op.
+
+      :param values: The input values as an array of length :attr:`input_dims` or
+                     shape (N, :attr:`input_dims`).
+      :type values: array
+
+      :returns: The output values as an array of length :attr:`output_dims` or
+                shape (N, :attr:`output_dims`), depending on the input.
+      :rtype: array
+
+
+
+   .. py:method:: transform_path(path)
+
+      Apply the transform to `.Path` *path*, returning a new `.Path`.
+
+      In some cases, this transform may insert curves into the path
+      that began as line segments.
+
+
+
+   .. py:method:: transform_path_affine(path)
+
+      Apply the affine part of this transform to `.Path` *path*, returning a
+      new `.Path`.
+
+      ``transform_path(path)`` is equivalent to
+      ``transform_path_affine(transform_path_non_affine(values))``.
+
+
+
+   .. py:method:: transform_path_non_affine(path)
+
+      Apply the non-affine part of this transform to `.Path` *path*,
+      returning a new `.Path`.
+
+      ``transform_path(path)`` is equivalent to
+      ``transform_path_affine(transform_path_non_affine(values))``.
+
+
+
+   .. py:method:: transform_point(point)
+
+      Return a transformed point.
+
+      This function is only kept for backcompatibility; the more general
+      `.transform` method is capable of transforming both a list of points
+      and a single point.
+
+      The point is given as a sequence of length :attr:`input_dims`.
+      The transformed point is returned as a sequence of length
+      :attr:`output_dims`.
+
+
+
+   .. py:attribute:: breaks
+
+
+   .. py:property:: depth
+
+      Return the number of transforms which have been chained
+      together to form this Transform instance.
+
+      .. note::
+
+          For the special case of a Composite transform, the maximum depth
+          of the two is returned.
+
+
+   .. py:attribute:: has_inverse
+      :value: False
+
+
+      True if this transform has a corresponding inverse transform.
+
+
+   .. py:attribute:: hide
+      :value: True
+
+
+
+   .. py:attribute:: input_dims
+      :value: None
+
+
+      The number of input dimensions of this transform.
+      Must be overridden (with integers) in the subclass.
+
+
+   .. py:attribute:: is_affine
+      :value: False
+
+
+
+   .. py:attribute:: is_bbox
+
+
+   .. py:attribute:: is_separable
+      :value: False
+
+
+      True if this transform is separable in the x- and y- dimensions.
+
+
+   .. py:attribute:: output_dims
+      :value: None
+
+
+      The number of output dimensions of this transform.
+      Must be overridden (with integers) in the subclass.
+
+
+   .. py:attribute:: pass_through
+      :value: False
+
+
+      If pass_through is True, all ancestors will always be
+      invalidated, even if 'self' is already invalid.
+
+
+   .. py:attribute:: spaces
 
 
 .. py:class:: ManifoldMultipleLocator(fixed_multiples, n=5, minor_n=None)

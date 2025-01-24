@@ -5,7 +5,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Common concepts — Xplt 0.11.1 documentation</title>
+<title>Common concepts — Xplt 0.11.2 documentation</title>
 <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
@@ -32,7 +32,7 @@
 <!-- Pre-loaded scripts that we'll load fully later -->
 <link as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" rel="preload"/>
 <link as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" rel="preload"/>
-<script src="../_static/documentation_options.js?v=57cbeb03"></script>
+<script src="../_static/documentation_options.js?v=60336169"></script>
 <script src="../_static/doctools.js?v=9bcbadda"></script>
 <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
 <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
@@ -51,7 +51,7 @@
 <link href="../usage.html" rel="prev" title="User guide"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta content="en" name="docsearch:language"/>
-<meta content="0.11.1" name="docsearch:version"/>
+<meta content="0.11.2" name="docsearch:version"/>
 </head>
 <body data-bs-root-margin="0px 0px -60%" data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-default-mode="" data-offset="180">
 <div class="skip-link d-print-none" id="pst-skip-link"><a href="#main-content">Skip to main content</a></div>
@@ -76,7 +76,7 @@
 <div class="col-lg-3 navbar-header-items__start">
 <div class="navbar-item">
 <a class="navbar-brand logo" href="../index.html">
-<p class="title logo__title">Xplt 0.11.1 documentation</p>
+<p class="title logo__title">Xplt 0.11.2 documentation</p>
 </a></div>
 </div>
 <div class="col-lg-9 navbar-header-items">
@@ -220,6 +220,7 @@
 <li class="toctree-l1"><a class="reference internal" href="timestructure.html">Timestructure (Spill, Schottky)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="colors.html">Colors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utilities.html">Utilities</a></li>
 </ul>
 </div>
 </nav></div>
@@ -350,7 +351,7 @@ You can add more datasets:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/particles/index.html#xplt.particles.ParticleHistogramPlot.add_dataset" title="xplt.particles.ParticleHistogramPlot.add_dataset"><span class="n">plot</span><span class="o">.</span><span class="n">add_dataset</span></a><span class="p">(</span>
-    <span class="s2">"ref"</span><span class="p">,</span>
+    <span class="s2">"ref"</span><span class="p">,</span>  <span class="c1"># optional ID to update data later</span>
     <span class="n">particles</span><span class="o">=</span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/util/index.html#xplt.util.AttrDict" title="xplt.util.AttrDict"><span class="n">data2</span></a><span class="p">,</span>
     <span class="n">plot_kwargs</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">label</span><span class="o">=</span><span class="s2">"Data B"</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s2">"C2"</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
     <span class="n">autoscale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>

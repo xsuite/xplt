@@ -12,7 +12,7 @@
           "Module Contents"
         ]
       },
-      "doc_lineno": 846
+      "doc_lineno": 1590
     }
   ],
   "autoapi/xplt/colors/index": [],
@@ -1181,7 +1181,7 @@
       "doc_lineno": 120002
     },
     {
-      "source": "plot.add_dataset(\n    \"ref\",\n    particles=data2,\n    plot_kwargs=dict(label=\"Data B\", c=\"C2\", lw=2),\n    autoscale=True,\n)\nplot.fig",
+      "source": "plot.add_dataset(\n    \"ref\",  # optional ID to update data later\n    particles=data2,\n    plot_kwargs=dict(label=\"Data B\", c=\"C2\", lw=2),\n    autoscale=True,\n)\nplot.fig",
       "names": [
         {
           "import_components": [
@@ -4573,7 +4573,7 @@
       "doc_lineno": 60002
     },
     {
-      "source": "plot = xplt.TwissPlot(tw, line=line)",
+      "source": "plot = xplt.TwissPlot(tw, line=line)\nplot.axis(\"x\").set(ylim=(-7, 7));",
       "names": [
         {
           "import_components": [
@@ -4597,6 +4597,19 @@
           "end_lineno": 1,
           "context": "none",
           "resolved_location": "xplt.twiss.TwissPlot"
+        },
+        {
+          "import_components": [
+            "xplt",
+            "TwissPlot",
+            "()",
+            "axis"
+          ],
+          "code_str": "plot.axis",
+          "lineno": 2,
+          "end_lineno": 2,
+          "context": "none",
+          "resolved_location": "xplt.twiss.TwissPlot.axis"
         }
       ],
       "example": {
@@ -4854,6 +4867,124 @@
       "doc_lineno": 210002
     }
   ],
+  "examples/utilities": [
+    {
+      "source": "%load_ext autoreload\n%autoreload 2\n\nimport numpy as np",
+      "names": [
+        {
+          "import_components": [
+            "numpy"
+          ],
+          "code_str": "numpy",
+          "lineno": 4,
+          "end_lineno": 4,
+          "context": "import_target",
+          "resolved_location": "numpy"
+        }
+      ],
+      "example": {
+        "document": "examples/utilities",
+        "ref_id": "utilities",
+        "headings": [
+          "Utilities"
+        ]
+      },
+      "doc_lineno": 30002
+    },
+    {
+      "source": "import matplotlib.pyplot as plt\nimport xplt\n\n# xplt.apply_style()",
+      "names": [
+        {
+          "import_components": [
+            "matplotlib",
+            "pyplot"
+          ],
+          "code_str": "matplotlib.pyplot",
+          "lineno": 1,
+          "end_lineno": 1,
+          "context": "import_target",
+          "resolved_location": "matplotlib.pyplot"
+        },
+        {
+          "import_components": [
+            "xplt"
+          ],
+          "code_str": "xplt",
+          "lineno": 2,
+          "end_lineno": 2,
+          "context": "import_target",
+          "resolved_location": "xplt"
+        }
+      ],
+      "example": {
+        "document": "examples/utilities",
+        "ref_id": "utilities",
+        "headings": [
+          "Utilities"
+        ]
+      },
+      "doc_lineno": 40002
+    },
+    {
+      "source": "fig, ax = plt.subplots(figsize=(4.5, 3))\nx = np.linspace(0, 10, 10000)\nax.plot(x, np.sin(2 * np.pi * x))\nax.minorticks_on()\nax.grid()\n\nax.set_xscale(\"discontinuous_linear\", breaks=[(2, 4), (6, 9)], space=0.5)\nax.set_yscale(\n    \"discontinuous_linear\",\n    breaks=[\n        (-0.25, 0.25),\n    ],\n    space=0.1,\n    hide=True,\n)",
+      "names": [
+        {
+          "import_components": [
+            "matplotlib",
+            "pyplot",
+            "subplots"
+          ],
+          "code_str": "plt.subplots",
+          "lineno": 1,
+          "end_lineno": 1,
+          "context": "none",
+          "resolved_location": "matplotlib.pyplot.subplots"
+        },
+        {
+          "import_components": [
+            "numpy",
+            "linspace"
+          ],
+          "code_str": "np.linspace",
+          "lineno": 2,
+          "end_lineno": 2,
+          "context": "none",
+          "resolved_location": "numpy.linspace"
+        },
+        {
+          "import_components": [
+            "numpy",
+            "pi"
+          ],
+          "code_str": "np.pi",
+          "lineno": 3,
+          "end_lineno": 3,
+          "context": "none",
+          "resolved_location": "numpy.pi"
+        },
+        {
+          "import_components": [
+            "numpy",
+            "sin"
+          ],
+          "code_str": "np.sin",
+          "lineno": 3,
+          "end_lineno": 3,
+          "context": "none",
+          "resolved_location": "numpy.sin"
+        }
+      ],
+      "example": {
+        "document": "examples/utilities",
+        "ref_id": "discontinuous-axes",
+        "headings": [
+          "Utilities",
+          "Discontinuous axes"
+        ]
+      },
+      "doc_lineno": 60002
+    }
+  ],
   "index": [],
   "quickstart": [],
   "usage": [
@@ -4957,7 +5088,7 @@
           "User guide"
         ]
       },
-      "doc_lineno": 23
+      "doc_lineno": 24
     }
   ]
 }

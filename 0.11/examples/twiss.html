@@ -5,7 +5,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Twiss — Xplt 0.11.1 documentation</title>
+<title>Twiss — Xplt 0.11.2 documentation</title>
 <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
@@ -32,7 +32,7 @@
 <!-- Pre-loaded scripts that we'll load fully later -->
 <link as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" rel="preload"/>
 <link as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" rel="preload"/>
-<script src="../_static/documentation_options.js?v=57cbeb03"></script>
+<script src="../_static/documentation_options.js?v=60336169"></script>
 <script src="../_static/doctools.js?v=9bcbadda"></script>
 <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
 <script>DOCUMENTATION_OPTIONS.pagename = 'examples/twiss';</script>
@@ -49,7 +49,7 @@
 <link href="line.html" rel="prev" title="Beamline"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta content="en" name="docsearch:language"/>
-<meta content="0.11.1" name="docsearch:version"/>
+<meta content="0.11.2" name="docsearch:version"/>
 </head>
 <body data-bs-root-margin="0px 0px -60%" data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-default-mode="" data-offset="180">
 <div class="skip-link d-print-none" id="pst-skip-link"><a href="#main-content">Skip to main content</a></div>
@@ -74,7 +74,7 @@
 <div class="col-lg-3 navbar-header-items__start">
 <div class="navbar-item">
 <a class="navbar-brand logo" href="../index.html">
-<p class="title logo__title">Xplt 0.11.1 documentation</p>
+<p class="title logo__title">Xplt 0.11.2 documentation</p>
 </a></div>
 </div>
 <div class="col-lg-9 navbar-header-items">
@@ -218,6 +218,7 @@
 <li class="toctree-l1"><a class="reference internal" href="timestructure.html">Timestructure (Spill, Schottky)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="colors.html">Colors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utilities.html">Utilities</a></li>
 </ul>
 </div>
 </nav></div>
@@ -344,11 +345,12 @@ First, create a simple line and a tracker:</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/twiss/index.html#xplt.twiss.TwissPlot" title="xplt.twiss.TwissPlot"><span class="n">plot</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/twiss/index.html#xplt.twiss.TwissPlot" title="xplt.twiss.TwissPlot"><span class="n">xplt</span><span class="o">.</span><span class="n">TwissPlot</span></a><span class="p">(</span><span class="n">tw</span><span class="p">,</span> <span class="n">line</span><span class="o">=</span><span class="n">line</span><span class="p">)</span>
+<a class="sphinx-codeautolink-a" href="../autoapi/xplt/twiss/index.html#xplt.twiss.TwissPlot.axis" title="xplt.twiss.TwissPlot.axis"><span class="n">plot</span><span class="o">.</span><span class="n">axis</span></a><span class="p">(</span><span class="s2">"x"</span><span class="p">)</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">ylim</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">));</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/9c8c1d3615c766314a890791396fc964ff0fc0131a0260150e9841950837c77b.png" src="../_images/9c8c1d3615c766314a890791396fc964ff0fc0131a0260150e9841950837c77b.png"/>
+<img alt="../_images/fb3c0bbeb23f5a8de9f96165bb0c71f9cf7f23ad963fda6d280acd2553d49d83.png" src="../_images/fb3c0bbeb23f5a8de9f96165bb0c71f9cf7f23ad963fda6d280acd2553d49d83.png"/>
 </div>
 </div>
 </section>
