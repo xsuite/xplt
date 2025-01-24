@@ -659,7 +659,7 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
             else:
                 return plot
 
-        self._create_artists(create_artists)
+        self._create_artists(create_artists, dataset_id=id)
 
         # set data
         if kwargs.get("particles") is not None or kwargs.get("timeseries") is not None:
@@ -1053,7 +1053,7 @@ class TimeIntervalPlot(
                 pplot = None
             return plot, pplot
 
-        self._create_artists(create_artists)
+        self._create_artists(create_artists, dataset_id=id)
 
         # set data
         if kwargs.get("particles") is not None:
@@ -1270,7 +1270,7 @@ class SpillQualityPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, Metrices
                 pstep = None
             return step, pstep
 
-        self._create_artists(create_artists)
+        self._create_artists(create_artists, dataset_id=id)
 
         # set data
         if kwargs.get("particles") is not None or kwargs.get("timeseries") is not None:
