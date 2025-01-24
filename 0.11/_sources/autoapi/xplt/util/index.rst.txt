@@ -38,7 +38,6 @@ Functions
    xplt.util.denormalized_coordinates
    xplt.util.evaluate_expression_wrapper
    xplt.util.flattened
-   xplt.util.fmt
    xplt.util.get
    xplt.util.hamiltonian_kobayashi
    xplt.util.ieee_mod
@@ -190,11 +189,6 @@ Module Contents
 .. py:function:: flattened(lists)
 
    Flatten a list of nested lists recursively
-
-
-.. py:function:: fmt(t, unit='s')
-
-   Human-readable representation of value in unit (latex syntax)
 
 
 .. py:function:: get(obj, value, default=VOID)
