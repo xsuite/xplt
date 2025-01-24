@@ -91,7 +91,7 @@ jobs:
           rm -rf $VERSION
           cp -r _build/html $VERSION
           if [[ "$IS_CLEAN" != "1" ]] ; then
-            touch .pre-release
+            touch $VERSION/.pre-release
           fi
           # Update docs
           ./update.py
