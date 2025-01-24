@@ -23,7 +23,7 @@ import matplotlib.path
 import numpy as np
 import pint
 
-from .util import defaults, flattened, defaults_for
+from .util import defaults, flattened, defaults_for, AUTO
 from .properties import Property, find_property, DataProperty, arb_unit
 
 
@@ -880,11 +880,11 @@ class XManifoldPlot(XPlot):
                 Signature: (i, j, k, axis, p) -> artist
                 Where i, j, k are the subplot, twin-axis, trace indices respectively;
                 axis is the axis and the string p is the property to plot.
-            dataset_id (str | None): The dataset identifier if this plot represents multiple datasets.
-                If None, and a default dataset already exists, a new UUID is generated.
+            dataset_id (str | None | AUTO): The dataset identifier if this plot represents multiple datasets.
+                If :const:`xplt.AUTO`, a new UUID is generated.
         """
 
-        if dataset_id is None and None in self._artists:
+        if dataset_id is AUTO:
             dataset_id = str(uuid.uuid4())
         if dataset_id in self._artists:
             raise ValueError(f"Dataset identifier `{dataset_id}` already exists")

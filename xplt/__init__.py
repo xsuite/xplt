@@ -16,6 +16,7 @@ from .phasespace import *
 from .properties import *
 from .timestructure import *
 from .twiss import *
+from .util import AUTO
 
 # allow usage of xplt.mpl.* without importing matplotlib
 import matplotlib as mpl
