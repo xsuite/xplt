@@ -452,7 +452,7 @@ class TimeBinPlot(ParticleHistogramPlot, TimePlotMixin):
         return self.bin_width
 
     def add_dataset(
-        self, id=None, *, plot_kwargs=None, particles=None, timeseries=None, **kwargs
+        self, id=AUTO, *, plot_kwargs=None, particles=None, timeseries=None, **kwargs
     ):
         """Create artists for a new dataset to the plot and optionally update their values
 
@@ -618,7 +618,7 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
 
     def add_dataset(
         self,
-        id=None,
+        id=AUTO,
         *,
         plot_kwargs=None,
         averaging_shadow=True,
@@ -666,6 +666,8 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
         # set data
         if kwargs.get("particles") is not None or kwargs.get("timeseries") is not None:
             self.update(**kwargs, dataset_id=id)
+
+        return id
 
     def _get_scaling(self, key):
         if isinstance(self._scaling, str):
@@ -1013,7 +1015,7 @@ class TimeIntervalPlot(
             )
 
     def add_dataset(
-        self, id=None, *, plot_kwargs=None, poisson=False, poisson_kwargs=None, **kwargs
+        self, id=AUTO, *, plot_kwargs=None, poisson=False, poisson_kwargs=None, **kwargs
     ):
         """Create artists for a new dataset to the plot and optionally update their values
 
@@ -1062,6 +1064,8 @@ class TimeIntervalPlot(
         # set data
         if kwargs.get("particles") is not None:
             self.update(**kwargs, dataset_id=id)
+
+        return id
 
     @property
     def bin_time(self):
@@ -1239,7 +1243,7 @@ class SpillQualityPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, Metrices
             )
 
     def add_dataset(
-        self, id=None, *, plot_kwargs=None, poisson=True, poisson_kwargs=None, **kwargs
+        self, id=AUTO, *, plot_kwargs=None, poisson=True, poisson_kwargs=None, **kwargs
     ):
         """Create artists for a new dataset to the plot and optionally update their values
 
@@ -1281,6 +1285,8 @@ class SpillQualityPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, Metrices
         # set data
         if kwargs.get("particles") is not None or kwargs.get("timeseries") is not None:
             self.update(**kwargs, dataset_id=id)
+
+        return id
 
     def update(
         self, particles=None, mask=None, *, autoscale=None, timeseries=None, dataset_id=None
@@ -1473,7 +1479,7 @@ class SpillQualityTimescalePlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin,
 
     def add_dataset(
         self,
-        id=None,
+        id=AUTO,
         *,
         plot_kwargs=None,
         std=True,
@@ -1528,6 +1534,8 @@ class SpillQualityTimescalePlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin,
         # set data
         if kwargs.get("particles") or kwargs.get("timeseries") is not None:
             self.update(**kwargs, dataset_id=id)
+
+        return id
 
     def update(
         self,

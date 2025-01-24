@@ -304,7 +304,7 @@ class ParticleHistogramPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramP
         if add_default_dataset:
             self.add_dataset(None, particles=particles, mask=mask, plot_kwargs=plot_kwargs)
 
-    def add_dataset(self, id=None, *, plot_kwargs=None, **kwargs):
+    def add_dataset(self, id=AUTO, *, plot_kwargs=None, **kwargs):
         """Create artists for a new dataset to the plot and optionally update their values
 
         Args:
@@ -327,6 +327,8 @@ class ParticleHistogramPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramP
         # set data
         if kwargs.get("particles") is not None:
             self.update(**kwargs, dataset_id=id)
+
+        return id
 
     def _symbol_for(self, p):
         symbol = super()._symbol_for(p)
@@ -489,7 +491,7 @@ class ParticlesPlot(XManifoldPlot, ParticlePlotMixin):
         if add_default_dataset:
             self.add_dataset(None, particles=particles, mask=mask, plot_kwargs=plot_kwargs)
 
-    def add_dataset(self, id=None, *, plot_kwargs=None, **kwargs):
+    def add_dataset(self, id=AUTO, *, plot_kwargs=None, **kwargs):
         """Create artists for a new dataset to the plot and optionally update their values
 
         Args:
@@ -510,6 +512,8 @@ class ParticlesPlot(XManifoldPlot, ParticlePlotMixin):
         # set data
         if kwargs.get("particles") is not None:
             self.update(**kwargs, dataset_id=id)
+
+        return id
 
     def update(self, particles, mask=None, *, autoscale=None, dataset_id=None):
         """Update plot with new data
