@@ -52,7 +52,7 @@ jobs:
       - run: |
           VERSION=$(git describe --tags)
           echo "Version: $VERSION"
-          if [[ $VERSION =~ v[0-9]+(\.[0-9]+)*$ ]] ; then
+          if [[ $VERSION =~ v[0-9]+\.[0-9]+\.[0-9]+(-rc[0-9]+)?$ ]] ; then
             echo "Ready for publication"
           else
             echo "Not publishing dirty versions"
