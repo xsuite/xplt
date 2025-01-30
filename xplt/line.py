@@ -26,11 +26,12 @@ from .properties import Property, DataProperty
 
 def element_strength(element, n):
     """Get knl strength of element"""
-    if hasattr(element, f"k{n}") and hasattr(element, "length"):
-        return getattr(element, f"k{n}") * element.length
-    elif hasattr(element, "knl") and n <= element.order:
-        return element.knl[n]
-    return 0
+    knl = 0
+    if knl == 0 and hasattr(element, f"k{n}") and hasattr(element, "length"):
+        knl = getattr(element, f"k{n}") * element.length
+    if knl == 0 and hasattr(element, "knl") and n <= element.order:
+        knl = element.knl[n]
+    return knl
 
 
 def nominal_order(element):
@@ -49,16 +50,18 @@ def nominal_order(element):
 
 
 def effective_order(element):
-    """Get effective order of element (ignoring zero strength)"""
-    order = {-1}
+    """Get effective order of element (lowest non-zero knl or ksl strength)"""
+    order = set()
     if hasattr(element, "length") and element.length > 0:
-        for n in range(10, -1, -1):
+        for n in range(10):
             if get(element, f"k{n}", 0) or get(element, f"k{n}s", 0):
                 order.add(n)
     for knl in ("knl", "ksl"):
         if hasattr(element, knl):
-            order.add(int(np.max(np.nonzero(getattr(element, knl)), initial=-1)))
-    return max(order)
+            order.update(np.flatnonzero(getattr(element, knl)).tolist())
+    if order:
+        return min(order)
+    return -1
 
 
 def order(knl):
@@ -70,6 +73,17 @@ def tanc(x):
     """Tangens cardinalis, i.e. tan(x)/x with limit tanc(0)=1"""
     # Note that np.sinc is sin(pi*x)/(pi*x) and not sin(x)/x !
     return np.sinc(x / np.pi) / np.cos(x)
+
+
+def sign_sticky(arr, *, initial=1):
+    """Determine sign or values, but keep previous sign for zero values"""
+    s = np.sign(arr)
+    if s[0] == 0:
+        s[0] = initial
+    index = np.arange(len(s))
+    index[s == 0] = -1
+    index_last_nonzero = np.maximum.accumulate(index)
+    return s[index_last_nonzero]
 
 
 PUBLIC_SECTION_BEGIN()
@@ -233,7 +247,7 @@ class FloorPlot(XPlot):
 
         Args:
             survey (Any | None): Survey data from MAD-X or Xsuite.
-            line (xtrack.Line): Xsuite line object (optional).
+            line (None | xtrack.Line): Optional Xsuite line object for backwards compatible coloring of Multipoles (deprecated).
             projection (str): The projection to use: A pair of coordinates ('XZ', 'ZY' etc.)
             boxes (None | bool | str | iterable | dict): Config option for showing colored boxes for elements. See below.
                 Detailed options can be "length" and all options suitable for a patch, such as "color", "alpha", etc.
@@ -275,7 +289,6 @@ class FloorPlot(XPlot):
         if projection == "3D":
             raise NotImplementedError()
 
-        self.line = line
         self.projection = projection
         self.boxes = boxes
         self.default_boxes = default_boxes if default_boxes is not None else (boxes is not False)
@@ -304,15 +317,16 @@ class FloorPlot(XPlot):
         self.artists_labels = []
 
         if survey is not None:
-            self.update(survey)
+            self.update(survey, line)
 
-    def update(self, survey=None, *, autoscale=None):
+    def update(self, survey=None, line=None, *, autoscale=None):
         """
         Update the survey data this plot shows
 
         Args:
             survey (Any | None): Survey data. Defaults to `line.survey()`.
                 For convenience, passing line as first argument is also supported.
+            line (None | xtrack.Line): Optional Xsuite line object for backwards compatible coloring of Multipoles (deprecated).
             autoscale (str | None | bool): Whether and on which axes to perform autoscaling.
                 One of `"x"`, `"y"`, `"xy"`, `False` or `None`. If `None`, decide based on :meth:`matplotlib.axes.Axes.get_autoscalex_on` and :meth:`matplotlib.axes.Axes.get_autoscaley_on`.
 
@@ -320,10 +334,6 @@ class FloorPlot(XPlot):
             changed artists
 
         """
-
-        # Handle various input types in a smart way
-        if type(survey).__name__ == "Line":
-            survey = survey.survey()
 
         changed = []
 
@@ -338,29 +348,48 @@ class FloorPlot(XPlot):
                 # can't handle this, because angles are not preserved
                 raise ValueError(f"Display units for {A} and {B} must be equal!")
 
-            X = get(survey, A) * scale
-            Y = get(survey, B) * scale
+            X = get(survey, A) * scale  # coordinate to be plotted on x-axis
+            Y = get(survey, B) * scale  # coordinate to be plotted on y-axis
 
-            # ang: transform angles from data (A-B) to axis (X-Y) coordinate system
-            if self.projection == "ZX":
+            # rotation of element (angle between plot x-axis and tangential beam direction)
+            if self.projection in ("ZX", "XZ"):
+                RT = get(survey, "theta")
+            elif self.projection in ("ZY",):
+                RT = get(survey, "phi")
+            else:
+                raise ValueError(f"Unknown projection {self.projection}")
 
-                def ang(a):
-                    return a
-
-            elif self.projection == "XZ":
-
-                def ang(a):
-                    return np.pi / 2 - a
-
-            elif self.projection == "ZY":
+            # ang: function to transform angles from data (A-B) to axis (X-Y) coordinate system
+            if self.projection in ("ZX", "ZY"):
 
                 def ang(a):
                     return a
 
             else:
-                raise ValueError(f"Unknown projection {self.projection}")
+
+                def ang(a):
+                    return np.pi / 2 - a
 
             NAME = get(survey, "name")
+            ARC = -np.round(np.diff(RT, append=RT[-1]), 9)  # bending angle to next element
+            HELICITY = sign_sticky(ARC)  # if the beamline is left or right bending
+            RR = ang(
+                RT - ARC / 2 + HELICITY * np.pi / 2
+            )  # angle between plot x-axis and radial vector of bending
+
+            LENGTH = get(survey, "length", np.zeros_like(NAME))
+            IS_THICK = get(survey, "isthick", np.zeros_like(NAME))
+            ORDER = get(survey, "order", -np.ones_like(NAME))
+            if (TYPE := get(survey, "element_type", None)) is not None:
+                # map element type to order when order is not in survey
+                for type, o in {
+                    "Bend": 0,
+                    "Quadrupole": 1,
+                    "Sextupole": 2,
+                    "Octupole": 3,
+                    "Multipole": 999,
+                }.items():
+                    ORDER[(ORDER < 0) & (TYPE == type)] = o
 
             # beam line
             ############
@@ -381,56 +410,38 @@ class FloorPlot(XPlot):
                 # remove old artists
                 self.artists_labels.pop().remove()
 
-            helicity = 1
             legend_entries = []
-            for i, (x, y, name) in enumerate(zip(X, Y, NAME)):
+            for i, (x, y, rt, name, arc) in enumerate(zip(X, Y, RT, NAME, ARC)):
+                helicity, rr, length, is_thick, order = (
+                    HELICITY[i],
+                    RR[i],
+                    LENGTH[i],
+                    IS_THICK[i],
+                    ORDER[i],
+                )
 
                 if name == "_end_point":
-                    break
+                    continue
 
-                if self.projection == "ZX" or self.projection == "XZ":
-                    rt = survey["theta"][i]
-                    arc = -(survey["theta"][i + 1] - rt)
-                elif self.projection == "ZY":
-                    rt = survey["phi"][i]
-                    arc = -(survey["phi"][i + 1] - rt)
-                else:
-                    raise ValueError(f"Unknown projection {self.projection}")
-
-                helicity = np.sign(arc) or helicity
-                rr = ang(rt - arc / 2 + helicity * np.pi / 2)
-
-                length = get(get(survey, "length", []), i, 0)
-                is_thick = False
-                if "element_type" in survey.keys():
-                    # is an xtrack survey
-                    is_xtrack = True
-                    order = {
-                        "Bend": 0,
-                        "Quadrupole": 1,
-                        "Sextupole": 2,
-                        "Octupole": 3,
-                        "Multipole": 999,
-                    }.get(survey["element_type"][i], -1)
-                    is_thick = survey["isthick"][i]
-                    length = survey["length"][i]
-                else:
-                    # probably a MAD-X survey
-                    order = get(get(survey, "order", []), i, -1)
-                    is_xtrack = False
-
-                # For multipoles extract the order from the knl values
-                if order == 999 and self.line is not None:
-                    knl = self.line.get(name).knl
-                    non_zero = np.where(knl != 0)[0]
-                    if len(non_zero) > 0:
-                        order = non_zero[0]
+                element = None
+                if line is not None:
+                    # Fallback to extract missing properties from line
+                    try:
+                        element = line.get(
+                            name
+                        )  # required also for custom text formatting if user wants to
+                        if not is_thick:
+                            is_thick = element.isthick
+                        if order < 0 or order > 100:
+                            order = effective_order(element)
+                        if not length:
+                            length = get(element, "length", 0)
+                    except (TypeError, KeyError):
+                        pass
 
                 if self.ignore is not None:
                     if np.any([re.match(pattern, name) is not None for pattern in self.ignore]):
                         continue  # skip ignored
-                if name == "_end_point":
-                    continue
 
                 # box
                 ######
@@ -449,10 +460,8 @@ class FloorPlot(XPlot):
                 )
 
                 boxes = self.boxes
-                if boxes is None:
-                    boxes = not (is_xtrack) or order >= 0
                 box_style = self._get_config(boxes, name, **default_box_style)
-                if box_style is None and self.default_boxes and (not (is_xtrack) or order >= 0):
+                if box_style is None and self.default_boxes and order >= 0:
                     box_style = default_box_style
 
                 if box_style is not None:
@@ -513,12 +522,14 @@ class FloorPlot(XPlot):
 
                 labels = self.labels
                 if labels is None:
-                    labels = is_xtrack and order >= 0
+                    labels = order >= 0
                 label_style = self._get_config(labels, name, text=name)
 
                 if label_style is not None:
                     width = label_style.pop("width", self.element_width * scale)
-                    label_style["text"] = label_style["text"].format(name=name, element=element)
+                    label_style["text"] = label_style["text"].format(
+                        name=name, length=length, arc=arc, order=order, element=element
+                    )
 
                     label = self.ax.annotate(
                         **defaults_for(

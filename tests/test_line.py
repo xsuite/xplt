@@ -91,3 +91,9 @@ def test_repeated_elements_survey():
     assert_equal(boxes[0].get_height(), 0.5)
     assert_equal(boxes[1].get_center(), [0.75, 0])
     assert_equal(boxes[1].get_height(), 0.5)
+
+
+def test_sign_sticky():
+
+    x = [0, 1, 5, 0, 5, -3, 0, 1, 0, -2, 0]
+    assert_equal(xplt.line.sign_sticky(x, initial=1), [1, 1, 1, 1, 1, -1, -1, 1, 1, -1, -1])
