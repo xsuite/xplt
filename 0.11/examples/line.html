@@ -5,7 +5,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Beamline — Xplt 0.11.3-rc5 documentation</title>
+<title>Beamline — Xplt 0.11.3-rc6 documentation</title>
 <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
@@ -32,7 +32,7 @@
 <!-- Pre-loaded scripts that we'll load fully later -->
 <link as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" rel="preload"/>
 <link as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" rel="preload"/>
-<script src="../_static/documentation_options.js?v=5d0d9356"></script>
+<script src="../_static/documentation_options.js?v=6af5193c"></script>
 <script src="../_static/doctools.js?v=9bcbadda"></script>
 <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
 <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
@@ -51,7 +51,7 @@
 <link href="concepts.html" rel="prev" title="Common concepts"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta content="en" name="docsearch:language"/>
-<meta content="0.11.3-rc5" name="docsearch:version"/>
+<meta content="0.11.3-rc6" name="docsearch:version"/>
 </head>
 <body data-bs-root-margin="0px 0px -60%" data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-default-mode="" data-offset="180">
 <div class="skip-link d-print-none" id="pst-skip-link"><a href="#main-content">Skip to main content</a></div>
@@ -76,7 +76,7 @@
 <div class="col-lg-3 navbar-header-items__start">
 <div class="navbar-item">
 <a class="navbar-brand logo" href="../index.html">
-<p class="title logo__title">Xplt 0.11.3-rc5 documentation</p>
+<p class="title logo__title">Xplt 0.11.3-rc6 documentation</p>
 </a></div>
 </div>
 <div class="col-lg-9 navbar-header-items">
@@ -294,8 +294,8 @@ First, create a simple line and a tracker:</p>
 <span class="n">n</span> <span class="o">=</span> <span class="mi">6</span>  <span class="c1"># number of sections</span>
 <span class="n">elements</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">"QF"</span><span class="p">:</span> <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.Quadrupole" title="xtrack.beam_elements.elements.Quadrupole"><span class="n">xt</span><span class="o">.</span><span class="n">Quadrupole</span></a><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">k1</span><span class="o">=</span><span class="mf">0.63</span> <span class="o">/</span> <span class="mf">0.3</span><span class="p">),</span>
-    <span class="s2">"QD"</span><span class="p">:</span> <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.Multipole" title="xtrack.beam_elements.elements.Multipole"><span class="n">xt</span><span class="o">.</span><span class="n">Multipole</span></a><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">knl</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.48</span><span class="p">]),</span>
-    <span class="s2">"MU"</span><span class="p">:</span> <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.Multipole" title="xtrack.beam_elements.elements.Multipole"><span class="n">xt</span><span class="o">.</span><span class="n">Multipole</span></a><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">knl</span><span class="o">=</span><span class="p">[</span><a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/constants.html#numpy.pi" title="numpy.pi"><span class="n">np</span><span class="o">.</span><span class="n">pi</span></a> <span class="o">/</span> <span class="n">n</span><span class="p">],</span> <span class="n">hxl</span><span class="o">=</span><span class="p">[</span><a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/constants.html#numpy.pi" title="numpy.pi"><span class="n">np</span><span class="o">.</span><span class="n">pi</span></a> <span class="o">/</span> <span class="n">n</span><span class="p">]),</span>
+    <span class="s2">"QD"</span><span class="p">:</span> <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.Quadrupole" title="xtrack.beam_elements.elements.Quadrupole"><span class="n">xt</span><span class="o">.</span><span class="n">Quadrupole</span></a><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">k1</span><span class="o">=-</span><span class="mf">0.48</span> <span class="o">/</span> <span class="mf">0.3</span><span class="p">),</span>
+    <span class="s2">"MU"</span><span class="p">:</span> <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.Bend" title="xtrack.beam_elements.elements.Bend"><span class="n">xt</span><span class="o">.</span><span class="n">Bend</span></a><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">knl</span><span class="o">=</span><span class="p">[</span><a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/constants.html#numpy.pi" title="numpy.pi"><span class="n">np</span><span class="o">.</span><span class="n">pi</span></a> <span class="o">/</span> <span class="n">n</span><span class="p">],</span> <span class="n">h</span><span class="o">=</span><a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/constants.html#numpy.pi" title="numpy.pi"><span class="n">np</span><span class="o">.</span><span class="n">pi</span></a> <span class="o">/</span> <span class="n">n</span> <span class="o">/</span> <span class="mf">0.5</span><span class="p">),</span>
 <span class="p">}</span>
 <span class="n">parts</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s2">"a"</span><span class="p">:</span> <span class="p">[</span>
@@ -315,14 +315,37 @@ First, create a simple line and a tracker:</p>
 
 <span class="c1"># sextupoles</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
-    <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.Multipole" title="xtrack.beam_elements.elements.Multipole"><span class="n">sx</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.Multipole" title="xtrack.beam_elements.elements.Multipole"><span class="n">xt</span><span class="o">.</span><span class="n">Multipole</span></a><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">knl</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.5</span> <span class="o">*</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/generated/numpy.sin.html#numpy.sin" title="numpy.sin"><span class="n">np</span><span class="o">.</span><span class="n">sin</span></a><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/constants.html#numpy.pi" title="numpy.pi"><span class="n">np</span><span class="o">.</span><span class="n">pi</span></a> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">/</span> <span class="n">n</span><span class="p">))])</span>
-    <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.Multipole" title="xtrack.beam_elements.elements.Multipole"><span class="n">sx</span></a><span class="p">,</span> <span class="n">from_</span><span class="o">=</span><span class="sa">f</span><span class="s2">"S</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">"S</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">SX"</span><span class="p">))</span>
+    <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.Sextupole" title="xtrack.beam_elements.elements.Sextupole"><span class="n">sx</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.Sextupole" title="xtrack.beam_elements.elements.Sextupole"><span class="n">xt</span><span class="o">.</span><span class="n">Sextupole</span></a><span class="p">(</span><span class="n">length</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">k2</span><span class="o">=</span><span class="mf">0.5</span> <span class="o">*</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/generated/numpy.sin.html#numpy.sin" title="numpy.sin"><span class="n">np</span><span class="o">.</span><span class="n">sin</span></a><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/constants.html#numpy.pi" title="numpy.pi"><span class="n">np</span><span class="o">.</span><span class="n">pi</span></a> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">/</span> <span class="n">n</span><span class="p">)))</span>
+    <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xt</span><span class="o">.</span><span class="n">Node</span><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.Sextupole" title="xtrack.beam_elements.elements.Sextupole"><span class="n">sx</span></a><span class="p">,</span> <span class="n">from_</span><span class="o">=</span><span class="sa">f</span><span class="s2">"S</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">"</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">"S</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">SX"</span><span class="p">))</span>
 
 <span class="n">line</span> <span class="o">=</span> <span class="n">xt</span><span class="o">.</span><span class="n">Line</span><span class="o">.</span><span class="n">from_sequence</span><span class="p">(</span>
     <span class="n">nodes</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mf">5.0</span> <span class="o">*</span> <span class="n">n</span><span class="p">,</span> <span class="n">sequences</span><span class="o">=</span><span class="n">parts</span><span class="p">,</span> <span class="n">elements</span><span class="o">=</span><span class="n">elements</span><span class="p">,</span> <span class="n">auto_reorder</span><span class="o">=</span><span class="kc">True</span>
 <span class="p">)</span>
 <span class="n">line</span><span class="o">.</span><span class="n">particle_ref</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.Particles" title="xtrack.particles.particles.Particles"><span class="n">xp</span><span class="o">.</span><span class="n">Particles</span></a><span class="p">()</span>
-<span class="n">line</span><span class="o">.</span><span class="n">build_tracker</span><span class="p">();</span>
+<span class="n">line</span><span class="o">.</span><span class="n">build_tracker</span><span class="p">()</span>
+
+
+<span class="c1">## Generate a second line with horizontal and vertical bends</span>
+
+<a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.Environment" title="xtrack.environment.Environment"><span class="n">env</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.Environment" title="xtrack.environment.Environment"><span class="n">xt</span><span class="o">.</span><span class="n">Environment</span></a><span class="p">()</span>
+<span class="n">env</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">"bend_v"</span><span class="p">,</span> <span class="s2">"Bend"</span><span class="p">,</span> <span class="n">rot_s_rad</span><span class="o">=</span><a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/constants.html#numpy.pi" title="numpy.pi"><span class="n">np</span><span class="o">.</span><span class="n">pi</span></a> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">env</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">"quad"</span><span class="p">,</span> <span class="s2">"Quadrupole"</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<span class="n">env</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">"sext"</span><span class="p">,</span> <span class="s2">"Sextupole"</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+<span class="n">env</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">"oct"</span><span class="p">,</span> <span class="s2">"Octupole"</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+
+<span class="n">line2</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">new_line</span><span class="p">(</span>
+    <span class="n">components</span><span class="o">=</span><span class="p">[</span>
+        <span class="n">env</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">"mb1"</span><span class="p">,</span> <span class="s2">"Bend"</span><span class="p">,</span> <span class="n">angle</span><span class="o">=</span><a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/constants.html#numpy.pi" title="numpy.pi"><span class="n">np</span><span class="o">.</span><span class="n">pi</span></a> <span class="o">/</span> <span class="mi">6</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">at</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span>
+        <span class="n">env</span><span class="o">.</span><span class="n">place</span><span class="p">([</span><span class="s2">"quad"</span><span class="p">,</span> <span class="s2">"sext"</span><span class="p">]),</span>
+        <span class="n">env</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">"mb2"</span><span class="p">,</span> <span class="s2">"Bend"</span><span class="p">,</span> <span class="n">angle</span><span class="o">=-</span><a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/constants.html#numpy.pi" title="numpy.pi"><span class="n">np</span><span class="o">.</span><span class="n">pi</span></a> <span class="o">/</span> <span class="mi">6</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">at</span><span class="o">=</span><span class="mi">10</span><span class="p">),</span>
+        <span class="n">env</span><span class="o">.</span><span class="n">place</span><span class="p">([</span><span class="s2">"quad"</span><span class="p">,</span> <span class="s2">"sext"</span><span class="p">]),</span>
+        <span class="n">env</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">"mbv1"</span><span class="p">,</span> <span class="s2">"bend_v"</span><span class="p">,</span> <span class="n">angle</span><span class="o">=</span><a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/constants.html#numpy.pi" title="numpy.pi"><span class="n">np</span><span class="o">.</span><span class="n">pi</span></a> <span class="o">/</span> <span class="mi">4</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">at</span><span class="o">=</span><span class="mi">15</span><span class="p">),</span>
+        <span class="n">env</span><span class="o">.</span><span class="n">place</span><span class="p">([</span><span class="s2">"quad"</span><span class="p">,</span> <span class="s2">"oct"</span><span class="p">]),</span>
+        <span class="n">env</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">"mbv2"</span><span class="p">,</span> <span class="s2">"bend_v"</span><span class="p">,</span> <span class="n">angle</span><span class="o">=-</span><a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/constants.html#numpy.pi" title="numpy.pi"><span class="n">np</span><span class="o">.</span><span class="n">pi</span></a> <span class="o">/</span> <span class="mi">4</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">at</span><span class="o">=</span><span class="mi">20</span><span class="p">),</span>
+        <span class="n">env</span><span class="o">.</span><span class="n">place</span><span class="p">([</span><span class="s2">"quad"</span><span class="p">,</span> <span class="s2">"oct"</span><span class="p">]),</span>
+        <span class="n">env</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">"ev"</span><span class="p">,</span> <span class="s2">"Marker"</span><span class="p">,</span> <span class="n">at</span><span class="o">=</span><span class="mi">25</span><span class="p">),</span>
+    <span class="p">]</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -333,13 +356,14 @@ First, create a simple line and a tracker:</p>
 <p>Create a survey and a default floor plan plot:</p>
 <div class="cell tag_remove-stderr docutils container">
 <div class="cell_input docutils container">
-<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><a class="sphinx-codeautolink-a" href="../autoapi/xplt/line/index.html#xplt.line.FloorPlot" title="xplt.line.FloorPlot"><span class="n">plot</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/line/index.html#xplt.line.FloorPlot" title="xplt.line.FloorPlot"><span class="n">xplt</span><span class="o">.</span><span class="n">FloorPlot</span></a><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s2">"S.Q."</span><span class="p">,</span> <span class="s2">"S1SX"</span><span class="p">])</span>
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">survey</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">survey</span><span class="p">()</span>
+<a class="sphinx-codeautolink-a" href="../autoapi/xplt/line/index.html#xplt.line.FloorPlot" title="xplt.line.FloorPlot"><span class="n">plot</span></a> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="../autoapi/xplt/line/index.html#xplt.line.FloorPlot" title="xplt.line.FloorPlot"><span class="n">xplt</span><span class="o">.</span><span class="n">FloorPlot</span></a><span class="p">(</span><span class="n">survey</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s2">"S.Q."</span><span class="p">,</span> <span class="s2">"S1SX"</span><span class="p">])</span>
 <a class="sphinx-codeautolink-a" href="../autoapi/xplt/line/index.html#xplt.line.FloorPlot.legend" title="xplt.line.FloorPlot.legend"><span class="n">plot</span><span class="o">.</span><span class="n">legend</span></a><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/f3f2e9bcd8e3f63aed9925b02a1258a6adfd63660f3311d0fe4e448f3260d6d4.png" src="../_images/f3f2e9bcd8e3f63aed9925b02a1258a6adfd63660f3311d0fe4e448f3260d6d4.png"/>
+<img alt="../_images/6279bfde1b845445963cb24f391dde2add1a337e3451b6115fddf7b2ca54ecfd.png" src="../_images/6279bfde1b845445963cb24f391dde2add1a337e3451b6115fddf7b2ca54ecfd.png"/>
 </div>
 </div>
 <p>Customize the plot:</p>
@@ -366,7 +390,7 @@ First, create a simple line and a tracker:</p>
             <span class="n">text</span><span class="o">=</span><span class="p">(</span>
                 <span class="s2">"A bending magnet</span><span class="se">\n</span><span class="s2">"</span>
                 <span class="s2">"name: </span><span class="si">{name}</span><span class="se">\n</span><span class="s2">"</span>
-                <span class="s2">"l = </span><span class="si">{element.length}</span><span class="s2"> m</span><span class="se">\n</span><span class="s2">"</span>
+                <span class="s2">"l = </span><span class="si">{length}</span><span class="s2"> m</span><span class="se">\n</span><span class="s2">"</span>
                 <span class="s2">"k0l = </span><span class="si">{element.knl[0]:g}</span><span class="s2"> rad"</span>
             <span class="p">),</span>
             <span class="n">xytext</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">4</span><span class="p">),</span>
@@ -375,6 +399,7 @@ First, create a simple line and a tracker:</p>
             <span class="n">c</span><span class="o">=</span><span class="s2">"red"</span><span class="p">,</span>
         <span class="p">),</span>
     <span class="p">},</span>
+    <span class="n">line</span><span class="o">=</span><span class="n">line</span><span class="p">,</span>  <span class="c1"># optional, here we need it only to access it in the custom label of S4MU1</span>
 <span class="p">)</span>
 <a class="sphinx-codeautolink-a" href="../autoapi/xplt/line/index.html#xplt.line.FloorPlot.add_scale" title="xplt.line.FloorPlot.add_scale"><span class="n">plot</span><span class="o">.</span><span class="n">add_scale</span></a><span class="p">()</span>
 <a class="sphinx-codeautolink-a" href="../autoapi/xplt/line/index.html#xplt.line.FloorPlot.legend" title="xplt.line.FloorPlot.legend"><span class="n">plot</span><span class="o">.</span><span class="n">legend</span></a><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s2">"upper left"</span><span class="p">)</span>
@@ -382,7 +407,26 @@ First, create a simple line and a tracker:</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/e179360f784dc8d14fb0d249fdbe5ba7481db6a2332574715c08c8297f326377.png" src="../_images/e179360f784dc8d14fb0d249fdbe5ba7481db6a2332574715c08c8297f326377.png"/>
+<img alt="../_images/376d62428910b97925c963dba6e672c8be687a0f73ed15d0e6ec01bc4b7cd117.png" src="../_images/376d62428910b97925c963dba6e672c8be687a0f73ed15d0e6ec01bc4b7cd117.png"/>
+</div>
+</div>
+<p>Different projections are also supported. In this example we have a line with a horizontal and vertical chicane:</p>
+<div class="cell tag_remove-stderr docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <a class="sphinx-codeautolink-a" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.pyplot.subplots.html#matplotlib.pyplot.subplots" title="matplotlib.pyplot.subplots"><span class="n">xplt</span><span class="o">.</span><span class="n">mpl</span><span class="o">.</span><span class="n">pyplot</span><span class="o">.</span><span class="n">subplots</span></a><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># First the default ZX projection, second the ZY projection</span>
+<span class="n">survey</span> <span class="o">=</span> <span class="n">line2</span><span class="o">.</span><span class="n">survey</span><span class="p">()</span>
+<a class="sphinx-codeautolink-a" href="../autoapi/xplt/line/index.html#xplt.line.FloorPlot" title="xplt.line.FloorPlot"><span class="n">xplt</span><span class="o">.</span><span class="n">FloorPlot</span></a><span class="p">(</span><span class="n">survey</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<a class="sphinx-codeautolink-a" href="../autoapi/xplt/line/index.html#xplt.line.FloorPlot" title="xplt.line.FloorPlot"><span class="n">xplt</span><span class="o">.</span><span class="n">FloorPlot</span></a><span class="p">(</span><span class="n">survey</span><span class="p">,</span> <span class="n">projection</span><span class="o">=</span><span class="s2">"ZY"</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">xlabel</span><span class="o">=</span><span class="kc">None</span><span class="p">);</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/6c7d81c13fd635ab18e48f377d2ef677aee5066bddf9358973c0790688cba1ce.png" src="../_images/6c7d81c13fd635ab18e48f377d2ef677aee5066bddf9358973c0790688cba1ce.png"/>
 </div>
 </div>
 </section>
@@ -397,7 +441,7 @@ First, create a simple line and a tracker:</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/6f50a74f28236828b8b5128bc38b310ea3b1d369443a027fc3757ade25c78857.png" src="../_images/6f50a74f28236828b8b5128bc38b310ea3b1d369443a027fc3757ade25c78857.png"/>
+<img alt="../_images/043bfed222ddd444f3536003a720e8e93f546faba4754331c2ba7b9029fac9da.png" src="../_images/043bfed222ddd444f3536003a720e8e93f546faba4754331c2ba7b9029fac9da.png"/>
 </div>
 </div>
 <p>The usual subplot spec string is also supported:</p>
@@ -408,7 +452,7 @@ First, create a simple line and a tracker:</p>
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/aa991f0b9b67ff218abe10253a2053445c4b2894a1319a62018c54607d1dfa83.png" src="../_images/aa991f0b9b67ff218abe10253a2053445c4b2894a1319a62018c54607d1dfa83.png"/>
+<img alt="../_images/aeafc97e33f9866fcc5f8906b9b0671e7ebd091a3233b1ee5f42db82cfa069cf.png" src="../_images/aeafc97e33f9866fcc5f8906b9b0671e7ebd091a3233b1ee5f42db82cfa069cf.png"/>
 </div>
 </div>
 <hr class="docutils"/>

@@ -2344,7 +2344,7 @@
       "doc_lineno": 30002
     },
     {
-      "source": "## Generate a simple 6-fold symmetric FODO lattice\n\nn = 6  # number of sections\nelements = {\n    \"QF\": xt.Quadrupole(length=0.3, k1=0.63 / 0.3),\n    \"QD\": xt.Multipole(length=0.3, knl=[0, -0.48]),\n    \"MU\": xt.Multipole(length=0.5, knl=[np.pi / n], hxl=[np.pi / n]),\n}\nparts = {\n    \"a\": [\n        xt.Node(0.7, \"QF\"),\n        xt.Node(1.4, \"MU\"),\n        xt.Node(2.1, \"QD\"),\n        xt.Node(2.8, \"MU\"),\n    ],\n    \"b\": [\n        xt.Node(2.2, \"MU\"),\n        xt.Node(2.9, \"QD\"),\n        xt.Node(3.6, \"MU\"),\n        xt.Node(4.3, \"QF\"),\n    ],\n}\nnodes = [xt.Node(5.0 * i, \"a\" if i % 2 else \"b\", name=f\"S{i+1}\") for i in range(n)]\n\n# sextupoles\nfor i in range(n):\n    sx = xt.Multipole(length=0.2, knl=[0, 0, 0.5 * np.sin(2 * np.pi * (i / n))])\n    nodes.append(xt.Node(0.2, sx, from_=f\"S{i+1}\", name=f\"S{i+1}SX\"))\n\nline = xt.Line.from_sequence(\n    nodes, length=5.0 * n, sequences=parts, elements=elements, auto_reorder=True\n)\nline.particle_ref = xp.Particles()\nline.build_tracker();",
+      "source": "## Generate a simple 6-fold symmetric FODO lattice\n\nn = 6  # number of sections\nelements = {\n    \"QF\": xt.Quadrupole(length=0.3, k1=0.63 / 0.3),\n    \"QD\": xt.Quadrupole(length=0.3, k1=-0.48 / 0.3),\n    \"MU\": xt.Bend(length=0.5, knl=[np.pi / n], h=np.pi / n / 0.5),\n}\nparts = {\n    \"a\": [\n        xt.Node(0.7, \"QF\"),\n        xt.Node(1.4, \"MU\"),\n        xt.Node(2.1, \"QD\"),\n        xt.Node(2.8, \"MU\"),\n    ],\n    \"b\": [\n        xt.Node(2.2, \"MU\"),\n        xt.Node(2.9, \"QD\"),\n        xt.Node(3.6, \"MU\"),\n        xt.Node(4.3, \"QF\"),\n    ],\n}\nnodes = [xt.Node(5.0 * i, \"a\" if i % 2 else \"b\", name=f\"S{i+1}\") for i in range(n)]\n\n# sextupoles\nfor i in range(n):\n    sx = xt.Sextupole(length=0.2, k2=0.5 * np.sin(2 * np.pi * (i / n)))\n    nodes.append(xt.Node(0.2, sx, from_=f\"S{i+1}\", name=f\"S{i+1}SX\"))\n\nline = xt.Line.from_sequence(\n    nodes, length=5.0 * n, sequences=parts, elements=elements, auto_reorder=True\n)\nline.particle_ref = xp.Particles()\nline.build_tracker()\n\n\n## Generate a second line with horizontal and vertical bends\n\nenv = xt.Environment()\nenv.new(\"bend_v\", \"Bend\", rot_s_rad=np.pi / 2)\nenv.new(\"quad\", \"Quadrupole\", length=0.3)\nenv.new(\"sext\", \"Sextupole\", length=0.2)\nenv.new(\"oct\", \"Octupole\", length=0.1)\n\nline2 = env.new_line(\n    components=[\n        env.new(\"mb1\", \"Bend\", angle=np.pi / 6, length=1, at=5),\n        env.place([\"quad\", \"sext\"]),\n        env.new(\"mb2\", \"Bend\", angle=-np.pi / 6, length=1, at=10),\n        env.place([\"quad\", \"sext\"]),\n        env.new(\"mbv1\", \"bend_v\", angle=np.pi / 4, length=1, at=15),\n        env.place([\"quad\", \"oct\"]),\n        env.new(\"mbv2\", \"bend_v\", angle=-np.pi / 4, length=1, at=20),\n        env.place([\"quad\", \"oct\"]),\n        env.new(\"ev\", \"Marker\", at=25),\n    ]\n)",
       "names": [
         {
           "import_components": [
@@ -2360,13 +2360,13 @@
         {
           "import_components": [
             "xtrack",
-            "Multipole"
+            "Quadrupole"
           ],
-          "code_str": "xt.Multipole",
+          "code_str": "xt.Quadrupole",
           "lineno": 6,
           "end_lineno": 6,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Multipole"
+          "resolved_location": "xtrack.beam_elements.elements.Quadrupole"
         },
         {
           "import_components": [
@@ -2393,13 +2393,13 @@
         {
           "import_components": [
             "xtrack",
-            "Multipole"
+            "Bend"
           ],
-          "code_str": "xt.Multipole",
+          "code_str": "xt.Bend",
           "lineno": 7,
           "end_lineno": 7,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Multipole"
+          "resolved_location": "xtrack.beam_elements.elements.Bend"
         },
         {
           "import_components": [
@@ -2426,37 +2426,37 @@
         {
           "import_components": [
             "xtrack",
-            "Multipole"
+            "Sextupole"
           ],
-          "code_str": "xt.Multipole",
+          "code_str": "xt.Sextupole",
           "lineno": 27,
           "end_lineno": 27,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Multipole"
+          "resolved_location": "xtrack.beam_elements.elements.Sextupole"
         },
         {
           "import_components": [
             "xtrack",
-            "Multipole",
+            "Sextupole",
             "()"
           ],
           "code_str": "sx",
           "lineno": 27,
           "end_lineno": 27,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Multipole"
+          "resolved_location": "xtrack.beam_elements.elements.Sextupole"
         },
         {
           "import_components": [
             "xtrack",
-            "Multipole",
+            "Sextupole",
             "()"
           ],
           "code_str": "sx",
           "lineno": 28,
           "end_lineno": 28,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Multipole"
+          "resolved_location": "xtrack.beam_elements.elements.Sextupole"
         },
         {
           "import_components": [
@@ -2468,6 +2468,84 @@
           "end_lineno": 33,
           "context": "none",
           "resolved_location": "xtrack.particles.particles.Particles"
+        },
+        {
+          "import_components": [
+            "xtrack",
+            "Environment"
+          ],
+          "code_str": "xt.Environment",
+          "lineno": 39,
+          "end_lineno": 39,
+          "context": "none",
+          "resolved_location": "xtrack.environment.Environment"
+        },
+        {
+          "import_components": [
+            "xtrack",
+            "Environment",
+            "()"
+          ],
+          "code_str": "env",
+          "lineno": 39,
+          "end_lineno": 39,
+          "context": "none",
+          "resolved_location": "xtrack.environment.Environment"
+        },
+        {
+          "import_components": [
+            "numpy",
+            "pi"
+          ],
+          "code_str": "np.pi",
+          "lineno": 40,
+          "end_lineno": 40,
+          "context": "none",
+          "resolved_location": "numpy.pi"
+        },
+        {
+          "import_components": [
+            "numpy",
+            "pi"
+          ],
+          "code_str": "np.pi",
+          "lineno": 47,
+          "end_lineno": 47,
+          "context": "none",
+          "resolved_location": "numpy.pi"
+        },
+        {
+          "import_components": [
+            "numpy",
+            "pi"
+          ],
+          "code_str": "np.pi",
+          "lineno": 49,
+          "end_lineno": 49,
+          "context": "none",
+          "resolved_location": "numpy.pi"
+        },
+        {
+          "import_components": [
+            "numpy",
+            "pi"
+          ],
+          "code_str": "np.pi",
+          "lineno": 51,
+          "end_lineno": 51,
+          "context": "none",
+          "resolved_location": "numpy.pi"
+        },
+        {
+          "import_components": [
+            "numpy",
+            "pi"
+          ],
+          "code_str": "np.pi",
+          "lineno": 53,
+          "end_lineno": 53,
+          "context": "none",
+          "resolved_location": "numpy.pi"
         }
       ],
       "example": {
@@ -2480,7 +2558,7 @@
       "doc_lineno": 40002
     },
     {
-      "source": "plot = xplt.FloorPlot(line, labels=[\"S.Q.\", \"S1SX\"])\nplot.legend()",
+      "source": "survey = line.survey()\nplot = xplt.FloorPlot(survey, labels=[\"S.Q.\", \"S1SX\"])\nplot.legend()",
       "names": [
         {
           "import_components": [
@@ -2488,8 +2566,8 @@
             "FloorPlot"
           ],
           "code_str": "xplt.FloorPlot",
-          "lineno": 1,
-          "end_lineno": 1,
+          "lineno": 2,
+          "end_lineno": 2,
           "context": "none",
           "resolved_location": "xplt.line.FloorPlot"
         },
@@ -2500,8 +2578,8 @@
             "()"
           ],
           "code_str": "plot",
-          "lineno": 1,
-          "end_lineno": 1,
+          "lineno": 2,
+          "end_lineno": 2,
           "context": "none",
           "resolved_location": "xplt.line.FloorPlot"
         },
@@ -2513,8 +2591,8 @@
             "legend"
           ],
           "code_str": "plot.legend",
-          "lineno": 2,
-          "end_lineno": 2,
+          "lineno": 3,
+          "end_lineno": 3,
           "context": "none",
           "resolved_location": "xplt.line.FloorPlot.legend"
         }
@@ -2530,7 +2608,7 @@
       "doc_lineno": 70002
     },
     {
-      "source": "plot = xplt.FloorPlot(\n    line.survey(X0=4.5),\n    projection=\"XZ\",\n    #\n    # Adjust box style for element names matching regex\n    #\n    # default_boxes=False,  # use this to show *only* the boxes defined below (hiding the default elements)\n    boxes={\n        \"S.QF\": dict(color=\"limegreen\"),\n        \"S.QD\": True,  # default style for defocussing quads\n        \"S.SX\": dict(width=0.5),\n    },\n    #\n    # Adjust labels for element names matching regex\n    #\n    labels={\n        \"S.Q.\": True,  # default labels\n        \"S4MU1\": dict(\n            text=(\n                \"A bending magnet\\n\"\n                \"name: {name}\\n\"\n                \"l = {element.length} m\\n\"\n                \"k0l = {element.knl[0]:g} rad\"\n            ),\n            xytext=(-3, -4),\n            bbox={\"fc\": \"white\"},\n            font=\"monospace\",\n            c=\"red\",\n        ),\n    },\n)\nplot.add_scale()\nplot.legend(loc=\"upper left\")",
+      "source": "plot = xplt.FloorPlot(\n    line.survey(X0=4.5),\n    projection=\"XZ\",\n    #\n    # Adjust box style for element names matching regex\n    #\n    # default_boxes=False,  # use this to show *only* the boxes defined below (hiding the default elements)\n    boxes={\n        \"S.QF\": dict(color=\"limegreen\"),\n        \"S.QD\": True,  # default style for defocussing quads\n        \"S.SX\": dict(width=0.5),\n    },\n    #\n    # Adjust labels for element names matching regex\n    #\n    labels={\n        \"S.Q.\": True,  # default labels\n        \"S4MU1\": dict(\n            text=(\n                \"A bending magnet\\n\"\n                \"name: {name}\\n\"\n                \"l = {length} m\\n\"\n                \"k0l = {element.knl[0]:g} rad\"\n            ),\n            xytext=(-3, -4),\n            bbox={\"fc\": \"white\"},\n            font=\"monospace\",\n            c=\"red\",\n        ),\n    },\n    line=line,  # optional, here we need it only to access it in the custom label of S4MU1\n)\nplot.add_scale()\nplot.legend(loc=\"upper left\")",
       "names": [
         {
           "import_components": [
@@ -2563,8 +2641,8 @@
             "add_scale"
           ],
           "code_str": "plot.add_scale",
-          "lineno": 32,
-          "end_lineno": 32,
+          "lineno": 33,
+          "end_lineno": 33,
           "context": "none",
           "resolved_location": "xplt.line.FloorPlot.add_scale"
         },
@@ -2576,8 +2654,8 @@
             "legend"
           ],
           "code_str": "plot.legend",
-          "lineno": 33,
-          "end_lineno": 33,
+          "lineno": 34,
+          "end_lineno": 34,
           "context": "none",
           "resolved_location": "xplt.line.FloorPlot.legend"
         }
@@ -2591,6 +2669,55 @@
         ]
       },
       "doc_lineno": 90002
+    },
+    {
+      "source": "fig, ax = xplt.mpl.pyplot.subplots(2, figsize=(6, 4), sharex=True)\n\n# First the default ZX projection, second the ZY projection\nsurvey = line2.survey()\nxplt.FloorPlot(survey, ax=ax[0])\nxplt.FloorPlot(survey, projection=\"ZY\", ax=ax[1])\n\nax[0].legend()\nax[0].set(xlabel=None);",
+      "names": [
+        {
+          "import_components": [
+            "xplt",
+            "mpl",
+            "pyplot",
+            "subplots"
+          ],
+          "code_str": "xplt.mpl.pyplot.subplots",
+          "lineno": 1,
+          "end_lineno": 1,
+          "context": "none",
+          "resolved_location": "matplotlib.pyplot.subplots"
+        },
+        {
+          "import_components": [
+            "xplt",
+            "FloorPlot"
+          ],
+          "code_str": "xplt.FloorPlot",
+          "lineno": 5,
+          "end_lineno": 5,
+          "context": "none",
+          "resolved_location": "xplt.line.FloorPlot"
+        },
+        {
+          "import_components": [
+            "xplt",
+            "FloorPlot"
+          ],
+          "code_str": "xplt.FloorPlot",
+          "lineno": 6,
+          "end_lineno": 6,
+          "context": "none",
+          "resolved_location": "xplt.line.FloorPlot"
+        }
+      ],
+      "example": {
+        "document": "examples/line",
+        "ref_id": "survey",
+        "headings": [
+          "Beamline",
+          "Survey"
+        ]
+      },
+      "doc_lineno": 110002
     },
     {
       "source": "plot = xplt.KnlPlot(line, figsize=(7, 3))\nplot.ax.set(ylim=(-1, 1));",
@@ -2627,7 +2754,7 @@
           "Multipole strength"
         ]
       },
-      "doc_lineno": 120002
+      "doc_lineno": 140002
     },
     {
       "source": "plot = xplt.KnlPlot(line, knl=\"k0l,k2l,k1l\", filled=False)",
@@ -2664,7 +2791,7 @@
           "Multipole strength"
         ]
       },
-      "doc_lineno": 150002
+      "doc_lineno": 170002
     }
   ],
   "examples/phasespace": [

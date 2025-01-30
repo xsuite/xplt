@@ -27,6 +27,7 @@ Functions
    xplt.line.element_strength
    xplt.line.nominal_order
    xplt.line.order
+   xplt.line.sign_sticky
    xplt.line.tanc
 
 
@@ -42,9 +43,8 @@ Module Contents
 
    :param survey: Survey data from MAD-X or Xsuite.
    :type survey: Any | None
-   :param line: Line data with additional information about elements.
-                Use this to have colored boxes of correct size etc.
-   :type line: xtrack.Line | None
+   :param line: Optional Xsuite line object for backwards compatible coloring of Multipoles (deprecated).
+   :type line: None | xtrack.Line
    :param projection: The projection to use: A pair of coordinates ('XZ', 'ZY' etc.)
    :type projection: str
    :param boxes: Config option for showing colored boxes for elements. See below.
@@ -242,7 +242,7 @@ Module Contents
       :param survey: Survey data. Defaults to `line.survey()`.
                      For convenience, passing line as first argument is also supported.
       :type survey: Any | None
-      :param line: Line object. Defaults to `survey.line` if possible.
+      :param line: Optional Xsuite line object for backwards compatible coloring of Multipoles (deprecated).
       :type line: None | xtrack.Line
       :param autoscale: Whether and on which axes to perform autoscaling.
                         One of `"x"`, `"y"`, `"xy"`, `False` or `None`. If `None`, decide based on :meth:`matplotlib.axes.Axes.get_autoscalex_on` and :meth:`matplotlib.axes.Axes.get_autoscaley_on`.
@@ -696,7 +696,7 @@ Module Contents
 
 .. py:function:: effective_order(element)
 
-   Get effective order of element (ignoring zero strength)
+   Get effective order of element (lowest non-zero knl or ksl strength)
 
 
 .. py:function:: element_strength(element, n)
@@ -712,6 +712,11 @@ Module Contents
 .. py:function:: order(knl)
 
    Get order of knl string as int
+
+
+.. py:function:: sign_sticky(arr, *, initial=1)
+
+   Determine sign or values, but keep previous sign for zero values
 
 
 .. py:function:: tanc(x)
