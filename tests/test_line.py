@@ -81,9 +81,10 @@ def test_repeated_elements_survey():
     # https://github.com/xsuite/xplt/issues/31
     line = xt.Line(elements={"obm": xt.Bend(length=0.5)}, element_names=["obm", "obm"])
     # line.replace_all_repeated_elements()
-    print(line.survey())
+    survey = line.survey()
+    print(survey)
 
-    plot = xplt.FloorPlot(line=line)
+    plot = xplt.FloorPlot(survey)
 
     boxes = plot.artists_boxes
     assert_equal(len(boxes), 2)
