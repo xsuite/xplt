@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-""" Methods for plotting particle arrival times
-
-"""
+"""Methods for plotting particle arrival times"""
 
 __author__ = "Philipp Niedermayer"
 __contact__ = "eltos@outlook.de"
