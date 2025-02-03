@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-""" Methods for plotting twiss
-
-"""
+"""Methods for plotting twiss"""
 
 __author__ = "Philipp Niedermayer"
 __contact__ = "eltos@outlook.de"
