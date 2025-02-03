@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-""" Base methods for plotting
-
-"""
+"""Base methods for plotting"""
 
 __author__ = "Philipp Niedermayer"
 __contact__ = "eltos@outlook.de"

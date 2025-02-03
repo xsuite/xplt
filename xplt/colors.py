@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-""" Color definitions
+"""Color definitions
 
 Colors from https://arxiv.org/abs/2107.02270
 
