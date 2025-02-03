@@ -11,3 +11,6 @@ repos:
     rev: v3.3.3
     hooks:
       - id: pylint
+
+ci:
+  autoupdate_branch: dev
