@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-""" Utility methods for accelerator physics
-
-"""
+"""Utility methods for accelerator physics"""
 
 __author__ = "Philipp Niedermayer"
 __contact__ = "eltos@outlook.de"
