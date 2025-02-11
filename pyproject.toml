@@ -20,6 +20,7 @@ classifiers = [
     "Framework :: Matplotlib",
     "Programming Language :: Python :: 3",
 ]
+dynamic = ["version"]
 
 requires-python = ">=3.9"
 dependencies = [
@@ -27,18 +28,26 @@ dependencies = [
     "numpy>=1.17.0",
     "scipy>=1.2.0",
 ]
-dynamic = ["version"]
+
+default-optional-dependency-keys = [
+    "recommended",
+]
+
+[project.optional-dependencies]
+minimal= []
+recommended = [
+    "pint>=0.24.1",
+]
+full = [
+    "xplt[recommended]",
+    "pandas",
+]
+
 
 [project.urls]
 homepage = "https://github.com/eltos/xplt"
 documentation = "https://xsuite.github.io/xplt"
 repository = "https://github.com/xsuite/xplt"
-
-[project.optional-dependencies]
-full = [
-    "pandas",
-    "pint>=0.24.1",
-]
 
 
 # Build tools
