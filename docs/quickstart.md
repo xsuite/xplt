@@ -10,7 +10,7 @@ pip install xplt
 The following extras are available:
 - `xplt[minimal]` Minimal installation, certain features like unit conversion and unit resolving are disabled
 - `xplt[recommended]` Recommended default, same as `xplt`
-- `xplt[full]` Includes optional dependencies, like support for pandas data frames or support for pandas dataframes are disabled
+- `xplt[full]` Includes optional dependencies, adds support for pandas data frames
 
 
 ## Gallery
