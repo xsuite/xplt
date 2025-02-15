@@ -29,9 +29,10 @@ dependencies = [
     "scipy>=1.2.0",
 ]
 
-default-optional-dependency-keys = [
-    "recommended",
-]
+# PEP 771
+#default-optional-dependency-keys = [
+#    "recommended",
+#]
 
 [project.optional-dependencies]
 minimal= []
