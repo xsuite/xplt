@@ -4,12 +4,12 @@
 ## Installation
 
 ```bash
-pip install xplt
+pip install xplt[recommended]
 ```
 
 The following extras are available:
 - `xplt[minimal]` Minimal installation, certain features like unit conversion and unit resolving are disabled
-- `xplt[recommended]` Recommended default, same as `xplt`
+- `xplt[recommended]` Recommended default
 - `xplt[full]` Includes optional dependencies, adds support for pandas data frames
 
 
