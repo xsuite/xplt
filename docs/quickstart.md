@@ -4,11 +4,15 @@
 ## Installation
 
 ```bash
-pip install xplt[full]
+pip install xplt[recommended]
 ```
 
-It is recommended to install the library with all optional dependencies, to make use its full functionality.
-For a minimal installation without `[full]`, certain features like automatic unit conversion and resolving or support for pandas dataframes are disabled. 
+The following extras are available:
+- `xplt[minimal]` Minimal installation, certain features like unit conversion and unit resolving are disabled
+- `xplt[recommended]` Recommended default
+- `xplt[full]` Includes optional dependencies, adds support for pandas data frames
+
+Currently, `pip install xplt` defaults to `xplt[minimal]`. Once [PEP 771](https://peps.python.org/pep-0771/) is established, this will change to `xplt[recommended]` instead.
 
 
 ## Gallery
