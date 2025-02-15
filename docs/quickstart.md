@@ -12,6 +12,8 @@ The following extras are available:
 - `xplt[recommended]` Recommended default
 - `xplt[full]` Includes optional dependencies, adds support for pandas data frames
 
+Currently, `pip install xplt` defaults to `xplt[minimal]`. Once [PEP 771](https://peps.python.org/pep-0771/) is established, this will change to `xplt[recommended]` instead.
+
 
 ## Gallery
 
