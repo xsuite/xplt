@@ -36,7 +36,7 @@ def element_strength(element, n):
 
 def nominal_order(element):
     """Get nominal element order (even if coefficients might be zero)"""
-    if element.__class__.__name__ in ["Bend", 'RBend']:  # avoid using type to support Views
+    if element.__class__.__name__ in ["Bend", "RBend"]:  # avoid using type to support Views
         return 0
     if hasattr(element, "length"):
         for n in range(10, -1, -1):
