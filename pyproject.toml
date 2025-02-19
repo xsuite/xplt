@@ -40,7 +40,7 @@ recommended = [
     "pint>=0.24.1",
 ]
 full = [
-    "xplt[recommended]",
+    "pint>=0.24.1",
     "pandas",
 ]
 
