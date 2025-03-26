@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-""" Methods for plotting lines
-
-"""
+"""Methods for plotting lines"""
 
 __author__ = "Philipp Niedermayer"
 __contact__ = "eltos@outlook.de"
