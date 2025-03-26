@@ -2,6 +2,97 @@
   "api": [],
   "autoapi/xplt/base/index": [
     {
+      "source": ">>> print(type(loc))\n<type 'Locator'>\n>>> print(loc())\n[1, 2, 3, 4]",
+      "names": [],
+      "example": {
+        "document": "autoapi/xplt/base/index",
+        "ref_id": "module-contents",
+        "headings": [
+          "xplt.base",
+          "Module Contents"
+        ]
+      },
+      "doc_lineno": 114
+    },
+    {
+      "source": ".. plot::\n\n    lim = (1_000_000, 1_000_010)\n\n    fig, (ax1, ax2, ax3) = plt.subplots(3, 1, gridspec_kw={'hspace': 2})\n    ax1.set(title='offset notation', xlim=lim)\n    ax2.set(title='scientific notation', xlim=lim)\n    ax2.xaxis.get_major_formatter().set_useOffset(False)\n    ax3.set(title='floating-point notation', xlim=lim)\n    ax3.xaxis.get_major_formatter().set_useOffset(False)\n    ax3.xaxis.get_major_formatter().set_scientific(False)\n\n",
+      "names": [],
+      "example": {
+        "document": "autoapi/xplt/base/index",
+        "ref_id": "module-contents",
+        "headings": [
+          "xplt.base",
+          "Module Contents"
+        ]
+      },
+      "doc_lineno": null
+    },
+    {
+      "source": ">>> print(type(loc))\n<type 'Locator'>\n>>> print(loc())\n[1, 2, 3, 4]",
+      "names": [],
+      "example": {
+        "document": "autoapi/xplt/base/index",
+        "ref_id": "module-contents",
+        "headings": [
+          "xplt.base",
+          "Module Contents"
+        ]
+      },
+      "doc_lineno": 557
+    },
+    {
+      "source": "x_isdata, y_isdata = trans.contains_branch_seperately(ax.transData)",
+      "names": [],
+      "example": {
+        "document": "autoapi/xplt/base/index",
+        "ref_id": "module-contents",
+        "headings": [
+          "xplt.base",
+          "Module Contents"
+        ]
+      },
+      "doc_lineno": 650
+    },
+    {
+      "source": ">>> print(type(loc))\n<type 'Locator'>\n>>> print(loc())\n[1, 2, 3, 4]",
+      "names": [],
+      "example": {
+        "document": "autoapi/xplt/base/index",
+        "ref_id": "module-contents",
+        "headings": [
+          "xplt.base",
+          "Module Contents"
+        ]
+      },
+      "doc_lineno": 988
+    },
+    {
+      "source": ">>> print(type(loc))\n<type 'Locator'>\n>>> print(loc())\n[1, 2, 3, 4]",
+      "names": [],
+      "example": {
+        "document": "autoapi/xplt/base/index",
+        "ref_id": "module-contents",
+        "headings": [
+          "xplt.base",
+          "Module Contents"
+        ]
+      },
+      "doc_lineno": 1176
+    },
+    {
+      "source": ">>> print(type(loc))\n<type 'Locator'>\n>>> print(loc())\n[1, 2, 3, 4]",
+      "names": [],
+      "example": {
+        "document": "autoapi/xplt/base/index",
+        "ref_id": "module-contents",
+        "headings": [
+          "xplt.base",
+          "Module Contents"
+        ]
+      },
+      "doc_lineno": 1294
+    },
+    {
       "source": ">>> XManifoldPlot.parse_nested_list_string(\"a+b, c-d,fun(e,2)\")\n[[['a', 'b']], [['c'], ['d']], [['fun(e,2)']]]\n>>> XManifoldPlot.parse_nested_list_string(\"a+b, c-d,fun(e,2)\", strip_off_methods=True)\n([[['a', 'b']], [['c'], ['d']], [['e']]],\n [[[None, None]], [[None], [None]], [['fun(e,2)']]])",
       "names": [],
       "example": {
@@ -12,7 +103,7 @@
           "Module Contents"
         ]
       },
-      "doc_lineno": 1590
+      "doc_lineno": 1596
     }
   ],
   "autoapi/xplt/colors/index": [],
@@ -293,6 +384,17 @@
         },
         {
           "import_components": [
+            "xtrack",
+            "Multipole"
+          ],
+          "code_str": "xt.Multipole",
+          "lineno": 7,
+          "end_lineno": 7,
+          "context": "none",
+          "resolved_location": "xtrack.beam_elements.elements.Multipole"
+        },
+        {
+          "import_components": [
             "numpy",
             "pi"
           ],
@@ -319,21 +421,10 @@
             "Multipole"
           ],
           "code_str": "xt.Multipole",
-          "lineno": 7,
-          "end_lineno": 7,
-          "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Multipole"
-        },
-        {
-          "import_components": [
-            "numpy",
-            "pi"
-          ],
-          "code_str": "np.pi",
           "lineno": 27,
           "end_lineno": 27,
           "context": "none",
-          "resolved_location": "numpy.pi"
+          "resolved_location": "xtrack.beam_elements.elements.Multipole"
         },
         {
           "import_components": [
@@ -348,14 +439,14 @@
         },
         {
           "import_components": [
-            "xtrack",
-            "Multipole"
+            "numpy",
+            "pi"
           ],
-          "code_str": "xt.Multipole",
+          "code_str": "np.pi",
           "lineno": 27,
           "end_lineno": 27,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Multipole"
+          "resolved_location": "numpy.pi"
         },
         {
           "import_components": [
@@ -725,17 +816,6 @@
         },
         {
           "import_components": [
-            "numpy",
-            "linspace"
-          ],
-          "code_str": "np.linspace",
-          "lineno": 2,
-          "end_lineno": 2,
-          "context": "none",
-          "resolved_location": "numpy.linspace"
-        },
-        {
-          "import_components": [
             "matplotlib",
             "pyplot",
             "plot"
@@ -752,8 +832,8 @@
             "linspace"
           ],
           "code_str": "np.linspace",
-          "lineno": 3,
-          "end_lineno": 3,
+          "lineno": 2,
+          "end_lineno": 2,
           "context": "none",
           "resolved_location": "numpy.linspace"
         },
@@ -768,6 +848,17 @@
           "end_lineno": 3,
           "context": "none",
           "resolved_location": "matplotlib.pyplot.plot"
+        },
+        {
+          "import_components": [
+            "numpy",
+            "linspace"
+          ],
+          "code_str": "np.linspace",
+          "lineno": 3,
+          "end_lineno": 3,
+          "context": "none",
+          "resolved_location": "numpy.linspace"
         }
       ],
       "example": {
@@ -798,17 +889,6 @@
         {
           "import_components": [
             "numpy",
-            "pi"
-          ],
-          "code_str": "np.pi",
-          "lineno": 2,
-          "end_lineno": 2,
-          "context": "none",
-          "resolved_location": "numpy.pi"
-        },
-        {
-          "import_components": [
-            "numpy",
             "linspace"
           ],
           "code_str": "np.linspace",
@@ -816,6 +896,17 @@
           "end_lineno": 2,
           "context": "none",
           "resolved_location": "numpy.linspace"
+        },
+        {
+          "import_components": [
+            "numpy",
+            "pi"
+          ],
+          "code_str": "np.pi",
+          "lineno": 2,
+          "end_lineno": 2,
+          "context": "none",
+          "resolved_location": "numpy.pi"
         },
         {
           "import_components": [
@@ -934,6 +1025,18 @@
       "names": [
         {
           "import_components": [
+            "xplt",
+            "util",
+            "AttrDict"
+          ],
+          "code_str": "xplt.util.AttrDict",
+          "lineno": 1,
+          "end_lineno": 1,
+          "context": "none",
+          "resolved_location": "xplt.util.AttrDict"
+        },
+        {
+          "import_components": [
             "numpy",
             "random",
             "normal"
@@ -955,18 +1058,6 @@
           "end_lineno": 4,
           "context": "none",
           "resolved_location": "numpy.random.normal"
-        },
-        {
-          "import_components": [
-            "xplt",
-            "util",
-            "AttrDict"
-          ],
-          "code_str": "xplt.util.AttrDict",
-          "lineno": 1,
-          "end_lineno": 1,
-          "context": "none",
-          "resolved_location": "xplt.util.AttrDict"
         },
         {
           "import_components": [
@@ -1022,6 +1113,17 @@
         {
           "import_components": [
             "xplt",
+            "ParticleHistogramPlot"
+          ],
+          "code_str": "xplt.ParticleHistogramPlot",
+          "lineno": 1,
+          "end_lineno": 1,
+          "context": "none",
+          "resolved_location": "xplt.particles.ParticleHistogramPlot"
+        },
+        {
+          "import_components": [
+            "xplt",
             "util",
             "AttrDict",
             "()"
@@ -1031,17 +1133,6 @@
           "end_lineno": 1,
           "context": "none",
           "resolved_location": "xplt.util.AttrDict"
-        },
-        {
-          "import_components": [
-            "xplt",
-            "ParticleHistogramPlot"
-          ],
-          "code_str": "xplt.ParticleHistogramPlot",
-          "lineno": 1,
-          "end_lineno": 1,
-          "context": "none",
-          "resolved_location": "xplt.particles.ParticleHistogramPlot"
         },
         {
           "import_components": [
@@ -1072,6 +1163,17 @@
         {
           "import_components": [
             "xplt",
+            "ParticleHistogramPlot"
+          ],
+          "code_str": "xplt.ParticleHistogramPlot",
+          "lineno": 1,
+          "end_lineno": 1,
+          "context": "none",
+          "resolved_location": "xplt.particles.ParticleHistogramPlot"
+        },
+        {
+          "import_components": [
+            "xplt",
             "util",
             "AttrDict",
             "()"
@@ -1081,17 +1183,6 @@
           "end_lineno": 1,
           "context": "none",
           "resolved_location": "xplt.util.AttrDict"
-        },
-        {
-          "import_components": [
-            "xplt",
-            "ParticleHistogramPlot"
-          ],
-          "code_str": "xplt.ParticleHistogramPlot",
-          "lineno": 1,
-          "end_lineno": 1,
-          "context": "none",
-          "resolved_location": "xplt.particles.ParticleHistogramPlot"
         },
         {
           "import_components": [
@@ -1145,19 +1236,6 @@
         {
           "import_components": [
             "xplt",
-            "util",
-            "AttrDict",
-            "()"
-          ],
-          "code_str": "data",
-          "lineno": 4,
-          "end_lineno": 4,
-          "context": "none",
-          "resolved_location": "xplt.util.AttrDict"
-        },
-        {
-          "import_components": [
-            "xplt",
             "ParticleHistogramPlot",
             "()",
             "update"
@@ -1167,6 +1245,19 @@
           "end_lineno": 4,
           "context": "none",
           "resolved_location": "xplt.particles.ParticleHistogramPlot.update"
+        },
+        {
+          "import_components": [
+            "xplt",
+            "util",
+            "AttrDict",
+            "()"
+          ],
+          "code_str": "data",
+          "lineno": 4,
+          "end_lineno": 4,
+          "context": "none",
+          "resolved_location": "xplt.util.AttrDict"
         }
       ],
       "example": {
@@ -1186,19 +1277,6 @@
         {
           "import_components": [
             "xplt",
-            "util",
-            "AttrDict",
-            "()"
-          ],
-          "code_str": "data2",
-          "lineno": 3,
-          "end_lineno": 3,
-          "context": "none",
-          "resolved_location": "xplt.util.AttrDict"
-        },
-        {
-          "import_components": [
-            "xplt",
             "ParticleHistogramPlot",
             "()",
             "add_dataset"
@@ -1208,6 +1286,19 @@
           "end_lineno": 1,
           "context": "none",
           "resolved_location": "xplt.particles.ParticleHistogramPlot.add_dataset"
+        },
+        {
+          "import_components": [
+            "xplt",
+            "util",
+            "AttrDict",
+            "()"
+          ],
+          "code_str": "data2",
+          "lineno": 3,
+          "end_lineno": 3,
+          "context": "none",
+          "resolved_location": "xplt.util.AttrDict"
         }
       ],
       "example": {
@@ -1227,19 +1318,6 @@
         {
           "import_components": [
             "xplt",
-            "util",
-            "AttrDict",
-            "()"
-          ],
-          "code_str": "data2",
-          "lineno": 1,
-          "end_lineno": 1,
-          "context": "none",
-          "resolved_location": "xplt.util.AttrDict"
-        },
-        {
-          "import_components": [
-            "xplt",
             "ParticleHistogramPlot",
             "()",
             "update"
@@ -1249,6 +1327,19 @@
           "end_lineno": 1,
           "context": "none",
           "resolved_location": "xplt.particles.ParticleHistogramPlot.update"
+        },
+        {
+          "import_components": [
+            "xplt",
+            "util",
+            "AttrDict",
+            "()"
+          ],
+          "code_str": "data2",
+          "lineno": 1,
+          "end_lineno": 1,
+          "context": "none",
+          "resolved_location": "xplt.util.AttrDict"
         }
       ],
       "example": {
@@ -1608,6 +1699,17 @@
       "names": [
         {
           "import_components": [
+            "numpy",
+            "any"
+          ],
+          "code_str": "np.any",
+          "lineno": 22,
+          "end_lineno": 22,
+          "context": "none",
+          "resolved_location": "numpy.any"
+        },
+        {
+          "import_components": [
             "xplt",
             "properties",
             "DerivedProperty"
@@ -1617,17 +1719,6 @@
           "end_lineno": 23,
           "context": "none",
           "resolved_location": "xplt.properties.DerivedProperty"
-        },
-        {
-          "import_components": [
-            "numpy",
-            "any"
-          ],
-          "code_str": "np.any",
-          "lineno": 22,
-          "end_lineno": 22,
-          "context": "none",
-          "resolved_location": "numpy.any"
         },
         {
           "import_components": [
@@ -1980,6 +2071,17 @@
         },
         {
           "import_components": [
+            "xtrack",
+            "Multipole"
+          ],
+          "code_str": "xt.Multipole",
+          "lineno": 7,
+          "end_lineno": 7,
+          "context": "none",
+          "resolved_location": "xtrack.beam_elements.elements.Multipole"
+        },
+        {
+          "import_components": [
             "numpy",
             "pi"
           ],
@@ -2006,21 +2108,10 @@
             "Multipole"
           ],
           "code_str": "xt.Multipole",
-          "lineno": 7,
-          "end_lineno": 7,
-          "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Multipole"
-        },
-        {
-          "import_components": [
-            "numpy",
-            "pi"
-          ],
-          "code_str": "np.pi",
           "lineno": 27,
           "end_lineno": 27,
           "context": "none",
-          "resolved_location": "numpy.pi"
+          "resolved_location": "xtrack.beam_elements.elements.Multipole"
         },
         {
           "import_components": [
@@ -2035,14 +2126,14 @@
         },
         {
           "import_components": [
-            "xtrack",
-            "Multipole"
+            "numpy",
+            "pi"
           ],
-          "code_str": "xt.Multipole",
+          "code_str": "np.pi",
           "lineno": 27,
           "end_lineno": 27,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Multipole"
+          "resolved_location": "numpy.pi"
         },
         {
           "import_components": [
@@ -2370,28 +2461,6 @@
         },
         {
           "import_components": [
-            "numpy",
-            "pi"
-          ],
-          "code_str": "np.pi",
-          "lineno": 7,
-          "end_lineno": 7,
-          "context": "none",
-          "resolved_location": "numpy.pi"
-        },
-        {
-          "import_components": [
-            "numpy",
-            "pi"
-          ],
-          "code_str": "np.pi",
-          "lineno": 7,
-          "end_lineno": 7,
-          "context": "none",
-          "resolved_location": "numpy.pi"
-        },
-        {
-          "import_components": [
             "xtrack",
             "Bend"
           ],
@@ -2407,10 +2476,32 @@
             "pi"
           ],
           "code_str": "np.pi",
+          "lineno": 7,
+          "end_lineno": 7,
+          "context": "none",
+          "resolved_location": "numpy.pi"
+        },
+        {
+          "import_components": [
+            "numpy",
+            "pi"
+          ],
+          "code_str": "np.pi",
+          "lineno": 7,
+          "end_lineno": 7,
+          "context": "none",
+          "resolved_location": "numpy.pi"
+        },
+        {
+          "import_components": [
+            "xtrack",
+            "Sextupole"
+          ],
+          "code_str": "xt.Sextupole",
           "lineno": 27,
           "end_lineno": 27,
           "context": "none",
-          "resolved_location": "numpy.pi"
+          "resolved_location": "xtrack.beam_elements.elements.Sextupole"
         },
         {
           "import_components": [
@@ -2425,14 +2516,14 @@
         },
         {
           "import_components": [
-            "xtrack",
-            "Sextupole"
+            "numpy",
+            "pi"
           ],
-          "code_str": "xt.Sextupole",
+          "code_str": "np.pi",
           "lineno": 27,
           "end_lineno": 27,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Sextupole"
+          "resolved_location": "numpy.pi"
         },
         {
           "import_components": [
@@ -2878,28 +2969,6 @@
         },
         {
           "import_components": [
-            "numpy",
-            "pi"
-          ],
-          "code_str": "np.pi",
-          "lineno": 7,
-          "end_lineno": 7,
-          "context": "none",
-          "resolved_location": "numpy.pi"
-        },
-        {
-          "import_components": [
-            "numpy",
-            "pi"
-          ],
-          "code_str": "np.pi",
-          "lineno": 7,
-          "end_lineno": 7,
-          "context": "none",
-          "resolved_location": "numpy.pi"
-        },
-        {
-          "import_components": [
             "xtrack",
             "Multipole"
           ],
@@ -2908,6 +2977,28 @@
           "end_lineno": 7,
           "context": "none",
           "resolved_location": "xtrack.beam_elements.elements.Multipole"
+        },
+        {
+          "import_components": [
+            "numpy",
+            "pi"
+          ],
+          "code_str": "np.pi",
+          "lineno": 7,
+          "end_lineno": 7,
+          "context": "none",
+          "resolved_location": "numpy.pi"
+        },
+        {
+          "import_components": [
+            "numpy",
+            "pi"
+          ],
+          "code_str": "np.pi",
+          "lineno": 7,
+          "end_lineno": 7,
+          "context": "none",
+          "resolved_location": "numpy.pi"
         },
         {
           "import_components": [
@@ -3498,6 +3589,17 @@
         },
         {
           "import_components": [
+            "xtrack",
+            "Multipole"
+          ],
+          "code_str": "xt.Multipole",
+          "lineno": 7,
+          "end_lineno": 7,
+          "context": "none",
+          "resolved_location": "xtrack.beam_elements.elements.Multipole"
+        },
+        {
+          "import_components": [
             "numpy",
             "pi"
           ],
@@ -3524,21 +3626,10 @@
             "Multipole"
           ],
           "code_str": "xt.Multipole",
-          "lineno": 7,
-          "end_lineno": 7,
-          "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Multipole"
-        },
-        {
-          "import_components": [
-            "numpy",
-            "pi"
-          ],
-          "code_str": "np.pi",
           "lineno": 27,
           "end_lineno": 27,
           "context": "none",
-          "resolved_location": "numpy.pi"
+          "resolved_location": "xtrack.beam_elements.elements.Multipole"
         },
         {
           "import_components": [
@@ -3553,14 +3644,14 @@
         },
         {
           "import_components": [
-            "xtrack",
-            "Multipole"
+            "numpy",
+            "pi"
           ],
-          "code_str": "xt.Multipole",
+          "code_str": "np.pi",
           "lineno": 27,
           "end_lineno": 27,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Multipole"
+          "resolved_location": "numpy.pi"
         },
         {
           "import_components": [
@@ -3791,6 +3882,17 @@
       "names": [
         {
           "import_components": [
+            "xplt",
+            "Timeseries"
+          ],
+          "code_str": "xplt.Timeseries",
+          "lineno": 1,
+          "end_lineno": 1,
+          "context": "none",
+          "resolved_location": "xplt.timestructure.Timeseries"
+        },
+        {
+          "import_components": [
             "numpy",
             "random",
             "poisson"
@@ -3804,35 +3906,12 @@
         {
           "import_components": [
             "xplt",
-            "Timeseries"
-          ],
-          "code_str": "xplt.Timeseries",
-          "lineno": 1,
-          "end_lineno": 1,
-          "context": "none",
-          "resolved_location": "xplt.timestructure.Timeseries"
-        },
-        {
-          "import_components": [
-            "xplt",
             "Timeseries",
             "()"
           ],
           "code_str": "binned_counts",
           "lineno": 1,
           "end_lineno": 1,
-          "context": "none",
-          "resolved_location": "xplt.timestructure.Timeseries"
-        },
-        {
-          "import_components": [
-            "xplt",
-            "Timeseries",
-            "()"
-          ],
-          "code_str": "binned_counts",
-          "lineno": 6,
-          "end_lineno": 6,
           "context": "none",
           "resolved_location": "xplt.timestructure.Timeseries"
         },
@@ -3846,6 +3925,18 @@
           "end_lineno": 3,
           "context": "none",
           "resolved_location": "xplt.timestructure.TimeBinPlot"
+        },
+        {
+          "import_components": [
+            "xplt",
+            "Timeseries",
+            "()"
+          ],
+          "code_str": "binned_counts",
+          "lineno": 6,
+          "end_lineno": 6,
+          "context": "none",
+          "resolved_location": "xplt.timestructure.Timeseries"
         },
         {
           "import_components": [
@@ -4003,17 +4094,6 @@
         {
           "import_components": [
             "xplt",
-            "Timeseries"
-          ],
-          "code_str": "xplt.Timeseries",
-          "lineno": 3,
-          "end_lineno": 3,
-          "context": "none",
-          "resolved_location": "xplt.timestructure.Timeseries"
-        },
-        {
-          "import_components": [
-            "xplt",
             "SpillQualityPlot"
           ],
           "code_str": "xplt.SpillQualityPlot",
@@ -4021,6 +4101,17 @@
           "end_lineno": 1,
           "context": "none",
           "resolved_location": "xplt.timestructure.SpillQualityPlot"
+        },
+        {
+          "import_components": [
+            "xplt",
+            "Timeseries"
+          ],
+          "code_str": "xplt.Timeseries",
+          "lineno": 3,
+          "end_lineno": 3,
+          "context": "none",
+          "resolved_location": "xplt.timestructure.Timeseries"
         },
         {
           "import_components": [
@@ -4051,17 +4142,6 @@
         {
           "import_components": [
             "xplt",
-            "Timeseries"
-          ],
-          "code_str": "xplt.Timeseries",
-          "lineno": 3,
-          "end_lineno": 3,
-          "context": "none",
-          "resolved_location": "xplt.timestructure.Timeseries"
-        },
-        {
-          "import_components": [
-            "xplt",
             "SpillQualityTimescalePlot"
           ],
           "code_str": "xplt.SpillQualityTimescalePlot",
@@ -4069,6 +4149,17 @@
           "end_lineno": 1,
           "context": "none",
           "resolved_location": "xplt.timestructure.SpillQualityTimescalePlot"
+        },
+        {
+          "import_components": [
+            "xplt",
+            "Timeseries"
+          ],
+          "code_str": "xplt.Timeseries",
+          "lineno": 3,
+          "end_lineno": 3,
+          "context": "none",
+          "resolved_location": "xplt.timestructure.Timeseries"
         },
         {
           "import_components": [
@@ -4181,17 +4272,6 @@
         },
         {
           "import_components": [
-            "numpy",
-            "nanmean"
-          ],
-          "code_str": "np.nanmean",
-          "lineno": 18,
-          "end_lineno": 18,
-          "context": "none",
-          "resolved_location": "numpy.nanmean"
-        },
-        {
-          "import_components": [
             "matplotlib",
             "patches",
             "Rectangle"
@@ -4201,6 +4281,17 @@
           "end_lineno": 18,
           "context": "none",
           "resolved_location": "matplotlib.patches.Rectangle"
+        },
+        {
+          "import_components": [
+            "numpy",
+            "nanmean"
+          ],
+          "code_str": "np.nanmean",
+          "lineno": 18,
+          "end_lineno": 18,
+          "context": "none",
+          "resolved_location": "numpy.nanmean"
         }
       ],
       "example": {
@@ -4544,6 +4635,17 @@
         },
         {
           "import_components": [
+            "xtrack",
+            "Multipole"
+          ],
+          "code_str": "xt.Multipole",
+          "lineno": 7,
+          "end_lineno": 7,
+          "context": "none",
+          "resolved_location": "xtrack.beam_elements.elements.Multipole"
+        },
+        {
+          "import_components": [
             "numpy",
             "pi"
           ],
@@ -4570,21 +4672,10 @@
             "Multipole"
           ],
           "code_str": "xt.Multipole",
-          "lineno": 7,
-          "end_lineno": 7,
-          "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Multipole"
-        },
-        {
-          "import_components": [
-            "numpy",
-            "pi"
-          ],
-          "code_str": "np.pi",
           "lineno": 27,
           "end_lineno": 27,
           "context": "none",
-          "resolved_location": "numpy.pi"
+          "resolved_location": "xtrack.beam_elements.elements.Multipole"
         },
         {
           "import_components": [
@@ -4599,14 +4690,14 @@
         },
         {
           "import_components": [
-            "xtrack",
-            "Multipole"
+            "numpy",
+            "pi"
           ],
-          "code_str": "xt.Multipole",
+          "code_str": "np.pi",
           "lineno": 27,
           "end_lineno": 27,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Multipole"
+          "resolved_location": "numpy.pi"
         },
         {
           "import_components": [
@@ -5081,17 +5172,6 @@
         {
           "import_components": [
             "numpy",
-            "pi"
-          ],
-          "code_str": "np.pi",
-          "lineno": 3,
-          "end_lineno": 3,
-          "context": "none",
-          "resolved_location": "numpy.pi"
-        },
-        {
-          "import_components": [
-            "numpy",
             "sin"
           ],
           "code_str": "np.sin",
@@ -5099,6 +5179,17 @@
           "end_lineno": 3,
           "context": "none",
           "resolved_location": "numpy.sin"
+        },
+        {
+          "import_components": [
+            "numpy",
+            "pi"
+          ],
+          "code_str": "np.pi",
+          "lineno": 3,
+          "end_lineno": 3,
+          "context": "none",
+          "resolved_location": "numpy.pi"
         }
       ],
       "example": {

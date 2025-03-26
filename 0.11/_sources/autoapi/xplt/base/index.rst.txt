@@ -253,7 +253,7 @@ Module Contents
 
       Return whether locale settings are used for formatting.
 
-      .. seealso:: :obj:`ScalarFormatter.set_useLocale`
+      .. seealso:: :py:obj:`ScalarFormatter.set_useLocale`
 
 
 
@@ -261,7 +261,7 @@ Module Contents
 
       Return whether to use fancy math formatting.
 
-      .. seealso:: :obj:`ScalarFormatter.set_useMathText`
+      .. seealso:: :py:obj:`ScalarFormatter.set_useMathText`
 
 
 
@@ -272,11 +272,14 @@ Module Contents
       This returns True if ``set_useOffset(True)``; it returns False if an
       explicit offset was set, e.g. ``set_useOffset(1000)``.
 
-      .. seealso:: :obj:`ScalarFormatter.set_useOffset`
+      .. seealso:: :py:obj:`ScalarFormatter.set_useOffset`
 
 
 
    .. py:method:: get_usetex()
+
+      Return whether TeX's math mode is enabled for rendering.
+
 
 
    .. py:method:: set_axis(axis)
@@ -315,7 +318,7 @@ Module Contents
                    :math:`9999, 1 \times 10^4`.
       :type lims: (int, int)
 
-      .. seealso:: :obj:`ScalarFormatter.set_scientific`
+      .. seealso:: :py:obj:`ScalarFormatter.set_scientific`
 
 
 
@@ -323,7 +326,7 @@ Module Contents
 
       Turn scientific notation on or off.
 
-      .. seealso:: :obj:`ScalarFormatter.set_powerlimits`
+      .. seealso:: :py:obj:`ScalarFormatter.set_powerlimits`
 
 
 
@@ -376,6 +379,9 @@ Module Contents
 
 
    .. py:method:: set_usetex(val)
+
+      Set whether to use TeX's math mode for rendering numbers in the formatter.
+
 
 
    .. py:attribute:: axis
