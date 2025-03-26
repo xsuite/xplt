@@ -20,7 +20,7 @@ concurrency:
   group: ${{ github.workflow }}
 
 env:
-  # Note: the last version in this list is used for docs requirements, so update it in other workflows too!
+  # Note: the last version in this list is used to for sphinx-docs and pypi-releases
   PYTHON_VERSIONS: |
     3.9
     3.10
@@ -45,11 +45,14 @@ jobs:
           cd requirements
           for VER in $PYTHON_VERSIONS
           do
+            echo "Updating dependencies for python $VER..."
             python$VER -m pip install pip-tools==7.4.1
             python$VER -m piptools compile --upgrade --no-annotate -o examples-requirements-py$VER.txt --all-extras ../pyproject.toml examples.in
             python$VER -m piptools compile --upgrade --no-annotate -o tests-requirements-py$VER.txt examples-requirements-py$VER.txt tests.in
           done
-          # use last version for docs 
+          # use last version for docs and releases
+          echo "Updating dependencies for docs and release using python $VER..."
+          echo "$VER" > .python-version
           python$VER -m piptools compile --upgrade --no-annotate -o docs-requirements.txt examples-requirements-py$VER.txt docs.in
 
       - name: Open PR
