@@ -20,12 +20,13 @@ concurrency:
   group: ${{ github.workflow }}
 
 env:
+  # Note: the last version in this list is used for docs requirements, so update it in other workflows too!
   PYTHON_VERSIONS: |
     3.9
     3.10
     3.11
-    3.12
     3.13
+    3.12
 
 jobs:
   update-dependencies:
