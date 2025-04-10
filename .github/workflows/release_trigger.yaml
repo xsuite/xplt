@@ -22,7 +22,7 @@ jobs:
           ssh-key: ${{ secrets.RELEASE_TRIGGER_WORKFLOW_KEY }}
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version-file: 'requirements/.python-version'
       - run: |
           # Determine version
           pip install -e .
