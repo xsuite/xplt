@@ -8,11 +8,14 @@ __contact__ = "eltos@outlook.de"
 __date__ = "2022-11-08"
 
 import re
+
 import numpy as np
 import matplotlib as mpl
+
 from .util import (
     get,
     iter_elements,
+    element_strength,
     defaults,
     defaults_for,
     PUBLIC_SECTION_END,
@@ -20,16 +23,6 @@ from .util import (
 )
 from .base import XPlot, XManifoldPlot
 from .properties import Property, DataProperty
-
-
-def element_strength(element, n):
-    """Get knl strength of element"""
-    knl = 0
-    if knl == 0 and hasattr(element, f"k{n}") and hasattr(element, "length"):
-        knl = getattr(element, f"k{n}") * element.length
-    if knl == 0 and hasattr(element, "knl") and n <= element.order:
-        knl = element.knl[n]
-    return knl
 
 
 def nominal_order(element):

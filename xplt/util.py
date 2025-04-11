@@ -348,6 +348,16 @@ def binned_data(
         return result
 
 
+def element_strength(element, n):
+    """Get knl strength of element"""
+    knl = 0
+    if knl == 0 and hasattr(element, f"k{n}") and hasattr(element, "length"):
+        knl = getattr(element, f"k{n}") * element.length
+    if knl == 0 and hasattr(element, "knl") and n <= element.order:
+        knl = element.knl[n]
+    return knl
+
+
 def normalized_coordinates(x, px, twiss, xy, delta=0):
     """Convert physical to normalized coordinates
 
@@ -421,9 +431,9 @@ def virtual_sextupole(line, particle_ref=None, *, verbose=False):
     # find sextupoles
     sextupoles, k2l = [], []
     for name, el in line.element_dict.items():
-        if hasattr(el, "knl") and el.order >= 2 and el.knl[2]:
+        if element_k2l := element_strength(el, 2):
             sextupoles.append(name)
-            k2l.append(el.knl[2])
+            k2l.append(element_k2l)
 
     # twiss at sextupoles
     tw = line.twiss(method="4d", particle_ref=particle_ref, at_elements=sextupoles)
