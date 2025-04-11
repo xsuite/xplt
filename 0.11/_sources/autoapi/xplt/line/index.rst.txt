@@ -24,7 +24,6 @@ Functions
 .. autoapisummary::
 
    xplt.line.effective_order
-   xplt.line.element_strength
    xplt.line.nominal_order
    xplt.line.order
    xplt.line.sign_sticky
@@ -697,11 +696,6 @@ Module Contents
 .. py:function:: effective_order(element)
 
    Get effective order of element (lowest non-zero knl or ksl strength)
-
-
-.. py:function:: element_strength(element, n)
-
-   Get knl strength of element
 
 
 .. py:function:: nominal_order(element)

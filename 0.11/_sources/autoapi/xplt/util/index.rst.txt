@@ -36,6 +36,7 @@ Functions
    xplt.util.defaults
    xplt.util.defaults_for
    xplt.util.denormalized_coordinates
+   xplt.util.element_strength
    xplt.util.evaluate_expression_wrapper
    xplt.util.flattened
    xplt.util.get
@@ -179,6 +180,11 @@ Module Contents
              Tuple of physical coordinates
                  (x, px) in (m, rad)
    :rtype: tuple
+
+
+.. py:function:: element_strength(element, n)
+
+   Get knl strength of element
 
 
 .. py:function:: evaluate_expression_wrapper(expression, key, data)
