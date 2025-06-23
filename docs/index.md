@@ -10,6 +10,7 @@ quickstart
 usage
 api
 ```
+[Version history and changelog](https://github.com/xsuite/xplt/releases)
 
 -----
 
