@@ -22,7 +22,6 @@ concurrency:
 env:
   # Note: the last version in this list is used to for sphinx-docs and pypi-releases
   PYTHON_VERSIONS: |
-    3.9
     3.10
     3.11
     3.13
