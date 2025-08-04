@@ -389,8 +389,11 @@ class FloorPlot(XPlot):
                     "RBend": 0,
                     "ThickSliceRBend": 0,
                     "Quadrupole": 1,
+                    "ThickSliceQuadrupole": 1,
                     "Sextupole": 2,
+                    "ThickSliceSextupole": 2,
                     "Octupole": 3,
+                    "ThickSliceOctupole": 3,
                     "Multipole": 999,
                 }.items():
                     ORDER[(ORDER < 0) & (TYPE == type)] = o
