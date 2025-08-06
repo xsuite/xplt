@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version-file: 'requirements/.python-version'
       - run: |
           # Assert git and python versions match
           pip install -e .
@@ -32,7 +32,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version-file: 'requirements/.python-version'
       - run: |
           pip install build
       - name: Build
@@ -70,7 +70,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version-file: 'requirements/.python-version'
       - name: Install dependencies
         run: |
           pip install -r requirements/docs-requirements.txt
@@ -108,7 +108,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version-file: 'requirements/.python-version'
       - run: |
           pip install build
       - name: Build

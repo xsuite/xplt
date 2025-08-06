@@ -5,7 +5,7 @@ __author__ = "Philipp Niedermayer"
 __contact__ = "eltos@outlook.de"
 
 
-__version__ = "0.11.7"
+__version__ = "0.11.13"
 
 
 # expose the following in global namespace
@@ -50,6 +50,18 @@ import matplotlib.style as _mpl_style
 
 def apply_style():
     """Apply xplt's matplotlib style sheet and update rcParams"""
-    _mpl_style.use("xplt.xplt")
+    try:
+        _mpl_style.use("xplt.xplt")
+    except IOError:
+        import matplotlib, shutil, os
+
+        # for matplotlib versions prior to 3.7: copy the style file to the config directory
+        dir = os.path.join(matplotlib.get_configdir(), "stylelib")
+        os.makedirs(dir, exist_ok=True)
+        print("Installing xplt style in", dir)
+        shutil.copy(os.path.join(os.path.dirname(__file__), "xplt.mplstyle"), dir)
+        matplotlib.style.reload_library()
+        matplotlib.style.use("xplt")
+
     # import pint.formatting as _pint_formatting
     # _pint_formatting.format_default = "X"  # use explicit format instead!

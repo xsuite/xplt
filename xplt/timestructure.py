@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-""" Methods for plotting particle arrival times
-
-"""
+"""Methods for plotting particle arrival times"""
 
 __author__ = "Philipp Niedermayer"
 __contact__ = "eltos@outlook.de"
@@ -1600,7 +1598,8 @@ class SpillQualityTimescalePlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin,
                     50 * duration / ntotal
                 )  # at least 50 particles per bin (on average)
             if counting_dt_max is None:
-                counting_dt_max = duration / 50  # at least 50 bins to calculate metric
+                # at least N bins to calculate metric
+                counting_dt_max = duration / self.counting_bins_per_evaluation
             if check_insufficient_statistics():
                 return
 
@@ -1631,7 +1630,8 @@ class SpillQualityTimescalePlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin,
             if counting_dt_min is None or counting_dt_min < 1 / timeseries.fs:
                 counting_dt_min = timeseries.dt  # at least resolution of data
             if counting_dt_max is None:
-                counting_dt_max = duration / 50  # at least 50 bins to calculate metric
+                # at least N bins to calculate metric
+                counting_dt_max = duration / self.counting_bins_per_evaluation
             if check_insufficient_statistics():
                 return
 

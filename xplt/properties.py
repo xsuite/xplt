@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-""" Methods to work with properties
-
-"""
+"""Methods to work with properties"""
 
 __author__ = "Philipp Niedermayer"
 __contact__ = "eltos@outlook.de"

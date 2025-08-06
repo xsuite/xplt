@@ -1,5 +1,8 @@
 import pytest
 import pytest_benchmark
+import pytest_benchmark.plugin
+from pytest_benchmark.utils import NameWrapper
+from pytest_benchmark.fixture import BenchmarkFixture
 import numpy as np
 from numpy.testing import assert_equal
 import xplt.util
@@ -8,8 +11,27 @@ import xplt.util
 @pytest.fixture(scope="function")
 def benchmark_ref(request):
     # See https://github.com/ionelmc/pytest-benchmark/issues/166
-    bm = pytest_benchmark.plugin.benchmark.__pytest_wrapped__.obj(request)
-    return next(bm) if hasattr(bm, "__next__") else bm
+    # code below is a copy of `pytest_benchmark.plugin.benchmark` fixture
+    bs = request.config._benchmarksession
+
+    if bs.skip:
+        pytest.skip("Benchmarks are skipped (--benchmark-skip was used).")
+    else:
+        node = request.node
+        marker = node.get_closest_marker("benchmark")
+        options = dict(marker.kwargs) if marker else {}
+        if "timer" in options:
+            options["timer"] = NameWrapper(options["timer"])
+        fixture = BenchmarkFixture(
+            node,
+            add_stats=bs.benchmarks.append,
+            logger=bs.logger,
+            warner=request.node.warn,
+            disabled=bs.disabled,
+            **dict(bs.options, **options),
+        )
+        request.addfinalizer(fixture._cleanup)
+        return fixture
 
 
 @pytest.mark.parametrize(
