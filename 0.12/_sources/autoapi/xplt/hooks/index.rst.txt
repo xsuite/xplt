@@ -1,0 +1,36 @@
+xplt.hooks
+==========
+
+.. py:module:: xplt.hooks
+
+.. autoapi-nested-parse::
+
+   Matplotlib setup
+
+
+
+Functions
+---------
+
+.. autoapisummary::
+
+   xplt.hooks.register_matplotlib_options
+   xplt.hooks.register_pint_options
+   xplt.hooks.try_register_hooks
+
+
+Module Contents
+---------------
+
+.. py:function:: register_matplotlib_options()
+
+   Register default options for matplotlib
+
+
+.. py:function:: register_pint_options()
+
+   Register default options for pint
+
+
+.. py:function:: try_register_hooks()
+

@@ -1,0 +1,38 @@
+
+html[data-theme="light"] {
+    --pst-color-primary: #437db3;
+    --pst-color-secondary: #0a7d91;
+    --pst-color-table-row-hover-bg: var(--pst-color-surface);
+}
+
+html[data-theme="dark"] {
+    --pst-color-primary: #437db3;
+    --pst-color-secondary: #3fb1c5;
+    --pst-color-table-row-hover-bg: var(--pst-color-surface);
+}
+
+
+/* Stack footer items horizontally instead of vertically */
+.footer-items__start, .footer-items__end {
+  flex-direction: row !important;
+}
+
+/* Fix expandable sections color for darkmode (see https://github.com/executablebooks/MyST-NB/issues/607) */
+details.above-input > summary {
+  background-color: var(--pst-color-background) !important; /* or --pst-color-surface */
+}
+
+/* Fixes for using `display(Markdown(df.to_markdown()))` */
+.cell_output table {
+  table-layout: auto !important;
+  
+  .text-left {
+    text-align: left !important;
+  }
+  tbody tr:hover {
+      background-color: var(--pst-color-table-row-zebra-high-bg) !important;
+  }
+  tbody tr:nth-child(2n+1) {
+    background-color: var(--pst-color-table-row-zebra-low-bg) !important;
+  }
+}
