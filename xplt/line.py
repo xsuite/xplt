@@ -27,7 +27,12 @@ from .properties import Property, DataProperty
 
 def nominal_order(element):
     """Get nominal element order (even if coefficients might be zero)"""
-    if element.__class__.__name__ in ["Bend", "RBend"]:  # avoid using type to support Views
+    if element.__class__.__name__ in [
+        "Bend",
+        "RBend",
+        "ThickSliceBend",
+        "ThickSliceRBend",
+    ]:  # avoid using type to support Views
         return 0
     if hasattr(element, "length"):
         for n in range(10, -1, -1):
@@ -375,10 +380,15 @@ class FloorPlot(XPlot):
                 # map element type to order when order is not in survey
                 for type, o in {
                     "Bend": 0,
+                    "ThickSliceBend": 0,
                     "RBend": 0,
+                    "ThickSliceRBend": 0,
                     "Quadrupole": 1,
+                    "ThickSliceQuadrupole": 1,
                     "Sextupole": 2,
+                    "ThickSliceSextupole": 2,
                     "Octupole": 3,
+                    "ThickSliceOctupole": 3,
                     "Multipole": 999,
                 }.items():
                     ORDER[(ORDER < 0) & (TYPE == type)] = o
@@ -443,7 +453,7 @@ class FloorPlot(XPlot):
                     color=f"C{order}" if order >= 0 else "k",
                     length=length or 0,
                     label={
-                        0: "Bending magnet" if arc else None,
+                        0: "Bending magnet" if (arc or ("Bend" in TYPE[i])) else None,
                         1: "Quadrupole magnet",
                         2: "Sextupole magnet",
                         3: "Octupole magnet",
