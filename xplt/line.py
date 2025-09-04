@@ -374,7 +374,9 @@ class FloorPlot(XPlot):
             )  # angle between plot x-axis and radial vector of bending
 
             LENGTH = get(survey, "length", np.zeros(len(NAME)))
-            IS_THICK = get(survey, "isthick", np.zeros(len(NAME), "bool"))
+            IS_THICK = np.array(get(survey, "isthick", [False] * len(NAME))) | (
+                np.array(get(survey, "length", [0] * len(NAME))) > 0
+            )
             ORDER = get(survey, "order", -np.ones(len(NAME), "int"))
             if (TYPE := get(survey, "element_type", None)) is not None:
                 # map element type to order when order is not in survey
