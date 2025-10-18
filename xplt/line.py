@@ -429,13 +429,15 @@ class FloorPlot(XPlot):
 
                 element = None
                 if line is not None:
+                    from xtrack.line import _is_thick
+
                     # Fallback to extract missing properties from line
                     try:
                         element = line.get(
                             name
                         )  # required also for custom text formatting if user wants to
                         if not is_thick:
-                            is_thick = element.isthick
+                            is_thick = _is_thick(element, line)
                         if order < 0 or order > 100:
                             order = effective_order(element)
                         if not length:
