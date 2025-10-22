@@ -269,7 +269,7 @@ class FloorPlot(XPlot):
               `{"regex": {...}}`. For each matching element name, the options are used.
 
         """
-        
+
         kwargs["_properties"] = defaults(
             kwargs.get("_properties"),
             X=DataProperty("X", "m"),
@@ -445,7 +445,7 @@ class FloorPlot(XPlot):
                             order = effective_order(element)
                         if not length:
                             length = get(element, "length", 0)
-                        
+
                         rot_s_rad = get(element, "rot_s_rad", 0)
                         rot_x_rad = get(element, "rot_x_rad", 0)
                         rot_y_rad = get(element, "rot_y_rad", 0)
@@ -486,7 +486,7 @@ class FloorPlot(XPlot):
                         box_style.pop("label")  # prevent duplicate legend entries
                     else:
                         legend_entries.append(box_style.get("label"))
-                        
+
                     # get the shift angle of the projection
                     proj = self.projection[1].lower()
                     shift_angle = {"x": rot_x_rad, "y": rot_y_rad, "z": rot_s_rad}.get(proj, 0)
@@ -497,7 +497,7 @@ class FloorPlot(XPlot):
                         d = length * tanc(arc / 2) / 2
                         x += d * np.cos(ang(rt) + ang(shift_angle)) + shift_x
                         y += d * np.sin(ang(rt) + ang(shift_angle)) + shift_y
-                        
+
                     if length > 0 and arc:
                         # bending elements as wedge
                         rho = length / arc
