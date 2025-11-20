@@ -45,7 +45,7 @@ jobs:
           for VER in $PYTHON_VERSIONS
           do
             echo "::group::Updating dependencies for python $VER..."
-            python$VER -m pip install pip-tools==7.4.1
+            python$VER -m pip install pip-tools==7.5.2
             python$VER -m piptools compile --upgrade --no-annotate -o examples-requirements-py$VER.txt --all-extras ../pyproject.toml examples.in
             python$VER -m piptools compile --upgrade --no-annotate -o tests-requirements-py$VER.txt examples-requirements-py$VER.txt tests.in
             echo "::endgroup::"
