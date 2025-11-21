@@ -428,6 +428,11 @@ class FloorPlot(XPlot):
                     continue
 
                 element = None
+                rot_s_rad = 0
+                rot_x_rad = 0
+                rot_y_rad = 0
+                shift_y = 0
+                shift_x = 0
                 if line is not None:
                     from xtrack.line import _is_thick
 
@@ -442,7 +447,13 @@ class FloorPlot(XPlot):
                             order = effective_order(element)
                         if not length:
                             length = get(element, "length", 0)
-                    except (TypeError, KeyError):
+
+                        rot_s_rad = get(element, "rot_s_rad", 0)
+                        rot_x_rad = get(element, "rot_x_rad", 0)
+                        rot_y_rad = get(element, "rot_y_rad", 0)
+                        shift_y = get(element, "shift_y", 0)
+                        shift_x = get(element, "shift_x", 0)
+                    except (TypeError, KeyError) as e:
                         pass
 
                 if self.ignore is not None:
@@ -478,12 +489,16 @@ class FloorPlot(XPlot):
                     else:
                         legend_entries.append(box_style.get("label"))
 
+                    # get the shift angle of the projection
+                    proj = self.projection[1].lower()
+                    shift_angle = {"x": rot_x_rad, "y": rot_y_rad, "z": rot_s_rad}.get(proj, 0)
+
                     # Handle thick elements
                     if is_thick:
                         # Find the center of single kick for equivalent thin element
                         d = length * tanc(arc / 2) / 2
-                        x += d * np.cos(ang(rt))
-                        y += d * np.sin(ang(rt))
+                        x += d * np.cos(ang(rt) + ang(shift_angle)) + shift_x
+                        y += d * np.sin(ang(rt) + ang(shift_angle)) + shift_y
 
                     if length > 0 and arc:
                         # bending elements as wedge
@@ -506,6 +521,7 @@ class FloorPlot(XPlot):
                         box = mpl.patches.Wedge(**wedge_kwargs)
                     else:
                         # other elements as rect
+
                         box = mpl.patches.Rectangle(
                             **defaults_for(
                                 mpl.patches.Rectangle,
@@ -513,7 +529,7 @@ class FloorPlot(XPlot):
                                 xy=(x - width / 2, y - length / 2),
                                 width=width,
                                 height=length,
-                                angle=np.rad2deg(ang(rt - arc / 2)) - 90,
+                                angle=np.rad2deg(ang(rt + shift_angle - arc / 2)) - 90,
                                 rotation_point="center",
                                 alpha=0.5,
                                 zorder=3,
