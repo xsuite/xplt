@@ -441,7 +441,7 @@ class XPlot:
             elif isinstance(art, mpl.artist.Artist):
                 # Any other artist (e.g. Text), but requires to draw figure
                 if not drawn:
-                    self.fig.show()
+                    self.fig.draw_without_rendering()
                     drawn = True
                 lim = art.get_window_extent().transformed(ax.transData.inverted())
                 limits.append(lim)
