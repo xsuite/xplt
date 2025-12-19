@@ -352,7 +352,10 @@ def element_strength(element, n):
     """Get knl strength of element"""
     knl = 0
     if knl == 0 and hasattr(element, f"k{n}") and hasattr(element, "length"):
-        knl = getattr(element, f"k{n}") * element.length
+        kn = getattr(element, f"k{n}")
+        if kn == "from_h":
+            kn = element.h
+        knl = kn * element.length
     if knl == 0 and hasattr(element, "knl") and n <= element.order:
         knl = element.knl[n]
     return knl
