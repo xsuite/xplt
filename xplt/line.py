@@ -50,7 +50,10 @@ def effective_order(element):
     order = set()
     if hasattr(element, "length") and element.length > 0:
         for n in range(10):
-            if get(element, f"k{n}", 0) or get(element, f"k{n}s", 0):
+            kn = get(element, f"k{n}", 0)
+            if kn == "from_h":
+                kn = element.h
+            if kn or get(element, f"k{n}s", 0):
                 order.add(n)
     for knl in ("knl", "ksl"):
         if hasattr(element, knl):
