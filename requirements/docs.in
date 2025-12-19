@@ -10,3 +10,6 @@ sphinx-prompt
 sphinx-tabs
 sphinx-toolbox
 sphinxcontrib-napoleon
+
+# exclude broken dependencies
+autodocsumm != 0.2.4

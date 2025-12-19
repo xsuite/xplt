@@ -7,7 +7,7 @@ on:
     - cron: '47 8 19 * *'
   push:
     branches:
-      - dev
+      - main
     paths:
       - '.github/workflows/dependencies.yaml'
       - 'requirements/*.in'
@@ -33,7 +33,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: dev  # force checkout dev branch since schedule runs on main by default
+          ref: main  # force checkout branch since schedule runs on main by default
           ssh-key: ${{ secrets.DEPENDENCY_WORKFLOW_KEY }}
       - uses: actions/setup-python@v5
         with:
@@ -62,7 +62,7 @@ jobs:
           commit-message: Dependency updates
           author: github-actions[bot] <41898282+github-actions[bot]@users.noreply.github.com>
           branch: deps/dependency-updates
-          base: dev
+          base: main
           delete-branch: true
           title: Dependency updates
           labels: |
