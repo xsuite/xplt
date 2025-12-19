@@ -121,7 +121,7 @@
           "Module Contents"
         ]
       },
-      "doc_lineno": 572
+      "doc_lineno": 570
     }
   ],
   "autoapi/xplt/particles/index": [
@@ -2637,6 +2637,20 @@
           "end_lineno": 53,
           "context": "none",
           "resolved_location": "numpy.pi"
+        },
+        {
+          "import_components": [
+            "xtrack",
+            "Environment",
+            "()",
+            "new_line",
+            "()"
+          ],
+          "code_str": "line2",
+          "lineno": 45,
+          "end_lineno": 45,
+          "context": "none",
+          "resolved_location": "xtrack.line.Line"
         }
       ],
       "example": {

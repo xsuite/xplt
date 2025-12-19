@@ -5,7 +5,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Beamline — Xplt 0.12.1 documentation</title>
+<title>Beamline — Xplt 0.12.2 documentation</title>
 <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
@@ -32,7 +32,7 @@
 <!-- Pre-loaded scripts that we'll load fully later -->
 <link as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" rel="preload"/>
 <link as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" rel="preload"/>
-<script src="../_static/documentation_options.js?v=c5b435e8"></script>
+<script src="../_static/documentation_options.js?v=f24cbf82"></script>
 <script src="../_static/doctools.js?v=9bcbadda"></script>
 <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
 <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
@@ -51,7 +51,7 @@
 <link href="concepts.html" rel="prev" title="Common concepts"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta content="en" name="docsearch:language"/>
-<meta content="0.12.1" name="docsearch:version"/>
+<meta content="0.12.2" name="docsearch:version"/>
 </head>
 <body data-bs-root-margin="0px 0px -60%" data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-default-mode="" data-offset="180">
 <div class="skip-link d-print-none" id="pst-skip-link"><a href="#main-content">Skip to main content</a></div>
@@ -76,7 +76,7 @@
 <div class="col-lg-3 navbar-header-items__start">
 <div class="navbar-item">
 <a class="navbar-brand logo" href="../index.html">
-<p class="title logo__title">Xplt 0.12.1 documentation</p>
+<p class="title logo__title">Xplt 0.12.2 documentation</p>
 </a></div>
 </div>
 <div class="col-lg-9 navbar-header-items">
@@ -333,7 +333,7 @@ First, create a simple line and a tracker:</p>
 <span class="n">env</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">"sext"</span><span class="p">,</span> <span class="s2">"Sextupole"</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
 <span class="n">env</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">"oct"</span><span class="p">,</span> <span class="s2">"Octupole"</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
 
-<span class="n">line2</span> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">new_line</span><span class="p">(</span>
+<a class="sphinx-codeautolink-a" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.Line" title="xtrack.line.Line"><span class="n">line2</span></a> <span class="o">=</span> <span class="n">env</span><span class="o">.</span><span class="n">new_line</span><span class="p">(</span>
     <span class="n">components</span><span class="o">=</span><span class="p">[</span>
         <span class="n">env</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="s2">"mb1"</span><span class="p">,</span> <span class="s2">"Bend"</span><span class="p">,</span> <span class="n">angle</span><span class="o">=</span><a class="sphinx-codeautolink-a" href="https://numpy.org/doc/stable/reference/constants.html#numpy.pi" title="numpy.pi"><span class="n">np</span><span class="o">.</span><span class="n">pi</span></a> <span class="o">/</span> <span class="mi">6</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">at</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span>
         <span class="n">env</span><span class="o">.</span><span class="n">place</span><span class="p">([</span><span class="s2">"quad"</span><span class="p">,</span> <span class="s2">"sext"</span><span class="p">]),</span>

@@ -285,8 +285,6 @@ Module Contents
 
 
    .. py:attribute:: default_boxes
-      :value: None
-
 
 
    .. py:attribute:: element_width
