@@ -15,7 +15,6 @@ __date__ = "2022-09-06"
 import matplotlib as mpl
 from .util import *
 
-
 PUBLIC_SECTION_BEGIN()
 
 
