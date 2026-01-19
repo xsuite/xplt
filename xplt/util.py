@@ -500,7 +500,7 @@ def hamiltonian_kobayashi(X, Px, S, mu, twiss, xy="x", delta=0, *, normalized=Fa
     # rotate coordinates to account for phase advance
     dmu = 2 * np.pi * (mu - get(twiss, "mu" + xy))  # phase advance to virtual sextupole
     rotation = np.array([[+np.cos(dmu), np.sin(dmu)], [-np.sin(dmu), np.cos(dmu)]])
-    (X, Px) = np.tensordot(rotation, (X, Px), 1)
+    X, Px = np.tensordot(rotation, (X, Px), 1)
 
     # calculate hamiltonian
     H = 3 * np.pi * d * (X**2 + Px**2) + S / 4 * (3 * X * Px**2 - X**3)
