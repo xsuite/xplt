@@ -103,7 +103,7 @@
           "Module Contents"
         ]
       },
-      "doc_lineno": 1596
+      "doc_lineno": 1592
     }
   ],
   "autoapi/xplt/colors/index": [],
@@ -121,7 +121,7 @@
           "Module Contents"
         ]
       },
-      "doc_lineno": 570
+      "doc_lineno": 566
     }
   ],
   "autoapi/xplt/particles/index": [
@@ -136,7 +136,7 @@
           "Module Contents"
         ]
       },
-      "doc_lineno": 342
+      "doc_lineno": 338
     },
     {
       "source": ">>> XManifoldPlot.parse_nested_list_string(\"a+b, c-d,fun(e,2)\")\n[[['a', 'b']], [['c'], ['d']], [['fun(e,2)']]]\n>>> XManifoldPlot.parse_nested_list_string(\"a+b, c-d,fun(e,2)\", strip_off_methods=True)\n([[['a', 'b']], [['c'], ['d']], [['e']]],\n [[[None, None]], [[None], [None]], [['fun(e,2)']]])",
@@ -149,7 +149,7 @@
           "Module Contents"
         ]
       },
-      "doc_lineno": 831
+      "doc_lineno": 827
     }
   ],
   "autoapi/xplt/phasespace/index": [],
@@ -180,7 +180,7 @@
           "Module Contents"
         ]
       },
-      "doc_lineno": 370
+      "doc_lineno": 366
     },
     {
       "source": ">>> XManifoldPlot.parse_nested_list_string(\"a+b, c-d,fun(e,2)\")\n[[['a', 'b']], [['c'], ['d']], [['fun(e,2)']]]\n>>> XManifoldPlot.parse_nested_list_string(\"a+b, c-d,fun(e,2)\", strip_off_methods=True)\n([[['a', 'b']], [['c'], ['d']], [['e']]],\n [[[None, None]], [[None], [None]], [['fun(e,2)']]])",
@@ -193,7 +193,7 @@
           "Module Contents"
         ]
       },
-      "doc_lineno": 845
+      "doc_lineno": 841
     },
     {
       "source": "def mask_callback(mask, get):\n    mask &= get(\"t\") < 1e-3  # all particles with time < 1 ms\n    return mask",
@@ -219,7 +219,7 @@
           "Module Contents"
         ]
       },
-      "doc_lineno": 1405
+      "doc_lineno": 1401
     },
     {
       "source": ">>> XManifoldPlot.parse_nested_list_string(\"a+b, c-d,fun(e,2)\")\n[[['a', 'b']], [['c'], ['d']], [['fun(e,2)']]]\n>>> XManifoldPlot.parse_nested_list_string(\"a+b, c-d,fun(e,2)\", strip_off_methods=True)\n([[['a', 'b']], [['c'], ['d']], [['e']]],\n [[[None, None]], [[None], [None]], [['fun(e,2)']]])",
@@ -232,7 +232,7 @@
           "Module Contents"
         ]
       },
-      "doc_lineno": 1911
+      "doc_lineno": 1907
     },
     {
       "source": ">>> XManifoldPlot.parse_nested_list_string(\"a+b, c-d,fun(e,2)\")\n[[['a', 'b']], [['c'], ['d']], [['fun(e,2)']]]\n>>> XManifoldPlot.parse_nested_list_string(\"a+b, c-d,fun(e,2)\", strip_off_methods=True)\n([[['a', 'b']], [['c'], ['d']], [['e']]],\n [[[None, None]], [[None], [None]], [['fun(e,2)']]])",
@@ -245,7 +245,7 @@
           "Module Contents"
         ]
       },
-      "doc_lineno": 2360
+      "doc_lineno": 2356
     },
     {
       "source": ">>> XManifoldPlot.parse_nested_list_string(\"a+b, c-d,fun(e,2)\")\n[[['a', 'b']], [['c'], ['d']], [['fun(e,2)']]]\n>>> XManifoldPlot.parse_nested_list_string(\"a+b, c-d,fun(e,2)\", strip_off_methods=True)\n([[['a', 'b']], [['c'], ['d']], [['e']]],\n [[[None, None]], [[None], [None]], [['fun(e,2)']]])",
@@ -258,7 +258,7 @@
           "Module Contents"
         ]
       },
-      "doc_lineno": 2767
+      "doc_lineno": 2763
     }
   ],
   "autoapi/xplt/twiss/index": [
@@ -273,7 +273,7 @@
           "Module Contents"
         ]
       },
-      "doc_lineno": 275
+      "doc_lineno": 271
     }
   ],
   "autoapi/xplt/util/index": [],
