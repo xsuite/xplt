@@ -75,12 +75,12 @@ def register_pint_options():
             as_ratio=False,  # changed
             single_denominator=True,
             product_fmt=r" \cdot ",
-            division_fmt=r"\frac[{}][{}]",
-            power_fmt="{}^[{}]",
+            division_fmt=r"\frac{{{}}}{{{}}}",
+            power_fmt="{}^{{{}}}",
             parentheses_fmt=r"\left({}\right)",
             **options,
         )
-        return formatted.replace("[", "{").replace("]", "}").replace("^{0.5}", "^{1/2}")
+        return formatted.replace("^{0.5}", "^{1/2}")
 
 
 ## Restrict star imports to local namespace
