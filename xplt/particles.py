@@ -117,7 +117,7 @@ class ParticlePlotMixin:
             if self._frev is not None:
                 return self._frev * self.line_length / c0
             if self.twiss is not None:
-                return self.line_length / get(self.twiss, "T_rev0") / c0
+                return self.line_length / get(self.twiss, "t_rev0") / c0
         if particles is not None:
             try:
                 beta = get(particles, "beta0")
@@ -137,7 +137,7 @@ class ParticlePlotMixin:
         if self._frev is not None:
             return self._frev
         if self.twiss is not None:
-            return 1 / get(self.twiss, "T_rev0")
+            return 1 / get(self.twiss, "t_rev0")
         beta = self.beta(particles)
         if beta is not None and self.line_length is not None:
             return beta * c0 / self.line_length
