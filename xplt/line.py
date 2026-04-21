@@ -220,7 +220,7 @@ class KnlPlot(XManifoldPlot):
         if len(pp) > 1 and np.all([re.match(r"k\d+l", p) for p in pp]):
             label = "$k_nl$"
             if unit:
-                label += " / $m^{-n}$"
+                label += " / $\\mathrm{m}^{-n}$"
             return label
         return super().label_for(*pp, unit=unit, description=description)
 
@@ -460,7 +460,11 @@ class FloorPlot(XPlot):
                     color=f"C{order}" if order >= 0 else "k",
                     length=length or 0,
                     label={
-                        0: "Bending magnet" if (arc or ("Bend" in TYPE[i])) else None,
+                        0: (
+                            "Bending magnet"
+                            if (arc or (TYPE is not None and "Bend" in TYPE[i]))
+                            else None
+                        ),
                         1: "Quadrupole magnet",
                         2: "Sextupole magnet",
                         3: "Octupole magnet",
@@ -564,6 +568,7 @@ class FloorPlot(XPlot):
                 self.ax,
                 autoscale,
                 artists=self.artists_boxes + self.artists_labels + [self.artist_beamline],
+                freeze=False,  # don't freeze to avoid warning with fixed aspect ratio
             )
 
         return changed
