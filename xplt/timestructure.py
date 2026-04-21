@@ -1716,17 +1716,25 @@ class SpillQualityTimescalePlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin,
 class TimeBinMetricHelper(ParticlePlotMixin, MetricesMixin):
     """Helper class for binning and evaluating metrices on timeseries data"""
 
-    def __init__(self, *, twiss=None, beta=None, frev=None, circumference=None):
+    def __init__(self, *, twiss=None, beta=None, frev=None, line_length=None, circumference=None):
         """
 
         Args:
             twiss (dict | None): Twiss parameters (alfx, alfy, betx and bety) to use for conversion to normalized phase space coordinates.
             beta (float | None): Relativistic beta of particles. Defaults to particles.beta0.
             frev (float | None): Revolution frequency of circular line for calculation of particle time.
-            circumference (float | None): Path length of circular line if frev is not given.
+            line_length (float | None): Path length of circular line if frev is not given.
+            circumference (float | None): Deprecated alias for line_length.
 
         """
-        self._init_particle_mixin(twiss=twiss, beta=beta, frev=frev, circumference=circumference)
+        if line_length is None and circumference is not None:
+            warnings.warn(
+                "Use `line_length=...` instead of `circumference=...`. "
+                "This deprecation is part of the interface cleanup of xsuite in view of the 1.0 release",
+                DeprecationWarning,
+            )
+            line_length = circumference  # for backwarsd compatibility
+        self._init_particle_mixin(twiss=twiss, beta=beta, frev=frev, line_length=line_length)
 
     def binned_timeseries(
         self, particles, dt=None, *, mask=None, t_range=None, what=None, moments=1
