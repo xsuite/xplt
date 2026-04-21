@@ -460,7 +460,11 @@ class FloorPlot(XPlot):
                     color=f"C{order}" if order >= 0 else "k",
                     length=length or 0,
                     label={
-                        0: "Bending magnet" if (arc or ("Bend" in TYPE[i])) else None,
+                        0: (
+                            "Bending magnet"
+                            if (arc or (TYPE is not None and "Bend" in TYPE[i]))
+                            else None
+                        ),
                         1: "Quadrupole magnet",
                         2: "Sextupole magnet",
                         3: "Octupole magnet",
