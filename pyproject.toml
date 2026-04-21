@@ -37,10 +37,10 @@ dependencies = [
 [project.optional-dependencies]
 minimal= []
 recommended = [
-    "pint>=0.24.1",
+    "pint>=0.24.1,!=0.25.3", # Exclude 0.25.3 due to https://github.com/hgrecco/pint/pull/2291
 ]
 full = [
-    "pint>=0.24.1",
+    "pint>=0.24.1,!=0.25.3", # Exclude 0.25.3 due to https://github.com/hgrecco/pint/pull/2291
     "pandas",
 ]
 
