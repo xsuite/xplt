@@ -72,12 +72,28 @@ class NotebookTester:
             for i, ref_out in enumerate(reference_outputs):
                 output_type = ref_out.get("output_type")
 
-                try:
-                    act_out = actual_outputs[i]
-                except IndexError:
-                    raise ValueError(
-                        f"Expected {len(reference_outputs)} cell outputs, but only {len(actual_outputs)} found"
-                    )
+                strict = True  # Use strict for now, it helps to catch deprecation warnings
+                if strict:
+                    # compare outputs in exactly the expected order
+                    try:
+                        act_out = actual_outputs[i]
+                    except IndexError:
+                        raise ValueError(
+                            f"Expected {len(reference_outputs)} cell outputs, but only {len(actual_outputs)} found"
+                        )
+                else:
+                    # compare outputs in per-output-type order (gracefully handle warnings or reorders)
+                    type_filter = lambda o: o.get("output_type") == output_type
+                    reference_outputs_this_type = list(filter(type_filter, reference_outputs))
+                    actual_outputs_this_type = list(filter(type_filter, actual_outputs))
+                    try:
+                        act_out = actual_outputs_this_type[
+                            reference_outputs_this_type.index(ref_out)
+                        ]
+                    except IndexError:
+                        raise ValueError(
+                            f"Expected {len(reference_outputs_this_type)} cell outputs of type `{output_type}`, but only {len(actual_outputs_this_type)} of this type found ({len(actual_outputs)} total: {[o.get('output_type') for o in actual_outputs]})."
+                        )
 
                 if output_type == "stream":  # compare plain text
                     cls.compare_outputs_text(ref_out.get("text"), act_out.get("text"))
