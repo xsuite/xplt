@@ -220,7 +220,7 @@ class KnlPlot(XManifoldPlot):
         if len(pp) > 1 and np.all([re.match(r"k\d+l", p) for p in pp]):
             label = "$k_nl$"
             if unit:
-                label += " / $m^{-n}$"
+                label += " / $\\mathrm{m}^{-n}$"
             return label
         return super().label_for(*pp, unit=unit, description=description)
 
