@@ -11,6 +11,7 @@ on:
     paths:
       - '.github/workflows/dependencies.yaml'
       - 'requirements/*.in'
+      - 'pyproject.toml'
 
 permissions:
   pull-requests: write
