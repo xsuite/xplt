@@ -8,6 +8,8 @@ __contact__ = "eltos@outlook.de"
 __date__ = "2022-12-07"
 
 
+import warnings
+
 from .util import *
 from .properties import _fmt_qty, _convert_value_to_unit, _has_pint
 from .base import XManifoldPlot
@@ -21,7 +23,7 @@ class ParticlePlotMixin:
     """
 
     def _init_particle_mixin(
-        self, *, twiss=None, beta=None, frev=None, circumference=None, **kwargs
+        self, *, twiss=None, beta=None, frev=None, line_length=None, **kwargs
     ):
         r"""Initializes the mixin by providing associated information
 
@@ -29,7 +31,7 @@ class ParticlePlotMixin:
         this mixin allows determination of the following derived properties:
 
         - Wrapped longitudinal coordinate: ``zeta_wrapped``
-           |  This is the ``zeta`` coordinate wrapped to be in range (-circumference/2; circumference/2)
+           |  This is the ``zeta`` coordinate wrapped to be in range (-line_length/2; line_length/2)
         - Normalized coordinates: ``X``, ``Y``, ``Px``, ``Py``
            |  :math:`X = x/\sqrt{\beta_x} = \sqrt{2J_x} \cos(\Theta_x)`
            |  :math:`P_x = (\alpha_x x + \beta_x p_x)/\sqrt{\beta_x} = -\sqrt{2J_x} \sin(\Theta_x)`
@@ -46,7 +48,7 @@ class ParticlePlotMixin:
             twiss (dict | None): Twiss parameters (alfx, alfy, betx and bety) to use for conversion to normalized phase space coordinates.
             beta (float | None): Relativistic beta of particles. Defaults to `beta0` property of particles.
             frev (float | None): Revolution frequency of circular line for calculation of particle time.
-            circumference (float | None): Path length of circular line if frev is not given.
+            line_length (float | None): Path length of circular line if frev is not given.
             kwargs: Keyword arguments for :class:`~.base.XPlot`
 
         Returns:
@@ -56,12 +58,12 @@ class ParticlePlotMixin:
         self.twiss = twiss
         self._beta = val(beta)
         self._frev = val(frev)
-        self._circumference = val(circumference)
+        self._line_length = val(line_length)
 
         # Particle specific properties
         # fmt: off
         self._derived_particle_properties = dict(
-            zeta_wrapped=DerivedProperty("$\\zeta$", "m", lambda zeta: ieee_mod(zeta, self.circumference)),
+            zeta_wrapped=DerivedProperty("$\\zeta$", "m", lambda zeta: ieee_mod(zeta, self.line_length)),
             X=DerivedProperty("$X$", "m^(1/2)", lambda x, px, delta: normalized_coordinates(x, px, self.twiss, "x", delta)[0]),
             Y=DerivedProperty("$Y$", "m^(1/2)", lambda y, py, delta: normalized_coordinates(y, py, self.twiss, "y", delta)[0]),
             Px=DerivedProperty("$X'$", "m^(1/2)", lambda x, px, delta: normalized_coordinates(x, px, self.twiss, "x", delta)[1]),
@@ -92,21 +94,30 @@ class ParticlePlotMixin:
 
     @property
     def circumference(self):
+        warnings.warn(
+            "Use `line_length=...` instead of `circumference=...`. "
+            "This deprecation is part of the interface cleanup of xsuite in view of the 1.0 release",
+            DeprecationWarning,
+        )
+        return self.line_length
+
+    @property
+    def line_length(self):
         """Circumference of circular accelerator"""
-        if self._circumference is not None:
-            return self._circumference
+        if self._line_length is not None:
+            return self._line_length
         if self.twiss is not None:
-            return get(self.twiss, "circumference")
+            return get(self.twiss, "line_length")
 
     def beta(self, particles=None):
         """Get reference relativistic beta as float"""
         if self._beta is not None:
             return self._beta
-        if self.circumference is not None:
+        if self.line_length is not None:
             if self._frev is not None:
-                return self._frev * self.circumference / c0
+                return self._frev * self.line_length / c0
             if self.twiss is not None:
-                return self.circumference / get(self.twiss, "T_rev0") / c0
+                return self.line_length / get(self.twiss, "t_rev0") / c0
         if particles is not None:
             try:
                 beta = get(particles, "beta0")
@@ -126,10 +137,10 @@ class ParticlePlotMixin:
         if self._frev is not None:
             return self._frev
         if self.twiss is not None:
-            return 1 / get(self.twiss, "T_rev0")
+            return 1 / get(self.twiss, "t_rev0")
         beta = self.beta(particles)
-        if beta is not None and self.circumference is not None:
-            return beta * c0 / self.circumference
+        if beta is not None and self.line_length is not None:
+            return beta * c0 / self.line_length
 
     def _particle_time(self, turn, zeta, particles=None):
         """Particle arrival time (t = at_turn / frev - zeta / beta / c0)"""
@@ -147,7 +158,7 @@ class ParticlePlotMixin:
             raise ValueError(
                 "Particle arrival time can not be determined "
                 "because all of the following are unknown: "
-                "beta, (frev and circumference), twiss. "
+                "beta, (frev and line_length), twiss. "
                 "To resolve this error, pass either to the plot constructor "
                 "or specify particle.beta0."
             )
@@ -159,7 +170,7 @@ class ParticlePlotMixin:
                 raise ValueError(
                     "Particle arrival time can not be determined while at_turn > 0 "
                     "because all of the following are unknown: "
-                    "frev, twiss, (beta and circumference). "
+                    "frev, twiss, (beta and line_length). "
                     "To resolve this error, pass either to the plot constructor "
                     "and/or specify particle.beta0."
                 )
