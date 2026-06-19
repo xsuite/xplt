@@ -72,4 +72,6 @@ jobs:
           labels: |
               dependencies
           body: |
-            Dependency updates by pip-compile
+            Dependency updates by pip-compile. 
+            See https://github.com/xsuite/xplt/wiki/maintenance for further information, guidance and troubleshooting.
+
