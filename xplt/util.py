@@ -439,7 +439,7 @@ def virtual_sextupole(line, particle_ref=None, *, verbose=False):
             k2l.append(element_k2l)
 
     # twiss at sextupoles
-    tw = line.twiss(method="4d", particle_ref=particle_ref, at_elements=sextupoles)
+    tw = line.twiss(method="4d", particle_ref=particle_ref).rows[sextupoles]
     betx, mux = tw.betx, tw.mux
 
     # determine virtual sextupole
@@ -528,10 +528,9 @@ def iter_elements(line, *, s=None, mask_nearest=False):
           omitted if s=None (see arguments).
 
     """
-    el_s0 = line.get_s_elements("upstream")
-    el_s1 = line.get_s_elements("downstream")
+    table = line.get_table()
     smax = line.get_length()
-    for name, el, s0, s1 in zip(line.element_names, line.elements, el_s0, el_s1):
+    for name, el, s0, s1 in zip(table.name, line.elements, table.s_start, table.s_end):
         if s0 == s1:  # thin lense located at element center
             if hasattr(el, "length"):
                 s0, s1 = (s0 + s1 - el.length) / 2, (s0 + s1 + el.length) / 2
