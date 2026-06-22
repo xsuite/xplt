@@ -461,10 +461,13 @@ Module Contents
 
    .. py:property:: circumference
 
-      Circumference of circular accelerator
-
 
    .. py:attribute:: fig
+
+
+   .. py:property:: line_length
+
+      Circumference of circular accelerator
 
 
    .. py:attribute:: moment
@@ -527,6 +530,9 @@ Module Contents
 
 
    .. py:property:: circumference
+
+
+   .. py:property:: line_length
 
       Circumference of circular accelerator
 
@@ -939,10 +945,13 @@ Module Contents
 
    .. py:property:: circumference
 
-      Circumference of circular accelerator
-
 
    .. py:attribute:: fig
+
+
+   .. py:property:: line_length
+
+      Circumference of circular accelerator
 
 
    .. py:attribute:: on_x

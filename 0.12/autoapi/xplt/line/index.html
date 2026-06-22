@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>xplt.line &#8212; Xplt 0.12.4 documentation</title>
+    <title>xplt.line &#8212; Xplt 0.12.5 documentation</title>
   
   
   
@@ -27,8 +27,8 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/graphviz.css?v=4ae1632d" />
@@ -37,43 +37,50 @@
     <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=603c5a11" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
-    <script src="../../../_static/documentation_options.js?v=9dbdab56"></script>
+    <script src="../../../_static/documentation_options.js?v=39c52f4f"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'autoapi/xplt/line/index';</script>
     <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_version = '0.19.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://xsuite.github.io/xplt/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.12';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="xplt.particles" href="../particles/index.html" />
     <link rel="prev" title="xplt.hooks" href="../hooks/index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
-  <meta name="docsearch:version" content="0.12.4" />
+  <meta name="docsearch:version" content="0.12.5" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
+  <body data-default-mode="">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -99,7 +106,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -121,7 +128,7 @@
   
   
   
-    <p class="title logo__title">Xplt 0.12.4 documentation</p>
+    <p class="title logo__title">Xplt 0.12.5 documentation</p>
   
 </a></div>
     
@@ -176,11 +183,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -193,8 +207,7 @@
           
           
           
-          <a href="https://github.com/xsuite/xplt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/xsuite/xplt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -205,8 +218,7 @@
           
           
           
-          <a href="https://pypi.org/project/xplt" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-cube fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">PyPI</span></a>
+          <a href="https://pypi.org/project/xplt" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-cube fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
         </li>
 </ul></div>
       
@@ -308,11 +320,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -325,8 +344,7 @@
           
           
           
-          <a href="https://github.com/xsuite/xplt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/xsuite/xplt" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
         <li class="nav-item">
           
@@ -337,8 +355,7 @@
           
           
           
-          <a href="https://pypi.org/project/xplt" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-cube fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">PyPI</span></a>
+          <a href="https://pypi.org/project/xplt" title="PyPI" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-cube fa-lg" aria-hidden="true"></i><span class="visually-hidden">PyPI</span></a>
         </li>
 </ul></div>
         
@@ -367,7 +384,14 @@
   </div>
   
     <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar"><svg class="pst-icon svg-inline--fa" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
         <div class="sidebar-primary-item">
+
 <nav class="bd-docs-nav bd-links"
      aria-label="Section Navigation">
   <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
@@ -492,14 +516,14 @@
 <h2>Module Contents<a class="headerlink" href="#module-contents" title="Link to this heading">#</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="xplt.line.FloorPlot">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">xplt.line.</span></span><span class="sig-name descname"><span class="pre">FloorPlot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">survey</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ZX'</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_boxes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">element_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'equal'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.4/xplt/line.py#L228-L617"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.FloorPlot" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">xplt.line.</span></span><span class="sig-name descname"><span class="pre">FloorPlot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">survey</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'ZX'</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_boxes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">boxes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">element_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'equal'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.5/xplt/line.py#L228-L622"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.FloorPlot" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../base/index.html#xplt.base.XPlot" title="xplt.base.XPlot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xplt.base.XPlot</span></code></a></p>
 <p>A floor plan of the line based on survey data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>survey</strong> (<em>Any</em><em> | </em><em>None</em>) – Survey data from MAD-X or Xsuite.</p></li>
-<li><p><strong>line</strong> (<em>None</em><em> | </em><a class="reference external" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.Line" title="(in Xsuite)"><em>xtrack.Line</em></a>) – Optional Xsuite line object for backwards compatible coloring of Multipoles (deprecated).</p></li>
+<li><p><strong>line</strong> (<em>None</em><em> | </em><em>xtrack.Line</em>) – Optional Xsuite line object for backwards compatible coloring of Multipoles (deprecated).</p></li>
 <li><p><strong>projection</strong> (<em>str</em>) – The projection to use: A pair of coordinates (‘XZ’, ‘ZY’ etc.)</p></li>
 <li><p><strong>boxes</strong> (<em>None</em><em> | </em><em>bool</em><em> | </em><em>str</em><em> | </em><em>iterable</em><em> | </em><em>dict</em>) – Config option for showing colored boxes for elements. See below.
 Detailed options can be “length” and all options suitable for a patch, such as “color”, “alpha”, etc.
@@ -530,7 +554,7 @@ Note that drift spaces are always ignored.</p></li>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="xplt.line.FloorPlot.add_scale">
-<span class="sig-name descname"><span class="pre">add_scale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fontsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'x-small'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.4/xplt/line.py#L574-L601"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.FloorPlot.add_scale" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">add_scale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fontsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'x-small'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.5/xplt/line.py#L579-L606"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.FloorPlot.add_scale" title="Link to this definition">#</a></dt>
 <dd><p>Add a scale patch (a yardstick or ruler)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -548,19 +572,19 @@ e.g. ‘auto’, ‘upper left’, ‘upper center’, ‘upper right’, ‘cen
 <dd class="field-even"><p>The artist added</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://matplotlib.org/stable/api/offsetbox_api.html#matplotlib.offsetbox.AnchoredOffsetbox" title="(in Matplotlib v3.10.8)">matplotlib.offsetbox.AnchoredOffsetbox</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://matplotlib.org/stable/api/offsetbox_api.html#matplotlib.offsetbox.AnchoredOffsetbox" title="(in Matplotlib v3.11.0)">matplotlib.offsetbox.AnchoredOffsetbox</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xplt.line.FloorPlot.annotate">
-<span class="sig-name descname"><span class="pre">annotate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.4/xplt/base.py#L484-L486"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.FloorPlot.annotate" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">annotate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.5/xplt/base.py#L484-L486"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.FloorPlot.annotate" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xplt.line.FloorPlot.axes">
-<span class="sig-name descname"><span class="pre">axes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subplots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">twins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.4/xplt/base.py#L505-L524"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.FloorPlot.axes" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">axes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subplots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">twins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.5/xplt/base.py#L505-L524"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.FloorPlot.axes" title="Link to this definition">#</a></dt>
 <dd><p>Generator yielding axes for the given flat subplot and twin indices</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -578,7 +602,7 @@ e.g. ‘auto’, ‘upper left’, ‘upper center’, ‘upper right’, ‘cen
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xplt.line.FloorPlot.axis">
-<span class="sig-name descname"><span class="pre">axis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subplot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">twin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.4/xplt/base.py#L493-L503"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.FloorPlot.axis" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">axis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subplot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">twin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.5/xplt/base.py#L493-L503"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.FloorPlot.axis" title="Link to this definition">#</a></dt>
 <dd><p>Return the axis for a given flat subplot index and twin index</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -591,14 +615,14 @@ e.g. ‘auto’, ‘upper left’, ‘upper center’, ‘upper right’, ‘cen
 <dd class="field-even"><p>Axis for the given subplot and twin index</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="(in Matplotlib v3.10.8)">matplotlib.axes.Axes</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="(in Matplotlib v3.11.0)">matplotlib.axes.Axes</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xplt.line.FloorPlot.display_unit_for">
-<span class="sig-name descname"><span class="pre">display_unit_for</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.4/xplt/base.py#L555-L574"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.FloorPlot.display_unit_for" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">display_unit_for</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.5/xplt/base.py#L555-L574"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.FloorPlot.display_unit_for" title="Link to this definition">#</a></dt>
 <dd><p>Return display unit for parameter</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -615,7 +639,7 @@ e.g. ‘auto’, ‘upper left’, ‘upper center’, ‘upper right’, ‘cen
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xplt.line.FloorPlot.factor_for">
-<span class="sig-name descname"><span class="pre">factor_for</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.4/xplt/base.py#L544-L553"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.FloorPlot.factor_for" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">factor_for</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.5/xplt/base.py#L544-L553"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.FloorPlot.factor_for" title="Link to this definition">#</a></dt>
 <dd><p>Return factor to convert parameter into display unit</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -632,7 +656,7 @@ e.g. ‘auto’, ‘upper left’, ‘upper center’, ‘upper right’, ‘cen
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xplt.line.FloorPlot.label_for">
-<span class="sig-name descname"><span class="pre">label_for</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">pp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.4/xplt/base.py#L635-L700"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.FloorPlot.label_for" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">label_for</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">pp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.5/xplt/base.py#L635-L700"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.FloorPlot.label_for" title="Link to this definition">#</a></dt>
 <dd><p>Return axis label for list of properties, joining where possible</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -653,12 +677,12 @@ e.g. ‘auto’, ‘upper left’, ‘upper center’, ‘upper right’, ‘cen
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xplt.line.FloorPlot.legend">
-<span class="sig-name descname"><span class="pre">legend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.4/xplt/line.py#L571-L572"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.FloorPlot.legend" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">legend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.5/xplt/line.py#L576-L577"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.FloorPlot.legend" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xplt.line.FloorPlot.plot_harmonics">
-<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">plot_harmonics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">plot_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.4/xplt/base.py#L719-L762"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.FloorPlot.plot_harmonics" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">plot_harmonics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">plot_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.5/xplt/base.py#L719-L762"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.FloorPlot.plot_harmonics" title="Link to this definition">#</a></dt>
 <dd><p>Add vertical lines or spans indicating the location of values or spans and their harmonics</p>
 <dl class="simple">
 <dt>Indicates the bands at the h-th harmonics (h = 1, 2, …, n) at</dt><dd><ul class="simple">
@@ -672,7 +696,7 @@ e.g. ‘auto’, ‘upper left’, ‘upper center’, ‘upper right’, ‘cen
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ax</strong> (<a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="(in Matplotlib v3.10.8)"><em>matplotlib.axes.Axes</em></a>) – Axes to plot onto.</p></li>
+<li><p><strong>ax</strong> (<a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="(in Matplotlib v3.11.0)"><em>matplotlib.axes.Axes</em></a>) – Axes to plot onto.</p></li>
 <li><p><strong>v</strong> (<em>float</em><em> | </em><em>list</em><em>[</em><em>float</em><em>]</em>) – Value or list of values.</p></li>
 <li><p><strong>dv</strong> (<em>float</em><em> | </em><em>list</em><em>[</em><em>float</em><em>]</em>) – Width or list of widths centered around value(s).</p></li>
 <li><p><strong>n</strong> (<em>int</em>) – Number of harmonics to plot.</p></li>
@@ -688,7 +712,7 @@ Useful to plot frequency harmonics in time domain and vice-versa.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xplt.line.FloorPlot.prop">
-<span class="sig-name descname"><span class="pre">prop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.4/xplt/base.py#L576-L589"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.FloorPlot.prop" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">prop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.5/xplt/base.py#L576-L589"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.FloorPlot.prop" title="Link to this definition">#</a></dt>
 <dd><p>Get property by key</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -705,13 +729,13 @@ Useful to plot frequency harmonics in time domain and vice-versa.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xplt.line.FloorPlot.save">
-<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.4/xplt/base.py#L526-L533"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.FloorPlot.save" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.5/xplt/base.py#L526-L533"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.FloorPlot.save" title="Link to this definition">#</a></dt>
 <dd><p>Save the figure with sensible default options</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>fname</strong> (<em>str</em>) – Filename</p></li>
-<li><p><strong>kwargs</strong> – Keyword arguments passed to <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.savefig.html#matplotlib.figure.Figure.savefig" title="(in Matplotlib v3.10.8)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.figure.Figure.savefig()</span></code></a></p></li>
+<li><p><strong>kwargs</strong> – Keyword arguments passed to <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.savefig.html#matplotlib.figure.Figure.savefig" title="(in Matplotlib v3.11.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.figure.Figure.savefig()</span></code></a></p></li>
 </ul>
 </dd>
 </dl>
@@ -719,13 +743,13 @@ Useful to plot frequency harmonics in time domain and vice-versa.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xplt.line.FloorPlot.title">
-<span class="sig-name descname"><span class="pre">title</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.4/xplt/base.py#L535-L542"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.FloorPlot.title" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">title</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.5/xplt/base.py#L535-L542"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.FloorPlot.title" title="Link to this definition">#</a></dt>
 <dd><p>Set figure title</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>title</strong> (<em>str</em>) – Title</p></li>
-<li><p><strong>kwargs</strong> – Keyword arguments passed to <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.suptitle.html#matplotlib.figure.Figure.suptitle" title="(in Matplotlib v3.10.8)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.figure.Figure.suptitle()</span></code></a></p></li>
+<li><p><strong>kwargs</strong> – Keyword arguments passed to <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.suptitle.html#matplotlib.figure.Figure.suptitle" title="(in Matplotlib v3.11.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.figure.Figure.suptitle()</span></code></a></p></li>
 </ul>
 </dd>
 </dl>
@@ -733,16 +757,16 @@ Useful to plot frequency harmonics in time domain and vice-versa.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xplt.line.FloorPlot.update">
-<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">survey</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">autoscale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.4/xplt/line.py#L321-L569"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.FloorPlot.update" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">survey</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">autoscale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.5/xplt/line.py#L321-L574"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.FloorPlot.update" title="Link to this definition">#</a></dt>
 <dd><p>Update the survey data this plot shows</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>survey</strong> (<em>Any</em><em> | </em><em>None</em>) – Survey data. Defaults to <cite>line.survey()</cite>.
 For convenience, passing line as first argument is also supported.</p></li>
-<li><p><strong>line</strong> (<em>None</em><em> | </em><a class="reference external" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.Line" title="(in Xsuite)"><em>xtrack.Line</em></a>) – Optional Xsuite line object for backwards compatible coloring of Multipoles (deprecated).</p></li>
+<li><p><strong>line</strong> (<em>None</em><em> | </em><em>xtrack.Line</em>) – Optional Xsuite line object for backwards compatible coloring of Multipoles (deprecated).</p></li>
 <li><p><strong>autoscale</strong> (<em>str</em><em> | </em><em>None</em><em> | </em><em>bool</em>) – Whether and on which axes to perform autoscaling.
-One of <cite>“x”</cite>, <cite>“y”</cite>, <cite>“xy”</cite>, <cite>False</cite> or <cite>None</cite>. If <cite>None</cite>, decide based on <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.get_autoscalex_on.html#matplotlib.axes.Axes.get_autoscalex_on" title="(in Matplotlib v3.10.8)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.axes.Axes.get_autoscalex_on()</span></code></a> and <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.get_autoscaley_on.html#matplotlib.axes.Axes.get_autoscaley_on" title="(in Matplotlib v3.10.8)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.axes.Axes.get_autoscaley_on()</span></code></a>.</p></li>
+One of <cite>“x”</cite>, <cite>“y”</cite>, <cite>“xy”</cite>, <cite>False</cite> or <cite>None</cite>. If <cite>None</cite>, decide based on <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.get_autoscalex_on.html#matplotlib.axes.Axes.get_autoscalex_on" title="(in Matplotlib v3.11.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.axes.Axes.get_autoscalex_on()</span></code></a> and <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.get_autoscaley_on.html#matplotlib.axes.Axes.get_autoscaley_on" title="(in Matplotlib v3.11.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.axes.Axes.get_autoscaley_on()</span></code></a>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -821,13 +845,13 @@ One of <cite>“x”</cite>, <cite>“y”</cite>, <cite>“xy”</cite>, <cite>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="xplt.line.KnlPlot">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">xplt.line.</span></span><span class="sig-name descname"><span class="pre">KnlPlot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">knl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.4/xplt/line.py#L91-L225"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.KnlPlot" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">xplt.line.</span></span><span class="sig-name descname"><span class="pre">KnlPlot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">knl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filled</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.5/xplt/line.py#L91-L225"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.KnlPlot" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <a class="reference internal" href="../base/index.html#xplt.base.XManifoldPlot" title="xplt.base.XManifoldPlot"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xplt.base.XManifoldPlot</span></code></a></p>
 <p>A plot for knl values along line</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>line</strong> (<a class="reference external" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.Line" title="(in Xsuite)"><em>xtrack.Line</em></a>) – Line of elements.</p></li>
+<li><p><strong>line</strong> (<em>xtrack.Line</em>) – Line of elements.</p></li>
 <li><p><strong>knl</strong> (<em>int</em><em> | </em><em>list</em><em>[</em><em>int</em><em>] </em><em>| </em><em>str</em>) – Maximum order or list of orders n to plot knl values for.
 This can also be a manifold subplot specification string like <code class="docutils literal notranslate"><span class="pre">&quot;k0l+k1l,k2l&quot;</span></code>,
 see <a class="reference internal" href="../base/index.html#xplt.base.XManifoldPlot" title="xplt.base.XManifoldPlot"><code class="xref py py-class docutils literal notranslate"><span class="pre">XManifoldPlot</span></code></a> for details.
@@ -848,12 +872,12 @@ This leads to glitches of knl being doubled or zero at element overlaps for line
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="xplt.line.KnlPlot.add_scale">
-<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">add_scale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fontsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'x-small'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.4/xplt/base.py#L764-L816"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.KnlPlot.add_scale" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">add_scale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">label</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fontsize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'x-small'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.5/xplt/base.py#L764-L816"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.KnlPlot.add_scale" title="Link to this definition">#</a></dt>
 <dd><p>Add a scale patch (a yardstick or ruler)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ax</strong> (<a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="(in Matplotlib v3.10.8)"><em>matplotlib.axes.Axes</em></a>) – The axis to add it to.</p></li>
+<li><p><strong>ax</strong> (<a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="(in Matplotlib v3.11.0)"><em>matplotlib.axes.Axes</em></a>) – The axis to add it to.</p></li>
 <li><p><strong>scale</strong> (<em>float</em>) – The size of the scale in data units.</p></li>
 <li><p><strong>label</strong> (<em>str</em><em> | </em><em>None</em>) – A label for the scale.</p></li>
 <li><p><strong>vertical</strong> (<em>bool</em>) – If true, make a vertical one (default is a horizontal one).</p></li>
@@ -871,19 +895,19 @@ e.g. <code class="docutils literal notranslate"><span class="pre">&quot;auto&quo
 <dd class="field-even"><p>The artist added</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://matplotlib.org/stable/api/offsetbox_api.html#matplotlib.offsetbox.AnchoredOffsetbox" title="(in Matplotlib v3.10.8)">matplotlib.offsetbox.AnchoredOffsetbox</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://matplotlib.org/stable/api/offsetbox_api.html#matplotlib.offsetbox.AnchoredOffsetbox" title="(in Matplotlib v3.11.0)">matplotlib.offsetbox.AnchoredOffsetbox</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xplt.line.KnlPlot.annotate">
-<span class="sig-name descname"><span class="pre">annotate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.4/xplt/base.py#L484-L486"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.KnlPlot.annotate" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">annotate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.5/xplt/base.py#L484-L486"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.KnlPlot.annotate" title="Link to this definition">#</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xplt.line.KnlPlot.artist">
-<span class="sig-name descname"><span class="pre">artist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subplot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">twin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.4/xplt/base.py#L1019-L1041"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.KnlPlot.artist" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">artist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subplot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">twin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.5/xplt/base.py#L1019-L1041"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.KnlPlot.artist" title="Link to this definition">#</a></dt>
 <dd><p>Return the artist either by name, or by subplot, twin axes and trace index</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -899,21 +923,21 @@ e.g. <code class="docutils literal notranslate"><span class="pre">&quot;auto&quo
 <dd class="field-even"><p>First artist that matches the given criteria</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://matplotlib.org/stable/api/artist_api.html#matplotlib.artist.Artist" title="(in Matplotlib v3.10.8)">matplotlib.artist.Artist</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://matplotlib.org/stable/api/artist_api.html#matplotlib.artist.Artist" title="(in Matplotlib v3.11.0)">matplotlib.artist.Artist</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xplt.line.KnlPlot.autoscale">
-<span class="sig-name descname"><span class="pre">autoscale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subplot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'xy'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freeze</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.4/xplt/base.py#L1140-L1162"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.KnlPlot.autoscale" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">autoscale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subplot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'xy'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">freeze</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.5/xplt/base.py#L1140-L1162"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.KnlPlot.autoscale" title="Link to this definition">#</a></dt>
 <dd><p>Autoscale the axes of a subplot</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>subplot</strong> (<em>int</em><em> | </em><em>iterable</em><em> | </em><em>str</em>) – Subplot axis index, indices or “all”</p></li>
 <li><p><strong>axis</strong> (<em>str</em><em> | </em><em>None</em><em> | </em><em>bool</em>) – Whether and on which axes to perform autoscaling.
-One of <cite>“x”</cite>, <cite>“y”</cite>, <cite>“xy”</cite>, <cite>False</cite> or <cite>None</cite>. If <cite>None</cite>, decide based on <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.get_autoscalex_on.html#matplotlib.axes.Axes.get_autoscalex_on" title="(in Matplotlib v3.10.8)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.axes.Axes.get_autoscalex_on()</span></code></a> and <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.get_autoscaley_on.html#matplotlib.axes.Axes.get_autoscaley_on" title="(in Matplotlib v3.10.8)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.axes.Axes.get_autoscaley_on()</span></code></a>.
+One of <cite>“x”</cite>, <cite>“y”</cite>, <cite>“xy”</cite>, <cite>False</cite> or <cite>None</cite>. If <cite>None</cite>, decide based on <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.get_autoscalex_on.html#matplotlib.axes.Axes.get_autoscalex_on" title="(in Matplotlib v3.11.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.axes.Axes.get_autoscalex_on()</span></code></a> and <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.get_autoscaley_on.html#matplotlib.axes.Axes.get_autoscaley_on" title="(in Matplotlib v3.11.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.axes.Axes.get_autoscaley_on()</span></code></a>.
 For backwards compatibility, the following aliases are also supported: <cite>“both”</cite>, <cite>True</cite>, <cite>“”</cite>.</p></li>
 <li><p><strong>reset</strong> (<em>bool</em>) – Whether to ignore any data limits already registered.</p></li>
 <li><p><strong>freeze</strong> (<em>bool</em>) – Whether to keep the updated axes limits (True) or enable automatic
@@ -927,7 +951,7 @@ May be <code class="docutils literal notranslate"><span class="pre">&quot;x&quot
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xplt.line.KnlPlot.axes">
-<span class="sig-name descname"><span class="pre">axes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subplots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">twins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.4/xplt/base.py#L505-L524"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.KnlPlot.axes" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">axes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subplots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">twins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.5/xplt/base.py#L505-L524"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.KnlPlot.axes" title="Link to this definition">#</a></dt>
 <dd><p>Generator yielding axes for the given flat subplot and twin indices</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -945,7 +969,7 @@ May be <code class="docutils literal notranslate"><span class="pre">&quot;x&quot
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xplt.line.KnlPlot.axis">
-<span class="sig-name descname"><span class="pre">axis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subplot_or_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">twin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">subplot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.4/xplt/base.py#L1043-L1075"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.KnlPlot.axis" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">axis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subplot_or_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">twin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">subplot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.5/xplt/base.py#L1043-L1075"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.KnlPlot.axis" title="Link to this definition">#</a></dt>
 <dd><p>Return the axis for a given flat subplot index and twin index, or an artist name</p>
 <p>Either get axis by index <code class="docutils literal notranslate"><span class="pre">axis(subplot,</span> <span class="pre">twin)</span></code> or by property name <code class="docutils literal notranslate"><span class="pre">axis(name)</span></code>.</p>
 <dl class="field-list simple">
@@ -961,14 +985,14 @@ May be <code class="docutils literal notranslate"><span class="pre">&quot;x&quot
 <dd class="field-even"><p>Axis for the given subplot and twin index</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="(in Matplotlib v3.10.8)">matplotlib.axes.Axes</a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="(in Matplotlib v3.11.0)">matplotlib.axes.Axes</a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xplt.line.KnlPlot.axline">
-<span class="sig-name descname"><span class="pre">axline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kind</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.4/xplt/base.py#L1164-L1173"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.KnlPlot.axline" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">axline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kind</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.5/xplt/base.py#L1164-L1173"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.KnlPlot.axline" title="Link to this definition">#</a></dt>
 <dd><p>Plot a vertical or horizontal line for a given coordinate</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -983,7 +1007,7 @@ May be <code class="docutils literal notranslate"><span class="pre">&quot;x&quot
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xplt.line.KnlPlot.axspan">
-<span class="sig-name descname"><span class="pre">axspan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kind</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_to</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">subplots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotation_loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotation_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.4/xplt/base.py#L1175-L1276"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.KnlPlot.axspan" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">axspan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">kind</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">val_to</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">subplots</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotation_loc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">annotation_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.5/xplt/base.py#L1175-L1276"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.KnlPlot.axspan" title="Link to this definition">#</a></dt>
 <dd><p>Plot a vertical or horizontal span (or line) for a given coordinate</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -998,9 +1022,9 @@ text on the axes. To put text in the legend, use <cite>label=…</cite>.</p></li
 or a string <code class="docutils literal notranslate"><span class="pre">&quot;lower&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;bottom&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">left&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;upper&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;top&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;right&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">center</span></code>.
 For vertical lines or spans extending over multiple subplots, 0 is the bottom of the lowermost
 and 1 the top of the uppermost subplot.</p></li>
-<li><p><strong>annotation_kwargs</strong> (<em>dict</em><em> | </em><em>None</em>) – Arguments for <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.text.html#matplotlib.axes.Axes.text" title="(in Matplotlib v3.10.8)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.axes.Axes.text()</span></code></a>.</p></li>
-<li><p><strong>kwargs</strong> – Arguments passed to <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.axvspan.html#matplotlib.axes.Axes.axvspan" title="(in Matplotlib v3.10.8)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.axes.Axes.axvspan()</span></code></a> or <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.axhspan.html#matplotlib.axes.Axes.axhspan" title="(in Matplotlib v3.10.8)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.axes.Axes.axhspan()</span></code></a>
-(or <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.axvline.html#matplotlib.axes.Axes.axvline" title="(in Matplotlib v3.10.8)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.axes.Axes.axvline()</span></code></a> or <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.axhline.html#matplotlib.axes.Axes.axhline" title="(in Matplotlib v3.10.8)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.axes.Axes.axhline()</span></code></a> if <cite>val_to</cite> is <cite>None</cite>)</p></li>
+<li><p><strong>annotation_kwargs</strong> (<em>dict</em><em> | </em><em>None</em>) – Arguments for <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.text.html#matplotlib.axes.Axes.text" title="(in Matplotlib v3.11.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.axes.Axes.text()</span></code></a>.</p></li>
+<li><p><strong>kwargs</strong> – Arguments passed to <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.axvspan.html#matplotlib.axes.Axes.axvspan" title="(in Matplotlib v3.11.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.axes.Axes.axvspan()</span></code></a> or <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.axhspan.html#matplotlib.axes.Axes.axhspan" title="(in Matplotlib v3.11.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.axes.Axes.axhspan()</span></code></a>
+(or <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.axvline.html#matplotlib.axes.Axes.axvline" title="(in Matplotlib v3.11.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.axes.Axes.axvline()</span></code></a> or <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.axhline.html#matplotlib.axes.Axes.axhline" title="(in Matplotlib v3.11.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.axes.Axes.axhline()</span></code></a> if <cite>val_to</cite> is <cite>None</cite>)</p></li>
 </ul>
 </dd>
 </dl>
@@ -1008,7 +1032,7 @@ and 1 the top of the uppermost subplot.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xplt.line.KnlPlot.display_unit_for">
-<span class="sig-name descname"><span class="pre">display_unit_for</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.4/xplt/base.py#L555-L574"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.KnlPlot.display_unit_for" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">display_unit_for</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.5/xplt/base.py#L555-L574"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.KnlPlot.display_unit_for" title="Link to this definition">#</a></dt>
 <dd><p>Return display unit for parameter</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1025,7 +1049,7 @@ and 1 the top of the uppermost subplot.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xplt.line.KnlPlot.factor_for">
-<span class="sig-name descname"><span class="pre">factor_for</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.4/xplt/base.py#L544-L553"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.KnlPlot.factor_for" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">factor_for</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.5/xplt/base.py#L544-L553"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.KnlPlot.factor_for" title="Link to this definition">#</a></dt>
 <dd><p>Return factor to convert parameter into display unit</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1042,7 +1066,7 @@ and 1 the top of the uppermost subplot.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xplt.line.KnlPlot.label_for">
-<span class="sig-name descname"><span class="pre">label_for</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">pp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.4/xplt/line.py#L208-L225"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.KnlPlot.label_for" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">label_for</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">pp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.5/xplt/line.py#L208-L225"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.KnlPlot.label_for" title="Link to this definition">#</a></dt>
 <dd><p>Return axis label for list of properties, joining where possible</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1063,7 +1087,7 @@ and 1 the top of the uppermost subplot.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xplt.line.KnlPlot.legend">
-<span class="sig-name descname"><span class="pre">legend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subplot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.4/xplt/base.py#L1097-L1138"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.KnlPlot.legend" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">legend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subplot</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.5/xplt/base.py#L1097-L1138"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.KnlPlot.legend" title="Link to this definition">#</a></dt>
 <dd><p>Add, update or remove legend for a subplot</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1071,7 +1095,7 @@ and 1 the top of the uppermost subplot.</p></li>
 <li><p><strong>subplot</strong> (<em>int</em><em> | </em><em>list</em><em> | </em><em>str</em>) – Subplot axis index or indices</p></li>
 <li><p><strong>show</strong> (<em>bool</em><em> | </em><em>str</em>) – If True, show the legend. If “auto”, show
 legend for subplots with more than one trace, or if subplot is specified explicitly.</p></li>
-<li><p><strong>kwargs</strong> – Keyword arguments passed to <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.legend.html#matplotlib.axes.Axes.legend" title="(in Matplotlib v3.10.8)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.axes.Axes.legend()</span></code></a></p></li>
+<li><p><strong>kwargs</strong> – Keyword arguments passed to <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.legend.html#matplotlib.axes.Axes.legend" title="(in Matplotlib v3.11.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.axes.Axes.legend()</span></code></a></p></li>
 </ul>
 </dd>
 </dl>
@@ -1079,7 +1103,7 @@ legend for subplots with more than one trace, or if subplot is specified explici
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xplt.line.KnlPlot.parse_nested_list_string">
-<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">parse_nested_list_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">separators</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">',-+'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">strip_off_methods</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.4/xplt/base.py#L1278-L1337"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.KnlPlot.parse_nested_list_string" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">parse_nested_list_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">separators</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">',-+'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">strip_off_methods</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.5/xplt/base.py#L1278-L1337"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.KnlPlot.parse_nested_list_string" title="Link to this definition">#</a></dt>
 <dd><p>Parse a separated string or nested list or a mixture of both</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1110,7 +1134,7 @@ nested list of expressions in the string (only if strip_off_methods is True)</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xplt.line.KnlPlot.plot_harmonics">
-<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">plot_harmonics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">plot_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.4/xplt/base.py#L719-L762"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.KnlPlot.plot_harmonics" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></span><span class="sig-name descname"><span class="pre">plot_harmonics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertical</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">plot_kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.5/xplt/base.py#L719-L762"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.KnlPlot.plot_harmonics" title="Link to this definition">#</a></dt>
 <dd><p>Add vertical lines or spans indicating the location of values or spans and their harmonics</p>
 <dl class="simple">
 <dt>Indicates the bands at the h-th harmonics (h = 1, 2, …, n) at</dt><dd><ul class="simple">
@@ -1124,7 +1148,7 @@ nested list of expressions in the string (only if strip_off_methods is True)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ax</strong> (<a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="(in Matplotlib v3.10.8)"><em>matplotlib.axes.Axes</em></a>) – Axes to plot onto.</p></li>
+<li><p><strong>ax</strong> (<a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes" title="(in Matplotlib v3.11.0)"><em>matplotlib.axes.Axes</em></a>) – Axes to plot onto.</p></li>
 <li><p><strong>v</strong> (<em>float</em><em> | </em><em>list</em><em>[</em><em>float</em><em>]</em>) – Value or list of values.</p></li>
 <li><p><strong>dv</strong> (<em>float</em><em> | </em><em>list</em><em>[</em><em>float</em><em>]</em>) – Width or list of widths centered around value(s).</p></li>
 <li><p><strong>n</strong> (<em>int</em>) – Number of harmonics to plot.</p></li>
@@ -1140,7 +1164,7 @@ Useful to plot frequency harmonics in time domain and vice-versa.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xplt.line.KnlPlot.prop">
-<span class="sig-name descname"><span class="pre">prop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.4/xplt/line.py#L202-L206"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.KnlPlot.prop" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">prop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.5/xplt/line.py#L202-L206"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.KnlPlot.prop" title="Link to this definition">#</a></dt>
 <dd><p>Get property by key</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -1157,13 +1181,13 @@ Useful to plot frequency harmonics in time domain and vice-versa.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xplt.line.KnlPlot.save">
-<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.4/xplt/base.py#L526-L533"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.KnlPlot.save" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.5/xplt/base.py#L526-L533"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.KnlPlot.save" title="Link to this definition">#</a></dt>
 <dd><p>Save the figure with sensible default options</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>fname</strong> (<em>str</em>) – Filename</p></li>
-<li><p><strong>kwargs</strong> – Keyword arguments passed to <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.savefig.html#matplotlib.figure.Figure.savefig" title="(in Matplotlib v3.10.8)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.figure.Figure.savefig()</span></code></a></p></li>
+<li><p><strong>kwargs</strong> – Keyword arguments passed to <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.savefig.html#matplotlib.figure.Figure.savefig" title="(in Matplotlib v3.11.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.figure.Figure.savefig()</span></code></a></p></li>
 </ul>
 </dd>
 </dl>
@@ -1171,13 +1195,13 @@ Useful to plot frequency harmonics in time domain and vice-versa.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xplt.line.KnlPlot.title">
-<span class="sig-name descname"><span class="pre">title</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.4/xplt/base.py#L535-L542"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.KnlPlot.title" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">title</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.5/xplt/base.py#L535-L542"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.KnlPlot.title" title="Link to this definition">#</a></dt>
 <dd><p>Set figure title</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>title</strong> (<em>str</em>) – Title</p></li>
-<li><p><strong>kwargs</strong> – Keyword arguments passed to <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.suptitle.html#matplotlib.figure.Figure.suptitle" title="(in Matplotlib v3.10.8)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.figure.Figure.suptitle()</span></code></a></p></li>
+<li><p><strong>kwargs</strong> – Keyword arguments passed to <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.suptitle.html#matplotlib.figure.Figure.suptitle" title="(in Matplotlib v3.11.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.figure.Figure.suptitle()</span></code></a></p></li>
 </ul>
 </dd>
 </dl>
@@ -1185,14 +1209,14 @@ Useful to plot frequency harmonics in time domain and vice-versa.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="xplt.line.KnlPlot.update">
-<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">autoscale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.4/xplt/line.py#L148-L200"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.KnlPlot.update" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">autoscale</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.5/xplt/line.py#L148-L200"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.KnlPlot.update" title="Link to this definition">#</a></dt>
 <dd><p>Update the line data this plot shows</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>line</strong> (<a class="reference external" href="https://xsuite.readthedocs.io/en/latest/apireference.html#xtrack.Line" title="(in Xsuite)"><em>xtrack.Line</em></a>) – Line of elements.</p></li>
+<li><p><strong>line</strong> (<em>xtrack.Line</em>) – Line of elements.</p></li>
 <li><p><strong>autoscale</strong> (<em>str</em><em> | </em><em>None</em><em> | </em><em>bool</em>) – Whether and on which axes to perform autoscaling.
-One of <cite>“x”</cite>, <cite>“y”</cite>, <cite>“xy”</cite>, <cite>False</cite> or <cite>None</cite>. If <cite>None</cite>, decide based on <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.get_autoscalex_on.html#matplotlib.axes.Axes.get_autoscalex_on" title="(in Matplotlib v3.10.8)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.axes.Axes.get_autoscalex_on()</span></code></a> and <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.get_autoscaley_on.html#matplotlib.axes.Axes.get_autoscaley_on" title="(in Matplotlib v3.10.8)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.axes.Axes.get_autoscaley_on()</span></code></a>.</p></li>
+One of <cite>“x”</cite>, <cite>“y”</cite>, <cite>“xy”</cite>, <cite>False</cite> or <cite>None</cite>. If <cite>None</cite>, decide based on <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.get_autoscalex_on.html#matplotlib.axes.Axes.get_autoscalex_on" title="(in Matplotlib v3.11.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.axes.Axes.get_autoscalex_on()</span></code></a> and <a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.get_autoscaley_on.html#matplotlib.axes.Axes.get_autoscaley_on" title="(in Matplotlib v3.11.0)"><code class="xref py py-meth docutils literal notranslate"><span class="pre">matplotlib.axes.Axes.get_autoscaley_on()</span></code></a>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1255,31 +1279,31 @@ Examples: <cite>self.artists[i][j][k]</cite>, <cite>self.artists[i,j,k]</cite>, 
 
 <dl class="py function">
 <dt class="sig sig-object py" id="xplt.line.effective_order">
-<span class="sig-prename descclassname"><span class="pre">xplt.line.</span></span><span class="sig-name descname"><span class="pre">effective_order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.4/xplt/line.py#L48-L63"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.effective_order" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">xplt.line.</span></span><span class="sig-name descname"><span class="pre">effective_order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.5/xplt/line.py#L48-L63"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.effective_order" title="Link to this definition">#</a></dt>
 <dd><p>Get effective order of element (lowest non-zero knl or ksl strength)</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="xplt.line.nominal_order">
-<span class="sig-prename descclassname"><span class="pre">xplt.line.</span></span><span class="sig-name descname"><span class="pre">nominal_order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.4/xplt/line.py#L28-L45"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.nominal_order" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">xplt.line.</span></span><span class="sig-name descname"><span class="pre">nominal_order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.5/xplt/line.py#L28-L45"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.nominal_order" title="Link to this definition">#</a></dt>
 <dd><p>Get nominal element order (even if coefficients might be zero)</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="xplt.line.order">
-<span class="sig-prename descclassname"><span class="pre">xplt.line.</span></span><span class="sig-name descname"><span class="pre">order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">knl</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.4/xplt/line.py#L66-L68"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.order" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">xplt.line.</span></span><span class="sig-name descname"><span class="pre">order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">knl</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.5/xplt/line.py#L66-L68"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.order" title="Link to this definition">#</a></dt>
 <dd><p>Get order of knl string as int</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="xplt.line.sign_sticky">
-<span class="sig-prename descclassname"><span class="pre">xplt.line.</span></span><span class="sig-name descname"><span class="pre">sign_sticky</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.4/xplt/line.py#L77-L85"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.sign_sticky" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">xplt.line.</span></span><span class="sig-name descname"><span class="pre">sign_sticky</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arr</span></span></em>, <em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.5/xplt/line.py#L77-L85"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.sign_sticky" title="Link to this definition">#</a></dt>
 <dd><p>Determine sign or values, but keep previous sign for zero values</p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="xplt.line.tanc">
-<span class="sig-prename descclassname"><span class="pre">xplt.line.</span></span><span class="sig-name descname"><span class="pre">tanc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.4/xplt/line.py#L71-L74"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.tanc" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">xplt.line.</span></span><span class="sig-name descname"><span class="pre">tanc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/xsuite/xplt/blob/v0.12.5/xplt/line.py#L71-L74"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#xplt.line.tanc" title="Link to this definition">#</a></dt>
 <dd><p>Tangens cardinalis, i.e. tan(x)/x with limit tanc(0)=1</p>
 </dd></dl>
 
@@ -1331,8 +1355,8 @@ Examples: <cite>self.artists[i][j][k]</cite>, <cite>self.artists[i,j,k]</cite>, 
     class="page-toc tocsection onthispage">
     <i class="fa-solid fa-list"></i> On this page
   </div>
-  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
-    <ul class="visible nav section-nav flex-column">
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#classes">Classes</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#functions">Functions</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-contents">Module Contents</a><ul class="nav section-nav flex-column">
@@ -1418,8 +1442,8 @@ Examples: <cite>self.artists[i][j][k]</cite>, <cite>self.artists[i,j,k]</cite>, 
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1453,7 +1477,7 @@ Examples: <cite>self.artists[i][j][k]</cite>, <cite>self.artists[i,j,k]</cite>, 
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.19.0.
 </p></div>
       
     </div>

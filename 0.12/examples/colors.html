@@ -5,7 +5,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Colors — Xplt 0.12.4 documentation</title>
+<title>Colors — Xplt 0.12.5 documentation</title>
 <script data-cfasync="false">
     document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
     document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
@@ -20,38 +20,42 @@
     </style>
 </noscript>
 <!-- Loaded before other Sphinx assets -->
-<link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet"/>
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet"/>
+<link href="../_static/styles/theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet"/>
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet"/>
 <link href="../_static/pygments.css?v=8f2a1f02" rel="stylesheet" type="text/css"/>
 <link href="../_static/graphviz.css?v=4ae1632d" rel="stylesheet" type="text/css"/>
 <link href="../_static/mystnb.11b39860a7a0cbfd473a3ad8a317855267ff0bd372690045ca344a6b62be495e.css" rel="stylesheet" type="text/css"/>
 <link href="../_static/sphinx-codeautolink.css?v=b2176991" rel="stylesheet" type="text/css"/>
 <link href="../_static/custom.css?v=603c5a11" rel="stylesheet" type="text/css"/>
 <!-- So that users can add custom icons -->
-<script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+<script defer="" src="../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
 <!-- Pre-loaded scripts that we'll load fully later -->
-<link as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" rel="preload"/>
-<link as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" rel="preload"/>
-<script src="../_static/documentation_options.js?v=9dbdab56"></script>
+<link as="script" href="../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" rel="preload"/>
+<link as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" rel="preload"/>
+<script src="../_static/documentation_options.js?v=39c52f4f"></script>
 <script src="../_static/doctools.js?v=fd6eb6e6"></script>
 <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
 <script>DOCUMENTATION_OPTIONS.pagename = 'examples/colors';</script>
 <script>
-        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_version = '0.19.0';
         DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://xsuite.github.io/xplt/versions.json';
         DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.12';
         DOCUMENTATION_OPTIONS.show_version_warning_banner =
             false;
         </script>
+<script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
 <link href="../genindex.html" rel="index" title="Index"/>
 <link href="../search.html" rel="search" title="Search"/>
 <link href="utilities.html" rel="next" title="Utilities"/>
 <link href="animations.html" rel="prev" title="Animations"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <meta content="en" name="docsearch:language"/>
-<meta content="0.12.4" name="docsearch:version"/>
+<meta content="0.12.5" name="docsearch:version"/>
+<script src="../_static/searchtools.js"></script>
+<script src="../_static/language_data.js"></script>
+<script src="../searchindex.js"></script>
 </head>
-<body data-bs-root-margin="0px 0px -60%" data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-default-mode="" data-offset="180">
+<body data-default-mode="">
 <div class="skip-link d-print-none" id="pst-skip-link"><a href="#main-content">Skip to main content</a></div>
 <div id="pst-scroll-pixel-helper"></div>
 <button class="btn rounded-pill" id="pst-back-to-top" type="button">
@@ -66,7 +70,7 @@
 <div class="pst-async-banner-revealer d-none">
 <aside aria-label="Version warning" class="d-none d-print-none" id="bd-header-version-warning"></aside>
 </div>
-<header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none" id="pst-header">
 <div class="bd-header__inner bd-page-width">
 <button aria-label="Site navigation" class="pst-navbar-icon sidebar-toggle primary-toggle">
 <span class="fa-solid fa-bars"></span>
@@ -74,7 +78,7 @@
 <div class="col-lg-3 navbar-header-items__start">
 <div class="navbar-item">
 <a class="navbar-brand logo" href="../index.html">
-<p class="title logo__title">Xplt 0.12.4 documentation</p>
+<p class="title logo__title">Xplt 0.12.5 documentation</p>
 </a></div>
 </div>
 <div class="col-lg-9 navbar-header-items">
@@ -109,19 +113,24 @@
 </button>
 </div>
 <div class="navbar-item">
-<button aria-label="Color mode" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" data-bs-placement="bottom" data-bs-title="Color mode" data-bs-toggle="tooltip">
-<i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
-<i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
-<i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-placement="bottom" data-bs-toggle="tooltip" title="Color mode">
+<button aria-label="Color mode" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" data-bs-toggle="dropdown">
+<i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+<i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+<i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+</button>
+<ul class="dropdown-menu dropdown-menu-end">
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+</ul>
+</div></div>
 <div class="navbar-item"><ul aria-label="Icon Links" class="navbar-icon-links">
 <li class="nav-item">
-<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://github.com/xsuite/xplt" rel="noopener" target="_blank" title="GitHub"><i aria-hidden="true" class="fa-brands fa-square-github fa-lg"></i>
-<span class="sr-only">GitHub</span></a>
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://github.com/xsuite/xplt" rel="noopener" target="_blank" title="GitHub"><i aria-hidden="true" class="fa-brands fa-square-github fa-lg"></i><span class="visually-hidden">GitHub</span></a>
 </li>
 <li class="nav-item">
-<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://pypi.org/project/xplt" rel="noopener" target="_blank" title="PyPI"><i aria-hidden="true" class="fa-solid fa-cube fa-lg"></i>
-<span class="sr-only">PyPI</span></a>
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://pypi.org/project/xplt" rel="noopener" target="_blank" title="PyPI"><i aria-hidden="true" class="fa-solid fa-cube fa-lg"></i><span class="visually-hidden">PyPI</span></a>
 </li>
 </ul></div>
 <div class="navbar-item">
@@ -177,19 +186,24 @@
 </div>
 <div class="sidebar-header-items__end">
 <div class="navbar-item">
-<button aria-label="Color mode" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" data-bs-placement="bottom" data-bs-title="Color mode" data-bs-toggle="tooltip">
-<i class="theme-switch fa-solid fa-sun fa-lg" data-mode="light" title="Light"></i>
-<i class="theme-switch fa-solid fa-moon fa-lg" data-mode="dark" title="Dark"></i>
-<i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto" title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-placement="bottom" data-bs-toggle="tooltip" title="Color mode">
+<button aria-label="Color mode" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" data-bs-toggle="dropdown">
+<i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+<i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+<i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+</button>
+<ul class="dropdown-menu dropdown-menu-end">
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+<li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+</ul>
+</div></div>
 <div class="navbar-item"><ul aria-label="Icon Links" class="navbar-icon-links">
 <li class="nav-item">
-<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://github.com/xsuite/xplt" rel="noopener" target="_blank" title="GitHub"><i aria-hidden="true" class="fa-brands fa-square-github fa-lg"></i>
-<span class="sr-only">GitHub</span></a>
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://github.com/xsuite/xplt" rel="noopener" target="_blank" title="GitHub"><i aria-hidden="true" class="fa-brands fa-square-github fa-lg"></i><span class="visually-hidden">GitHub</span></a>
 </li>
 <li class="nav-item">
-<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://pypi.org/project/xplt" rel="noopener" target="_blank" title="PyPI"><i aria-hidden="true" class="fa-solid fa-cube fa-lg"></i>
-<span class="sr-only">PyPI</span></a>
+<a class="nav-link pst-navbar-icon" data-bs-placement="bottom" data-bs-toggle="tooltip" href="https://pypi.org/project/xplt" rel="noopener" target="_blank" title="PyPI"><i aria-hidden="true" class="fa-solid fa-cube fa-lg"></i><span class="visually-hidden">PyPI</span></a>
 </li>
 </ul></div>
 <div class="navbar-item">
@@ -205,6 +219,12 @@
 </div>
 </div>
 <div class="sidebar-primary-items__start sidebar-primary__section">
+<div class="sidebar-primary-item pst-sidebar-collapse"><button aria-controls="pst-primary-sidebar" aria-expanded="true" id="pst-collapse-sidebar-button"><svg aria-hidden="true" class="pst-icon svg-inline--fa" focusable="false" role="img" viewbox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+<path d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z" fill="currentColor"></path>
+</svg>
+<span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+<span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
 <div class="sidebar-primary-item">
 <nav aria-label="Section Navigation" class="bd-docs-nav bd-links">
 <p aria-level="1" class="bd-links__title" role="heading">Section Navigation</p>
@@ -285,7 +305,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><div style="vertical-align: middle;"><strong>petroff</strong> </div><div class="cmap"><img alt="petroff colormap" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAABACAYAAABsv8+/AAAAFnRFWHRUaXRsZQBwZXRyb2ZmIGNvbG9ybWFwMsiuoAAAABx0RVh0RGVzY3JpcHRpb24AcGV0cm9mZiBjb2xvcm1hcJXmH9kAAAAwdEVYdEF1dGhvcgBNYXRwbG90bGliIHYzLjkuMiwgaHR0cHM6Ly9tYXRwbG90bGliLm9yZ2GZxVMAAAAydEVYdFNvZnR3YXJlAE1hdHBsb3RsaWIgdjMuOS4yLCBodHRwczovL21hdHBsb3RsaWIub3JnTz9adAAAAX5JREFUeJzt1iEyBWAYQFHswIwiKlYgP9keVF16OxBee1swgi1IRlUVMzYhKBqb+Mc3456zghvv4eX+4+fgH3k5vZhOWOZ5+zWdsMz73f10wjKfu5PphGXONw/TCctsvh+nE5Z5u7qdTljm6fV4OmGZs5vr6YSljqYDAIC/ZwAAIMgAAECQAQCAIAMAAEEGAACCDAAABBkAAAgyAAAQZAAAIMgAAECQAQCAIAMAAEEGAACCDAAABBkAAAgyAAAQZAAAIMgAAECQAQCAIAMAAEEGAACCDAAABBkAAAgyAAAQZAAAIMgAAECQAQCAIAMAAEEGAACCDAAABBkAAAgyAAAQZAAAIMgAAECQAQCAIAMAAEEGAACCDAAABBkAAAgyAAAQZAAAIMgAAECQAQCAIAMAAEEGAACCDAAABBkAAAgyAAAQZAAAIMgAAECQAQCAIAMAAEEGAACCDAAABBkAAAgyAAAQZAAAIMgAAECQAQCAIAMAAEEGAACCDAAABP0C0BwQyM263O8AAAAASUVORK5CYII=" style="border: 1px solid #555;" title="petroff"/></div><div style="vertical-align: middle; max-width: 514px; display: flex; justify-content: space-between;"><div style="float: left;"><div style="display: inline-block; width: 1em; height: 1em; margin: 0; vertical-align: middle; border: 1px solid #555; background-color: #00000000;" title="#00000000"></div> under</div><div style="margin: 0 auto; display: inline-block;">bad <div style="display: inline-block; width: 1em; height: 1em; margin: 0; vertical-align: middle; border: 1px solid #555; background-color: #00000000;" title="#00000000"></div></div><div style="float: right;">over <div style="display: inline-block; width: 1em; height: 1em; margin: 0; vertical-align: middle; border: 1px solid #555; background-color: #00000000;" title="#00000000"></div></div></div></div></div>
+<div class="output text_html"><div style="vertical-align: middle;"><strong>petroff</strong> </div><div class="cmap"><img alt="petroff colormap" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAABACAYAAABsv8+/AAAAFnRFWHRUaXRsZQBwZXRyb2ZmIGNvbG9ybWFwMsiuoAAAABx0RVh0RGVzY3JpcHRpb24AcGV0cm9mZiBjb2xvcm1hcJXmH9kAAAAxdEVYdEF1dGhvcgBNYXRwbG90bGliIHYzLjExLjAsIGh0dHBzOi8vbWF0cGxvdGxpYi5vcmfdG9VHAAAAM3RFWHRTb2Z0d2FyZQBNYXRwbG90bGliIHYzLjExLjAsIGh0dHBzOi8vbWF0cGxvdGxpYi5vcmd4P8azAAABfklEQVR4nO3WITIFYBhAUezAjCIqViA/2R5UXXo7EF57WzCCLUhGVRUzNiEoGpv4xzfjnrOCG+/h5f7j5+AfeTm9mE5Y5nn7NZ2wzPvd/XTCMp+7k+mEZc43D9MJy2y+H6cTlnm7up1OWObp9Xg6YZmzm+vphKWOpgMAgL9nAAAgyAAAQJABAIAgAwAAQQYAAIIMAAAEGQAACDIAABBkAAAgyAAAQJABAIAgAwAAQQYAAIIMAAAEGQAACDIAABBkAAAgyAAAQJABAIAgAwAAQQYAAIIMAAAEGQAACDIAABBkAAAgyAAAQJABAIAgAwAAQQYAAIIMAAAEGQAACDIAABBkAAAgyAAAQJABAIAgAwAAQQYAAIIMAAAEGQAACDIAABBkAAAgyAAAQJABAIAgAwAAQQYAAIIMAAAEGQAACDIAABBkAAAgyAAAQJABAIAgAwAAQQYAAIIMAAAEGQAACDIAABBkAAAgyAAAQJABAIAgAwAAQQYAAIIMAAAE/QLQHBDIzbrc7wAAAABJRU5ErkJggg==" style="border: 1px solid #555;" title="petroff"/></div><div style="vertical-align: middle; max-width: 514px; display: flex; justify-content: space-between;"><div style="float: left;"><div style="display: inline-block; width: 1em; height: 1em; margin: 0; vertical-align: middle; border: 1px solid #555; background-color: #00000000;" title="#00000000"></div> under</div><div style="margin: 0 auto; display: inline-block;">bad <div style="display: inline-block; width: 1em; height: 1em; margin: 0; vertical-align: middle; border: 1px solid #555; background-color: #00000000;" title="#00000000"></div></div><div style="float: right;">over <div style="display: inline-block; width: 1em; height: 1em; margin: 0; vertical-align: middle; border: 1px solid #555; background-color: #00000000;" title="#00000000"></div></div></div></div></div>
 </div>
 </section>
 <section id="color-gradients">
@@ -297,7 +317,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><div style="vertical-align: middle;"><strong>petroff_gradient</strong> </div><div class="cmap"><img alt="petroff_gradient colormap" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAABACAYAAABsv8+/AAAAH3RFWHRUaXRsZQBwZXRyb2ZmX2dyYWRpZW50IGNvbG9ybWFwvFogsAAAACV0RVh0RGVzY3JpcHRpb24AcGV0cm9mZl9ncmFkaWVudCBjb2xvcm1hcGGd4JAAAAAwdEVYdEF1dGhvcgBNYXRwbG90bGliIHYzLjkuMiwgaHR0cHM6Ly9tYXRwbG90bGliLm9yZ2GZxVMAAAAydEVYdFNvZnR3YXJlAE1hdHBsb3RsaWIgdjMuOS4yLCBodHRwczovL21hdHBsb3RsaWIub3JnTz9adAAAAfNJREFUeJzt1j1ygzAURtEH+6+yvMxkJzFKEXAGsAz+mTTfOQ0jkEByUtzh4/OrVVVNU6uqqvlSbarVeJrHbTPuzT87b//edn/92e8ffefgXG2+8fD+3/z7DfON5Tpex73n1Zm/Xte7v1vXevPvv2+7j/P77Jyr9eYf7P/F32N3rmUf7fv3Wsv1srl/ufl87D1/dt3Bd59dt//um865W/+ec17H8z/sMNT6Oq7H1bn/3/Pr4D3/Nb9OnuvVfWx/l2Vibx/X59vvjsN6vFu/eb7dx7j57qPv7f69e+tvn/Nv3oPvfdPvt9wGAIIIAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAINAPJf8FRJR7hUEAAAAASUVORK5CYII=" style="border: 1px solid #555;" title="petroff_gradient"/></div><div style="vertical-align: middle; max-width: 514px; display: flex; justify-content: space-between;"><div style="float: left;"><div style="display: inline-block; width: 1em; height: 1em; margin: 0; vertical-align: middle; border: 1px solid #555; background-color: #94a4a2ff;" title="#94a4a2ff"></div> under</div><div style="margin: 0 auto; display: inline-block;">bad <div style="display: inline-block; width: 1em; height: 1em; margin: 0; vertical-align: middle; border: 1px solid #555; background-color: #00000000;" title="#00000000"></div></div><div style="float: right;">over <div style="display: inline-block; width: 1em; height: 1em; margin: 0; vertical-align: middle; border: 1px solid #555; background-color: #b9ac70ff;" title="#b9ac70ff"></div></div></div></div></div>
+<div class="output text_html"><div style="vertical-align: middle;"><strong>petroff_gradient</strong> </div><div class="cmap"><img alt="petroff_gradient colormap" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAABACAYAAABsv8+/AAAAH3RFWHRUaXRsZQBwZXRyb2ZmX2dyYWRpZW50IGNvbG9ybWFwvFogsAAAACV0RVh0RGVzY3JpcHRpb24AcGV0cm9mZl9ncmFkaWVudCBjb2xvcm1hcGGd4JAAAAAxdEVYdEF1dGhvcgBNYXRwbG90bGliIHYzLjExLjAsIGh0dHBzOi8vbWF0cGxvdGxpYi5vcmfdG9VHAAAAM3RFWHRTb2Z0d2FyZQBNYXRwbG90bGliIHYzLjExLjAsIGh0dHBzOi8vbWF0cGxvdGxpYi5vcmd4P8azAAAB80lEQVR4nO3WPXKDMBRG0Qf7r7K8zGQnMUoRcAawDP6ZNN85DSOQQHJS3OHj86tVVU1Tq6qq+VJtqtV4msdtM+7NPztv/952f/3Z7x995+Bcbb7x8P7f/PsN843lOl7HvefVmb9e17u/W9d68++/b7uP8/vsnKv15h/s/8XfY3euZR/t+/day/WyuX+5+XzsPX923cF3n123/+6bzrlb/55zXsfzP+ww1Po6rsfVuf/f8+vgPf81v06e69V9bH+XZWJvH9fn2++Ow3q8W795vt3HuPnuo+/t/r1762+f82/eg+990++33AYAgggAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAg0A8l/wVElHuFQQAAAABJRU5ErkJggg==" style="border: 1px solid #555;" title="petroff_gradient"/></div><div style="vertical-align: middle; max-width: 514px; display: flex; justify-content: space-between;"><div style="float: left;"><div style="display: inline-block; width: 1em; height: 1em; margin: 0; vertical-align: middle; border: 1px solid #555; background-color: #94a4a2ff;" title="#94a4a2ff"></div> under</div><div style="margin: 0 auto; display: inline-block;">bad <div style="display: inline-block; width: 1em; height: 1em; margin: 0; vertical-align: middle; border: 1px solid #555; background-color: #00000000;" title="#00000000"></div></div><div style="float: right;">over <div style="display: inline-block; width: 1em; height: 1em; margin: 0; vertical-align: middle; border: 1px solid #555; background-color: #b9ac70ff;" title="#b9ac70ff"></div></div></div></div></div>
 </div>
 <hr class="docutils"/>
 <div class="cell docutils container">
@@ -307,7 +327,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><div style="vertical-align: middle;"><strong>petroff_bipolar</strong> </div><div class="cmap"><img alt="petroff_bipolar colormap" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAABACAYAAABsv8+/AAAAHnRFWHRUaXRsZQBwZXRyb2ZmX2JpcG9sYXIgY29sb3JtYXAnroqCAAAAJHRFWHREZXNjcmlwdGlvbgBwZXRyb2ZmX2JpcG9sYXIgY29sb3JtYXDtEmPtAAAAMHRFWHRBdXRob3IATWF0cGxvdGxpYiB2My45LjIsIGh0dHBzOi8vbWF0cGxvdGxpYi5vcmdhmcVTAAAAMnRFWHRTb2Z0d2FyZQBNYXRwbG90bGliIHYzLjkuMiwgaHR0cHM6Ly9tYXRwbG90bGliLm9yZ08/WnQAAAHpSURBVHic7dZBUoMwGIbhH/Qe3v8QHq3ERaUOoUDB0c33PJsMIQnQ6eIdPj+GVlVV8zDWfRxqeb01b93uuurWzTf6/f38Y9980Oo5z+dr7M7p1m/Nnz5n9X1Dt64752D+6Jx5/tbe7mPdx6nez123k+u3rtvf7P/v95j6P+jj99/4Q4/9H/FgfnXuq/uX+9rZ9zn6nqvv87i//z7T1L7HWo6tns//+n67tL9dfn67uO/a/XnB2I3DrZbX8/1b250fpuW+n/n+/Pm6NuaPnlu756/n6+n5x8+tF8/vvqcAgDgCAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACPQFl0fa5UexADwAAAAASUVORK5CYII=" style="border: 1px solid #555;" title="petroff_bipolar"/></div><div style="vertical-align: middle; max-width: 514px; display: flex; justify-content: space-between;"><div style="float: left;"><div style="display: inline-block; width: 1em; height: 1em; margin: 0; vertical-align: middle; border: 1px solid #555; background-color: #a96b59ff;" title="#a96b59ff"></div> under</div><div style="margin: 0 auto; display: inline-block;">bad <div style="display: inline-block; width: 1em; height: 1em; margin: 0; vertical-align: middle; border: 1px solid #555; background-color: #00000000;" title="#00000000"></div></div><div style="float: right;">over <div style="display: inline-block; width: 1em; height: 1em; margin: 0; vertical-align: middle; border: 1px solid #555; background-color: #717581ff;" title="#717581ff"></div></div></div></div></div>
+<div class="output text_html"><div style="vertical-align: middle;"><strong>petroff_bipolar</strong> </div><div class="cmap"><img alt="petroff_bipolar colormap" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAABACAYAAABsv8+/AAAAHnRFWHRUaXRsZQBwZXRyb2ZmX2JpcG9sYXIgY29sb3JtYXAnroqCAAAAJHRFWHREZXNjcmlwdGlvbgBwZXRyb2ZmX2JpcG9sYXIgY29sb3JtYXDtEmPtAAAAMXRFWHRBdXRob3IATWF0cGxvdGxpYiB2My4xMS4wLCBodHRwczovL21hdHBsb3RsaWIub3Jn3RvVRwAAADN0RVh0U29mdHdhcmUATWF0cGxvdGxpYiB2My4xMS4wLCBodHRwczovL21hdHBsb3RsaWIub3JneD/GswAAAelJREFUeJzt1kFSgzAYhuEf9B7e/xAercRFpQ6hQMHRzfc8mwwhCdDp4h0+P4ZWVVXzMNZ9HGp5vTVv3e666tbNN/r9/fxj33zQ6jnP52vszunWb82fPmf1fUO3rjvnYP7onHn+1t7uY93Hqd7PXbeT67eu29/s/+/3mPo/6OP33/hDj/0f8WB+de6r+5f72tn3Ofqeq+/zuL//PtPUvsdajq2ez//6fru0v11+fru479r9ecHYjcOtltfz/VvbnR+m5b6f+f78+bo25o+eW7vnr+fr6fnHz60Xz+++pwCAOAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAI9AWXR9rlR7EAPAAAAABJRU5ErkJggg==" style="border: 1px solid #555;" title="petroff_bipolar"/></div><div style="vertical-align: middle; max-width: 514px; display: flex; justify-content: space-between;"><div style="float: left;"><div style="display: inline-block; width: 1em; height: 1em; margin: 0; vertical-align: middle; border: 1px solid #555; background-color: #a96b59ff;" title="#a96b59ff"></div> under</div><div style="margin: 0 auto; display: inline-block;">bad <div style="display: inline-block; width: 1em; height: 1em; margin: 0; vertical-align: middle; border: 1px solid #555; background-color: #00000000;" title="#00000000"></div></div><div style="float: right;">over <div style="display: inline-block; width: 1em; height: 1em; margin: 0; vertical-align: middle; border: 1px solid #555; background-color: #717581ff;" title="#717581ff"></div></div></div></div></div>
 </div>
 <hr class="docutils"/>
 <div class="cell docutils container">
@@ -317,7 +337,7 @@
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output text_html"><div style="vertical-align: middle;"><strong>petroff_cyclic</strong> </div><div class="cmap"><img alt="petroff_cyclic colormap" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAABACAYAAABsv8+/AAAAHXRFWHRUaXRsZQBwZXRyb2ZmX2N5Y2xpYyBjb2xvcm1hcPk3ET0AAAAjdEVYdERlc2NyaXB0aW9uAHBldHJvZmZfY3ljbGljIGNvbG9ybWFw/xz0zAAAADB0RVh0QXV0aG9yAE1hdHBsb3RsaWIgdjMuOS4yLCBodHRwczovL21hdHBsb3RsaWIub3JnYZnFUwAAADJ0RVh0U29mdHdhcmUATWF0cGxvdGxpYiB2My45LjIsIGh0dHBzOi8vbWF0cGxvdGxpYi5vcmdPP1p0AAAB/ElEQVR4nO3WQW6rMABFUYPa/U+6gqq7TMAdBCLhhEAgs3fOxN/GBoqUr9v9/P3WUkqpXVdKKaV0/W3s2/k0zvtW5585Xz/9/JPvOdbbdByX4zA+X9+6/rheD57be70+vz585u+o0/37YRqneTc8X+/b9a1z9+vl4Ll967vfd2W92zpXr7d95TLNL8v5xnpXP73vupw3+9fud3rf6ntN36f5mbbjw897a3/zs3773M7zD/vPntt5fv4g2+vz/2vtfZv1tf3N/dbXm+d2J99za1/zfer0j6F8vRzH8r1cr6/3b45vnr8//+hzD56bnzt/VgAgiAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAAC/QPaBfVZKPSFJgAAAABJRU5ErkJggg==" style="border: 1px solid #555;" title="petroff_cyclic"/></div><div style="vertical-align: middle; max-width: 514px; display: flex; justify-content: space-between;"><div style="float: left;"><div style="display: inline-block; width: 1em; height: 1em; margin: 0; vertical-align: middle; border: 1px solid #555; background-color: #94a4a2ff;" title="#94a4a2ff"></div> under</div><div style="margin: 0 auto; display: inline-block;">bad <div style="display: inline-block; width: 1em; height: 1em; margin: 0; vertical-align: middle; border: 1px solid #555; background-color: #00000000;" title="#00000000"></div></div><div style="float: right;">over <div style="display: inline-block; width: 1em; height: 1em; margin: 0; vertical-align: middle; border: 1px solid #555; background-color: #94a4a2ff;" title="#94a4a2ff"></div></div></div></div></div>
+<div class="output text_html"><div style="vertical-align: middle;"><strong>petroff_cyclic</strong> </div><div class="cmap"><img alt="petroff_cyclic colormap" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAgAAAABACAYAAABsv8+/AAAAHXRFWHRUaXRsZQBwZXRyb2ZmX2N5Y2xpYyBjb2xvcm1hcPk3ET0AAAAjdEVYdERlc2NyaXB0aW9uAHBldHJvZmZfY3ljbGljIGNvbG9ybWFw/xz0zAAAADF0RVh0QXV0aG9yAE1hdHBsb3RsaWIgdjMuMTEuMCwgaHR0cHM6Ly9tYXRwbG90bGliLm9yZ90b1UcAAAAzdEVYdFNvZnR3YXJlAE1hdHBsb3RsaWIgdjMuMTEuMCwgaHR0cHM6Ly9tYXRwbG90bGliLm9yZ3g/xrMAAAH8SURBVHic7dZBbqswAEVRg9r9T7qCqrtMwB0EIuGEQCCzd87E38YGipSv2/38/dZSSqldV0oppXT9bezb+TTO+1bnnzlfP/38k+851tt0HJfjMD5f37r+uF4Pntt7vT6/Pnzm76jT/fthGqd5Nzxf79v1rXP36+XguX3ru993Zb3bOlevt33lMs0vy/nGelc/ve+6nDf71+53et/qe03fp/mZtuPDz3trf/OzfvvczvMP+8+e23l+/iDb6/P/a+19m/W1/c391teb53Yn33NrX/N96vSPoXy9HMfyvVyvr/dvjm+evz//6HMPnpufO39WACCIAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAIJAAAIJAAAIJAAAIBAAgAAAgkAAAgkAAAgkAAAgEACAAACCQAACCQAACCQAACAQAIAAAL9A9oF9Vko9IUmAAAAAElFTkSuQmCC" style="border: 1px solid #555;" title="petroff_cyclic"/></div><div style="vertical-align: middle; max-width: 514px; display: flex; justify-content: space-between;"><div style="float: left;"><div style="display: inline-block; width: 1em; height: 1em; margin: 0; vertical-align: middle; border: 1px solid #555; background-color: #94a4a2ff;" title="#94a4a2ff"></div> under</div><div style="margin: 0 auto; display: inline-block;">bad <div style="display: inline-block; width: 1em; height: 1em; margin: 0; vertical-align: middle; border: 1px solid #555; background-color: #00000000;" title="#00000000"></div></div><div style="float: right;">over <div style="display: inline-block; width: 1em; height: 1em; margin: 0; vertical-align: middle; border: 1px solid #555; background-color: #94a4a2ff;" title="#94a4a2ff"></div></div></div></div></div>
 </div>
 </section>
 <hr class="docutils"/>
@@ -334,8 +354,8 @@ The colors are also accessible by name as <code class="docutils literal notransl
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/64fccd92d3b1329ee6ae67380caa50d7cb0b2a56cc912eda5ea126786dc9eda8.png" src="../_images/64fccd92d3b1329ee6ae67380caa50d7cb0b2a56cc912eda5ea126786dc9eda8.png">
-</img></div>
+<img alt="../_images/61c64679b47d2ce627c0f6f86efda6d5a8562ae7fcd0da659c4533160298e7e2.png" src="../_images/61c64679b47d2ce627c0f6f86efda6d5a8562ae7fcd0da659c4533160298e7e2.png"/>
+</div>
 </div>
 <p>Colormaps can be used like <code class="docutils literal notranslate"><span class="pre">cmap='petroff_bipolar'</span></code>:</p>
 <div class="cell docutils container">
@@ -349,8 +369,8 @@ The colors are also accessible by name as <code class="docutils literal notransl
 </div>
 </div>
 <div class="cell_output docutils container">
-<img alt="../_images/03f465a9dc35a55d558390ea70aea79343a46aa6c42116b73f2667602f628359.png" src="../_images/03f465a9dc35a55d558390ea70aea79343a46aa6c42116b73f2667602f628359.png">
-</img></div>
+<img alt="../_images/6f8b76c16ebc0cca5616cc5907bf648da583602f4f534913c323020a6208ff66.png" src="../_images/6f8b76c16ebc0cca5616cc5907bf648da583602f4f534913c323020a6208ff66.png"/>
+</div>
 </div>
 <hr class="docutils"/>
 <div class="admonition seealso">
@@ -387,8 +407,8 @@ The colors are also accessible by name as <code class="docutils literal notransl
 <div class="page-toc tocsection onthispage" id="pst-page-navigation-heading-2">
 <i class="fa-solid fa-list"></i> On this page
   </div>
-<nav aria-labelledby="pst-page-navigation-heading-2" class="bd-toc-nav page-toc">
-<ul class="visible nav section-nav flex-column">
+<nav aria-labelledby="pst-page-navigation-heading-2" class="page-toc" id="pst-page-toc-nav">
+<ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#color-palette">Color palette</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#color-gradients">Color gradients</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#usage">Usage</a></li>
@@ -402,8 +422,8 @@ The colors are also accessible by name as <code class="docutils literal notransl
 </div>
 </div>
 <!-- Scripts loaded after <body> so the DOM is not blocked -->
-<script defer="" src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer="" src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+<script defer="" src="../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5"></script>
+<script defer="" src="../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5"></script>
 <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
 <div class="footer-items__start">
@@ -425,7 +445,7 @@ The colors are also accessible by name as <code class="docutils literal notransl
 <div class="footer-item">
 <p class="theme-version">
 <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.19.0.
 </p></div>
 </div>
 </div>

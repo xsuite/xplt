@@ -481,8 +481,6 @@ Module Contents
 
    .. py:property:: circumference
 
-      Circumference of circular accelerator
-
 
    .. py:attribute:: counting_dt
       :value: None
@@ -495,6 +493,11 @@ Module Contents
 
 
    .. py:attribute:: fig
+
+
+   .. py:property:: line_length
+
+      Circumference of circular accelerator
 
 
    .. py:attribute:: on_x
@@ -958,8 +961,6 @@ Module Contents
 
    .. py:property:: circumference
 
-      Circumference of circular accelerator
-
 
    .. py:attribute:: counting_bins_per_evaluation
       :value: 50
@@ -979,13 +980,18 @@ Module Contents
    .. py:attribute:: fig
 
 
+   .. py:property:: line_length
+
+      Circumference of circular accelerator
+
+
    .. py:attribute:: on_x
 
 
    .. py:property:: on_y_unique
 
 
-.. py:class:: TimeBinMetricHelper(*, twiss=None, beta=None, frev=None, circumference=None)
+.. py:class:: TimeBinMetricHelper(*, twiss=None, beta=None, frev=None, line_length=None, circumference=None)
 
    Bases: :py:obj:`xplt.particles.ParticlePlotMixin`, :py:obj:`MetricesMixin`
 
@@ -998,7 +1004,9 @@ Module Contents
    :type beta: float | None
    :param frev: Revolution frequency of circular line for calculation of particle time.
    :type frev: float | None
-   :param circumference: Path length of circular line if frev is not given.
+   :param line_length: Path length of circular line if frev is not given.
+   :type line_length: float | None
+   :param circumference: Deprecated alias for line_length.
    :type circumference: float | None
 
 
@@ -1085,6 +1093,9 @@ Module Contents
 
 
    .. py:property:: circumference
+
+
+   .. py:property:: line_length
 
       Circumference of circular accelerator
 
@@ -1518,10 +1529,13 @@ Module Contents
 
    .. py:property:: circumference
 
-      Circumference of circular accelerator
-
 
    .. py:attribute:: fig
+
+
+   .. py:property:: line_length
+
+      Circumference of circular accelerator
 
 
    .. py:attribute:: moment
@@ -2014,10 +2028,13 @@ Module Contents
 
    .. py:property:: circumference
 
-      Circumference of circular accelerator
-
 
    .. py:attribute:: fig
+
+
+   .. py:property:: line_length
+
+      Circumference of circular accelerator
 
 
    .. py:attribute:: on_x
@@ -2453,13 +2470,16 @@ Module Contents
 
    .. py:property:: circumference
 
-      Circumference of circular accelerator
-
 
    .. py:attribute:: dt_max
 
 
    .. py:attribute:: fig
+
+
+   .. py:property:: line_length
+
+      Circumference of circular accelerator
 
 
    .. py:attribute:: on_x
@@ -2875,10 +2895,13 @@ Module Contents
 
    .. py:property:: circumference
 
-      Circumference of circular accelerator
-
 
    .. py:attribute:: fig
+
+
+   .. py:property:: line_length
+
+      Circumference of circular accelerator
 
 
    .. py:attribute:: on_x

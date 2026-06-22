@@ -224,22 +224,49 @@ Module Contents
 
    .. py:method:: format_data(value)
 
-      Return the full string representation of the value with the
-      position unspecified.
+      Return the context-independent string representation of a single *value*.
+
+      This is used internally, e.g. for constructing offset and
+      scientific-notation strings.  It always formats with ``pos=None``
+      and should return a context-independent representation
+      rather than a concise tick label.
+
+      The output may contain mathtext or LaTeX markup.
 
 
 
    .. py:method:: format_data_short(value)
 
-      Return a short string version of the tick value.
+      Return a short string representation of *value* for the mouseover
+      tooltip (the coordinate display in the interactive figure window).
 
-      Defaults to the position-independent long value.
+      This should return concise, plain text (no mathtext / LaTeX).
+      The precision is typically adapted to the current axis resolution
+      so that neighbouring pixels produce distinguishable labels.
+
+      Defaults to `.Formatter.format_data`; subclasses should override
+      this to provide a plain-text representation that is independent
+      of the current tick locations.
+
+      Note: The mouseover text can be customized by setting the
+      ``Axes.fmt_xdata`` and ``Axes.fmt_ydata`` attributes.
 
 
 
    .. py:method:: format_ticks(values)
 
-      Return the tick labels for all the ticks at once.
+      Return the tick label strings for all *values*.
+
+      This is the public API for generating tick labels.  It calls
+      ``set_locs`` to configure context-dependent formatting state before
+      delegating to ``__call__`` for each individual value.
+
+      The output may contain mathtext or LaTeX markup.
+
+      Use this method (rather than ``__call__``) whenever formatting a
+      complete set of tick values, so that formatters which need to see
+      all tick locations (e.g. to determine precision, offsets, or which
+      date components to display) can work correctly.
 
 
 
@@ -393,18 +420,12 @@ Module Contents
 
 
    .. py:attribute:: format
-      :value: ''
-
 
 
    .. py:attribute:: locs
-      :value: []
-
 
 
    .. py:attribute:: orderOfMagnitude
-      :value: 0
-
 
 
    .. py:attribute:: useLocale
@@ -453,6 +474,14 @@ Module Contents
 
       Set the locators and formatters of *axis* to instances suitable for
       this scale.
+
+
+
+   .. py:method:: val_in_range(val)
+
+      Return whether the value(s) are within the valid range for this scale.
+
+      This is True for all values, except +-inf and NaN.
 
 
 
@@ -639,7 +668,7 @@ Module Contents
 
 
 
-   .. py:method:: contains_branch_seperately(other_transform)
+   .. py:method:: contains_branch_separately(other_transform)
 
       Return whether the given branch is a sub-tree of this transform on
       each separate dimension.
@@ -647,8 +676,14 @@ Module Contents
       A common use for this method is to identify if a transform is a blended
       transform containing an Axes' data transform. e.g.::
 
-          x_isdata, y_isdata = trans.contains_branch_seperately(ax.transData)
+          x_isdata, y_isdata = trans.contains_branch_separately(ax.transData)
 
+
+
+
+   .. py:method:: contains_branch_seperately(other_transform)
+
+      :meta private:
 
 
 
@@ -705,12 +740,12 @@ Module Contents
 
       Apply this transformation on the given array of *values*.
 
-      :param values: The input values as an array of length :attr:`input_dims` or
-                     shape (N, :attr:`input_dims`).
+      :param values: The input values as an array of length :attr:`~Transform.input_dims` or
+                     shape (N, :attr:`~Transform.input_dims`).
       :type values: array-like
 
-      :returns: The output values as an array of length :attr:`output_dims` or
-                shape (N, :attr:`output_dims`), depending on the input.
+      :returns: The output values as an array of length :attr:`~Transform.output_dims` or
+                shape (N, :attr:`~Transform.output_dims`), depending on the input.
       :rtype: array
 
 
@@ -727,12 +762,12 @@ Module Contents
       affine transformations, this is equivalent to
       ``transform(values)``.
 
-      :param values: The input values as an array of length :attr:`input_dims` or
-                     shape (N, :attr:`input_dims`).
+      :param values: The input values as an array of length :attr:`~Transform.input_dims` or
+                     shape (N, :attr:`~Transform.input_dims`).
       :type values: array
 
-      :returns: The output values as an array of length :attr:`output_dims` or
-                shape (N, :attr:`output_dims`), depending on the input.
+      :returns: The output values as an array of length :attr:`~Transform.output_dims` or
+                shape (N, :attr:`~Transform.output_dims`), depending on the input.
       :rtype: array
 
 
@@ -778,12 +813,15 @@ Module Contents
       ``transform(values)``.  In affine transformations, this is
       always a no-op.
 
-      :param values: The input values as an array of length :attr:`input_dims` or
-                     shape (N, :attr:`input_dims`).
+      :param values: The input values as an array of length
+                     :attr:`~matplotlib.transforms.Transform.input_dims` or
+                     shape (N, :attr:`~matplotlib.transforms.Transform.input_dims`).
       :type values: array
 
-      :returns: The output values as an array of length :attr:`output_dims` or
-                shape (N, :attr:`output_dims`), depending on the input.
+      :returns: The output values as an array of length
+                :attr:`~matplotlib.transforms.Transform.output_dims` or shape
+                (N, :attr:`~matplotlib.transforms.Transform.output_dims`),
+                depending on the input.
       :rtype: array
 
 
@@ -868,9 +906,6 @@ Module Contents
    .. py:attribute:: is_affine
       :value: False
 
-
-
-   .. py:attribute:: is_bbox
 
 
    .. py:attribute:: is_separable
@@ -1051,22 +1086,49 @@ Module Contents
 
    .. py:method:: format_data(value)
 
-      Return the full string representation of the value with the
-      position unspecified.
+      Return the context-independent string representation of a single *value*.
+
+      This is used internally, e.g. for constructing offset and
+      scientific-notation strings.  It always formats with ``pos=None``
+      and should return a context-independent representation
+      rather than a concise tick label.
+
+      The output may contain mathtext or LaTeX markup.
 
 
 
    .. py:method:: format_data_short(value)
 
-      Return a short string version of the tick value.
+      Return a short string representation of *value* for the mouseover
+      tooltip (the coordinate display in the interactive figure window).
 
-      Defaults to the position-independent long value.
+      This should return concise, plain text (no mathtext / LaTeX).
+      The precision is typically adapted to the current axis resolution
+      so that neighbouring pixels produce distinguishable labels.
+
+      Defaults to `.Formatter.format_data`; subclasses should override
+      this to provide a plain-text representation that is independent
+      of the current tick locations.
+
+      Note: The mouseover text can be customized by setting the
+      ``Axes.fmt_xdata`` and ``Axes.fmt_ydata`` attributes.
 
 
 
    .. py:method:: format_ticks(values)
 
-      Return the tick labels for all the ticks at once.
+      Return the tick label strings for all *values*.
+
+      This is the public API for generating tick labels.  It calls
+      ``set_locs`` to configure context-dependent formatting state before
+      delegating to ``__call__`` for each individual value.
+
+      The output may contain mathtext or LaTeX markup.
+
+      Use this method (rather than ``__call__``) whenever formatting a
+      complete set of tick values, so that formatters which need to see
+      all tick locations (e.g. to determine precision, offsets, or which
+      date components to display) can work correctly.
 
 
 
@@ -1091,8 +1153,6 @@ Module Contents
 
 
    .. py:attribute:: locs
-      :value: []
-
 
 
 .. py:class:: TransformedLocator(locator, transform=lambda x: x, inverse=lambda x: x, vmin=-np.inf, vmax=np.inf)

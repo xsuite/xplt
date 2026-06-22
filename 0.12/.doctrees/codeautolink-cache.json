@@ -38,10 +38,10 @@
           "Module Contents"
         ]
       },
-      "doc_lineno": 557
+      "doc_lineno": 586
     },
     {
-      "source": "x_isdata, y_isdata = trans.contains_branch_seperately(ax.transData)",
+      "source": "x_isdata, y_isdata = trans.contains_branch_separately(ax.transData)",
       "names": [],
       "example": {
         "document": "autoapi/xplt/base/index",
@@ -51,20 +51,7 @@
           "Module Contents"
         ]
       },
-      "doc_lineno": 650
-    },
-    {
-      "source": ">>> print(type(loc))\n<type 'Locator'>\n>>> print(loc())\n[1, 2, 3, 4]",
-      "names": [],
-      "example": {
-        "document": "autoapi/xplt/base/index",
-        "ref_id": "module-contents",
-        "headings": [
-          "xplt.base",
-          "Module Contents"
-        ]
-      },
-      "doc_lineno": 988
+      "doc_lineno": 679
     },
     {
       "source": ">>> print(type(loc))\n<type 'Locator'>\n>>> print(loc())\n[1, 2, 3, 4]",
@@ -77,7 +64,7 @@
           "Module Contents"
         ]
       },
-      "doc_lineno": 1176
+      "doc_lineno": 1023
     },
     {
       "source": ">>> print(type(loc))\n<type 'Locator'>\n>>> print(loc())\n[1, 2, 3, 4]",
@@ -90,7 +77,20 @@
           "Module Contents"
         ]
       },
-      "doc_lineno": 1294
+      "doc_lineno": 1236
+    },
+    {
+      "source": ">>> print(type(loc))\n<type 'Locator'>\n>>> print(loc())\n[1, 2, 3, 4]",
+      "names": [],
+      "example": {
+        "document": "autoapi/xplt/base/index",
+        "ref_id": "module-contents",
+        "headings": [
+          "xplt.base",
+          "Module Contents"
+        ]
+      },
+      "doc_lineno": 1354
     },
     {
       "source": ">>> XManifoldPlot.parse_nested_list_string(\"a+b, c-d,fun(e,2)\")\n[[['a', 'b']], [['c'], ['d']], [['fun(e,2)']]]\n>>> XManifoldPlot.parse_nested_list_string(\"a+b, c-d,fun(e,2)\", strip_off_methods=True)\n([[['a', 'b']], [['c'], ['d']], [['e']]],\n [[[None, None]], [[None], [None]], [['fun(e,2)']]])",
@@ -103,7 +103,7 @@
           "Module Contents"
         ]
       },
-      "doc_lineno": 1592
+      "doc_lineno": 1652
     }
   ],
   "autoapi/xplt/colors/index": [],
@@ -149,7 +149,7 @@
           "Module Contents"
         ]
       },
-      "doc_lineno": 827
+      "doc_lineno": 833
     }
   ],
   "autoapi/xplt/phasespace/index": [],
@@ -193,7 +193,7 @@
           "Module Contents"
         ]
       },
-      "doc_lineno": 841
+      "doc_lineno": 844
     },
     {
       "source": "def mask_callback(mask, get):\n    mask &= get(\"t\") < 1e-3  # all particles with time < 1 ms\n    return mask",
@@ -206,7 +206,7 @@
           "Module Contents"
         ]
       },
-      "doc_lineno": 1026
+      "doc_lineno": 1034
     },
     {
       "source": ">>> XManifoldPlot.parse_nested_list_string(\"a+b, c-d,fun(e,2)\")\n[[['a', 'b']], [['c'], ['d']], [['fun(e,2)']]]\n>>> XManifoldPlot.parse_nested_list_string(\"a+b, c-d,fun(e,2)\", strip_off_methods=True)\n([[['a', 'b']], [['c'], ['d']], [['e']]],\n [[[None, None]], [[None], [None]], [['fun(e,2)']]])",
@@ -219,7 +219,7 @@
           "Module Contents"
         ]
       },
-      "doc_lineno": 1401
+      "doc_lineno": 1412
     },
     {
       "source": ">>> XManifoldPlot.parse_nested_list_string(\"a+b, c-d,fun(e,2)\")\n[[['a', 'b']], [['c'], ['d']], [['fun(e,2)']]]\n>>> XManifoldPlot.parse_nested_list_string(\"a+b, c-d,fun(e,2)\", strip_off_methods=True)\n([[['a', 'b']], [['c'], ['d']], [['e']]],\n [[[None, None]], [[None], [None]], [['fun(e,2)']]])",
@@ -232,7 +232,7 @@
           "Module Contents"
         ]
       },
-      "doc_lineno": 1907
+      "doc_lineno": 1921
     },
     {
       "source": ">>> XManifoldPlot.parse_nested_list_string(\"a+b, c-d,fun(e,2)\")\n[[['a', 'b']], [['c'], ['d']], [['fun(e,2)']]]\n>>> XManifoldPlot.parse_nested_list_string(\"a+b, c-d,fun(e,2)\", strip_off_methods=True)\n([[['a', 'b']], [['c'], ['d']], [['e']]],\n [[[None, None]], [[None], [None]], [['fun(e,2)']]])",
@@ -245,7 +245,7 @@
           "Module Contents"
         ]
       },
-      "doc_lineno": 2356
+      "doc_lineno": 2373
     },
     {
       "source": ">>> XManifoldPlot.parse_nested_list_string(\"a+b, c-d,fun(e,2)\")\n[[['a', 'b']], [['c'], ['d']], [['fun(e,2)']]]\n>>> XManifoldPlot.parse_nested_list_string(\"a+b, c-d,fun(e,2)\", strip_off_methods=True)\n([[['a', 'b']], [['c'], ['d']], [['e']]],\n [[[None, None]], [[None], [None]], [['fun(e,2)']]])",
@@ -258,7 +258,7 @@
           "Module Contents"
         ]
       },
-      "doc_lineno": 2763
+      "doc_lineno": 2783
     }
   ],
   "autoapi/xplt/twiss/index": [
@@ -474,6 +474,18 @@
         },
         {
           "import_components": [
+            "xtrack",
+            "Line",
+            "from_sequence"
+          ],
+          "code_str": "xt.Line.from_sequence",
+          "lineno": 30,
+          "end_lineno": 30,
+          "context": "none",
+          "resolved_location": "xtrack.line.Line.from_sequence"
+        },
+        {
+          "import_components": [
             "xpart",
             "Particles"
           ],
@@ -565,7 +577,21 @@
     },
     {
       "source": "# use a faster backend\nxplt.mpl.rcParams[\"backend\"] = \"nbagg\"\n# increase buffer size\nxplt.mpl.rcParams[\"animation.embed_limit\"] = 100  # MB\n# use a faster style\nxplt.mpl.style.use(\"fast\")",
-      "names": [],
+      "names": [
+        {
+          "import_components": [
+            "xplt",
+            "mpl",
+            "style",
+            "use"
+          ],
+          "code_str": "xplt.mpl.style.use",
+          "lineno": 6,
+          "end_lineno": 6,
+          "context": "none",
+          "resolved_location": "matplotlib.style.use"
+        }
+      ],
       "example": {
         "document": "examples/animations",
         "ref_id": "animations",
@@ -2172,6 +2198,18 @@
         },
         {
           "import_components": [
+            "xtrack",
+            "Line",
+            "from_sequence"
+          ],
+          "code_str": "xt.Line.from_sequence",
+          "lineno": 33,
+          "end_lineno": 33,
+          "context": "none",
+          "resolved_location": "xtrack.line.Line.from_sequence"
+        },
+        {
+          "import_components": [
             "xpart",
             "Particles"
           ],
@@ -2251,7 +2289,7 @@
       "doc_lineno": 70002
     },
     {
-      "source": "## Track for a few turns and then stop at the sextupole\nline.track(particles, num_turns=500, ele_stop=7)\nprint(f\"{np.sum(particles.state <= 0)} of {len(particles.state)} particles lost\")\n\n## Determine twiss parameters for normalized phase space plots\ntw = line.twiss(method=\"4d\", at_elements=[7])\n\nprint(f\"qx: {tw.qx:g}\")",
+      "source": "## Track for a few turns and then stop at the sextupole\nline.track(particles, num_turns=500, ele_stop=7)\nprint(f\"{np.sum(particles.state <= 0)} of {len(particles.state)} particles lost\")\n\n## Determine twiss parameters for normalized phase space plots\ntw = line.twiss(method=\"4d\").rows[[7]]\n\nprint(f\"qx: {tw.qx:g}\")",
       "names": [
         {
           "import_components": [
@@ -2540,6 +2578,18 @@
         },
         {
           "import_components": [
+            "xtrack",
+            "Line",
+            "from_sequence"
+          ],
+          "code_str": "xt.Line.from_sequence",
+          "lineno": 30,
+          "end_lineno": 30,
+          "context": "none",
+          "resolved_location": "xtrack.line.Line.from_sequence"
+        },
+        {
+          "import_components": [
             "xpart",
             "Particles"
           ],
@@ -2552,25 +2602,15 @@
         {
           "import_components": [
             "xtrack",
-            "Environment"
-          ],
-          "code_str": "xt.Environment",
-          "lineno": 39,
-          "end_lineno": 39,
-          "context": "none",
-          "resolved_location": "xtrack.environment.Environment"
-        },
-        {
-          "import_components": [
-            "xtrack",
             "Environment",
-            "()"
+            "()",
+            "new"
           ],
-          "code_str": "env",
-          "lineno": 39,
-          "end_lineno": 39,
+          "code_str": "env.new",
+          "lineno": 40,
+          "end_lineno": 40,
           "context": "none",
-          "resolved_location": "xtrack.environment.Environment"
+          "resolved_location": "xtrack.environment.Environment.new"
         },
         {
           "import_components": [
@@ -2585,6 +2625,71 @@
         },
         {
           "import_components": [
+            "xtrack",
+            "Environment",
+            "()",
+            "new"
+          ],
+          "code_str": "env.new",
+          "lineno": 41,
+          "end_lineno": 41,
+          "context": "none",
+          "resolved_location": "xtrack.environment.Environment.new"
+        },
+        {
+          "import_components": [
+            "xtrack",
+            "Environment",
+            "()",
+            "new"
+          ],
+          "code_str": "env.new",
+          "lineno": 42,
+          "end_lineno": 42,
+          "context": "none",
+          "resolved_location": "xtrack.environment.Environment.new"
+        },
+        {
+          "import_components": [
+            "xtrack",
+            "Environment",
+            "()",
+            "new"
+          ],
+          "code_str": "env.new",
+          "lineno": 43,
+          "end_lineno": 43,
+          "context": "none",
+          "resolved_location": "xtrack.environment.Environment.new"
+        },
+        {
+          "import_components": [
+            "xtrack",
+            "Environment",
+            "()",
+            "new_line"
+          ],
+          "code_str": "env.new_line",
+          "lineno": 45,
+          "end_lineno": 45,
+          "context": "none",
+          "resolved_location": "xtrack.environment.Environment.new_line"
+        },
+        {
+          "import_components": [
+            "xtrack",
+            "Environment",
+            "()",
+            "new"
+          ],
+          "code_str": "env.new",
+          "lineno": 47,
+          "end_lineno": 47,
+          "context": "none",
+          "resolved_location": "xtrack.environment.Environment.new"
+        },
+        {
+          "import_components": [
             "numpy",
             "pi"
           ],
@@ -2593,6 +2698,32 @@
           "end_lineno": 47,
           "context": "none",
           "resolved_location": "numpy.pi"
+        },
+        {
+          "import_components": [
+            "xtrack",
+            "Environment",
+            "()",
+            "place"
+          ],
+          "code_str": "env.place",
+          "lineno": 48,
+          "end_lineno": 48,
+          "context": "none",
+          "resolved_location": "xtrack.environment.Environment.place"
+        },
+        {
+          "import_components": [
+            "xtrack",
+            "Environment",
+            "()",
+            "new"
+          ],
+          "code_str": "env.new",
+          "lineno": 49,
+          "end_lineno": 49,
+          "context": "none",
+          "resolved_location": "xtrack.environment.Environment.new"
         },
         {
           "import_components": [
@@ -2607,6 +2738,32 @@
         },
         {
           "import_components": [
+            "xtrack",
+            "Environment",
+            "()",
+            "place"
+          ],
+          "code_str": "env.place",
+          "lineno": 50,
+          "end_lineno": 50,
+          "context": "none",
+          "resolved_location": "xtrack.environment.Environment.place"
+        },
+        {
+          "import_components": [
+            "xtrack",
+            "Environment",
+            "()",
+            "new"
+          ],
+          "code_str": "env.new",
+          "lineno": 51,
+          "end_lineno": 51,
+          "context": "none",
+          "resolved_location": "xtrack.environment.Environment.new"
+        },
+        {
+          "import_components": [
             "numpy",
             "pi"
           ],
@@ -2615,6 +2772,32 @@
           "end_lineno": 51,
           "context": "none",
           "resolved_location": "numpy.pi"
+        },
+        {
+          "import_components": [
+            "xtrack",
+            "Environment",
+            "()",
+            "place"
+          ],
+          "code_str": "env.place",
+          "lineno": 52,
+          "end_lineno": 52,
+          "context": "none",
+          "resolved_location": "xtrack.environment.Environment.place"
+        },
+        {
+          "import_components": [
+            "xtrack",
+            "Environment",
+            "()",
+            "new"
+          ],
+          "code_str": "env.new",
+          "lineno": 53,
+          "end_lineno": 53,
+          "context": "none",
+          "resolved_location": "xtrack.environment.Environment.new"
         },
         {
           "import_components": [
@@ -2632,14 +2815,26 @@
             "xtrack",
             "Environment",
             "()",
-            "new_line",
-            "()"
+            "place"
           ],
-          "code_str": "line2",
-          "lineno": 45,
-          "end_lineno": 45,
+          "code_str": "env.place",
+          "lineno": 54,
+          "end_lineno": 54,
           "context": "none",
-          "resolved_location": "xtrack.line.Line"
+          "resolved_location": "xtrack.environment.Environment.place"
+        },
+        {
+          "import_components": [
+            "xtrack",
+            "Environment",
+            "()",
+            "new"
+          ],
+          "code_str": "env.new",
+          "lineno": 55,
+          "end_lineno": 55,
+          "context": "none",
+          "resolved_location": "xtrack.environment.Environment.new"
         }
       ],
       "example": {
@@ -2779,6 +2974,21 @@
           "end_lineno": 1,
           "context": "none",
           "resolved_location": "matplotlib.pyplot.subplots"
+        },
+        {
+          "import_components": [
+            "xtrack",
+            "Environment",
+            "()",
+            "new_line",
+            "()",
+            "survey"
+          ],
+          "code_str": "line2.survey",
+          "lineno": 4,
+          "end_lineno": 4,
+          "context": "none",
+          "resolved_location": "xtrack.line.Line.survey"
         },
         {
           "import_components": [
@@ -3005,6 +3215,18 @@
         },
         {
           "import_components": [
+            "xtrack",
+            "Line",
+            "from_sequence"
+          ],
+          "code_str": "xt.Line.from_sequence",
+          "lineno": 25,
+          "end_lineno": 25,
+          "context": "none",
+          "resolved_location": "xtrack.line.Line.from_sequence"
+        },
+        {
+          "import_components": [
             "xpart",
             "Particles"
           ],
@@ -3194,7 +3416,7 @@
       "doc_lineno": 160002
     },
     {
-      "source": "tw = line.twiss(\n    method=\"4d\",\n    at_elements=np.unique(particles.at_element),  # twiss at location of particles\n)",
+      "source": "# twiss at location of particles\ntw = line.twiss(method=\"4d\").rows[np.unique(particles.at_element)]",
       "names": [
         {
           "import_components": [
@@ -3202,8 +3424,8 @@
             "unique"
           ],
           "code_str": "np.unique",
-          "lineno": 3,
-          "end_lineno": 3,
+          "lineno": 2,
+          "end_lineno": 2,
           "context": "none",
           "resolved_location": "numpy.unique"
         }
@@ -3690,6 +3912,18 @@
           "end_lineno": 31,
           "context": "none",
           "resolved_location": "xtrack.beam_elements.apertures.LimitRect"
+        },
+        {
+          "import_components": [
+            "xtrack",
+            "Line",
+            "from_sequence"
+          ],
+          "code_str": "xt.Line.from_sequence",
+          "lineno": 33,
+          "end_lineno": 33,
+          "context": "none",
+          "resolved_location": "xtrack.line.Line.from_sequence"
         },
         {
           "import_components": [
@@ -4396,7 +4630,7 @@
       "doc_lineno": 390002
     },
     {
-      "source": "# select only a single particle\nmask = (0, None)\n\nplot = xplt.TimeFFTPlot(\n    line.record_last_track,\n    \"count\",\n    mask=mask,\n    fmax=50e6,\n    log=False,\n    display_units=dict(f=\"MHz\"),\n    twiss=tw,\n)\n\nfrev = 1 / tw.T_rev0\nfor i in range(10):\n    plot.ax.axvline(i * frev / 1e6, ls=\"--\", color=\"gray\", zorder=-1)",
+      "source": "# select only a single particle\nmask = (0, None)\n\nplot = xplt.TimeFFTPlot(\n    line.record_last_track,\n    \"count\",\n    mask=mask,\n    fmax=50e6,\n    log=False,\n    display_units=dict(f=\"MHz\"),\n    twiss=tw,\n)\n\nfrev = 1 / tw.t_rev0\nfor i in range(10):\n    plot.ax.axvline(i * frev / 1e6, ls=\"--\", color=\"gray\", zorder=-1)",
       "names": [
         {
           "import_components": [
@@ -4750,6 +4984,18 @@
         },
         {
           "import_components": [
+            "xtrack",
+            "Line",
+            "from_sequence"
+          ],
+          "code_str": "xt.Line.from_sequence",
+          "lineno": 34,
+          "end_lineno": 34,
+          "context": "none",
+          "resolved_location": "xtrack.line.Line.from_sequence"
+        },
+        {
+          "import_components": [
             "xpart",
             "Particles"
           ],
@@ -4770,7 +5016,7 @@
       "doc_lineno": 40002
     },
     {
-      "source": "tw = line.twiss(\n    method=\"4d\", at_s=np.linspace(0, line.get_length(), 500, endpoint=False)\n)",
+      "source": "snip = line.copy(shallow=True)\nsnip.cut_at_s(np.linspace(0, line.get_length(), 500, endpoint=False))\ntw = snip.twiss(method=\"4d\")",
       "names": [
         {
           "import_components": [
@@ -4844,7 +5090,7 @@
       "doc_lineno": 90002
     },
     {
-      "source": "# Normalized emittance in m*rad\ncv = tw.get_betatron_sigmas(nemitt_x=1e-6, nemitt_y=1e-6)",
+      "source": "# Normalized emittance in m*rad\ncv = tw.get_beam_covariance(nemitt_x=1e-6, nemitt_y=1e-6)",
       "names": [],
       "example": {
         "document": "examples/twiss",
@@ -4947,7 +5193,7 @@
       "doc_lineno": 170002
     },
     {
-      "source": "plot = xplt.TwissPlot(\n    tw,\n    kind=\"bet,mux+muy,dx\",  # 3 subplots: plot beta functions (\"bet\"=\"betx+bety\") on the first,\n    #                                     phase advances on the second, and dispersion on the third\n    display_units=dict(d=\"dm\"),  # dispersion in deci-meter (\"d=\" for \"dx\" and \"dy\")\n    figsize=(6, 5),\n)\n\n# add some annotations\nplot.axline(\"s\", line.get_s_position(\"S6QF\"), annotation=\"S6QF\")\nplot.axspan(\"s\", 9, 11, label=\"Section 42\")\nplot.axline(\"muy\", tw.qy, annotation=f\"$Q_y={tw.qy:g}$\", annotation_loc=1)\n\n# adjust some axes\nplot.axis(0).set(title=\"Twiss plot example\", ylim=(0, 14))\nplot.axis(\"mux\").set(ylim=(0, tw.qx))\n\n# adjust line layout\nplot.artist(\"mux\").set(ls=\"--\")\nplot.artist(subplot=2).set(c=\"pet2\")\n\n# legend is shown by default for subplots with more than 1 trace\nplot.legend(1, loc=\"upper left\")  # call it manually to reflect updated line layout\n# plot.legend() # uncomment this to show legends on all subplots",
+      "source": "plot = xplt.TwissPlot(\n    tw,\n    kind=\"bet,mux+muy,dx\",  # 3 subplots: plot beta functions (\"bet\"=\"betx+bety\") on the first,\n    #                                     phase advances on the second, and dispersion on the third\n    display_units=dict(d=\"dm\"),  # dispersion in deci-meter (\"d=\" for \"dx\" and \"dy\")\n    figsize=(6, 5),\n)\n\n# add some annotations\nplot.axline(\"s\", line.get_table()[\"s\", \"S6QF\"], annotation=\"S6QF\")\nplot.axspan(\"s\", 9, 11, label=\"Section 42\")\nplot.axline(\"muy\", tw.qy, annotation=f\"$Q_y={tw.qy:g}$\", annotation_loc=1)\n\n# adjust some axes\nplot.axis(0).set(title=\"Twiss plot example\", ylim=(0, 14))\nplot.axis(\"mux\").set(ylim=(0, tw.qx))\n\n# adjust line layout\nplot.artist(\"mux\").set(ls=\"--\")\nplot.artist(subplot=2).set(c=\"pet2\")\n\n# legend is shown by default for subplots with more than 1 trace\nplot.legend(1, loc=\"upper left\")  # call it manually to reflect updated line layout\n# plot.legend() # uncomment this to show legends on all subplots",
       "names": [
         {
           "import_components": [

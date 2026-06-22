@@ -385,8 +385,6 @@ Module Contents
 
    .. py:property:: circumference
 
-      Circumference of circular accelerator
-
 
    .. py:attribute:: color
       :value: None
@@ -399,6 +397,11 @@ Module Contents
    .. py:attribute:: kind
       :value: []
 
+
+
+   .. py:property:: line_length
+
+      Circumference of circular accelerator
 
 
    .. py:attribute:: percentiles
