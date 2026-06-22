@@ -40,7 +40,7 @@ ipython-pygments-lexers==1.1.1
 isoduration==20.11.0
 jedi==0.20.0
 jinja2==3.1.6
-json5==0.14.0
+json5==0.15.0
 jsonpointer==3.1.1
 jsonschema[format-nongpl]==4.26.0
 jsonschema-specifications==2025.9.1
@@ -60,13 +60,13 @@ markupsafe==3.0.3
 matplotlib==3.11.0
 matplotlib-inline==0.2.2
 meson==1.11.1
-mistune==3.2.1
+mistune==3.3.1
 nbclient==0.11.0
 nbconvert==7.17.1
 nbformat==5.10.4
 nest-asyncio2==1.7.2
 notebook-shim==0.2.4
-numpy==2.4.6
+numpy==2.5.0
 packaging==26.2
 pandas==3.0.3
 pandocfilters==1.5.1
@@ -94,7 +94,7 @@ rfc3986-validator==0.1.1
 rfc3987-syntax==1.1.0
 rpds-py==2026.5.1
 ruamel-yaml==0.19.1
-scipy==1.17.1
+scipy==1.18.0
 send2trash==2.1.0
 six==1.17.0
 soupsieve==2.8.4
@@ -118,5 +118,5 @@ xdeps==0.10.18
 xfields==0.25.18
 xobjects==0.6.4
 xpart==0.23.13
-xsuite==0.53.4
-xtrack==0.106.4
+xsuite==0.53.5
+xtrack==0.106.5
