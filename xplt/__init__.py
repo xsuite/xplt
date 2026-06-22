@@ -5,7 +5,7 @@ __author__ = "Philipp Niedermayer"
 __contact__ = "eltos@outlook.de"
 
 
-__version__ = "0.12.4"
+__version__ = "0.12.5"
 
 
 # expose the following in global namespace
