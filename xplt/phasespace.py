@@ -395,7 +395,7 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
                 if self.artists_std[i]:
                     w, h = 2 * np.sqrt(evals)
                     self.artists_std[i].set(
-                        center=XY0, width=w, height=h, angle=np.degrees(np.arctan2(*evecs[1]))
+                        center=XY0, width=w, height=h, angle=-np.degrees(np.arctan2(*evecs[1]))
                     )
                     changed_artists.append(self.artists_std[i])
 
@@ -408,7 +408,7 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
                         e = np.percentile(np.sum(NN**2, axis=0), p) ** 0.5
                         w, h = 2 * e * np.sqrt(evals)
                         self.artists_percentiles[i][j].set(
-                            center=XY0, width=w, height=h, angle=np.degrees(np.arctan2(*evecs[1]))
+                            center=XY0, width=w, height=h, angle=-np.degrees(np.arctan2(*evecs[1]))
                         )
                         changed_artists.append(self.artists_percentiles[i][j])
 
