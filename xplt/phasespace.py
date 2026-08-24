@@ -389,7 +389,7 @@ class PhaseSpacePlot(XPlot, ParticlePlotMixin):
 
             # 2D size indicator (ellipses)
             if UV.shape[1] > 1 and (self.artists_std[i] or self.artists_percentiles[i]):
-                evals, evecs = np.linalg.eig(np.cov(UV))  # eigenvalues and -vectors
+                evals, evecs = np.linalg.eigh(np.cov(UV))  # eigenvalues and -vectors
 
                 # 2D std indicator
                 if self.artists_std[i]:
