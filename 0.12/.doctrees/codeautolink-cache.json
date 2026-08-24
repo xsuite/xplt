@@ -369,7 +369,7 @@
           "lineno": 5,
           "end_lineno": 5,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Multipole"
+          "resolved_location": "xtrack.beam_elements.multipole.Multipole"
         },
         {
           "import_components": [
@@ -380,7 +380,7 @@
           "lineno": 6,
           "end_lineno": 6,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Multipole"
+          "resolved_location": "xtrack.beam_elements.multipole.Multipole"
         },
         {
           "import_components": [
@@ -391,7 +391,7 @@
           "lineno": 7,
           "end_lineno": 7,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Multipole"
+          "resolved_location": "xtrack.beam_elements.multipole.Multipole"
         },
         {
           "import_components": [
@@ -424,7 +424,7 @@
           "lineno": 27,
           "end_lineno": 27,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Multipole"
+          "resolved_location": "xtrack.beam_elements.multipole.Multipole"
         },
         {
           "import_components": [
@@ -458,7 +458,7 @@
           "lineno": 27,
           "end_lineno": 27,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Multipole"
+          "resolved_location": "xtrack.beam_elements.multipole.Multipole"
         },
         {
           "import_components": [
@@ -470,7 +470,7 @@
           "lineno": 28,
           "end_lineno": 28,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Multipole"
+          "resolved_location": "xtrack.beam_elements.multipole.Multipole"
         },
         {
           "import_components": [
@@ -2082,7 +2082,7 @@
           "lineno": 5,
           "end_lineno": 5,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Multipole"
+          "resolved_location": "xtrack.beam_elements.multipole.Multipole"
         },
         {
           "import_components": [
@@ -2093,7 +2093,7 @@
           "lineno": 6,
           "end_lineno": 6,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Multipole"
+          "resolved_location": "xtrack.beam_elements.multipole.Multipole"
         },
         {
           "import_components": [
@@ -2104,7 +2104,7 @@
           "lineno": 7,
           "end_lineno": 7,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Multipole"
+          "resolved_location": "xtrack.beam_elements.multipole.Multipole"
         },
         {
           "import_components": [
@@ -2137,7 +2137,7 @@
           "lineno": 27,
           "end_lineno": 27,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Multipole"
+          "resolved_location": "xtrack.beam_elements.multipole.Multipole"
         },
         {
           "import_components": [
@@ -2171,7 +2171,7 @@
           "lineno": 27,
           "end_lineno": 27,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Multipole"
+          "resolved_location": "xtrack.beam_elements.multipole.Multipole"
         },
         {
           "import_components": [
@@ -2183,7 +2183,7 @@
           "lineno": 28,
           "end_lineno": 28,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Multipole"
+          "resolved_location": "xtrack.beam_elements.multipole.Multipole"
         },
         {
           "import_components": [
@@ -2194,7 +2194,7 @@
           "lineno": 31,
           "end_lineno": 31,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.apertures.LimitRect"
+          "resolved_location": "xtrack.beam_elements.limit_rect.LimitRect"
         },
         {
           "import_components": [
@@ -2484,7 +2484,7 @@
           "lineno": 5,
           "end_lineno": 5,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Quadrupole"
+          "resolved_location": "xtrack.beam_elements.quadrupole.Quadrupole"
         },
         {
           "import_components": [
@@ -2495,7 +2495,7 @@
           "lineno": 6,
           "end_lineno": 6,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Quadrupole"
+          "resolved_location": "xtrack.beam_elements.quadrupole.Quadrupole"
         },
         {
           "import_components": [
@@ -2506,7 +2506,7 @@
           "lineno": 7,
           "end_lineno": 7,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Bend"
+          "resolved_location": "xtrack.beam_elements.bend.Bend"
         },
         {
           "import_components": [
@@ -2528,7 +2528,7 @@
           "lineno": 27,
           "end_lineno": 27,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Sextupole"
+          "resolved_location": "xtrack.beam_elements.sextupole.Sextupole"
         },
         {
           "import_components": [
@@ -2562,7 +2562,7 @@
           "lineno": 27,
           "end_lineno": 27,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Sextupole"
+          "resolved_location": "xtrack.beam_elements.sextupole.Sextupole"
         },
         {
           "import_components": [
@@ -2574,7 +2574,7 @@
           "lineno": 28,
           "end_lineno": 28,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Sextupole"
+          "resolved_location": "xtrack.beam_elements.sextupole.Sextupole"
         },
         {
           "import_components": [
@@ -3167,7 +3167,7 @@
           "lineno": 5,
           "end_lineno": 5,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Multipole"
+          "resolved_location": "xtrack.beam_elements.multipole.Multipole"
         },
         {
           "import_components": [
@@ -3178,7 +3178,7 @@
           "lineno": 6,
           "end_lineno": 6,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Multipole"
+          "resolved_location": "xtrack.beam_elements.multipole.Multipole"
         },
         {
           "import_components": [
@@ -3189,7 +3189,7 @@
           "lineno": 7,
           "end_lineno": 7,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Multipole"
+          "resolved_location": "xtrack.beam_elements.multipole.Multipole"
         },
         {
           "import_components": [
@@ -3799,7 +3799,7 @@
           "lineno": 5,
           "end_lineno": 5,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Multipole"
+          "resolved_location": "xtrack.beam_elements.multipole.Multipole"
         },
         {
           "import_components": [
@@ -3810,7 +3810,7 @@
           "lineno": 6,
           "end_lineno": 6,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Multipole"
+          "resolved_location": "xtrack.beam_elements.multipole.Multipole"
         },
         {
           "import_components": [
@@ -3821,7 +3821,7 @@
           "lineno": 7,
           "end_lineno": 7,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Multipole"
+          "resolved_location": "xtrack.beam_elements.multipole.Multipole"
         },
         {
           "import_components": [
@@ -3854,7 +3854,7 @@
           "lineno": 27,
           "end_lineno": 27,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Multipole"
+          "resolved_location": "xtrack.beam_elements.multipole.Multipole"
         },
         {
           "import_components": [
@@ -3888,7 +3888,7 @@
           "lineno": 27,
           "end_lineno": 27,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Multipole"
+          "resolved_location": "xtrack.beam_elements.multipole.Multipole"
         },
         {
           "import_components": [
@@ -3900,7 +3900,7 @@
           "lineno": 28,
           "end_lineno": 28,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Multipole"
+          "resolved_location": "xtrack.beam_elements.multipole.Multipole"
         },
         {
           "import_components": [
@@ -3911,7 +3911,7 @@
           "lineno": 31,
           "end_lineno": 31,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.apertures.LimitRect"
+          "resolved_location": "xtrack.beam_elements.limit_rect.LimitRect"
         },
         {
           "import_components": [
@@ -4422,7 +4422,7 @@
       "doc_lineno": 310002
     },
     {
-      "source": "dt_count = 50e-9\nbins = 1000\ndt_evaluate = dt_count * bins\n\n# use helper to calculate metric\nhelper = xplt.TimeBinMetricHelper(twiss=tw)\nt_min, dt_count, counts = helper.binned_timeseries(\n    particles, dt_count, mask=particles.state <= 0\n)\nCv, Cv_poisson = helper.calculate_metric(counts, \"cv\", bins)\n\n# plot it\nfig, ax = plt.subplots(figsize=(4, 1), constrained_layout=True)\nstyle = dict(marker=\".\", ls=\"\", capsize=3, label=\"Spill quality\")\nax.errorbar(np.nanmean(Cv), [\"Dataset sample\"], xerr=np.nanstd(Cv), **style)\nstyle = dict(hatch=\"////\", ec=\"#aaa\", fc=\"none\", label=\"Poisson limit\")\nax.add_patch(\n    mpl.patches.Rectangle((np.nanmean(Cv_poisson), -0.15), -10, 0.3, **style)\n)\nax.set(xlim=(4.5, 0))\n\n# use helper to style axes\nhelper._link_cv_duty_axes(ax, ax.twiny(), True, \"x\")\nax.legend(loc=\"upper right\", bbox_to_anchor=(0, 0));",
+      "source": "dt_count = 50e-9\nbins = 1000\ndt_evaluate = dt_count * bins\n\n# use helper to calculate metric\nhelper = xplt.TimeBinMetricHelper(twiss=tw)\nt_min, dt_count, counts = helper.binned_timeseries(\n    particles, dt_count, mask=particles.state <= 0\n)\nCv, Cv_poisson = helper.calculate_metric(counts, \"cv\", bins)\n\n# plot it\nfig, ax = plt.subplots(figsize=(4, 1.2), constrained_layout=True)\nstyle = dict(marker=\".\", ls=\"\", capsize=3, label=\"Spill quality\")\nax.errorbar(np.nanmean(Cv), [\"Dataset sample\"], xerr=np.nanstd(Cv), **style)\nstyle = dict(hatch=\"////\", ec=\"#aaa\", fc=\"none\", label=\"Poisson limit\")\nax.add_patch(\n    mpl.patches.Rectangle((np.nanmean(Cv_poisson), -0.15), -10, 0.3, **style)\n)\nax.set(xlim=(4.5, 0))\n\n# use helper to style axes\nhelper._link_cv_duty_axes(ax, ax.twiny(), True, \"x\")\nax.legend(loc=\"upper right\", bbox_to_anchor=(0, 0));",
       "names": [
         {
           "import_components": [
@@ -4857,7 +4857,7 @@
           "lineno": 5,
           "end_lineno": 5,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Multipole"
+          "resolved_location": "xtrack.beam_elements.multipole.Multipole"
         },
         {
           "import_components": [
@@ -4868,7 +4868,7 @@
           "lineno": 6,
           "end_lineno": 6,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Multipole"
+          "resolved_location": "xtrack.beam_elements.multipole.Multipole"
         },
         {
           "import_components": [
@@ -4879,7 +4879,7 @@
           "lineno": 7,
           "end_lineno": 7,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Multipole"
+          "resolved_location": "xtrack.beam_elements.multipole.Multipole"
         },
         {
           "import_components": [
@@ -4912,7 +4912,7 @@
           "lineno": 27,
           "end_lineno": 27,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Multipole"
+          "resolved_location": "xtrack.beam_elements.multipole.Multipole"
         },
         {
           "import_components": [
@@ -4946,7 +4946,7 @@
           "lineno": 27,
           "end_lineno": 27,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Multipole"
+          "resolved_location": "xtrack.beam_elements.multipole.Multipole"
         },
         {
           "import_components": [
@@ -4958,7 +4958,7 @@
           "lineno": 28,
           "end_lineno": 28,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.elements.Multipole"
+          "resolved_location": "xtrack.beam_elements.multipole.Multipole"
         },
         {
           "import_components": [
@@ -4969,7 +4969,7 @@
           "lineno": 31,
           "end_lineno": 31,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.apertures.LimitRect"
+          "resolved_location": "xtrack.beam_elements.limit_rect.LimitRect"
         },
         {
           "import_components": [
@@ -4980,7 +4980,7 @@
           "lineno": 32,
           "end_lineno": 32,
           "context": "none",
-          "resolved_location": "xtrack.beam_elements.apertures.LimitRectEllipse"
+          "resolved_location": "xtrack.beam_elements.limit_rect_ellipse.LimitRectEllipse"
         },
         {
           "import_components": [
