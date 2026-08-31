@@ -1,11 +1,15 @@
 repos:
-  - repo: https://github.com/psf/black-pre-commit-mirror
-    rev: 26.5.1
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.13.1
     hooks:
-      - id: black
-      - id: black-jupyter
+      - id: ruff-check
+        args: [--fix]
+      - id: ruff-format
+        types: [python]
+      - id: ruff-format
         types: [jupyter]
-        args: [--line-length=85]  # notebooks (for sphinx docs)
+        name: ruff-format-jupyter
+        args: [--line-length, "80"]
 
   - repo: https://github.com/pycqa/pylint
     rev: v4.0.8
