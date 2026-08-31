@@ -1,10 +1,9 @@
-import pytest
-import pytest_benchmark
-import pytest_benchmark.plugin
-from pytest_benchmark.utils import NameWrapper
-from pytest_benchmark.fixture import BenchmarkFixture
 import numpy as np
+import pytest
 from numpy.testing import assert_equal
+from pytest_benchmark.fixture import BenchmarkFixture
+from pytest_benchmark.utils import NameWrapper
+
 import xplt.util
 
 
@@ -66,7 +65,6 @@ def test_binned_data(benchmark, benchmark_ref, ndata, nbins, exp_time_fract):
 
 
 def test_averaging():
-
     data = np.array([1, 2, 4, 5, 6, 8, 3, 10, 25, 13])
 
     avg = xplt.util.average(data, n=2)

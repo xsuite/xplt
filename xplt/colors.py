@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 """Color definitions
 
@@ -13,7 +12,11 @@ __date__ = "2022-09-06"
 
 
 import matplotlib as mpl
-from .util import *
+
+from .util import (
+    PUBLIC_SECTION_BEGIN,
+    PUBLIC_SECTION_END,
+)
 
 PUBLIC_SECTION_BEGIN()
 

@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 """Methods to work with properties"""
 
@@ -8,7 +7,15 @@ __contact__ = "eltos@outlook.de"
 __date__ = "2023-11-11"
 
 
-from .util import *
+import inspect
+
+import numpy as np
+
+from .util import (
+    PUBLIC_SECTION_BEGIN,
+    PUBLIC_SECTION_END,
+    get,
+)
 
 arb_unit = "arb. unit"
 

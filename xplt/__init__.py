@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 __author__ = "Philipp Niedermayer"
 __contact__ = "eltos@outlook.de"
@@ -7,6 +6,10 @@ __contact__ = "eltos@outlook.de"
 
 __version__ = "0.12.6"
 
+# ruff: noqa: E402, F401, F403, F405
+
+# allow usage of xplt.mpl.* without importing matplotlib
+import matplotlib as mpl
 
 # expose the following in global namespace
 from .colors import *
@@ -16,10 +19,7 @@ from .phasespace import *
 from .properties import *
 from .timestructure import *
 from .twiss import *
-from .util import AUTO
-
-# allow usage of xplt.mpl.* without importing matplotlib
-import matplotlib as mpl
+from .util import AUTO as AUTO
 
 
 # Deprecated, for backwards compatibility
@@ -52,8 +52,11 @@ def apply_style():
     """Apply xplt's matplotlib style sheet and update rcParams"""
     try:
         _mpl_style.use("xplt.xplt")
-    except IOError:
-        import matplotlib, shutil, os
+    except OSError:
+        import os
+        import shutil
+
+        import matplotlib
 
         # for matplotlib versions prior to 3.7: copy the style file to the config directory
         dir = os.path.join(matplotlib.get_configdir(), "stylelib")

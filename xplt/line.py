@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 """Methods for plotting lines"""
 
@@ -9,20 +8,20 @@ __date__ = "2022-11-08"
 
 import re
 
-import numpy as np
 import matplotlib as mpl
+import numpy as np
 
+from .base import XManifoldPlot, XPlot
+from .properties import DataProperty, Property
 from .util import (
-    get,
-    iter_elements,
-    element_strength,
+    PUBLIC_SECTION_BEGIN,
+    PUBLIC_SECTION_END,
     defaults,
     defaults_for,
-    PUBLIC_SECTION_END,
-    PUBLIC_SECTION_BEGIN,
+    element_strength,
+    get,
+    iter_elements,
 )
-from .base import XPlot, XManifoldPlot
-from .properties import Property, DataProperty
 
 
 def nominal_order(element):

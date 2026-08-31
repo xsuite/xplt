@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 """Matplotlib setup"""
 
@@ -9,11 +8,12 @@ __date__ = "2022-09-06"
 
 import types
 import warnings
+
 from .colors import (
     cmap_petroff,
-    cmap_petroff_gradient,
     cmap_petroff_bipolar,
     cmap_petroff_cyclic,
+    cmap_petroff_gradient,
     petroff_colors,
 )
 

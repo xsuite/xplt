@@ -1,11 +1,11 @@
+import xtrack as xt
 from numpy.testing import assert_equal
 from packaging.version import Version
-import xtrack as xt
+
 import xplt.line
 
 
 def test_nominal_and_effective_order():
-
     def assert_order(*test_params):
         """Check elements for nominal and effective order
 
@@ -77,7 +77,6 @@ def test_nominal_and_effective_order():
 
 
 def test_repeated_elements_survey():
-
     # https://github.com/xsuite/xplt/issues/31
     line = xt.Line(elements={"obm": xt.Bend(length=0.5)}, element_names=["obm", "obm"])
     # line.replace_all_repeated_elements()
@@ -95,6 +94,5 @@ def test_repeated_elements_survey():
 
 
 def test_sign_sticky():
-
     x = [0, 1, 5, 0, 5, -3, 0, 1, 0, -2, 0]
     assert_equal(xplt.line.sign_sticky(x, initial=1), [1, 1, 1, 1, 1, -1, -1, 1, 1, -1, -1])

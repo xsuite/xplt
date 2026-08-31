@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 """Utility methods for accelerator physics"""
 
@@ -11,14 +10,14 @@ __date__ = "2022-11-15"
 import inspect
 import re
 
+import matplotlib as mpl
+import matplotlib.cbook
+import matplotlib.collections
+import matplotlib.lines
+import matplotlib.patches
+import matplotlib.text
 import numpy as np
 import scipy.signal
-import matplotlib as mpl
-import matplotlib.collections
-import matplotlib.patches
-import matplotlib.cbook
-import matplotlib.text
-import matplotlib.lines
 
 try:
     import pandas as pd
@@ -86,16 +85,16 @@ def get(obj, value, default=VOID):
     """
     if pd and isinstance(obj, pd.DataFrame):
         return val(obj[value].values)
-    if type(obj) == tuple:
+    if type(obj) is tuple:
         for o in obj:
             if (v := get(o, value, None)) is not None:
                 return v
     try:
         return val(getattr(obj, value))
-    except:
+    except Exception:
         try:
             return val(obj[value])
-        except:
+        except Exception:
             if default is not VOID:
                 return default
     raise AttributeError(f"{obj} does not provide an attribute or index '{value}'")
@@ -166,7 +165,7 @@ class AttrDict(dict):
     """Dict which allows accessing values via key attributes"""
 
     def __init__(self, *args, **kwargs):
-        super(AttrDict, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.__dict__ = self
 
 
@@ -217,7 +216,7 @@ def average(*data, n=100, function=np.mean, logspace=False, keepdim=False):
                 np.empty_like(d) if keepdim else np.empty([*d.shape[:-1], N.size - 1])
             )
             for i, (n0, n1) in enumerate(zip(N[:-1], N[1:])):
-                new[..., slice(n0, n1) if keepdim else i] = v = function(d[..., n0:n1])
+                new[..., slice(n0, n1) if keepdim else i] = function(d[..., n0:n1])
 
         result.append(new)
 
@@ -249,11 +248,12 @@ def evaluate_expression_wrapper(expression, key, data):
     try:
         return eval(expression, methods, {key: data})
     except Exception as e:
-        import inspect, sys
+        import inspect
+        import sys
 
         print(f"Error evaluating exprssion `{expression}`", file=sys.stderr)
         print(f"Reason: {e}", file=sys.stderr)
-        print(f"Supported methods:", file=sys.stderr)
+        print("Supported methods:", file=sys.stderr)
         for k, v in methods.items():
             if k in ("self", "data") or k.startswith("_"):
                 continue
@@ -581,9 +581,9 @@ def apertures(line, at_s=None):
             # handle shift
             if mi is not None:
                 mi += getattr(el, f"shift_{xy}", 0)
-                result[f"min_{xy}"][
-                    mask & ~(result[f"min_{xy}"] > mi)
-                ] = mi  # comparison inverted to handle NaN
+                result[f"min_{xy}"][mask & ~(result[f"min_{xy}"] > mi)] = (
+                    mi  # comparison inverted to handle NaN
+                )
             if ma is not None:
                 ma += getattr(el, f"shift_{xy}", 0)
                 result[f"max_{xy}"][mask & ~(result[f"max_{xy}"] < ma)] = ma

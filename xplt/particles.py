@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 """Methods for plotting phase space distributions"""
 
@@ -10,10 +9,32 @@ __date__ = "2022-12-07"
 
 import warnings
 
-from .util import *
-from .properties import _fmt_qty, _convert_value_to_unit, _has_pint
+import matplotlib as mpl
+import numpy as np
+
 from .base import XManifoldPlot
-from .properties import Property, DerivedProperty, find_property
+from .properties import (
+    DerivedProperty,
+    Property,
+    _convert_value_to_unit,
+    _fmt_qty,
+    _has_pint,
+    find_property,
+)
+from .util import (
+    AUTO,
+    PUBLIC_SECTION_BEGIN,
+    PUBLIC_SECTION_END,
+    binned_data,
+    c0,
+    defaults,
+    defaults_for,
+    evaluate_expression_wrapper,
+    get,
+    ieee_mod,
+    normalized_coordinates,
+    val,
+)
 
 
 class ParticlePlotMixin:
@@ -129,7 +150,7 @@ class ParticlePlotMixin:
                         )
                     beta = mean_beta
                 return beta
-            except:
+            except AttributeError:
                 pass
 
     def frev(self, particles=None):
@@ -351,7 +372,6 @@ class ParticleHistogramPlot(XManifoldPlot, ParticlePlotMixin, ParticleHistogramP
         return symbol
 
     def _histogram(self, p, particles, mask):
-
         values = self.prop(self.on_x).values(particles, mask)
         if p in ("current", "charge"):  # Note: these are also "count_based" i.e. use moments=None
             what = self.prop("q").values(particles, mask)

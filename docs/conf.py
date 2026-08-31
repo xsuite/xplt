@@ -4,7 +4,10 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 import importlib
 import inspect
-import os, sys, shutil
+import os
+import shutil
+import sys
+
 from xplt import __version__
 
 # -- Project information -----------------------------------------------------
@@ -134,7 +137,7 @@ def linkcode_resolve(domain, info):
             path = (root + sourcefile.split(root)[-1]).replace(os.path.sep, "/")
             filename = f"{path}#L{line}-L{line + len(sourcecode) - 1}"
             return f"https://github.com/{github_username}/{github_repository}/blob/v{version}/{filename}"
-    except:
+    except Exception:
         return None
 
 
