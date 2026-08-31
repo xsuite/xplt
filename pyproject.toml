@@ -22,7 +22,7 @@ classifiers = [
 ]
 dynamic = ["version"]
 
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 dependencies = [
     "matplotlib>=3.6",
     "numpy>=1.17.0",
@@ -63,19 +63,68 @@ version = {attr = "xplt.__version__"}
 [tool.setuptools]
 packages = ['xplt']
 
+[tool.ci]
+max-python-version = "3.14"
+
+[dependency-groups]
+examples = [
+    "xsuite",
+    "jupyterlab",
+    "tabulate",
+]
+test = [
+    "pytest",
+    "pytest-cov",
+    "pytest-benchmark",
+    "testbook",
+]
+docs = [
+    "myst-nb",
+    "pydata-sphinx-theme",
+    "sphinx",
+    "sphinx-autoapi",
+    "sphinx-autodoc-typehints",
+    "sphinx-codeautolink",
+    "sphinx-gallery",
+    "sphinx-jinja2-compat",
+    "sphinx-prompt",
+    "sphinx-tabs",
+    "sphinx-toolbox",
+    "sphinxcontrib-napoleon",
+]
+dev = [
+    "prek>=0.5.0",
+]
+
 
 # Dev tools
 
-[tool.black]
+[tool.ruff]
 line-length = 98
-target-version = ['py38', 'py39', 'py310', 'py311']
+target-version = "py312"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.ruff.lint]
+select = [
+    "E4",
+    "E7",
+    "E9",
+    "F",
+    "I",
+    "UP",
+]
 
 [tool.pylint.main]
-load-plugins = "pylint.extensions.docparams"
-disable = "all"
+load-plugins = ["pylint.extensions.docparams"]
+disable = ["all"]
 enable = ["parameter_documentation"]
+
 [tool.pylint.parameter_documentation]
 default-docstring-type = "google"
+
 [tool.pylint.basic]
 no-docstring-rgx = "^(?!.*)_" # also check private and magic methods "^(?!__init__$)_"
 

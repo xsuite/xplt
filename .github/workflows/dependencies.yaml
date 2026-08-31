@@ -10,8 +10,8 @@ on:
       - main
     paths:
       - '.github/workflows/dependencies.yaml'
-      - 'requirements/*.in'
       - 'pyproject.toml'
+      - 'uv.lock'
 
 permissions:
   pull-requests: write
@@ -21,12 +21,7 @@ concurrency:
   group: ${{ github.workflow }}
 
 env:
-  # Note: the last version in this list is used to for sphinx-docs and pypi-releases
-  PYTHON_VERSIONS: |
-    3.11
-    3.13
-    3.14
-    3.12
+  PYTHON_VERSIONS: 3.11 3.12 3.13 3.14
 
 jobs:
   update-dependencies:
@@ -36,28 +31,18 @@ jobs:
         with:
           ref: main  # force checkout branch since schedule runs on main by default
           ssh-key: ${{ secrets.DEPENDENCY_WORKFLOW_KEY }}
-      - uses: actions/setup-python@v5
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
         with:
-          python-version: ${{ env.PYTHON_VERSIONS }}
+          enable-cache: true
+
+      - name: Install supported Python versions
+        run: uv python install ${{ env.PYTHON_VERSIONS }}
 
       - name: Update dependencies
         run: |
-          cd requirements
-          for VER in $PYTHON_VERSIONS
-          do
-            echo "::group::Installing pip-tools for python $VER..."
-            python$VER -m pip install pip-tools
-            echo "::endgroup::"
-            echo "::group::Updating dependencies for python $VER..."
-            python$VER -m piptools compile --upgrade --no-annotate -o examples-requirements-py$VER.txt --all-extras ../pyproject.toml examples.in
-            python$VER -m piptools compile --upgrade --no-annotate -o tests-requirements-py$VER.txt examples-requirements-py$VER.txt tests.in
-            echo "::endgroup::"
-          done
-          # use last version for docs and releases
-          echo "::group::Updating dependencies for docs and release using python $VER..."
-          echo "$VER" > .python-version
-          python$VER -m piptools compile --upgrade --no-annotate -o docs-requirements.txt examples-requirements-py$VER.txt docs.in
-          echo "::endgroup::"
+          uv lock --upgrade
 
       - name: Open PR
         uses: peter-evans/create-pull-request@v7.0.5
@@ -71,6 +56,6 @@ jobs:
           labels: |
               dependencies
           body: |
-            Dependency updates by pip-compile. 
+            Dependency updates. 
             See https://github.com/xsuite/xplt/wiki/maintenance for further information, guidance and troubleshooting.
 
