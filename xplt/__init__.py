@@ -4,7 +4,7 @@ __author__ = "Philipp Niedermayer"
 __contact__ = "eltos@outlook.de"
 
 
-__version__ = "0.12.6"
+__version__ = "0.12.7-rc1"
 
 # ruff: noqa: E402, F401, F403, F405
 
