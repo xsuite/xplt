@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 """Methods for plotting particle arrival times"""
 
@@ -9,18 +8,30 @@ __date__ = "2022-11-24"
 
 import warnings
 from dataclasses import dataclass
+
+import matplotlib as mpl
+import numpy as np
 import scipy.signal
 
-from .util import *
-from .properties import _fmt_qty
-from .base import XManifoldPlot, TwinFunctionLocator, TransformedLocator
+from .base import TransformedLocator, TwinFunctionLocator, XManifoldPlot
 from .particles import (
-    ParticlePlotMixin,
-    ParticlesPlot,
     ParticleHistogramPlot,
     ParticleHistogramPlotMixin,
+    ParticlePlotMixin,
+    ParticlesPlot,
 )
-from .properties import Property, DerivedProperty, arb_unit
+from .properties import DerivedProperty, Property, _fmt_qty, arb_unit
+from .util import (
+    AUTO,
+    PUBLIC_SECTION_BEGIN,
+    PUBLIC_SECTION_END,
+    average,
+    binned_data,
+    defaults,
+    defaults_for,
+    evaluate_expression_wrapper,
+    get,
+)
 
 
 class TimePlotMixin:
@@ -64,7 +75,7 @@ class TimePlotMixin:
             if not isinstance(timeseries, dict):
                 if len(keys) != 1:
                     raise ValueError(
-                        f"timeseries must be a dict if plotting more than one property"
+                        "timeseries must be a dict if plotting more than one property"
                     )
                 timeseries = {keys[0]: timeseries}
             for ts in timeseries.values():
@@ -154,8 +165,11 @@ class MetricesMixin:
                 "Linked cv and duty axes are only supported for linear scaling!"
             )
 
-        cv2duty = lambda cv: factor_duty / (1 + (cv / factor_cv) ** 2)
-        duty2cv = lambda du: factor_cv * (factor_duty / du - 1) ** 0.5
+        def cv2duty(cv):
+            return factor_duty / (1 + (cv / factor_cv) ** 2)
+
+        def duty2cv(du):
+            return factor_cv * (factor_duty / du - 1) ** 0.5
 
         # cv axis
         axis_cv = getattr(ax_cv, f"{xy}axis")
@@ -177,7 +191,7 @@ class MetricesMixin:
                 TwinFunctionLocator(axis_cv.get_major_locator(), cv2duty, duty2cv, granularity)
             )
             axis_duty.set_major_formatter(
-                mpl.ticker.FuncFormatter(lambda cv, i: f"{100*cv2duty(cv):.0f} %")
+                mpl.ticker.FuncFormatter(lambda cv, i: f"{100 * cv2duty(cv):.0f} %")
             )
             axis_duty.set_minor_locator(
                 mpl.ticker.FixedLocator(duty2cv(granularity * np.linspace(1, 100, 100)))
@@ -212,10 +226,9 @@ class MetricesMixin:
         at.set_navigate(False)  # we maintain limits ourselves
         ax.set_zorder(at.get_zorder() + 1)  # make sure axis on top to capture events
         if xy == "x":
-            callback = lambda a: at.set(xlim=a.get_xlim())
+            ax.callbacks.connect("xlim_changed", lambda a: at.set(xlim=a.get_xlim()))
         else:
-            callback = lambda a: at.set(ylim=a.get_ylim())
-        ax.callbacks.connect(f"{xy}lim_changed", callback)
+            ax.callbacks.connect("ylim_changed", lambda a: at.set(ylim=a.get_ylim()))
 
         # force update once to initial values (while not changing autoscale setting)
         if xy == "x":
@@ -729,7 +742,6 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
         # Particle timestamp based data
         ################################
         if particles is not None:
-
             # extract times
             times = self.prop("t").values(particles, mask, unit="s")
             fmax = self.fmax(particles)
@@ -773,16 +785,15 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
             for j, pp in enumerate(ppp):
                 a = self.axis(i, j)
                 for k, p in enumerate(pp):
-
                     # calculate FFT
                     ts = timeseries[p]
                     fs.append(ts.fs)
                     if self.welch is None:
                         freq = np.fft.rfftfreq(ts.size, d=ts.dt)
                         mag = np.abs(np.fft.rfft(ts.data, norm="forward"))
-                        mag[
-                            1:
-                        ] *= 2  # one-sided spectrum contains only half the amplitude (except DC)
+                        mag[1:] *= (
+                            2  # one-sided spectrum contains only half the amplitude (except DC)
+                        )
                     else:
                         # Welch's method for smoothing
                         freq, mag2 = scipy.signal.welch(
@@ -874,7 +885,7 @@ class TimeFFTPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, ParticleHisto
                 f = fs[0] / self.frev(particles)
                 self.annotate(f"$f_\\mathrm{{samp}} = {_fmt_qty(f, '1')}\\, f_\\mathrm{{rev}}$")
             else:
-                self.annotate(f"$f_\\mathrm{{samp}} = {_fmt_qty(fs[ 0], 'Hz')}$")
+                self.annotate(f"$f_\\mathrm{{samp}} = {_fmt_qty(fs[0], 'Hz')}$")
         else:
             self.annotate("")
 
@@ -1315,7 +1326,6 @@ class SpillQualityPlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin, Metrices
         # Particle timestamp based data
         ################################
         if particles is not None:
-
             # extract times in range
             times = self.prop("t").values(particles, mask, unit="s")
             times = self._apply_time_range(times)
@@ -1579,13 +1589,12 @@ class SpillQualityTimescalePlot(XManifoldPlot, TimePlotMixin, ParticlePlotMixin,
                     f"counting_dt_max ({counting_dt_max:g} s) and/or count ({ntotal:g}) insufficient. "
                 )
                 if not ignore_insufficient_statistics:
-                    print(f"Nothing plotted.")
+                    print("Nothing plotted.")
                     return True
 
         # Particle timestamp based data
         ################################
         if particles is not None:
-
             # extract times in range
             times = self.prop("t").values(particles, mask)
             times = self._apply_time_range(times)

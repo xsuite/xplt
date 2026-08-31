@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 """Base methods for plotting"""
 
@@ -13,23 +12,22 @@ import types
 import uuid
 
 import matplotlib as mpl
+import matplotlib.patches
+import matplotlib.path
 import matplotlib.pyplot as plt
 import matplotlib.scale
 import matplotlib.transforms
-import matplotlib.patches
-import matplotlib.path
 import numpy as np
 
-from .util import defaults, flattened, defaults_for, AUTO
 from .properties import (
-    Property,
-    find_property,
     DataProperty,
-    arb_unit,
     _convert_value_to_unit,
     _fmt_qty,
     _has_pint,
+    arb_unit,
+    find_property,
 )
+from .util import AUTO, defaults, defaults_for, flattened
 
 
 class ManifoldMultipleLocator(mpl.ticker.MaxNLocator):
@@ -96,7 +94,7 @@ class RadiansFormatter(mpl.ticker.Formatter):
                 if m == 1:
                     m = ""
                 return f"${s}{m}\\pi/{n}$"
-        return f"${x/np.pi:g}\\pi$"
+        return f"${x / np.pi:g}\\pi$"
 
 
 class TwinFunctionLocator(mpl.ticker.Locator):
@@ -187,7 +185,10 @@ class DiscontinuousLinearScale(mpl.scale.LinearScale):
 
     def add_discontinuity_markers(self, axis):
         ax = axis.axes
-        xy = lambda x, y: (x, y) if axis == ax.xaxis else (y, x)
+
+        def xy(x, y):
+            return (x, y) if axis == ax.xaxis else (y, x)
+
         trans = mpl.transforms.blended_transform_factory(*xy(ax.transData, ax.transAxes))
         kwargs = dict(color="k", linewidth=0.8, transform=trans, clip_on=False, zorder=9)
         for br in self.breaks:
@@ -279,12 +280,12 @@ class DiscontinuousTransform(mpl.transforms.Transform):
         breaks = np.asanyarray(self.breaks, dtype="float").copy()
         spaces = np.asanyarray(self.spaces, dtype="float")
         m = np.zeros_like(a)
-        for (l, r), s in zip(breaks, spaces):
-            gap, over = (a > l) & (a < r), a >= r
+        for (left, right), space in zip(breaks, spaces):
+            gap, over = (a > left) & (a < right), a >= right
             m[gap] = 1
-            a[gap] = l + s * (a[gap] - l) / (r - l)
-            a[over] -= r - l - s
-            breaks[breaks >= r] -= r - l - s
+            a[gap] = left + space * (a[gap] - left) / (right - left)
+            a[over] -= right - left - space
+            breaks[breaks >= right] -= right - left - space
         if self.hide:
             a = np.ma.masked_where(m, a)
         return a
@@ -366,7 +367,7 @@ class XPlot:
                         # hack for shared cyclers
                         # see https://github.com/matplotlib/matplotlib/issues/19479
                         twin._get_lines = a._get_lines
-                    except:
+                    except Exception:
                         print(
                             "Warning: failed to share cyclers, please manually set trace colors for twin axes and make sure to upvote https://github.com/matplotlib/matplotlib/issues/19479"
                         )

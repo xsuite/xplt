@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 """Methods for plotting phase space distributions"""
 
@@ -8,11 +7,22 @@ __contact__ = "eltos@outlook.de"
 __date__ = "2022-09-06"
 
 
+import matplotlib as mpl
+import numpy as np
 from matplotlib.patches import Ellipse
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
-from .util import *
-from .base import XPlot, XManifoldPlot, AngleLocator, RadiansFormatter
+
+from .base import AngleLocator, RadiansFormatter, XManifoldPlot, XPlot
 from .particles import ParticlePlotMixin
+from .util import (
+    PUBLIC_SECTION_BEGIN,
+    PUBLIC_SECTION_END,
+    defaults,
+    defaults_for,
+    denormalized_coordinates,
+    get,
+    normalized_coordinates,
+)
 
 pairwise = np.c_
 

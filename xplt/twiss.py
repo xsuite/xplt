@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 """Methods for plotting twiss"""
 
@@ -7,15 +6,21 @@ __author__ = "Philipp Niedermayer"
 __contact__ = "eltos@outlook.de"
 __date__ = "2022-11-08"
 
+import numpy as np
+from matplotlib.collections import PolyCollection
 from matplotlib.lines import Line2D
+from numpy.testing import assert_equal
 
-from .util import *
 from .base import XManifoldPlot
 from .line import KnlPlot
-from .properties import Property, DataProperty, DerivedProperty, _has_pint
-
-from matplotlib.collections import PolyCollection
-from numpy.testing import assert_equal
+from .properties import DataProperty, DerivedProperty, _has_pint
+from .util import (
+    PUBLIC_SECTION_BEGIN,
+    PUBLIC_SECTION_END,
+    defaults,
+    defaults_for,
+    get,
+)
 
 PUBLIC_SECTION_BEGIN()
 
@@ -150,7 +155,7 @@ class TwissPlot(XManifoldPlot):
             changed artists
         """
 
-        if type(twiss) == tuple and len(twiss) > 1:
+        if type(twiss) is tuple and len(twiss) > 1:
             s = get(twiss[0], "s")
             for tw in twiss[1:]:
                 assert_equal(

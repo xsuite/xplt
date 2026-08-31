@@ -1,15 +1,14 @@
-import os
-import shutil
 import base64
+import os
 import re
+import shutil
 import warnings
-from unittest import TestCase
 from copy import deepcopy
 from tempfile import NamedTemporaryFile
+from unittest import TestCase
 
-import pytest
-from testbook import testbook
 from matplotlib.testing.compare import compare_images
+from testbook import testbook
 
 dir = "examples"
 if not os.path.exists(dir):
@@ -23,7 +22,7 @@ class NotebookTester:
     def execute(self, *, check_outputs=False):
         with testbook(self.nb) as tb:
             for i, cell in enumerate(tb.cells):
-                tags = cell.get("metadata", {}).get("tags", [])
+                # tags = cell.get("metadata", {}).get("tags", [])
                 ref_cell = deepcopy(cell)
 
                 # execute
@@ -83,7 +82,9 @@ class NotebookTester:
                         )
                 else:
                     # compare outputs in per-output-type order (gracefully handle warnings or reorders)
-                    type_filter = lambda o: o.get("output_type") == output_type
+                    def type_filter(o):
+                        return o.get("output_type") == output_type
+
                     reference_outputs_this_type = list(filter(type_filter, reference_outputs))
                     actual_outputs_this_type = list(filter(type_filter, actual_outputs))
                     try:
