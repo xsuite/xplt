@@ -567,7 +567,9 @@ class FloorPlot(XPlot):
                 self.ax,
                 autoscale,
                 artists=self.artists_boxes + self.artists_labels + [self.artist_beamline],
-                freeze=False,  # don't freeze to avoid warning with fixed aspect ratio
+                # Equal aspect with adjustable data limits needs autoscaling to
+                # remain enabled when drawing or resizing the figure.
+                freeze=self.ax.get_adjustable() != "datalim",
             )
 
         return changed

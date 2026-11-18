@@ -1,5 +1,7 @@
+import matplotlib.pyplot as plt
+import pytest
 import xtrack as xt
-from numpy.testing import assert_equal
+from numpy.testing import assert_allclose, assert_equal
 from packaging.version import Version
 
 import xplt.line
@@ -96,3 +98,34 @@ def test_repeated_elements_survey():
 def test_sign_sticky():
     x = [0, 1, 5, 0, 5, -3, 0, 1, 0, -2, 0]
     assert_equal(xplt.line.sign_sticky(x, initial=1), [1, 1, 1, 1, 1, -1, -1, 1, 1, -1, -1])
+
+
+@pytest.mark.parametrize("axis", ["auto", "scaled"])
+def test_floorplot_preserves_limits_with_added_artists(axis):
+    line = xt.Line(elements=[xt.Bend(length=1, angle=0.2)])
+    plot = xplt.FloorPlot(line.survey(), axis=axis)
+    try:
+        plot.update(line.survey(), autoscale=True)
+        plot.fig.canvas.draw()
+        limits = plot.ax.get_xlim(), plot.ax.get_ylim()
+
+        # An overlay outside the floor plan should not change its displayed limits.
+        plot.ax.plot([100, 200], [100, 200])
+        plot.fig.canvas.draw()
+        assert_allclose((plot.ax.get_xlim(), plot.ax.get_ylim()), limits)
+    finally:
+        plt.close(plot.fig)
+
+
+def test_floorplot_equal_aspect_on_resize(caplog):
+    line = xt.Line(elements=[xt.Bend(length=1, angle=0.2)])
+    plot = xplt.FloorPlot(line.survey())
+    try:
+        for size in [(8, 3), (3, 8)]:
+            plot.fig.set_size_inches(*size)
+            plot.fig.canvas.draw()
+            origin, x_unit, y_unit = plot.ax.transData.transform([(0, 0), (1, 0), (0, 1)])
+            assert_allclose(x_unit[0] - origin[0], y_unit[1] - origin[1])
+        assert "Ignoring fixed" not in caplog.text
+    finally:
+        plt.close(plot.fig)
